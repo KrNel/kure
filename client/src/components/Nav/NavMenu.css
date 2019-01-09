@@ -1,0 +1,68 @@
+.ui.menu {
+  border-radius: 0px !important;
+  /*min-height: 65px;*/
+}
+.ui.menu .item {
+  border-radius: 0px !important;
+}
+
+.ui.menu.menu {
+  padding-right:20px;
+}
+
+.ui.blue.menu a.item.active, .ui.blue.menu a.item.active .header {
+  background-color: #4da2f2;
+  border-color: #4da2f2;
+  color:#fff !important;
+  font-weight: bold;
+}
+
+.ui.blue.menu a.item:hover, .ui.blue.menu a.item:hover .header {
+  background-color: #4da2f2 !important;
+  border-color: #4da2f2 !important;
+  color:#fff !important;
+}
+
+/*-------------------
+        Active
+--------------------*/
+
+/*.ui.active.label {
+  background-color: #D0D0D0;
+  border-color: #D0D0D0;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.ui.active.label:before {
+  background-color: #D0D0D0;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.95);
+}*/
+
+
+
+/*-------------------
+     Active Hover
+--------------------*/
+
+/*a.ui.labels .active.label:hover,
+a.ui.active.label:hover {
+  background-color: #00aeef;
+  border-color: #00aeef;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.ui.labels a.active.label:ActiveHover:before,
+a.ui.active.label:ActiveHover:before {
+  background-color: #00aeef;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.95);
+}*/
+
+/*.ui.menu .item {
+  margin:0;
+  padding:0 !important;
+  width:116px;
+}*/

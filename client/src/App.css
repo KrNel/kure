@@ -1,0 +1,73 @@
+.App {
+  text-align: center;
+}
+
+/*#wrapper {
+  width:922px;
+  margin: 0 auto;
+}*/
+.ui.grid.navMenu {
+  /*height: 80px !important;*/
+  border-bottom: 1px solid #4da2f2;
+}
+
+.ui.grid.navMenu > .column:not(.row) {
+  padding-top: 5px;
+  padding-bottom: 0px;
+  /*height: 90px !important;*/
+}
+
+.ui.container.grid.wrapper {
+  max-width: 1020px !important
+}
+
+/*.wrapper {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 10px;
+}*/
+
+.ui.segment, .ui.menu, .ui.card {
+    border-radius: 0px !important;
+}
+
+.ui.segment {
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.ui.card {
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  /*border: 1px solid rgba(34, 36, 38, 0.15);*/
+  border: 1px solid rgba(77, 162, 242, 0.4) !important;
+}
+
+.ui.segment {
+  -webkit-box-shadow: none rgba(77, 162, 242, 0.4) !important;
+  box-shadow: none rgba(77, 162, 242, 0.4) !important;
+  border: 1px solid rgba(77, 162, 242, 0.4) !important;
+}
+
+/* Vertically Divided */
+
+.ui[class*="vertically divided"].grid > .row:before {
+  -webkit-box-shadow: none rgba(77, 162, 242, 0.4) !important;
+  box-shadow: none rgba(77, 162, 242, 0.4) !important;
+  border-top: none;
+}
+
+
+/*.grid {
+      position: relative;
+    }
+.grid:before {
+  content: '';
+  height: calc(100% - 2rem);
+  left: 1rem;
+  top: 1rem;
+  position: absolute;
+  width: calc(100% - 2rem);
+ }*/

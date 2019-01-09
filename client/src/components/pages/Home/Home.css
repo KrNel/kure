@@ -1,0 +1,29 @@
+.main .column {
+  /*min-width: 200px;*/
+
+}
+/*
+.home .ui.grid .main .header {
+  margin-left: 15px;
+}
+*/
+.main .recActivity .segment {
+  /*min-height: 250px;*/
+  max-width: 300px;
+}
+
+.sidebar .column {
+  min-width: 200px;
+}
+/*
+.home .ui.grid .sidebar .segment {
+  min-height: 200px;
+}
+*/
+.ui.grid > .row.reducePad {
+  padding-bottom: 0em;
+}
+
+.ui.header {
+  color: rgba(6, 87, 142, 1) !important;
+}
