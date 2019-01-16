@@ -1,11 +1,12 @@
 import sc2 from 'steemconnect';
+import scConfig from './scConfig'
 
 const api = sc2.Initialize({
-  app: 'demo-app',
-  callbackURL: 'http://localhost:3000',
+  app: scConfig.sc.app,
+  callbackURL: scConfig.sc.callbackURLDev,
   //callbackURL: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/callback' : 'https://appbaseio-apps.github.io/reactivesearch-auth0-example/callback',
-  accessToken: 'access_token',
-  scope: ['vote', 'comment'],
+  accessToken: scConfig.sc.accessToken,
+  scope: scConfig.sc.scope,
 });
 
 /*

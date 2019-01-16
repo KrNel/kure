@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu } from "semantic-ui-react";
 
-const LoginControl = ({isAuth, scURL}) => {
+const LoginControl = ({isAuth, loginURL}) => {
   let menu;
 
   if (isAuth) {
@@ -15,7 +15,15 @@ const LoginControl = ({isAuth, scURL}) => {
       Logout
     </Menu.Item>
   }else {
-    menu = <a className="header item" href={scURL}>Login</a>;
+    menu = <a className="header item" href={loginURL}>Login</a>;
+    /*menu = <Menu.Item
+      exact
+      as={NavLink}
+      to="/login"
+      header
+    >
+      Login
+    </Menu.Item>*/
   }
     /*const logInOut = (isAuth) ? "Logout" : "Login"
     const link = (isAuth) ? "/logout" : `${scURL}`*/

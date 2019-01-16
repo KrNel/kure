@@ -7,8 +7,9 @@ import Posts from '../components/pages/Posts/Posts';
 import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
+import AuthSC from '../components/Auth/AuthSC';
 import PrivateRoute from './PrivateRoute';
-//import Login from './Auth/Login';
+//import Login from '../components/Auth/Login';
 
 const NoMatch = ({ location }) => (
   <div className='ui inverted red raised very padded text container segment'>
@@ -19,7 +20,7 @@ const NoMatch = ({ location }) => (
   </div>
 );
 
-const Routes = ({onLogout, isAuth}) => {
+const Routes = (props) => {
   //console.log('scURL: ', scURL);
 
   return (
@@ -28,11 +29,12 @@ const Routes = ({onLogout, isAuth}) => {
       <Route path='/groups' component={Groups} />
       <Route path='/posts' component={Posts} />
       <Route path='/kurate' component={Kurate} />
-      <PrivateRoute path='/manage' component={Manage} isAuth={isAuth} />
+      <Route path='/success' render={()=><AuthSC handleIsAuth={props.handleIsAuth} handleIsAuthorizing={props.handleIsAuthorizing} setUserData={props.setUserData} />} />
+      <PrivateRoute path='/manage' component={Manage} isAuth={props.isAuth} isAuthorizing={props.isAuthorizing} user={props.user} />
       {/*<Route path='/login' component={() => window.location = {url}} />*/}
       {/*<Route path='/login' component={Login} />*/}
-      {/*<Route path='/login' render={()=><Login scURL={scURL} />} />*/}
-      <Route path='/logout' render={()=><Logout onLogout={onLogout} />} />
+      {/*<Route path='/login' render={()=><Login loginURL={loginURL} />} />*/}
+      <Route path='/logout' render={()=><Logout onLogout={props.onLogout} user={props.user} />} />
       {/*https://github.com/ReactTraining/react-router/issues/4105*/}
 
       {/*<PrivateRoute path='/manage' component={Manage} />*/}

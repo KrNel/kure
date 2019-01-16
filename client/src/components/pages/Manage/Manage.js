@@ -1,9 +1,9 @@
 import React  from 'react';
 
-const Manage = () => {
+const Manage = (props) => {
   return (
     <div>
-      Manage
+      Managing Groups and Posts for {props.user}
     </div>
   );
 }

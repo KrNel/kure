@@ -1,5 +1,12 @@
 import app from './server';
+import fs from 'fs';
+import https from 'https';
 
-app.listen(app.get('port'), () => {
-  console.log(`Find the server at: http://localhost:${app.get('port')}/`); // eslint-disable-line no-console
+const httpsOptions = {
+  key: fs.readFileSync('ssl/privateKey.key'),
+  cert: fs.readFileSync('ssl/certificate.crt')
+};
+
+https.createServer(httpsOptions, app).listen(app.get('port'), () => {
+  console.log(`Find the server at: https://localhost:${app.get('port')}/`); // eslint-disable-line no-console
 });

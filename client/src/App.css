@@ -1,5 +1,11 @@
+@import './variables.css';
+
 .App {
   text-align: center;
+}
+
+a {
+  color: var(--main-color)
 }
 
 /*#wrapper {
@@ -42,20 +48,20 @@
   -moz-box-shadow: none !important;
   box-shadow: none !important;
   /*border: 1px solid rgba(34, 36, 38, 0.15);*/
-  border: 1px solid rgba(77, 162, 242, 0.4) !important;
+  border: 1px solid var(--main-border) !important;
 }
 
 .ui.segment {
-  -webkit-box-shadow: none rgba(77, 162, 242, 0.4) !important;
-  box-shadow: none rgba(77, 162, 242, 0.4) !important;
-  border: 1px solid rgba(77, 162, 242, 0.4) !important;
+  -webkit-box-shadow: none var(--main-border) !important;
+  box-shadow: none var(--main-border) !important;
+  border: 1px solid var(--main-border) !important;
 }
 
 /* Vertically Divided */
 
 .ui[class*="vertically divided"].grid > .row:before {
-  -webkit-box-shadow: none rgba(77, 162, 242, 0.4) !important;
-  box-shadow: none rgba(77, 162, 242, 0.4) !important;
+  -webkit-box-shadow: none var(--main-border) !important;
+  box-shadow: none var(--main-border) !important;
   border-top: none;
 }
 

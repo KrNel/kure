@@ -1,17 +1,15 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import NotAuthorized from '../components/Auth/NotAuthorized';
+import Authorizing from '../components/Auth/Authorizing';
 
-const PrivateRoute = ({ component, isAuth, ...rest }) => (
+const PrivateRoute = ({ component: Component, isAuthorizing, isAuth, ...rest }) => (
   <Route {...rest} render={(props) => (
-    (isAuth) ? (
-      React.createElement(component, props)
-    ) : (
-      /*<Redirect to={{
-        pathname: '/login',
-      }} />*/
-      <NotAuthorized />
-    )
+    (isAuthorizing)
+      ? <Authorizing />
+    : (isAuth)
+          ? <Component {...props} {...rest} />
+          : <NotAuthorized />
   )} />
 );
 

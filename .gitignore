@@ -24,3 +24,5 @@ yarn-error.log*
 
 /db
 /server/db
+/ssl
+config.js

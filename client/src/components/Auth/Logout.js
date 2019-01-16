@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import {checkStatus, parseJson} from '../../utilities/helpers';
 //import SteemConnect from '../../auth';
 //import { removeToken } from '../../auth';
 
@@ -12,17 +13,24 @@ class Logout extends Component {
       redirect: false
     };
 
-    this.removeToken();
+    this.removeToken(this.props.user);
   }
 
-  removeToken = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('expires_at');
-    localStorage.removeItem('username');
-    //???
-    //SteemConnect.revokeToken();
+  removeToken = (user) => {
 
-    this.props.onLogout();
+    fetch('/auth/logout', {
+      method: 'post',
+      body: JSON.stringify({
+        user: user
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }).then(checkStatus)
+      .then(parseJson)
+      .then((res) => {
+        this.props.onLogout();
+      });
   }
 
   componentDidMount() {
@@ -39,7 +47,7 @@ class Logout extends Component {
       {
         (this.state.redirect) ? (
           <Redirect to='/' />
-        ) : "Logged out. Redirecting in 2 seconds..."
+        ) : <h2>Logged out. Redirecting in 2 seconds...</h2>
       }
       </div>
     )

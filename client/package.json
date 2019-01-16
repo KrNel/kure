@@ -2,8 +2,10 @@
   "name": "kure-client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:3001/",
+  "proxy": "https://127.0.0.1:3001/",
   "dependencies": {
+    "abortcontroller-polyfill": "^1.2.1",
+    "babel-eslint": "^9.0.0",
     "isomorphic-fetch": "^2.2.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
@@ -15,7 +17,7 @@
     "universal-cookie": "^3.0.7"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

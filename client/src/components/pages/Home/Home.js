@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Grid, Header, Segment, Card, Feed } from "semantic-ui-react";
+import { Loader, Grid, Header, Segment, Card, Feed } from "semantic-ui-react";
 import fetch from 'isomorphic-fetch';
 import {checkStatus, parseJson} from '../../../utilities/helpers';
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch'
 
 import './Home.css';
 
@@ -17,6 +18,8 @@ const RecentPosts = (props) => {
 }
 
 class Home extends Component {
+  //_isMounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,8 +28,45 @@ class Home extends Component {
     };
   }
 
+  controller = new AbortController();
+  signal = this.controller.signal;
+
+
+  getRecentPosts = () => {
+    setTimeout(() => fetch('/api/recentposts', {
+      signal: this.signal,
+      method: 'get',
+      headers: {
+        accept: 'application/json',
+      }
+    }).then(checkStatus)
+      .then(parseJson)
+      .then((data) => {
+        //if (this._isMounted) {
+          this.setState({
+            fetched: true,
+            recentposts: data.posts
+          })
+        //}
+      }).catch(err => {
+        if (err.name === 'AbortError') {
+          console.log('Fetch aborted');
+        } else {
+          console.error('Uh oh, an error!', err);
+        }
+      })
+      , 1000);
+  }
+
   componentDidMount() {
+    //this._isMounted = true;
     this.getRecentPosts();
+
+  }
+
+  componentWillUnmount() {
+    //this._isMounted = false;
+    this.controller.abort();
   }
 
   /*
@@ -46,28 +86,16 @@ class Home extends Component {
   });
   */
 
-  getRecentPosts = () => {
-    setTimeout(() => fetch('/api/recentposts', {
-      method: 'get',
-      headers: {
-        accept: 'application/json',
-      }
-    }).then(checkStatus)
-      .then(parseJson)
-      .then((data) => {
-        this.setState({
-          fetched: true,
-          recentposts: data.posts
-        })
-    }), 1000);
-  }
+
+
+
 
   render() {
 
     let {recentposts, fetched} = this.state;
 
     if (!fetched) {
-      recentposts = <div className='ui active centered inline loader' />
+      recentposts = <Loader active inline='centered' />
     }else {
       recentposts = recentposts.map(post =>
         <RecentPosts key={post._id} post={post} />

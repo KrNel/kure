@@ -9,7 +9,7 @@ import "semantic-ui-css/components/transition.min.css";
 import logo from '../../images/logo.png';
 import './NavMenu.css';
 
-const NavMenu = ({isAuth, scURL}) => {
+const NavMenu = ({isAuth, loginURL}) => {
 
   const items = [
     {name : "/", label : "Home"},
@@ -37,7 +37,7 @@ const NavMenu = ({isAuth, scURL}) => {
           ))
         }
         <Menu.Menu position="right">
-          <LoginControl isAuth={isAuth} scURL={scURL} />
+          <LoginControl isAuth={isAuth} loginURL={loginURL} />
         </Menu.Menu>
       </Menu>
     </div>

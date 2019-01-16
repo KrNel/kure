@@ -1,3 +1,5 @@
+@import '../../variables.css';
+
 .ui.menu {
   border-radius: 0px !important;
   /*min-height: 65px;*/
@@ -10,16 +12,24 @@
   padding-right:20px;
 }
 
+/*.ui.secondary.menu a.item {
+  border: 1px solid #fff;
+}
+
+.ui.secondary.menu a.item.active, .ui.secondary.menu a.item:hover {
+  border: 1px solid var(--main-color) !important;
+}*/
+
 .ui.blue.menu a.item.active, .ui.blue.menu a.item.active .header {
-  background-color: #4da2f2;
-  border-color: #4da2f2;
+  background-color: var(--main-color);
+  border-color: var(--main-color);
   color:#fff !important;
   font-weight: bold;
 }
 
 .ui.blue.menu a.item:hover, .ui.blue.menu a.item:hover .header {
-  background-color: #4da2f2 !important;
-  border-color: #4da2f2 !important;
+  background-color: var(--main-color) !important;
+  border-color: var(--main-color) !important;
   color:#fff !important;
 }
 
