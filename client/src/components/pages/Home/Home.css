@@ -1,3 +1,5 @@
+@import '../../../variables.css';
+
 .main .column {
   /*min-width: 200px;*/
 
@@ -21,9 +23,39 @@
 }
 */
 .ui.grid > .row.reducePad {
-  padding-bottom: 0em;
+  padding-bottom: 0;
 }
 
-.ui.header {
-  color: rgba(6, 87, 142, 1) !important;
+.ui.header, .ui.card .header {
+  color: var(--dark-blue) !important;
 }
+
+.home .ui.segment.nopad  {
+  padding: 0;
+}
+
+/*.home .ui.segment:first-child {
+  padding-top: 10px;
+}*/
+
+.home .recPost {
+  padding: 5px 10px;
+}
+.home .recPost:not(:first-child) {
+  /*border-top: 1px solid var(--main-border);*/
+  border-top: 1px solid #ddd;
+}
+
+.home hr {
+  margin: 0;
+  padding: 0;
+}
+
+/*.ui.segment hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid var(--main-border);
+  margin: 1em 0;
+  padding: 0;
+}*/

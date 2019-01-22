@@ -29,12 +29,12 @@ const Routes = (props) => {
       <Route path='/groups' component={Groups} />
       <Route path='/posts' component={Posts} />
       <Route path='/kurate' component={Kurate} />
-      <Route path='/success' render={()=><AuthSC handleIsAuth={props.handleIsAuth} handleIsAuthorizing={props.handleIsAuthorizing} setUserData={props.setUserData} />} />
-      <PrivateRoute path='/manage' component={Manage} isAuth={props.isAuth} isAuthorizing={props.isAuthorizing} user={props.user} />
+      <Route path='/success' render={()=><AuthSC handleIsAuth={props.handleIsAuth} handleIsAuthorizing={props.handleIsAuthorizing} setUserData={props.setUserData} setCSRF={props.setCSRF} />} />
+      <PrivateRoute path='/manage' component={Manage} isAuth={props.isAuth} isAuthorizing={props.isAuthorizing} user={props.user} csrfToken={props.csrfToken} />
       {/*<Route path='/login' component={() => window.location = {url}} />*/}
       {/*<Route path='/login' component={Login} />*/}
       {/*<Route path='/login' render={()=><Login loginURL={loginURL} />} />*/}
-      <Route path='/logout' render={()=><Logout onLogout={props.onLogout} user={props.user} />} />
+      <Route path='/logout' render={()=><Logout onLogout={props.onLogout} user={props.user} csrfToken={props.csrfToken} />} />
       {/*https://github.com/ReactTraining/react-router/issues/4105*/}
 
       {/*<PrivateRoute path='/manage' component={Manage} />*/}

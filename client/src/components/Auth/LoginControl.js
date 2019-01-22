@@ -6,14 +6,25 @@ const LoginControl = ({isAuth, loginURL}) => {
   let menu;
 
   if (isAuth) {
-    menu = <Menu.Item
-      exact
-      as={NavLink}
-      to="/logout"
-      header
-    >
-      Logout
-    </Menu.Item>
+    menu =
+    <React.Fragment>
+      <Menu.Item
+        exact
+        as={NavLink}
+        to="/manage"
+        header
+      >
+        Manage
+      </Menu.Item>
+      <Menu.Item
+        exact
+        as={NavLink}
+        to="/logout"
+        header
+      >
+        Logout
+      </Menu.Item>
+    </React.Fragment>
   }else {
     menu = <a className="header item" href={loginURL}>Login</a>;
     /*menu = <Menu.Item

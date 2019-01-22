@@ -13,16 +13,15 @@ const NavMenu = ({isAuth, loginURL}) => {
 
   const items = [
     {name : "/", label : "Home"},
-    {name : "/groups", label : "Groups"},
+    {name : "/groups", label : "Communities"},
     {name : "/posts", label : "Posts"},
-    {name : "/kurate", label : "Kurate"},
-    {name : "/manage", label : "Manage"}
+    {name : "/kurate", label : "Kurate"}
   ];
 
   return (
     <div>
-      <Menu color="blue" secondary stackable top="true" size="huge">
-        <Menu.Item><Image src={logo} alt="logo" /></Menu.Item>
+      <Menu color="blue" secondary stackable size="huge">
+        <Menu.Item className="nopad"><Image src={logo} alt="logo" /></Menu.Item>
         {
           items.map((item) => (
             <Menu.Item

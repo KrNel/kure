@@ -1,4 +1,5 @@
 :root {
-    --main-color: #4da2f2;
+    --light-blue: #4da2f2;
     --main-border: rgba(77, 162, 242, 0.4);
+    --dark-blue: rgba(6, 87, 142, 1);
 }

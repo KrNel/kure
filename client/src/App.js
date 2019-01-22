@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Grid } from "semantic-ui-react";
+import axios from 'axios';
 
 import Routes from './routes/Routes';
 import NavMenu from './components/Nav/NavMenu';
 import HelmetComponent from './components/Header/Header';
 import SteemConnect from './utilities/auth/scAPI';
-import {checkStatus, parseJson} from './utilities/helpers';
 import './App.css';
+
 
 /*
 import logo from './logo.svg';
@@ -28,12 +29,17 @@ class App extends Component {
 
     this.userData = { name: '' };
     this.csrf = "";
+    this.signal = axios.CancelToken.source();
   }
 
   componentDidMount() {
     if (!this.state.isAuth) {
       this.isReturning();
     }
+  }
+
+  componentWillUnmount() {
+    this.signal.cancel('Api is being canceled');
   }
 
   setUserData = (userData) => {
@@ -70,7 +76,23 @@ class App extends Component {
   }
 
   isReturning() {
-    fetch('/auth/returning', {
+    axios.get('/auth/returning', {
+      cancelToken: this.signal.token,
+    }).then((res) => {
+      const isAuth = res.data.isAuth;
+      if (isAuth) {
+        this.setCSRF(res.headers['x-csrf-token']);
+        this.setUserData(res.data.user);
+        this.handleIsAuth(isAuth);
+      }
+      this.handleIsAuthorizing(false);
+    }).catch(err => {
+      if (axios.isCancel(err)) {
+        console.log('Error: ', err.message); // => prints: Api is being canceled
+      }
+    })
+
+    /*fetch('/auth/returning', {
       method: 'get',
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +109,7 @@ class App extends Component {
           this.setUserData(res.user);
         }
         this.handleIsAuthorizing(false);
-      });
+      });*/
   }
 
   /*
@@ -116,11 +138,10 @@ class App extends Component {
       isAuth,
       isAuthorizing
     } = this.state;
-console.log('isAuth: ', isAuth);
-console.log('isAuthorizing: ', isAuthorizing);
     const user = this.getUserData().name;
     const scState = `${window.location.pathname}`;
     const loginURL = SteemConnect.getLoginURL(scState);
+    const csrfToken = this.getCSRF();
 
     return (
       <div>
@@ -138,7 +159,7 @@ console.log('isAuthorizing: ', isAuthorizing);
 
         <Grid container className="wrapper">
           <Grid.Column width={16}>
-            <Routes onLogout={this.onLogout} isAuth={isAuth} handleIsAuth={this.handleIsAuth} handleIsAuthorizing={this.handleIsAuthorizing} isAuthorizing={isAuthorizing} user={user} setUserData={this.setUserData} />
+            <Routes onLogout={this.onLogout} isAuth={isAuth} handleIsAuth={this.handleIsAuth} handleIsAuthorizing={this.handleIsAuthorizing} isAuthorizing={isAuthorizing} user={user} setUserData={this.setUserData} setCSRF={this.setCSRF} csrfToken={csrfToken} />
           </Grid.Column>
         </Grid>
       </div>

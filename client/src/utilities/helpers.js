@@ -4,10 +4,11 @@ export function checkStatus(res) {
     //console.log("headers: ", res.headers.get('x-csrf-token'));
     return res;
   } else {
-    const error = new Error(`HTTP rrror checking response status ${res.statusText}`);
+    const error = new Error(`HTTP error checking response to client, status: ${res.statusText}`);
     error.status = res.statusText;
+    error.data = res.data;
     error.response = res;
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }

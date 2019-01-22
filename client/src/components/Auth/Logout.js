@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import {checkStatus, parseJson} from '../../utilities/helpers';
+import { Grid } from "semantic-ui-react";
+import axios from 'axios';
+
+
 //import SteemConnect from '../../auth';
 //import { removeToken } from '../../auth';
 
@@ -18,18 +21,33 @@ class Logout extends Component {
 
   removeToken = (user) => {
 
-    fetch('/auth/logout', {
+    /*fetch('/auth/logout', {
       method: 'post',
       body: JSON.stringify({
         user: user
       }),
       headers: {
         "Content-Type": "application/json",
+        "x-csrf-token": this.props.csrfToken
       }
     }).then(checkStatus)
       .then(parseJson)
       .then((res) => {
         this.props.onLogout();
+      })
+      .catch(err => { console.error('error on fetch logout: ', err); });*/
+      axios.post('/auth/logout', {
+        user: user
+      }, {
+        /*headers: {
+          "x-csrf-token": this.props.csrfToken
+        }*/
+      })
+      .then((res) => {
+        this.props.onLogout();
+      })
+      .catch((err) => {
+        console.error('error on axios logout: ', err);
       });
   }
 
@@ -45,9 +63,16 @@ class Logout extends Component {
     return (
       <div>
       {
-        (this.state.redirect) ? (
-          <Redirect to='/' />
-        ) : <h2>Logged out. Redirecting in 2 seconds...</h2>
+        (this.state.redirect)
+          ? <Redirect to='/' />
+          :
+            <Grid verticalAlign='middle' columns={3} centered style={{height: "80vh"}}>
+              <Grid.Row>
+                <Grid.Column>
+                  <h2>Logged out. Redirecting in 2 seconds...</h2>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
       }
       </div>
     )

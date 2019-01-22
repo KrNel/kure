@@ -1,39 +1,40 @@
 import React, { Component } from 'react';
 import { Loader, Grid, Header, Segment, Card, Feed } from "semantic-ui-react";
-import fetch from 'isomorphic-fetch';
-import {checkStatus, parseJson} from '../../../utilities/helpers';
-import 'abortcontroller-polyfill/dist/polyfill-patch-fetch'
+//import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
+import axios from 'axios';
+//import progress from '../../../utilities/axios-nprogress';
 
 import './Home.css';
 
 const RecentPosts = (props) => {
     return (
-      <div>
-        <div>
-          {props.post.list}
-        </div>
-        <hr />
-      </div>
+      <React.Fragment>
+        <div className="recPost">{props.post.st_title}</div>
+      </React.Fragment>
     )
 }
 
 class Home extends Component {
   //_isMounted = false;
 
+
   constructor(props) {
     super(props);
     this.state = {
-        fetched: false,
+        isLoading: true,
         recentposts: []
     };
+
+    this.signal = axios.CancelToken.source();
+
   }
 
-  controller = new AbortController();
-  signal = this.controller.signal;
+  //controller = new AbortController();
+  //signal = this.controller.signal;
 
 
   getRecentPosts = () => {
-    setTimeout(() => fetch('/api/recentposts', {
+    /*setTimeout(() => fetch('/api/recentposts', {
       signal: this.signal,
       method: 'get',
       headers: {
@@ -42,12 +43,10 @@ class Home extends Component {
     }).then(checkStatus)
       .then(parseJson)
       .then((data) => {
-        //if (this._isMounted) {
-          this.setState({
-            fetched: true,
-            recentposts: data.posts
-          })
-        //}
+        this.setState({
+          isLoading: false,
+          recentposts: data.posts
+        })
       }).catch(err => {
         if (err.name === 'AbortError') {
           console.log('Fetch aborted');
@@ -55,18 +54,34 @@ class Home extends Component {
           console.error('Uh oh, an error!', err);
         }
       })
-      , 1000);
+      , 1000);*/
+
+    setTimeout(() => axios.get('/api/recentposts', {
+      cancelToken: this.signal.token,
+    }).then((data) => {
+      this.setState({
+        isLoading: false,
+        recentposts: data.data.posts
+      })
+    }).catch(err => {
+      if (axios.isCancel(err)) {
+        console.log('Error: ', err.message); // => prints: Api is being canceled
+      } else {
+        this.setState({ isLoading: false });
+      }
+    })
+    , 1000);
   }
 
   componentDidMount() {
     //this._isMounted = true;
     this.getRecentPosts();
-
   }
 
   componentWillUnmount() {
     //this._isMounted = false;
-    this.controller.abort();
+    //this.controller.abort();
+    this.signal.cancel('Api is being canceled');
   }
 
   /*
@@ -92,9 +107,9 @@ class Home extends Component {
 
   render() {
 
-    let {recentposts, fetched} = this.state;
+    let {recentposts, isLoading} = this.state;
 
-    if (!fetched) {
+    if (isLoading) {
       recentposts = <Loader active inline='centered' />
     }else {
       recentposts = recentposts.map(post =>
@@ -112,13 +127,13 @@ class Home extends Component {
             <Grid>
               <Grid.Row className="reducePad">
                 <Grid.Column>
-                  <Header as="h3">Post Activity:</Header>
+                  <Header as="h3">Recently Added</Header>
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Segment>
+                  <Segment className="nopad">
                     {recentposts}
                   </Segment>
                 </Grid.Column>
@@ -126,47 +141,46 @@ class Home extends Component {
 
               <Grid.Row className="reducePad">
                 <Grid.Column>
-                  <Header as="h3">Group Activity:</Header>
+                  <Header as="h3">Community Activity</Header>
                 </Grid.Column>
               </Grid.Row>
 
-              <Grid.Row>
-                <Grid.Column>
-                  <Grid stackable className="recActivity">
-                    <Grid.Row columns="3">
-                      <Grid.Column>
+
+                      <Grid.Column width={8}>
                         <Segment>
                           <p>1</p>
                           <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
                         </Segment>
                       </Grid.Column>
-                      <Grid.Column>
+                      <Grid.Column width={8}>
                         <Segment>
                           <p>2</p>
                           <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
                         </Segment>
                       </Grid.Column>
-                      <Grid.Column>
+                      <Grid.Column width={8}>
                         <Segment>
                           <p>3</p>
                           <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
                         </Segment>
                       </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
-                </Grid.Column>
+                      <Grid.Column width={8}>
+                        <Segment>
+                          <p>3</p>
+                          <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
+                        </Segment>
+                      </Grid.Column>
 
-              {/*<Grid.Row><Header as="h1">Popular Groups:</Header></Grid.Row>*/}
-              {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
-
-              </Grid.Row>
             </Grid>
           </Grid.Column>
+
+          {/*<Grid.Row><Header as="h1">Popular Groups:</Header></Grid.Row>*/}
+          {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
 
           <Grid.Column width={4} className="sidebar">
               <Card>
                 <Card.Content>
-                  <Card.Header>My Groups</Card.Header>
+                  <Card.Header as="h3">My Groups</Card.Header>
                 </Card.Content>
                 <Card.Content>
                   <Feed>
