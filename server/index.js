@@ -129,17 +129,6 @@ const initUser = (user) => {
             joined: joined,
             votes_amt: {
         			curation: 0
-        		},
-        		posts_amt: {
-        			curation: 0
-        		},
-        		groups_amt: {
-        			curation: {
-        				own: 0,
-        				moderate: 0,
-        				member: 0,
-        				total: 0
-        			}
         		}
           }
         },
@@ -235,15 +224,19 @@ const returning = async (res, accessToken) => {
 }
 
 const csrfValidateRequest = async (req, user) => {
-  const csrfHeader = req.header[CSRF_TOKEN];
-  db.collection('sessions').findOne({"user": user}, {projection: {csrf: 1, _id: 0}},  (err, result) => {
-console.log(result);
-    if (err) { console.error('err: ', err); }
-    if (result !== null && result.csrf === csrfHeader) {
+  const csrfHeader = req.header(CSRF_TOKEN);
+
+  const valid = db.collection('sessions').find({user: user}, {projection: {csrf: 1, _id: 0}}).limit(1).toArray().then(result => {
+    if (result.length) {
       return true;
     }
     return false;
-  });
+  }).catch(error => {
+		console.error(error);
+		res.status(500).json({ message: `Error with DB groupExists: ${error}` });
+	});
+
+  return await valid;
 }
 
 /*
@@ -348,22 +341,23 @@ const getUserGroups = async (user) => {
  *
  *
  */
-app.put('/api/groups/:group/:user', async (req, res, next) => {
-  const group = req.params.group;
-  const user = req.params.user;
+app.get('/api/groups/:group/:user', async (req, res, next) => {
+  const { group, user } = req.params;
+  //const user = req.params.user;
 
   const groupName = getGroupDisplayName(group);
   const groupPosts = getGroupPosts(group);
+  const groupUsers = getGroupUsers(group);
   //const users = getGroupsUsers(group);
 
-  Promise.all([groupName, groupPosts]).then((result) => {
+  Promise.all([groupName, groupPosts, groupUsers]).then((result) => {
     res.json({
       group: {
         name: group,
         display: result[0]['display']
       },
       posts: result[1],
-      users: []
+      users: result[2]
     })
   })
 })
@@ -371,7 +365,6 @@ app.put('/api/groups/:group/:user', async (req, res, next) => {
 const getGroupDisplayName = async (group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups').findOne({name: group}, {projection: {display: 1, _id: 0 }}, (err, result) => {
-  console.log(result);
       if (err) { console.error('err: ', err); }
       resolve(result);
   	})
@@ -381,12 +374,51 @@ const getGroupDisplayName = async (group) => {
 const getGroupPosts = async (group) => {
   return new Promise((resolve, reject) => {
     db.collection('kposts').find({group: group}).sort( { created: -1 } ).toArray().then(data => {
-  console.log('data: ', data);
   		resolve(data);
   	})
   })
 }
 
+const getGroupUsers = async (group) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups_access').find({group: group}, {projection: {_id: 0}}).sort( { user: 1 } ).toArray().then(data => {
+  		resolve(data);
+  	})
+  })
+  //do a join, aggregation
+  //kgroups_access.user === users.name
+  //https://gist.github.com/bertrandmartel/311dbe17c2a57e8a07610724310bf898
+  /*
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups_access').aggregate([
+      {
+        $match : {
+          group : group
+        }
+      }, {
+        $lookup: {
+          from: 'kgroups',
+          let: { access_group: "$group" },
+          pipeline: [{
+            $match: {
+              $expr: {
+                $eq: [ "$name",  "$$access_group" ]
+              }
+            },
+              { $project: { user: 1, _id: 0 } }
+          }],
+          as: 'kgroup'
+        }
+      }//{        $sort: {          user: 1        }      }{ $project: { _id: 0 } }
+
+    ]).toArray((err, result) => {
+console.log("result: ", result);
+    err
+      ? reject(err)
+      : resolve(result);
+    })
+  })*/
+}
 
 
 /*********************************************
@@ -399,30 +431,33 @@ app.post('/manage/groups/add', async (req, res, next) => {
 
   let { group, user } = req.body;
   group = group.trim();
-  const groupTrim = group.toLowerCase().replace(/\s/g, '-');
+  const groupClean = group.toLowerCase().replace(/\s/g, '-');
 
-  if (!csrfValidateRequest(req, user)) res.json({invalidCSRF: true});
+  const csrfValid = await csrfValidateRequest(req, user);
 
-  const exists = await groupExists(groupTrim);
-  if (exists) {
-     res.json({exists: true});
-  }else {
-    const exceeded = await exceededGrouplimit(user);
-    if (exceeded) {
-      res.json({exceeded: true});
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    const exists = await groupExists(groupClean);
+    if (exists) {
+       res.json({exists: true});
     }else {
-      const created = groupUpsert(group, groupTrim, user);
-      res.json({
-        group: {
-          name: groupTrim,
-          display: group,
-          owner: user,
-          followers: 1,
-          likes: 1,
-          created: created,
-          posts: 0
-        }
-      });
+      const exceeded = await exceededGrouplimit(user);
+      if (exceeded) {
+        res.json({exceeded: true});
+      }else {
+        const created = groupUpsert(group, groupClean, user);
+        res.json({
+          group: {
+            name: groupClean,
+            display: group,
+            owner: user,
+            followers: 1,
+            likes: 1,
+            created: created,
+            posts: 0
+          }
+        });
+      }
     }
   }
 })
@@ -480,15 +515,14 @@ const groupUpsert = (group, groupTrim, user) => {
       {
         $inc:
         {
-      		"groups_amt.curation.own": 1,
-          "groups_amt.curation.total": 1
+      		"own_limit": 1
         }
       }
     )
 
     db.collection('kgroups_access').insertOne(
       {
-        kgroup: groupTrim,
+        group: groupTrim,
         user: user,
         access: 0,
       }
@@ -503,11 +537,60 @@ const groupUpsert = (group, groupTrim, user) => {
 
 app.post('/manage/groups/delete', async (req, res, next) => {
   let { group, user } = req.body;
+  const csrfValid = await csrfValidateRequest(req, user);
 
-  //delete from kgroups collection
-  //delete all posts associated with group
-  //delete all group_access associated with group
-  //decrement group_amt.curation.own from users collection
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    const groupDeleted = await deleteGroup(group, user);
+    if (!groupDeleted) {
+       //res.status(500).json({ message: `failed to delete group ${group}: ${err}` });
+       res.json(false);
+    }else {
+      res.json(true);
+    }
+  }
+})
+
+const deleteGroup = (group, user) => {
+  try {
+    //delete from kgroups collection
+    db.collection('kgroups').deleteOne(
+      { name: group }
+    )
+
+    //delete all group_access associated with group
+    db.collection('kgroups_access').deleteMany(
+      { group: group }
+    )
+
+    //delete all posts associated with group
+    db.collection('kposts').deleteMany(
+      { group: group }
+    )
+
+    db.collection('users').updateOne(
+      { name: user },
+      {
+        $inc:
+        {
+      		"own_limit": -1
+        }
+      }
+    )
+  }catch (err) {
+    console.error(err);
+    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+  }
+  return true;
+}
+
+app.post('/manage/posts/add', async (req, res, next) => {
+  //do i need to verfiy access? no one can spoof a POST, right?
+
+  const { group, user, post } = req.body;
+console.log('add post');
+console.log('data: ', post, user, group);
+
 })
 
 

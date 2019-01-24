@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import Routes from './routes/Routes';
 import NavMenu from './components/Nav/NavMenu';
-import HelmetComponent from './components/Header/Header';
+import HelmetComponent from './components/PageHeader/PageHeader';
 import SteemConnect from './utilities/auth/scAPI';
 import './App.css';
 

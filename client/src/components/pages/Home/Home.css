@@ -26,10 +26,6 @@
   padding-bottom: 0;
 }
 
-.ui.header, .ui.card .header {
-  color: var(--dark-blue) !important;
-}
-
 .home .ui.segment.nopad  {
   padding: 0;
 }

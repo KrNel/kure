@@ -1,19 +1,14 @@
 @import '../../../variables.css';
 
-.manage .ui.grid > .row.header-row {
-  padding-bottom: 0;
-}
-
-
 
 .manage .ui.divider {
   border-top: 1px solid var(--main-border);
   color: var(--main-border);
 }
 
-.manage .ui.grid .row + .ui.divider {
+/*.manage .ui.grid .row + .ui.divider {
   margin: 0 1rem;
-}
+}*/
 
 .manage .ui.segment.errored {
   -webkit-box-shadow: none #f00000 !important;

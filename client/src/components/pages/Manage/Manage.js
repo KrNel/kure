@@ -1,22 +1,11 @@
 import React, { Component } from 'react';
-import { Grid, Header, Segment, Form, Divider, Icon, Label } from "semantic-ui-react";
+import { Grid, Header, Segment, Form, Icon } from "semantic-ui-react";
 import axios from 'axios';
 
 import GroupsList from './GroupsList';
-import GroupEdit from './GroupEdit';
+import GroupManage from './GroupManage';
+import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import './Manage.css';
-
-/*
-var rootElement = document.getElementById('reactjs-root');
-rootElement.getAttribute('data-rest-url')
-*/
-const ErrorLabel = ({text}) => {
-  return (
-    <Label basic color='red' pointing style={{position:"absolute", zIndex: 10}}>
-      {text}
-    </Label>
-  )
-}
 
 class Manage extends Component {
   constructor(props) {
@@ -27,12 +16,13 @@ class Manage extends Component {
       groups: [],
       groupExists: false,
       exceededGrouplimit: false,
-      noGroups: true,
       isGroupsLoading: false,
       addGroupLoading: false,
-      editGroup: [],
+      manageGroup: [],
       noOwned: true,
-      errors: {}
+      errors: {},
+      isEditGroupLoading: false,
+      loadingGroup: ''
       /*searchResults: [],
       searchValue: ''*/
     }
@@ -51,21 +41,20 @@ class Manage extends Component {
         "x-csrf-token": this.props.csrfToken
       }
     }).then((res) => {
-console.log('res: ', res)
       if (!res.data.invalidCSRF) {
         if (res.data.exists) {
           this.setState({
             groupExists: true,
             exceededGrouplimit: false,
             addGroupLoading: false,
-            noGroups: false
+            noOwned: false
           });
         }else if (res.data.exceeded) {
           this.setState({
             exceededGrouplimit: true,
             groupExists: false,
             addGroupLoading: false,
-            noGroups: false
+            noOwned: false
           });
         } else {
           this.setState({
@@ -75,7 +64,7 @@ console.log('res: ', res)
             ],
             newGroup: '',
             groupExists: false,
-            noGroups: false,
+            noOwned: false,
             addGroupLoading: false,
           });
         }
@@ -92,24 +81,24 @@ console.log('res: ', res)
         groups: res.data.groups,
         isGroupsLoading: false,
         noOwned: false,
-        editGroup: []
+        manageGroup: []
      });
     }).catch((err) => {
       console.error(err);
     });
   }
 
-  editGroupFetch = (group) => {
-    axios.put(`/api/groups/${group}/${this.props.user}`, {
-    }).then((res) => {
-console.log('editGroupFetch: ', res);
-      //if (!res.data.posts.length) res.data.posts = {empty:true}
+  manageGroupFetch = (group) => {
+    axios.get(`/api/groups/${group}/${this.props.user}`, {
+    }).then(res => {
+console.log('pug: ', res);
       this.setState({
-        editGroup: [res.data]
+        manageGroup: [res.data],
+        isGroupLoading: false,
      });
-    }).catch((err) => {
+    }).catch(err => {
       console.error(err);
-    });
+    })
   }
 
   deleteGroupFetch = (group) => {
@@ -122,9 +111,28 @@ console.log('editGroupFetch: ', res);
       }
     }).then((res) => {
 console.log('res: ', res)
-    }).catch((err) => {
+      if (res.data) {
+        const oldGroups = this.state.groups;
+        const newGroup = oldGroups.filter(g => g.name !== group);
+        //const groupIndex = findGroupIndex(group, oldGroups);
+        /*const newGroups = oldGroups.slice(0, groupIndex),
+        newThread,
+        ...this.state.groups.slice(
+          groupIndex + 1, this.state.groups.length
+        )*/
+        this.setState({
+          groups: newGroup,
+          manageGroup: [],
+          isGroupLoading: false
+        })
+      }
+    }).catch(err => {
       console.error(err);
-    });
+    })
+  }
+
+  findGroupIndex(group, oldGroups) {
+    return oldGroups.findIndex(g => g.name === group)
   }
 
   handleChange = (e, { name, value }) => {
@@ -138,34 +146,34 @@ console.log('res: ', res)
 
   handleSubmitNewGroup = (e) => {
     e.preventDefault();
+    const newGroup = this.state.newGroup.trim();
 
-    if (this.handleValidation()) {
-      const { newGroup } = this.state;
+    if (this.handleValidation(newGroup)) {
       this.setState({addGroupLoading: true});
       this.addGroupFetch(newGroup);
     }
   }
 
-  handleEditGroup = (e, groupName) => {
+  handleManageGroup = (e, groupName) => {
     e.preventDefault();
-    this.editGroupFetch(groupName);
-//console.log('editing: ', group);
-    //const toEdit = this.state.groups.filter(g => g.name === groupName);
-//console.log('group: ', toEdit);
-    /*this.setState({
-      editGroup: toEdit
-    });*/
-//console.log('data-group: ', e.target.getAttribute('data-group'));
+    this.setState({
+      isGroupLoading: true,
+      loadingGroup: groupName
+    });
+    this.manageGroupFetch(groupName);
   }
 
   handleDeleteGroup = (e, groupName) => {
     e.preventDefault();
+    this.setState({
+      isGroupLoading: true,
+      loadingGroup: groupName
+    });
     this.deleteGroupFetch(groupName);
   }
 
-  handleValidation = () => {
+  handleValidation = (newGroup) => {
     let valid = true;
-    const newGroup = this.state.newGroup.trim();
     let errors = {};
 
     if(!newGroup){
@@ -179,7 +187,7 @@ console.log('res: ', res)
       valid = false;
     }
 
-    if(valid && !newGroup.match(/[\d\w_-]{4,20}/)){
+    if(valid && !/[\d\w_-]{4,20}/.test(newGroup)) {
       errors["newGroup"] = "Only letters, numbers, spaces, underscores or hyphens.";
       valid = false;
     }
@@ -199,35 +207,25 @@ console.log('res: ', res)
       groups,
       groupExists,
       exceededGrouplimit,
-      noGroups,
       isGroupsLoading,
       addGroupLoading,
-      editGroup,
+      manageGroup,
       noOwned,
-      errors
+      errors,
+      isGroupLoading,
+      loadingGroup,
       /*searchResults,
       searchValue*/
     } = this.state;
 
-console.log('editGroup: ', editGroup);
+console.log('groups: ', groups);
 
     let addError = '';
     if (groupExists) addError = <ErrorLabel text={this.existText} />;
     if (exceededGrouplimit) addError = <ErrorLabel text={this.exceededGrouplimit} />;
-    if (errors["newGroup"] !== undefined) addError =<ErrorLabel text={errors["newGroup"]} />;
-    /*const addError = (groupExists)
-      ? <ErrorLabel text={this.existText} />
-      : (exceededGrouplimit)
-          ? <ErrorLabel text={this.exceededGrouplimit} />
-          : '';*/
-
-    const groupsListDisplay = <GroupsList groups={groups} noGroups={noGroups} handleEditGroup={this.handleEditGroup} handleDeleteGroup={this.handleDeleteGroup} isLoading={isGroupsLoading} noOwned={noOwned} />;
-
-    const groupEditDisplay = (editGroup && editGroup.length) ? <GroupEdit editGroup={editGroup} /> : '';
+    if (errors["newGroup"] !== undefined) addError = <ErrorLabel text={errors["newGroup"]} />;
 
     const newGroupError = groupExists || exceededGrouplimit;
-
-
 
     return (
       <div className="manage">
@@ -269,21 +267,25 @@ console.log('editGroup: ', editGroup);
                 </Grid.Column>
               </Grid.Row>
 
-              {/*<Divider fitted />*/}
+              <GroupsList
+                groups={groups}
+                handleManageGroup={this.handleManageGroup}
+                handleDeleteGroup={this.handleDeleteGroup}
+                isLoading={isGroupsLoading}
+                noOwned={noOwned}
+                isGroupLoading={isGroupLoading}
+                loadingGroup={loadingGroup}
+              />
 
-              <Grid.Row>
-                <Grid.Column>
-                  <Grid stackable className="groups">
-                    {groupsListDisplay}
-                  </Grid>
-                </Grid.Column>
-              </Grid.Row>
-
-              {groupEditDisplay}
+              {
+              (manageGroup && manageGroup.length)
+                ? <GroupManage manageGroup={manageGroup}  csrfToken={this.props.csrfToken} />
+                : ''
+              }
 
               <Grid.Row className="header-row">
                 <Grid.Column floated='left' width={6}>
-                  <Header as="h2">Communities You Belong To</Header>
+                  <Header as="h2">Communities You Joined</Header>
                 </Grid.Column>
               </Grid.Row>
 
