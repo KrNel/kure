@@ -1,4 +1,4 @@
-import app from './server';
+import app from './server/server';
 import fs from 'fs';
 import https from 'https';
 

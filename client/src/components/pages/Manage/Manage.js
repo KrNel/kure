@@ -22,7 +22,9 @@ class Manage extends Component {
       noOwned: true,
       errors: {},
       isEditGroupLoading: false,
-      loadingGroup: ''
+      loadingGroup: '',
+      modalOpen: false,
+      modalData: {},
       /*searchResults: [],
       searchValue: ''*/
     }
@@ -30,6 +32,24 @@ class Manage extends Component {
     this.existText = "Group name taken. Try another.";
     this.exceededGrouplimit = "Limit of 4 groups reached.";
     //const user = this.props.user;
+  }
+
+  showModal = (e, modalData) => {
+    e.preventDefault()
+    this.setState({ modalOpen: true, modalData: modalData });
+  }
+  onModalClose = () => this.setState({ modalOpen: false });
+
+  handleModalClick = (e) => {
+    e.preventDefault();
+    this.setState({modalData: {}})
+    const confirm = e.target.dataset.confirm;
+    if (confirm === 'true') {
+      this.onModalClose();
+      const group = this.state.modalData.group;
+      this.handleDeleteGroup(group)
+    }else this.onModalClose();
+
   }
 
   addGroupFetch = (group) => {
@@ -91,7 +111,6 @@ class Manage extends Component {
   manageGroupFetch = (group) => {
     axios.get(`/api/groups/${group}/${this.props.user}`, {
     }).then(res => {
-console.log('pug: ', res);
       this.setState({
         manageGroup: [res.data],
         isGroupLoading: false,
@@ -110,16 +129,9 @@ console.log('pug: ', res);
         "x-csrf-token": this.props.csrfToken
       }
     }).then((res) => {
-console.log('res: ', res)
       if (res.data) {
         const oldGroups = this.state.groups;
         const newGroup = oldGroups.filter(g => g.name !== group);
-        //const groupIndex = findGroupIndex(group, oldGroups);
-        /*const newGroups = oldGroups.slice(0, groupIndex),
-        newThread,
-        ...this.state.groups.slice(
-          groupIndex + 1, this.state.groups.length
-        )*/
         this.setState({
           groups: newGroup,
           manageGroup: [],
@@ -129,10 +141,6 @@ console.log('res: ', res)
     }).catch(err => {
       console.error(err);
     })
-  }
-
-  findGroupIndex(group, oldGroups) {
-    return oldGroups.findIndex(g => g.name === group)
   }
 
   handleChange = (e, { name, value }) => {
@@ -154,22 +162,22 @@ console.log('res: ', res)
     }
   }
 
-  handleManageGroup = (e, groupName) => {
+  handleManageGroup = (e, group) => {
     e.preventDefault();
     this.setState({
       isGroupLoading: true,
-      loadingGroup: groupName
+      loadingGroup: group
     });
-    this.manageGroupFetch(groupName);
+    this.manageGroupFetch(group);
   }
 
-  handleDeleteGroup = (e, groupName) => {
-    e.preventDefault();
+  handleDeleteGroup = (group) => {
+    //e.preventDefault();
     this.setState({
       isGroupLoading: true,
-      loadingGroup: groupName
+      loadingGroup: group
     });
-    this.deleteGroupFetch(groupName);
+    this.deleteGroupFetch(group);
   }
 
   handleValidation = (newGroup) => {
@@ -214,6 +222,7 @@ console.log('res: ', res)
       errors,
       isGroupLoading,
       loadingGroup,
+      modalOpen,
       /*searchResults,
       searchValue*/
     } = this.state;
@@ -270,11 +279,14 @@ console.log('groups: ', groups);
               <GroupsList
                 groups={groups}
                 handleManageGroup={this.handleManageGroup}
-                handleDeleteGroup={this.handleDeleteGroup}
                 isLoading={isGroupsLoading}
                 noOwned={noOwned}
                 isGroupLoading={isGroupLoading}
                 loadingGroup={loadingGroup}
+                modalOpen={modalOpen}
+                onModalClose={this.onModalClose}
+                showModal={this.showModal}
+                handleModalClick={this.handleModalClick}
               />
 
               {
