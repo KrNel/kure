@@ -5,6 +5,7 @@ import axios from 'axios';
 import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
+import ModalConfirm from '../../ModalConfirm/ModalConfirm';
 import './Manage.css';
 
 class Manage extends Component {
@@ -41,13 +42,20 @@ class Manage extends Component {
   onModalClose = () => this.setState({ modalOpen: false });
 
   handleModalClick = (e) => {
+console.log('in')
     e.preventDefault();
-    this.setState({modalData: {}})
     const confirm = e.target.dataset.confirm;
+console.log('confirm: ', confirm)
     if (confirm === 'true') {
       this.onModalClose();
       const group = this.state.modalData.group;
-      this.handleDeleteGroup(group)
+console.log('group: ', group)
+      const post = this.state.modalData.post;
+      if (group) {
+        this.handleDeleteGroup(group)
+      }else {
+        this.handleDeletePost(post, this.state.manageGroup[0].group['name'])
+      }
     }else this.onModalClose();
 
   }
@@ -143,6 +151,45 @@ class Manage extends Component {
     })
   }
 
+  deletePostFetch = (post, group) => {
+console.log('this.props.user: ', this.props.user)
+    axios.post('/manage/posts/delete', {
+      post: post,
+      group: group,
+      user: this.props.user
+    }, {
+      headers: {
+        "x-csrf-token": this.props.csrfToken
+      }
+    }).then((res) => {
+console.log('res: ', res)
+      if (res.data) {
+        const oldManageGroups = Object.assign({}, this.state.manageGroup[0]);
+        const removeIndex = oldManageGroups.posts.findIndex((p) => p.st_permlink === post);
+
+
+          //const oldPost = oldMergeGroups.posts[index];
+
+          const oldPosts = oldManageGroups.posts;
+          const newPosts = oldPosts.splice(removeIndex, 1);
+          let newManageGroups = Object.assign({}, oldManageGroups);
+          newManageGroups['posts'] = newPosts;
+
+console.log('oldManageGroups: ', oldManageGroups)
+console.log('newManageGroups: ', newManageGroups)
+        this.setState({
+          manageGroup: [newManageGroups],
+          //manageGroup: [],
+          //isGroupLoading: false
+        })
+      }
+    }).catch(err => {
+      console.error(err);
+    })
+  }
+
+
+
   handleChange = (e, { name, value }) => {
     this.setState({
       [name]: value,
@@ -156,7 +203,7 @@ class Manage extends Component {
     e.preventDefault();
     const newGroup = this.state.newGroup.trim();
 
-    if (this.handleValidation(newGroup)) {
+    if (this.handleGroupValidation(newGroup)) {
       this.setState({addGroupLoading: true});
       this.addGroupFetch(newGroup);
     }
@@ -175,12 +222,23 @@ class Manage extends Component {
     //e.preventDefault();
     this.setState({
       isGroupLoading: true,
-      loadingGroup: group
+      loadingGroup: group,
+      modalData: {}
     });
     this.deleteGroupFetch(group);
   }
 
-  handleValidation = (newGroup) => {
+  handleDeletePost = (post, group) => {
+    //e.preventDefault();
+    this.setState({
+      /*isGroupLoading: true,
+      loadingGroup: group,*/
+      modalData: {}
+    });
+    this.deletePostFetch(post, group);
+  }
+
+  handleGroupValidation = (newGroup) => {
     let valid = true;
     let errors = {};
 
@@ -195,7 +253,7 @@ class Manage extends Component {
       valid = false;
     }
 
-    if(valid && !/[\d\w_-]{4,20}/.test(newGroup)) {
+    if(valid && !/^[\d\w\s_-]+$/.test(newGroup)) {
       errors["newGroup"] = "Only letters, numbers, spaces, underscores or hyphens.";
       valid = false;
     }
@@ -223,11 +281,10 @@ class Manage extends Component {
       isGroupLoading,
       loadingGroup,
       modalOpen,
+      modalData,
       /*searchResults,
       searchValue*/
     } = this.state;
-
-console.log('groups: ', groups);
 
     let addError = '';
     if (groupExists) addError = <ErrorLabel text={this.existText} />;
@@ -244,6 +301,7 @@ console.log('groups: ', groups);
             <Grid>
               <Grid.Row className="header-row">
                 <Grid.Column floated='left' width={10}>
+
                   <Header as="h2">Communities You Own</Header>
                     {/*<SearchComponent
                       onResultSelect={this.handleResultSelect}
@@ -276,6 +334,13 @@ console.log('groups: ', groups);
                 </Grid.Column>
               </Grid.Row>
 
+              <ModalConfirm
+                modalOpen={this.state.modalOpen}
+                onModalClose={this.onModalClose}
+                handleModalClick={this.handleModalClick}
+                modalData={this.state.modalData}
+              />
+
               <GroupsList
                 groups={groups}
                 handleManageGroup={this.handleManageGroup}
@@ -283,15 +348,17 @@ console.log('groups: ', groups);
                 noOwned={noOwned}
                 isGroupLoading={isGroupLoading}
                 loadingGroup={loadingGroup}
-                modalOpen={modalOpen}
-                onModalClose={this.onModalClose}
                 showModal={this.showModal}
-                handleModalClick={this.handleModalClick}
               />
 
               {
               (manageGroup && manageGroup.length)
-                ? <GroupManage manageGroup={manageGroup}  csrfToken={this.props.csrfToken} />
+                ? <GroupManage
+                    manageGroup={manageGroup}
+                    csrfToken={this.props.csrfToken}
+                    user={this.props.user}
+                    showModal={this.showModal}
+                  />
                 : ''
               }
 

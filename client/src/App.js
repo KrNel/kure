@@ -88,28 +88,9 @@ class App extends Component {
       this.handleIsAuthorizing(false);
     }).catch(err => {
       if (axios.isCancel(err)) {
-        console.log('Error: ', err.message); // => prints: Api is being canceled
+        console.log('Error: ', err.message);
       }
     })
-
-    /*fetch('/auth/returning', {
-      method: 'get',
-      headers: {
-        "Content-Type": "application/json",
-      }
-    }).then(checkStatus)
-      .then(res => {
-        this.setCSRF(res.headers.get('x-csrf-token'));
-        return res;
-      })
-      .then(parseJson)
-      .then((res) => {
-        if (res.isAuth) {
-          this.handleIsAuth(res.isAuth);
-          this.setUserData(res.user);
-        }
-        this.handleIsAuthorizing(false);
-      });*/
   }
 
   /*

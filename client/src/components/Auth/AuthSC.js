@@ -49,32 +49,6 @@ class AuthSC extends Component {
     }).catch((err) => {
       console.error(err);
     });
-    /*fetch('/auth/validate', {
-      method: 'post',
-      body: JSON.stringify({
-        expiresAt: expiresAt,
-        accessToken: accessToken,
-        user: user
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      }
-    }).then(checkStatus)
-      .then(res => {
-        this.props.setCSRF(res.headers.get('x-csrf-token'));
-        return res;
-      })
-      .then(parseJson)
-      .then((res) => {
-        this.props.handleIsAuthorizing(false);
-        if (res.isAuth) {
-          this.props.setUserData({name: user});
-          this.props.handleIsAuth(true);
-          this.setState({ redirect: true });
-        }
-      }).catch((err) => {
-        console.error(err);
-      });*/
   }
 
   render() {

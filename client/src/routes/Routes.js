@@ -25,7 +25,7 @@ const Routes = (props) => {
 
   return (
     <Switch>
-      <Route exact path='/' component={Home} />
+      <Route exact path='/' render={()=><Home isAuth={props.isAuth} />} />
       <Route path='/groups' component={Groups} />
       <Route path='/posts' component={Posts} />
       <Route path='/kurate' component={Kurate} />

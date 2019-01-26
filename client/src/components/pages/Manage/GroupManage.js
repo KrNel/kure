@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Grid, Header, Segment, Icon, Form, Divider, Label } from "semantic-ui-react";
+import { Grid, Header, Icon, Form, Divider, Label } from "semantic-ui-react";
 import axios from 'axios';
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
@@ -12,12 +12,12 @@ class GroupManage extends Component {
 
     this.state = {
       newPost: '',
-      posts: props.manageGroup[0].post,
+      posts: this.props.manageGroup[0].posts,
       addPostLoading: false,
       errors: {},
       postExists: false,
-      noPosts: true,
-      users: props.manageGroup[0].users,
+      users: this.props.manageGroup[0].users,
+      group: this.props.manageGroup[0].group['name']
     };
 
     this.existText = "Post already exists.";
@@ -33,26 +33,26 @@ class GroupManage extends Component {
         "x-csrf-token": this.props.csrfToken
       }
     }).then((res) => {
-console.log('res: ', res)
       if (!res.data.invalidCSRF) {
         if (res.data.exists) {
           this.setState({
             postExists: true,
             addPostLoading: false,
           });
-        }else {
+        }else if (res.data.post) {
           this.setState({
             posts: [
-              res.data.posts,
+              res.data.post,
               ...this.state.posts,
-            ],
-            users: [
-              res.data.users,
-              ...this.state.users,
             ],
             newPost: '',
             postExists: false,
-            noPosts: false,
+            addPostLoading: false,
+          });
+        }else {
+          //error adding in db...
+          this.setState({
+            postExists: false,
             addPostLoading: false,
           });
         }
@@ -66,7 +66,7 @@ console.log('res: ', res)
     e.preventDefault();
     const newPost = this.state.newPost.trim();
 
-    if (this.handleValidation(newPost)) {
+    if (this.handlePostValidation(newPost)) {
       this.setState({addPostLoading: true});
       const user = this.props.user;
       const group = this.props.manageGroup[0].group['name']
@@ -74,7 +74,7 @@ console.log('res: ', res)
     }
   }
 
-  handleValidation = (newPost) => {
+  handlePostValidation = (newPost) => {
     let valid = true;
     let errors = {};
 
@@ -97,10 +97,39 @@ console.log('res: ', res)
   handleChange = (e, { name, value }) => {
     this.setState({
       [name]: value,
-      /*groupExists: false,
-      exceededGrouplimit: false,
-      errors: {}*/
+      postExists: false,
+      errors: {}
      });
+  }
+
+  /*componentWillReceiveProps(nextProps) {
+    if (this.props.manageGroup[0].posts !== this.nextProps.manageGroup[0].posts) {
+      this.setState({
+        posts: this.nextProps.manageGroup[0].posts,
+        users: this.nextProps.manageGroup[0].users,
+      })
+    }
+    if (this.props.manageGroup[0].users !== this.nextProps.manageGroup[0].users) {
+      this.setState({
+        users: this.nextProps.manageGroup[0].users,
+      })
+    }
+  }*/
+
+  /*componentWillReceiveProps(nextProps) {
+    this.setState({
+      posts: this.nextProps.manageGroup[0].posts,
+      users: this.nextProps.manageGroup[0].users,
+    })
+  }*/
+  static getDerivedStateFromProps(props, state) {
+    if (props.manageGroup[0].group['name'] !== state.group) {
+      return {
+        group: props.manageGroup[0].group['name'],
+        posts: props.manageGroup[0].posts
+      };
+    }
+    return null;
   }
 
   render() {
@@ -110,15 +139,15 @@ console.log('res: ', res)
       addPostLoading,
       errors,
       postExists,
-      noPosts,
       users,
     } = this.state;
-console.log('users: ', users)
-    /*const {
-      isEditGroupLoading,
-      loadingGroup,
-    } = this.props;*/
+
+    const {
+      showModal,
+    } = this.props;
+
     const manageGroup = this.props.manageGroup[0];
+
     let addError = '';
 
     if (postExists) addError = <ErrorLabel text={this.existText} />;
@@ -126,6 +155,9 @@ console.log('users: ', users)
 
     return (
       <React.Fragment>
+
+        <Divider />
+
         <Grid.Row className="header-row">
           <Grid.Column floated='left' width={10}>
             <Header as='h3'><Label size='large' color='blue'>Managing Group:</Label> {manageGroup.group.display}</Header>
@@ -155,13 +187,18 @@ console.log('users: ', users)
         </Grid.Row>
 
         <Grid.Row className="content">
-          <GroupManagePosts noPosts={noPosts} posts={posts} />
+          <GroupManagePosts
+            posts={posts}
+            showModal={showModal}
+          />
         </Grid.Row>
 
         <Grid.Row className="content">
           <GroupManageUsers users={users} />
         </Grid.Row>
+
         <Divider />
+
       </React.Fragment>
     )
   }

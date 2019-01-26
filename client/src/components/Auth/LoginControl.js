@@ -27,17 +27,8 @@ const LoginControl = ({isAuth, loginURL}) => {
     </React.Fragment>
   }else {
     menu = <a className="header item" href={loginURL}>Login</a>;
-    /*menu = <Menu.Item
-      exact
-      as={NavLink}
-      to="/login"
-      header
-    >
-      Login
-    </Menu.Item>*/
   }
-    /*const logInOut = (isAuth) ? "Logout" : "Login"
-    const link = (isAuth) ? "/logout" : `${scURL}`*/
+
   return (
     menu
   )

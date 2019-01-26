@@ -4,7 +4,7 @@
 
 KURE provides a network hub for people to create their own community groups for evaluating content to curate. It will also develop into communities to create posts within.
 
-You can create your own communities and have others join to contribute. You make up your own criteria. You manage who can add curation links to your community group. Anyone else can follow your community and engage.
+Create your own communities and have others join to contribute. Make up your own criteria. Manage who can add curation links to your community group. Anyone else can follow your community and engage.
 
 My goal is to make content easier for everyone to find by all of us sharing the content we like trough communities. Others can find communities they are interested in and see what is being curated within that community to also support it with upvotes, resteems and comments.
 

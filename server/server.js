@@ -2,28 +2,15 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
 import morgan from 'morgan';
-//import fs from 'fs';
-import log4js from 'log4js';
 import helmet from 'helmet';
-import serialize from 'serialize-javascript';
-//stringify-entities?
-//html-escaper
-//node-esapi
-import xss from 'xss';
-//express-rate-limit
 import Tokens from 'csrf';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+
 import config from '../config'
 import SteemConnect from '../client/src/utilities/auth/scAPI'
 
 const ORIGIN_HOST = `${config.app.client.host}:${config.app.client.port}`;
-
-log4js.configure({
-  appenders: { errors: { type: 'file', filename: 'errors.log' } },
-  categories: { default: { appenders: ['errors'], level: 'error' } }
-});
-const logger = log4js.getLogger('errors');
 
 const app = express();
 app.set('port', (config.app.server.port || 3001));
@@ -32,8 +19,8 @@ if (config.app.env !== 'TEST') {
   /*app.use(morgan('dev', {
   skip: function (req, res) { return res.statusCode < 400 }
 }))*/
-  //app.use(morgan('combined'));
 
+  //app.use(morgan('combined'));
 }
 
 //set headers on nginx sever when setup
@@ -43,15 +30,6 @@ app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }))
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-/*
-MonogDB SECURITY
-https://scalegrid.io/blog/10-tips-to-improve-your-mongodb-security/
-https://docs.mongodb.com/manual/security/
-https://docs.mongodb.com/manual/administration/security-checklist/
-
-efficiency
-https://www.sitepoint.com/7-simple-speed-solutions-mongodb/
-*/
 let db;
 MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrlParser: true }).then(connection => {
 	db = connection.db(config.db.name);
@@ -127,9 +105,16 @@ const initUser = (user) => {
             name: user,
             display: user,
             joined: joined,
-            votes_amt: {
-        			curation: 0
-        		}
+            votes: {
+        			curating: 0,
+        			writing: 0
+        		},
+        		posts: {
+        			curating: 0,
+        			writing: 0
+        		},
+        		owned_kgroups: 0,
+						owned_limit: 4
           }
         },
         { upsert:true }
@@ -476,7 +461,7 @@ const groupExists = async (group) => {
 }
 
 const exceededGrouplimit = async (user) => {
-  const exceeded = db.collection('users').find({name: user, 'groups_amt.curation.own': {$gte: 4}}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
+  const exceeded = db.collection('users').find({name: user, 'owned_kgroups': {$gte: 4}}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
@@ -515,7 +500,7 @@ const groupUpsert = (group, groupTrim, user) => {
       {
         $inc:
         {
-      		"own_limit": 1
+      		owned_kgroups: 1
         }
       }
     )
@@ -573,36 +558,152 @@ const deleteGroup = (group, user) => {
       {
         $inc:
         {
-      		"own_limit": -1
+      		owned_kgroups: -1
         }
       }
     )
+    return true;
   }catch (err) {
     console.error(err);
     res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
-  return true;
+  return false;
 }
+
+
+
 
 app.post('/manage/posts/add', async (req, res, next) => {
   //do i need to verfiy access? no one can spoof a POST, right?
 
-  const { group, user, post } = req.body;
-console.log('add post');
-console.log('data: ', post, user, group);
+  const { post, user, group } = req.body;
 
+  const csrfValid = await csrfValidateRequest(req, user);
+
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    const [ match, domain, category, author, permlink ] = parseURL(post);
+
+    const exists = await postExists(permlink, group);
+    if (exists) {
+       res.json({exists: true});
+    }else {
+      const postAdd = await addPost(user, group, category, author, permlink);
+      if (postAdd) {
+         res.json({post: postAdd});
+      }else {
+        res.json({post: postAdd});
+        //res.status(500).json({ message: `failed to delete group ${group}: ${err}` });
+      }
+    }
+  }
 })
+
+function parseURL(url) {
+    return url.match(/:\/\/(:?[\d\w\.]+)?\/([\d\w_-]+)?\/@([\d\w_-]+)?\/([\d\w_-]+)?$/i)
+}
+
+const postExists = async (permlink, group) => {
+  const exists = db.collection('kposts').find({st_permlink: permlink, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
+    if (data.length) {
+      return true;
+    }
+    return false;
+  }).catch(error => {
+		console.error(error);
+		res.status(500).json({ message: `Error with DB postExists: ${error}` });
+	});
+  return await exists;
+}
+
+const addPost = (user, group, category, author, permlink) => {
+  try {
+    const created = new Date();
+
+    const post = {
+      added_by: user,
+      group: group,
+      created: created,
+      likes: 0,
+      views: 0,
+      st_permlink: permlink,
+      st_author: author,
+      st_category: category,
+      st_title: permlink,
+      st_upvotes: 0,
+      st_payout: "0",
+      st_comments: 0,
+      rating: 0
+    }
+
+    db.collection('kposts').insertOne(
+      post
+    )
+
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          posts: 1
+        }
+      }
+    )
+    return post;
+  }catch (err) {
+    console.error(err);
+    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+  }
+  return false;
+}
+
+
+
+app.post('/manage/posts/delete', async (req, res, next) => {
+  let { post, group, user } = req.body;
+  const csrfValid = await csrfValidateRequest(req, user);
+
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    const postDeleted = await deletePost(post, group);
+    if (postDeleted) {
+      res.json(true);
+    }else {
+      //res.status(500).json({ message: `failed to delete group ${group}: ${err}` });
+      res.json(false);
+    }
+  }
+})
+
+const deletePost = (post, group) => {
+  try {
+    //delete from kgroups collection
+    db.collection('kposts').deleteOne(
+      { st_permlink: post, group: group }
+    )
+
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          posts: -1
+        }
+      }
+    )
+    return true;
+  }catch (err) {
+    console.error(err);
+    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+  }
+  return false;
+}
 
 
 
 app.post('/manage/post', (req, res, next) => {
 
 })
-
-
-
-
-
 
 
 app.use((err, req, res, next) => {

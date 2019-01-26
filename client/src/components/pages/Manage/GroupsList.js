@@ -1,24 +1,19 @@
 import React from 'react';
-import { Grid, Segment, Icon, Loader, Dimmer, Button } from "semantic-ui-react";
+import { Grid, Segment, Icon, Loader, Dimmer } from "semantic-ui-react";
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
-import ModalConfirm from '../../ModalConfirm/ModalConfirm';
 
 const GroupsList = (props) => {
 
   const {
     groups,
     handleManageGroup,
-    handleDeleteGroup,
     isLoading,
     noOwned,
     isGroupLoading,
     loadingGroup,
-    modalOpen,
-    onModalClose,
     showModal,
-    handleModalClick,
   } = props;
 
   if (isLoading) {
@@ -57,11 +52,10 @@ const GroupsList = (props) => {
                           <a href={'/delete/'+g.name} onClick={e => showModal(e, {group: g.name})}><Icon name='minus circle' color='blue' /></a>
                         </div>
                         <div className='clear'></div>
-                        {/*<div>Owner: {g.owner}</div>*/}
                         <div>Created: {date}</div>
-                        <div>Posts: {g.posts}</div>
+                        {/*<div>Posts: {g.posts}</div>*/}
                         {/*<div>Followers: {g.followers}</div>*/}
-                        <div>Likes: {g.likes}</div>
+                        {/*<div>Likes: {g.likes}</div>*/}
                       </div>
 
                     </Segment>
@@ -69,7 +63,7 @@ const GroupsList = (props) => {
                 )
               })
             }
-            <ModalConfirm modalOpen={modalOpen} onModalClose={onModalClose} handleModalClick={handleModalClick} />
+
             </Grid>
           </Grid.Column>
         </Grid.Row>
