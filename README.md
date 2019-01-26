@@ -8,8 +8,13 @@ Create your own communities and have others join to contribute. Make up your own
 
 My goal is to make content easier for everyone to find by all of us sharing the content we like trough communities. Others can find communities they are interested in and see what is being curated within that community to also support it with upvotes, resteems and comments.
 
+---
+# Setup
 
-----
+Run `npm install` at root level and in `client` folder.
+
+
+---
 **Development set to HTTPS.**
 
 To revert to HTTP only:
