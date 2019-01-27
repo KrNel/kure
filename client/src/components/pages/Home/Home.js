@@ -18,6 +18,14 @@ class Home extends Component {
 
   }
 
+  componentDidMount() {
+    this.getRecentPosts();
+  }
+
+  componentWillUnmount() {
+    this.signal.cancel('Api is being canceled');
+  }
+
   getRecentPosts = async () => {
     axios.get('/api/recentposts', {
       cancelToken: this.signal.token,
@@ -44,13 +52,7 @@ class Home extends Component {
     })
   }
 
-  componentDidMount() {
-    this.getRecentPosts();
-  }
 
-  componentWillUnmount() {
-    this.signal.cancel('Api is being canceled');
-  }
 
   render() {
     let {recentlyAdded, isLoading} = this.state;

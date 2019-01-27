@@ -1,6 +1,9 @@
 {
   "name": "kure",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "description": "",
   "main": "index.js",
   "private": "true",
@@ -35,6 +38,33 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
+    "eslint": "^5.6.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-standard": "^4.0.0",
     "nodemon": "^1.18.9"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:node/recommended"
+    ],
+    "ecmaFeatures": {
+      "modules": true,
+      "spread": true,
+      "restParams": true
+    },
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true
+    },
+    "rules": {
+      "no-unused-vars": 2,
+      "no-undef": 2
+    },
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2019
+    }
   }
 }
