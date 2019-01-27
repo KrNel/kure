@@ -18,7 +18,7 @@ const GroupManagePosts = ({posts, showModal}) => {
       <Grid.Column>
         <Table striped>
           <Table.Header>
-                  <Table.Row>
+            <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Likes</Table.HeaderCell>
               <Table.HeaderCell>Views</Table.HeaderCell>
@@ -28,14 +28,14 @@ const GroupManagePosts = ({posts, showModal}) => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-          {
+            {
             posts.map((p, i) => (
               <Table.Row key={i}>
                 <Table.Cell>
                   <a
                     href={Settings.baseSteemURL+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
                   >
-                  {(p.st_title.length > 70)
+                    {(p.st_title.length > 70)
                       ? p.st_title.substr(0,70) + " ..."
                       : p.st_title}
                   </a>

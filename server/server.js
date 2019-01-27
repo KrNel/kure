@@ -36,7 +36,7 @@ app.use('/api/recentposts', recentPosts);
 app.use('/api/groups', groups);
 app.use('/manage', manage);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err);
   res.status(500).send('Something broke!');
 })

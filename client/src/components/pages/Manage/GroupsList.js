@@ -24,7 +24,7 @@ const GroupsList = (props) => {
         <Grid.Row className="content">
           <Grid.Column>
             <Grid stackable>
-            {
+              {
               groups.map((g, i) => {
                 const date = moment(g.created).format("YYYY-MM-DD");
                 return (
@@ -40,46 +40,55 @@ const GroupsList = (props) => {
                           <a
                             href={'edit/'+g.name}
                             onClick={e => handleManageGroup(e, g.name)}
+                            title="Manage group"
                           >
                             {g.display}
                           </a>
                         </h3>
                         <div className='right'>
-                          <a href={'edit/'+g.name}
-                          onClick={e => handleManageGroup(e, g.name)}>
+                          <a
+                            href={'edit/'+g.name}
+                            onClick={e => handleManageGroup(e, g.name)}
+                            title="Manage group"
+                          >
                             <Icon name='edit' color='blue' />
                           </a>
-                          <a href={'/delete/'+g.name} onClick={e => showModal(e, {group: g.name})}><Icon name='minus circle' color='blue' /></a>
+                          <a
+                            href={'/delete/'+g.name}
+                            onClick={e => showModal(e, {group: g.name})}
+                            title="Delete group"
+                          >
+                            <Icon name='minus circle' color='blue' />
+                          </a>
                         </div>
-                        <div className='clear'></div>
-                        <div>Created: {date}</div>
+                        <div className='clear' />
+                        <div>
+                          {`Created: ${date}`}
+                        </div>
                         {/*<div>Posts: {g.posts}</div>*/}
                         {/*<div>Followers: {g.followers}</div>*/}
                         {/*<div>Likes: {g.likes}</div>*/}
                       </div>
-
                     </Segment>
                   </Grid.Column>
                 )
               })
             }
-
             </Grid>
           </Grid.Column>
         </Grid.Row>
-
-
       )
     }else {
       return (
-          <Grid.Column width={8}>
-            <Segment>
-              <p>
-                {"You don't own any community groups."}<br/>
+        <Grid.Column width={8}>
+          <Segment>
+            <p>
+              {"You don't own any community groups."}
+              <br />
               {"You can create up to 4 community groups."}
-              </p>
-            </Segment>
-          </Grid.Column>
+            </p>
+          </Segment>
+        </Grid.Column>
       )
     }
   }

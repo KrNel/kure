@@ -15,12 +15,11 @@ router.use(cookieParser());
 let tokens = new Tokens();
 const ORIGIN_HOST = `${config.app.client.host}:${config.app.client.port}`;
 
-router.post('/validate', (req, res, next) => {
+router.post('/validate', (req, res) => {
 
   if (ORIGIN_HOST !== req.headers['x-forwarded-host']) res.json({"isAuth": false});
 
   const db = req.app.locals.db;
-  const isAuth = false;
   const expiresAt = req.body.expiresAt;
   const accessToken = req.body.accessToken;
   const user = req.body.user;
@@ -50,8 +49,8 @@ const validateToken = (accessToken) => {
 }
 
 const setTokenCookie = (res, expiresAt, accessToken) => {
-  return new Promise((resolve, reject) => {
-    res.cookie(config.SC_COOKIE, accessToken, {
+  return new Promise((resolve) => {
+    res.cookie(config.scCookie, accessToken, {
       secure: true,
       httpOnly: true,
       maxAge: expiresAt
@@ -75,14 +74,14 @@ const initUser = (db, res, user) => {
             display: user,
             joined: joined,
             votes: {
-        			curating: 0,
-        			writing: 0
-        		},
-        		posts: {
-        			curating: 0,
-        			writing: 0
-        		},
-        		owned_kgroups: 0,
+              curating: 0,
+              writing: 0
+            },
+            posts: {
+              curating: 0,
+              writing: 0
+            },
+            owned_kgroups: 0,
 						owned_limit: 4
           }
         },
@@ -99,9 +98,6 @@ const initUser = (db, res, user) => {
 }
 
 const newCSRF = (db, res, user) => {
-/*console.log('req: ', req);
-console.log('res: ', res);
-console.log('user: ', user);*/
   return new Promise((resolve, reject) => {
 
     const secret = tokens.secretSync();
@@ -127,7 +123,7 @@ console.log('user: ', user);*/
       res.status(500).json({ message: `newCSRF DB upsert: ${err}` });
     }
 
-    if (success) res.set(config.CSRF_TOKEN, csrf);
+    if (success) res.set(config.csrfToken, csrf);
     resolve(success);
   })
 }
@@ -138,12 +134,11 @@ console.log('user: ', user);*/
  *
  *
  */
-router.get('/returning', (req, res, next) => {
-console.log('1: ', 1)
+router.get('/returning', (req, res) => {
   if (ORIGIN_HOST !== req.headers['x-forwarded-host']) res.json({isAuth: false, user:''}); //log the CSRF attempt?
 
   const db = req.app.locals.db;
-  const accessToken = req.cookies[config.SC_COOKIE];
+  const accessToken = req.cookies[config.scCookie];
 
   returning(db, res, accessToken)
     .then(ret => {
@@ -157,7 +152,7 @@ const returning = async (db, res, accessToken) => {
   if (!accessToken) return fail;
 
   SteemConnect.setAccessToken(accessToken);
-  SteemConnect.me((err, result) => {
+  SteemConnect.me((err) => {
     if (err) return fail;
   })
 
@@ -198,8 +193,7 @@ router.post('/logout', (req, res, next) => {
 })
 
 const logout = async (db, res, user) => {
-
-  res.clearCookie(config.SC_COOKIE);
+  res.clearCookie(config.scCookie);
 
   try {
     db.collection('sessions').deleteOne({"user": user});
@@ -208,7 +202,7 @@ const logout = async (db, res, user) => {
     //res.status(500).json({ message: `/auth/logout DB delete: ${err}` });
   }
 //SteemConnect.options.accessToken
-  await SteemConnect.revokeToken((err, ret) => {
+  SteemConnect.revokeToken((err, ret) => {
     if (!ret || err) {
       console.error('Error in revokeToken');
     }

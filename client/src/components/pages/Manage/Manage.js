@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Header, Segment, Form, Icon } from "semantic-ui-react";
 import axios from 'axios';
 
@@ -9,6 +10,12 @@ import ModalConfirm from '../../ModalConfirm/ModalConfirm';
 import './Manage.css';
 
 class Manage extends Component {
+
+  static propTypes = {
+    user: PropTypes.string.isRequired,
+    csrfToken: PropTypes.string.isRequired,
+  };
+
   constructor(props) {
     super(props);
 
@@ -22,7 +29,7 @@ class Manage extends Component {
       manageGroup: [],
       noOwned: true,
       errors: {},
-      isEditGroupLoading: false,
+      //isEditGroupLoading: false,
       loadingGroup: '',
       modalOpen: false,
       modalData: {},
@@ -32,7 +39,15 @@ class Manage extends Component {
 
     this.existText = "Group name taken. Try another.";
     this.exceededGrouplimit = "Limit of 4 groups reached.";
-    //const user = this.props.user;
+    //this.user = this.props.user;
+  }
+
+
+
+  componentDidMount() {
+    const {user} = this.props;
+    this.setState({isGroupsLoading: true});
+    this.getGroupsFetch(user);
   }
 
   showModal = (e, modalData) => {
@@ -42,15 +57,11 @@ class Manage extends Component {
   onModalClose = () => this.setState({ modalOpen: false });
 
   handleModalClick = (e) => {
-console.log('in')
     e.preventDefault();
     const confirm = e.target.dataset.confirm;
-console.log('confirm: ', confirm)
     if (confirm === 'true') {
       this.onModalClose();
-      const group = this.state.modalData.group;
-console.log('group: ', group)
-      const post = this.state.modalData.post;
+      const {group, post} = this.state.modalData;
       if (group) {
         this.handleDeleteGroup(group)
       }else {
@@ -152,7 +163,6 @@ console.log('group: ', group)
   }
 
   deletePostFetch = (post, group) => {
-console.log('this.props.user: ', this.props.user)
     axios.post('/manage/posts/delete', {
       post: post,
       group: group,
@@ -162,7 +172,6 @@ console.log('this.props.user: ', this.props.user)
         "x-csrf-token": this.props.csrfToken
       }
     }).then((res) => {
-console.log('res: ', res)
       if (res.data) {
         const oldManageGroups = Object.assign({}, this.state.manageGroup[0]);
         const removeIndex = oldManageGroups.posts.findIndex((p) => p.st_permlink === post);
@@ -175,8 +184,6 @@ console.log('res: ', res)
           let newManageGroups = Object.assign({}, oldManageGroups);
           newManageGroups['posts'] = newPosts;
 
-console.log('oldManageGroups: ', oldManageGroups)
-console.log('newManageGroups: ', newManageGroups)
         this.setState({
           manageGroup: [newManageGroups],
           //manageGroup: [],
@@ -262,10 +269,7 @@ console.log('newManageGroups: ', newManageGroups)
     return valid;
   }
 
-  componentDidMount() {
-    this.setState({isGroupsLoading: true});
-    this.getGroupsFetch(this.props.user);
-  }
+
 
   render() {
     const {
@@ -286,6 +290,11 @@ console.log('newManageGroups: ', newManageGroups)
       searchValue*/
     } = this.state;
 
+    const {
+      user,
+      csrfToken,
+    } = this.props;
+
     let addError = '';
     if (groupExists) addError = <ErrorLabel text={this.existText} />;
     if (exceededGrouplimit) addError = <ErrorLabel text={this.exceededGrouplimit} />;
@@ -303,12 +312,14 @@ console.log('newManageGroups: ', newManageGroups)
                 <Grid.Column floated='left' width={10}>
 
                   <Header as="h2">Communities You Own</Header>
-                    {/*<SearchComponent
+                  {
+                      /*<SearchComponent
                       onResultSelect={this.handleResultSelect}
                       onSearchChange={this.handleSearchChange}
                       results={searchResults}
                       value={searchValue}
-                    />*/}
+                    />*/
+                }
                 </Grid.Column>
                 <Grid.Column floated='right' width={6}>
                   <div className="">
@@ -323,11 +334,11 @@ console.log('newManageGroups: ', newManageGroups)
                             error={newGroupError}
                             loading={addGroupLoading}
                           />
-                        {addError}
-                      </Form.Field>
-                      <Form.Button icon size="tiny" color="blue">
-                        <Icon name="plus" />
-                      </Form.Button>
+                          {addError}
+                        </Form.Field>
+                        <Form.Button icon size="tiny" color="blue">
+                          <Icon name="plus" />
+                        </Form.Button>
                       </Form.Group>
                     </Form>
                   </div>
@@ -335,10 +346,10 @@ console.log('newManageGroups: ', newManageGroups)
               </Grid.Row>
 
               <ModalConfirm
-                modalOpen={this.state.modalOpen}
+                modalOpen={modalOpen}
                 onModalClose={this.onModalClose}
                 handleModalClick={this.handleModalClick}
-                modalData={this.state.modalData}
+                modalData={modalData}
               />
 
               <GroupsList
@@ -353,12 +364,14 @@ console.log('newManageGroups: ', newManageGroups)
 
               {
               (manageGroup && manageGroup.length)
-                ? <GroupManage
+                ? (
+                  <GroupManage
                     manageGroup={manageGroup}
-                    csrfToken={this.props.csrfToken}
-                    user={this.props.user}
+                    csrfToken={csrfToken}
+                    user={user}
                     showModal={this.showModal}
                   />
+                  )
                 : ''
               }
 

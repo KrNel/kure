@@ -79,7 +79,6 @@ class App extends Component {
     axios.get('/auth/returning', {
       cancelToken: this.signal.token,
     }).then((res) => {
-console.log('res: ', res)
       const isAuth = res.data.isAuth;
       if (isAuth) {
         this.setCSRF(res.headers['x-csrf-token']);
@@ -124,7 +123,7 @@ console.log('res: ', res)
     const scState = `${window.location.pathname}`;
     const loginURL = SteemConnect.getLoginURL(scState);
     const csrfToken = this.getCSRF();
-console.log('isAuth: ', isAuth)
+
     return (
       <div>
         <HelmetComponent title='KURE - Curation Network Remedy for Steem' description='Kindred United to Reward Everyone' />
