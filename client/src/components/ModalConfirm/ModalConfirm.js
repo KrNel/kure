@@ -22,10 +22,18 @@ const ModalConfirm = ({modalOpen, onModalClose, handleModalClick, modalData}) =>
 
   return (
     <Modal size='small' open={modalOpen} onClose={onModalClose}>
-      <Modal.Header>Delete {title}
+      <Modal.Header>
+        {`Delete ${title}`}
       </Modal.Header>
       <Modal.Content>
-        <p>Are you sure you want to delete {content}?</p>
+        <p>
+          {'Confirm delete of:'}
+          <br />
+          <br />
+          <strong>
+            {content}
+          </strong>
+        </p>
       </Modal.Content>
       <Modal.Actions>
         <Button data-confirm='false' onClick={e => handleModalClick(e)} negative content='No' />

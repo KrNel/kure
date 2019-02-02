@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Segment, Icon, Loader, Dimmer } from "semantic-ui-react";
+import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react";
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
@@ -12,7 +12,7 @@ const GroupsList = (props) => {
     isLoading,
     noOwned,
     isGroupLoading,
-    loadingGroup,
+    selectedGroup,
     showModal,
   } = props;
 
@@ -29,9 +29,9 @@ const GroupsList = (props) => {
                 const date = moment(g.created).format("YYYY-MM-DD");
                 return (
                   <Grid.Column key={i} width={4}>
-                    <Segment key={i}>
+                    <Segment key={i} className='groupList'>
                       {
-                        (loadingGroup === g.name)
+                        (selectedGroup === g.name)
                           ? <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
                           : ''
                       }
@@ -54,7 +54,7 @@ const GroupsList = (props) => {
                             <Icon name='edit' color='blue' />
                           </a>
                           <a
-                            href={'/delete/'+g.name}
+                            href={'/group/delete/'+g.name}
                             onClick={e => showModal(e, {group: g.name})}
                             title="Delete group"
                           >
@@ -62,6 +62,7 @@ const GroupsList = (props) => {
                           </a>
                         </div>
                         <div className='clear' />
+                        <Divider />
                         <div>
                           {`Created: ${date}`}
                         </div>

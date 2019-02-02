@@ -1,36 +1,58 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Header, Icon, Form, Divider, Label } from "semantic-ui-react";
 import axios from 'axios';
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
 import GroupManageUsers from './GroupManageUsers';
+import ModalConfirm from '../../ModalConfirm/ModalConfirm';
 
 class GroupManage extends Component {
+
+  static propTypes = {
+    showModal: PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props)
 
     this.state = {
       newPost: '',
-      posts: this.props.manageGroup[0].posts,
+      posts: [],
       addPostLoading: false,
       errors: {},
       postExists: false,
-      users: this.props.manageGroup[0].users,
-      group: this.props.manageGroup[0].group['name']
+      users: [],
+      group: '',
+      modalOpen: false,
+      modalData: {},
     };
 
     this.existText = "Post already exists.";
   }
 
+  static getDerivedStateFromProps(props, state) {
+    const group = props.manageGroup[0].group['name'];
+    if (group !== state.group) {
+      return {
+        group: group,
+        posts: props.manageGroup[0].posts,
+        users: props.manageGroup[0].users
+      };
+    }
+    return null;
+  }
+
   addPostFetch = (post, user, group) => {
+console.log('addPostFetch: ', post);
     axios.post('/manage/posts/add', {
       post: post,
       user: user,
       group: group
     }, {
       headers: {
-        "x-csrf-token": this.props.csrfToken
+        "x-csrf-token": this.props.csrf
       }
     }).then((res) => {
       if (!res.data.invalidCSRF) {
@@ -102,34 +124,51 @@ class GroupManage extends Component {
      });
   }
 
-  /*componentWillReceiveProps(nextProps) {
-    if (this.props.manageGroup[0].posts !== this.nextProps.manageGroup[0].posts) {
-      this.setState({
-        posts: this.nextProps.manageGroup[0].posts,
-        users: this.nextProps.manageGroup[0].users,
-      })
-    }
-    if (this.props.manageGroup[0].users !== this.nextProps.manageGroup[0].users) {
-      this.setState({
-        users: this.nextProps.manageGroup[0].users,
-      })
-    }
-  }*/
+  showModal = (e, modalData) => {
+    e.preventDefault()
+    this.setState({ modalOpen: true, modalData });
+  }
+  onModalClose = () => this.setState({ modalOpen: false });
 
-  /*componentWillReceiveProps(nextProps) {
+  handleModalClick = (e) => {
+    e.preventDefault();
+    const confirm = e.target.dataset.confirm;
+    if (confirm === 'true') {
+      this.onModalClose();
+      const {post} = this.state.modalData;
+      this.handleDeletePost(post, this.props.manageGroup[0].group['name'])
+    }else this.onModalClose();
+
+  }
+
+  handleDeletePost = (post, group) => {
+    //e.preventDefault();
     this.setState({
-      posts: this.nextProps.manageGroup[0].posts,
-      users: this.nextProps.manageGroup[0].users,
+      modalData: {}
+    });
+    this.deletePostFetch(post, group);
+  }
+
+  deletePostFetch = (post, group) => {
+    axios.post('/manage/posts/delete', {
+      post: post,
+      group: group,
+      user: this.props.user
+    }, {
+      headers: {
+        "x-csrf-token": this.props.csrf
+      }
+    }).then((res) => {
+      if (res.data) {
+        const {posts} = this.state;
+        const newPosts = posts.filter(p => p.st_permlink !== post)
+        this.setState({
+          posts: newPosts
+        })
+      }/*else error deleting posts*/
+    }).catch(err => {
+      console.error(err);
     })
-  }*/
-  static getDerivedStateFromProps(props, state) {
-    if (props.manageGroup[0].group['name'] !== state.group) {
-      return {
-        group: props.manageGroup[0].group['name'],
-        posts: props.manageGroup[0].posts
-      };
-    }
-    return null;
   }
 
   render() {
@@ -140,6 +179,8 @@ class GroupManage extends Component {
       errors,
       postExists,
       users,
+      modalOpen,
+      modalData,
     } = this.state;
 
     const {
@@ -160,7 +201,10 @@ class GroupManage extends Component {
 
         <Grid.Row className="header-row">
           <Grid.Column floated='left' width={10}>
-            <Header as='h3'><Label size='large' color='blue'>Managing Group:</Label> {manageGroup.group.display}</Header>
+            <Header as='h3'>
+              <Label size='large' color='blue'>Managing Group:</Label>
+              {manageGroup.group.display}
+            </Header>
           </Grid.Column>
           <Grid.Column floated='right' width={6}>
             <div className="">
@@ -175,21 +219,28 @@ class GroupManage extends Component {
                       errors={errors}
                       loading={addPostLoading}
                     />
-                  {addError}
-                </Form.Field>
-                <Form.Button icon size="tiny" color="blue">
-                  <Icon name="plus" />
-                </Form.Button>
+                    {addError}
+                  </Form.Field>
+                  <Form.Button icon size="tiny" color="blue">
+                    <Icon name="plus" />
+                  </Form.Button>
                 </Form.Group>
               </Form>
             </div>
           </Grid.Column>
         </Grid.Row>
 
+        <ModalConfirm
+          modalOpen={modalOpen}
+          onModalClose={this.onModalClose}
+          handleModalClick={this.handleModalClick}
+          modalData={modalData}
+        />
+
         <Grid.Row className="content">
           <GroupManagePosts
             posts={posts}
-            showModal={showModal}
+            showModal={this.showModal}
           />
         </Grid.Row>
 

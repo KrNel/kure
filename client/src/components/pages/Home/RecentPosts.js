@@ -1,7 +1,8 @@
 import React from 'react';
 import SteemConnect from '../../../utilities/auth/scAPI';
 
-const RecentlyAdded = ({post, isAuth}) => {
+//const RecentPosts = ({post, isAuth}) => {
+const RecentPosts = ({post, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
   if (post.st_title) {
     return <div className="recPost">{post.st_title}</div>;
@@ -34,4 +35,4 @@ const RecentlyAdded = ({post, isAuth}) => {
   }
 }
 
-export default RecentlyAdded;
+export default RecentPosts;

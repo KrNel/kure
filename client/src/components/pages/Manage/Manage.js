@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Header, Segment, Form, Icon } from "semantic-ui-react";
 import axios from 'axios';
+import { connect } from 'react-redux';
 
 import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
@@ -11,10 +12,10 @@ import './Manage.css';
 
 class Manage extends Component {
 
-  static propTypes = {
+  /*static propTypes = {
     user: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
-  };
+  };*/
 
   constructor(props) {
     super(props);
@@ -29,8 +30,7 @@ class Manage extends Component {
       manageGroup: [],
       noOwned: true,
       errors: {},
-      //isEditGroupLoading: false,
-      loadingGroup: '',
+      selectedGroup: '',
       modalOpen: false,
       modalData: {},
       /*searchResults: [],
@@ -52,7 +52,7 @@ class Manage extends Component {
 
   showModal = (e, modalData) => {
     e.preventDefault()
-    this.setState({ modalOpen: true, modalData: modalData });
+    this.setState({ modalOpen: true, modalData });
   }
   onModalClose = () => this.setState({ modalOpen: false });
 
@@ -61,11 +61,9 @@ class Manage extends Component {
     const confirm = e.target.dataset.confirm;
     if (confirm === 'true') {
       this.onModalClose();
-      const {group, post} = this.state.modalData;
+      const {group} = this.state.modalData;
       if (group) {
         this.handleDeleteGroup(group)
-      }else {
-        this.handleDeletePost(post, this.state.manageGroup[0].group['name'])
       }
     }else this.onModalClose();
 
@@ -77,7 +75,7 @@ class Manage extends Component {
       user: this.props.user
     }, {
       headers: {
-        "x-csrf-token": this.props.csrfToken
+        "x-csrf-token": this.props.csrf
       }
     }).then((res) => {
       if (!res.data.invalidCSRF) {
@@ -145,7 +143,7 @@ class Manage extends Component {
       user: this.props.user
     }, {
       headers: {
-        "x-csrf-token": this.props.csrfToken
+        "x-csrf-token": this.props.csrf
       }
     }).then((res) => {
       if (res.data) {
@@ -162,27 +160,33 @@ class Manage extends Component {
     })
   }
 
-  deletePostFetch = (post, group) => {
+  /*deletePostFetch = (post, group) => {
+console.log('deletePostFetch: ', post);
     axios.post('/manage/posts/delete', {
       post: post,
       group: group,
       user: this.props.user
     }, {
       headers: {
-        "x-csrf-token": this.props.csrfToken
+        "x-csrf-token": this.props.csrf
       }
     }).then((res) => {
+console.log('res: ', res);
       if (res.data) {
-        const oldManageGroups = Object.assign({}, this.state.manageGroup[0]);
+        const oldManageGroups = {...this.state.manageGroup[0]};
+console.log('oldManageGroups: ', oldManageGroups);
         const removeIndex = oldManageGroups.posts.findIndex((p) => p.st_permlink === post);
+console.log('removeIndex: ', removeIndex);
+        //const oldPost = oldMergeGroups.posts[index];
 
-
-          //const oldPost = oldMergeGroups.posts[index];
-
-          const oldPosts = oldManageGroups.posts;
-          const newPosts = oldPosts.splice(removeIndex, 1);
-          let newManageGroups = Object.assign({}, oldManageGroups);
-          newManageGroups['posts'] = newPosts;
+        const oldPosts = oldManageGroups.posts;
+console.log('oldPosts: ', oldPosts);
+        const newPosts = oldPosts.splice(removeIndex, 1);
+console.log('newPosts: ', newPosts);
+        let newManageGroups = Object.assign({}, oldManageGroups);
+console.log('newManageGroups: ', newManageGroups);
+        newManageGroups['posts'] = newPosts;
+console.log('newManageGroups[posts]: ', newManageGroups['posts']);
 
         this.setState({
           manageGroup: [newManageGroups],
@@ -193,8 +197,7 @@ class Manage extends Component {
     }).catch(err => {
       console.error(err);
     })
-  }
-
+  }*/
 
 
   handleChange = (e, { name, value }) => {
@@ -220,7 +223,7 @@ class Manage extends Component {
     e.preventDefault();
     this.setState({
       isGroupLoading: true,
-      loadingGroup: group
+      selectedGroup: group
     });
     this.manageGroupFetch(group);
   }
@@ -229,21 +232,19 @@ class Manage extends Component {
     //e.preventDefault();
     this.setState({
       isGroupLoading: true,
-      loadingGroup: group,
+      selectedGroup: group,
       modalData: {}
     });
     this.deleteGroupFetch(group);
   }
 
-  handleDeletePost = (post, group) => {
+  /*handleDeletePost = (post, group) => {
     //e.preventDefault();
     this.setState({
-      /*isGroupLoading: true,
-      loadingGroup: group,*/
       modalData: {}
     });
     this.deletePostFetch(post, group);
-  }
+  }*/
 
   handleGroupValidation = (newGroup) => {
     let valid = true;
@@ -254,9 +255,9 @@ class Manage extends Component {
       valid = false;
     }
 
-    if(valid && (newGroup.length < 4 || newGroup.length > 20)){
+    if(valid && (newGroup.length < 4 || newGroup.length > 17)){
 
-      errors["newGroup"] = "Must be between 4 and 20 chars.";
+      errors["newGroup"] = "Must be between 4 and 17 chars.";
       valid = false;
     }
 
@@ -283,7 +284,7 @@ class Manage extends Component {
       noOwned,
       errors,
       isGroupLoading,
-      loadingGroup,
+      selectedGroup,
       modalOpen,
       modalData,
       /*searchResults,
@@ -292,7 +293,7 @@ class Manage extends Component {
 
     const {
       user,
-      csrfToken,
+      csrf,
     } = this.props;
 
     let addError = '';
@@ -358,7 +359,7 @@ class Manage extends Component {
                 isLoading={isGroupsLoading}
                 noOwned={noOwned}
                 isGroupLoading={isGroupLoading}
-                loadingGroup={loadingGroup}
+                selectedGroup={selectedGroup}
                 showModal={this.showModal}
               />
 
@@ -367,7 +368,7 @@ class Manage extends Component {
                 ? (
                   <GroupManage
                     manageGroup={manageGroup}
-                    csrfToken={csrfToken}
+                    csrf={csrf}
                     user={user}
                     showModal={this.showModal}
                   />
@@ -403,4 +404,15 @@ class Manage extends Component {
   }
 }
 
-export default Manage;
+//export default Manage;
+const mapStateToProps = state => {
+  const { userData, csrf } = state.auth;
+  //const { userData, csrf } = state.manage;
+
+  return {
+    user: userData.name,
+    csrf
+  }
+}
+
+export default connect(mapStateToProps)(Manage)

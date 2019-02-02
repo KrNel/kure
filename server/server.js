@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
 import morgan from 'morgan';
 import helmet from 'helmet';
+//import dotenv from 'dotenv';
 
 import config from './config';
 import auth from './routes/auth/auth';
@@ -12,9 +13,9 @@ import manage from './routes/manage/manage';
 
 const app = express();
 app.set('port', (config.app.server.port || 3001));
-/*if (config.app.env !== 'TEST') {
+if (config.app.env !== 'TEST') {
   app.use(morgan('combined'));
-}*/
+}
 
 //set headers on nginx sever when setup
 app.use(helmet());

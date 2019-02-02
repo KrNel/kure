@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom';
-import axios from 'axios';
+import { connect } from 'react-redux';
+
+import { handleLogin } from '../../actions/authActions';
 
 //import Error from '../Error/Error';
 import Loading from '../Loading/Loading';
@@ -34,28 +36,19 @@ class AuthSC extends Component {
     const accessToken = url.get('access_token');
     const user = url.get('username');
 
-    axios.post('/auth/validate', {
-      expiresAt: expiresAt,
-      accessToken: accessToken,
-      user: user
-    }).then((res) => {
-      this.props.setCSRF(res.headers['x-csrf-token']);
-      this.props.handleIsAuthorizing(false);
-      if (res.data.isAuth) {
-        this.props.setUserData({name: user});
-        this.props.handleIsAuth(true);
-        this.setState({ redirect: true });
-      }
-    }).catch((err) => {
-      console.error(err);
-    });
+    const { dispatch } = this.props;
+    dispatch(handleLogin(expiresAt, accessToken, user));
   }
 
   render() {
+    const { isAuth } = this.props;
+    let { redirect } = this.state;
+    if (isAuth) redirect = true;
+
     return (
       <div>
         {
-          (this.state.redirect)
+          (redirect)
             ? (<Redirect to={this.redirectURL} />)
             : (<Loading active inline='centered' size='huge' text='Logging in...' />)
         }
@@ -64,4 +57,12 @@ class AuthSC extends Component {
   }
 }
 
-export default AuthSC;
+const mapStateToProps = state => {
+  const { isAuth } = state.auth;
+
+  return {
+    isAuth
+  }
+}
+
+export default connect(mapStateToProps)(AuthSC)

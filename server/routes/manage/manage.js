@@ -8,7 +8,7 @@ const router = new Router();
 
 //const initialState = serialize(response);
 //var html = xss('<script>alert("xss");</script>');
-router.post('/groups/add', async (req, res, next) => {
+router.post('/groups/add', async (req, res) => {
   const db = req.app.locals.db;
 
   let { group, user } = req.body;
@@ -52,7 +52,7 @@ const groupExists = async (db, group) => {
     return false;
   }).catch(error => {
 		console.error(error);
-		res.status(500).json({ message: `Error with DB groupExists: ${error}` });
+		//res.status(500).json({ message: `Error with DB groupExists: ${error}` });
 	});
   return await exists;
 }
@@ -65,7 +65,7 @@ const exceededGrouplimit = async (db, user) => {
     return false;
   }).catch(error => {
 		console.error(error);
-		res.status(500).json({ message: `Error with DB groupExists: ${error}` });
+		//res.status(500).json({ message: `Error with DB groupExists: ${error}` });
 	});
   return await exceeded;
 }
@@ -84,7 +84,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
           created: created,
           owner: user,
           followers: 1,
-      		likes: 1,
+          likes: 1,
           posts: 0,
           rating: 0
         }
@@ -97,7 +97,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
       {
         $inc:
         {
-      		owned_kgroups: 1
+          owned_kgroups: 1
         }
       }
     )
@@ -113,11 +113,11 @@ const groupUpsert = (db, group, groupTrim, user) => {
     return created;
   }catch (err) {
     console.error(err);
-    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
 }
 
-router.post('/groups/delete', async (req, res, next) => {
+router.post('/groups/delete', async (req, res) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -156,14 +156,14 @@ const deleteGroup = (db, group, user) => {
       {
         $inc:
         {
-      		owned_kgroups: -1
+          owned_kgroups: -1
         }
       }
     )
     return true;
   }catch (err) {
     console.error(err);
-    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
   return false;
 }
@@ -171,7 +171,7 @@ const deleteGroup = (db, group, user) => {
 
 
 
-router.post('/posts/add', async (req, res, next) => {
+router.post('/posts/add', async (req, res) => {
   const db = req.app.locals.db;
   //do i need to verfiy access? no one can spoof a POST, right?
 
@@ -210,7 +210,7 @@ const postExists = async (db, permlink, group) => {
     return false;
   }).catch(error => {
 		console.error(error);
-		res.status(500).json({ message: `Error with DB postExists: ${error}` });
+		//res.status(500).json({ message: `Error with DB postExists: ${error}` });
 	});
   return await exists;
 }
@@ -251,14 +251,14 @@ const addPost = (db, user, group, category, author, permlink) => {
     return post;
   }catch (err) {
     console.error(err);
-    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
   return false;
 }
 
 
 
-router.post('/posts/delete', async (req, res, next) => {
+router.post('/posts/delete', async (req, res) => {
   const db = req.app.locals.db;
   let { post, group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -294,7 +294,7 @@ const deletePost = (db, post, group) => {
     return true;
   }catch (err) {
     console.error(err);
-    res.status(500).json({ message: `groupUpsert DB error: ${err}` });
+    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
   return false;
 }

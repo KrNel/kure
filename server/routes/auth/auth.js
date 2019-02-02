@@ -33,7 +33,7 @@ router.post('/validate', (req, res) => {
     }).then(init => {
       if (init) return newCSRF(db, res, user)
     }).then(isAuth => {
-      if (isAuth) res.json({ isAuth: isAuth, user: user });
+      if (isAuth) res.json({ isAuth: isAuth, user: {name: user} });
     }).catch(err => console.error(err) );
 })
 

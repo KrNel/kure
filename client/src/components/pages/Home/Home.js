@@ -1,69 +1,55 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Loader, Grid, Header, Segment } from "semantic-ui-react";
-import axios from 'axios';
+import { connect } from 'react-redux';
 
-import RecentlyAdded from './RecentlyAdded'
+import { fetchPostsIfNeeded } from '../../../actions/recentPostsActions';
+
+import RecentPosts from './RecentPosts'
 //import progress from '../../../utilities/axios-nprogress';
 import './Home.css';
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-        isLoading: true,
-        recentlyAdded: []
-    };
+  
+  /*static propTypes = {
+    selected: PropTypes.string.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    posts: PropTypes.oneOf([PropTypes.object, PropTypes.array]),
+    isFetching: PropTypes.bool.isRequired
+  };
 
-    this.signal = axios.CancelToken.source();
-
-  }
+  static defaultProps = {
+    posts: []
+  };*/
 
   componentDidMount() {
-    this.getRecentPosts();
+    const {selected, dispatch} = this.props;
+    setTimeout(() => {
+      dispatch(fetchPostsIfNeeded(selected))
+    }, 1000);
   }
 
-  componentWillUnmount() {
-    this.signal.cancel('Api is being canceled');
+  componentDidUpdate(prevProps) {
+    /*if (prevProps.selectedSubreddit !== this.props.selectedSubreddit) {
+      const { dispatch, selectedSubreddit } = this.props
+      dispatch(fetchPostsIfNeeded(selectedSubreddit))
+    }*/
   }
-
-  getRecentPosts = async () => {
-    axios.get('/api/recentposts', {
-      cancelToken: this.signal.token,
-    }).then((data) => {
-      const posts = data.data.posts
-      if (posts.length) {
-        this.setState({
-          isLoading: false,
-          recentlyAdded: data.data.posts
-        })
-      }else {
-        this.setState({
-          isLoading: false,
-          recentlyAdded: [{st_title: ''}]
-        })
-      }
-    }).catch(err => {
-      if (axios.isCancel(err)) {
-        console.log('Error: ', err.message);
-      } else {
-        this.setState({ isLoading: false });
-        console.error(err);
-      }
-    })
-  }
-
-
 
   render() {
-    let {recentlyAdded, isLoading} = this.state;
 
-      if (isLoading) {
-        recentlyAdded = <Loader active inline='centered' />
-      }else {
-        recentlyAdded = recentlyAdded.map((post, i) =>
-          <RecentlyAdded key={i} post={post} isAuth={this.props.isAuth} />
-        )
-      }
+    const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
+    const isEmpty = posts.length === 0;
+    const recentPostsComp =
+        (isFetching)
+          ? <Loader active inline='centered' />
+        : (isEmpty)
+              ? 'No Posts'
+              : (posts.map((post, i) => <RecentPosts key={i} post={post} isAuth={isAuth} />));
+
+        /*(isEmpty)
+          ? (isFetching ? <Loader active inline='centered' /> : 'No Posts')
+          : (posts.map((post, i) => <RecentPosts key={i} post={post} isAuth={isAuth} />));*/
 
     return (
       <div className="home">
@@ -79,7 +65,7 @@ class Home extends Component {
               <Grid.Row columns={1}>
                 <Grid.Column>
                   <Segment className="nopad">
-                    {recentlyAdded}
+                    {recentPostsComp}
                   </Segment>
                 </Grid.Column>
               </Grid.Row>
@@ -147,4 +133,35 @@ class Home extends Component {
   }
 }
 
-export default Home;
+const mapStateToProps = state => {
+  const { selected, recentActivity, auth } = state
+  const {
+    isFetching,
+    lastUpdated,
+    items: posts
+  } = recentActivity[selected] || {
+    isFetching: true,
+    items: []
+  }
+
+  return {
+    selected,
+    posts,
+    isFetching,
+    lastUpdated,
+    isAuth: auth.isAuth
+  }
+}
+
+/*const mapDispatchToProps = dispatch => (
+  {
+    getRecentPosts: (selected) => (
+      dispatch(fetchPostsIfNeeded(selected))
+    ),
+  }
+);*/
+
+export default connect(
+  mapStateToProps/*,
+  mapDispatchToProps*/
+)(Home);

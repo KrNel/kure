@@ -1,15 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, Image } from "semantic-ui-react";
-import LoginControl from "../Auth/LoginControl";
+import LoginControl from "../../Auth/LoginControl";
 
 import "semantic-ui-css/components/menu.min.css";
 import "semantic-ui-css/components/tab.min.css";
 import "semantic-ui-css/components/transition.min.css";
-import logo from '../../images/logo.png';
+import logo from '../../../images/logo.png';
 import './NavMenu.css';
 
-const NavMenu = ({isAuth, loginURL}) => {
+const NavMenu = ({loginURL}) => {
 
   const items = [
     {name : "/", label : "Home"},
@@ -36,7 +36,7 @@ const NavMenu = ({isAuth, loginURL}) => {
           ))
         }
         <Menu.Menu position="right">
-          <LoginControl isAuth={isAuth} loginURL={loginURL} />
+          <LoginControl loginURL={loginURL} />
         </Menu.Menu>
       </Menu>
     </div>

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Grid, Segment, Header } from "semantic-ui-react";
-import axios from 'axios';
+import { connect } from 'react-redux';
+import Loading from '../Loading/Loading'
+
+import { handleLogout } from '../../actions/authActions';
 
 class Logout extends Component {
   constructor(props) {
@@ -11,19 +14,7 @@ class Logout extends Component {
       redirect: false
     };
 
-    this.removeToken(this.props.user);
-  }
-
-  removeToken = (user) => {
-      axios.post('/auth/logout', {
-        user: user
-      })
-      .then((res) => {
-        this.props.onLogout();
-      })
-      .catch((err) => {
-        console.error('error on axios logout: ', err);
-      });
+    this.removeToken();
   }
 
   componentDidMount() {
@@ -34,27 +25,40 @@ class Logout extends Component {
     clearInterval(this.interval);
   }
 
+  removeToken = () => {
+    const { dispatch } = this.props;
+    dispatch(handleLogout());
+  }
+
   render () {
+    const { redirect } = this.state;
     return (
       <div>
-      {
-        (this.state.redirect)
+        {
+        (redirect)
           ? <Redirect to='/' />
           :
-            <Grid verticalAlign='middle' columns={5} centered style={{height: "80vh"}}>
-              <Grid.Row>
-                <Grid.Column>
-                  <Segment textAlign='center'>
-                    <Header as='h2'>Logged out.</Header>
-                    <Header as='h4'>Redirecting...</Header>
-                  </Segment>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-      }
+            (
+              <Grid verticalAlign='middle' columns={5} centered style={{height: "80vh"}}>
+                <Grid.Row>
+                  <Grid.Column>
+                    <Loading text='Logging you out...' size='huge' />
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            )
+        }
       </div>
     )
   }
 }
 
-export default Logout;
+const mapStateToProps = state => {
+  const { isAuth } = state.auth;
+
+  return {
+    isAuth
+  }
+}
+
+export default connect(mapStateToProps)(Logout)

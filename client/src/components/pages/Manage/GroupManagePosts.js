@@ -44,7 +44,7 @@ const GroupManagePosts = ({posts, showModal}) => {
                 <Table.Cell>{p.views}</Table.Cell>
                 <Table.Cell>{p.rating}</Table.Cell>
                 <Table.Cell>{p.added_by}</Table.Cell>
-                <Table.Cell><a href={'/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}><Icon name='minus circle' color='blue' /></a></Table.Cell>
+                <Table.Cell><a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}><Icon name='minus circle' color='blue' /></a></Table.Cell>
               </Table.Row>
             ))
           }

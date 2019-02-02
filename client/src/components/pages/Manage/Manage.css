@@ -6,6 +6,15 @@
   color: var(--main-border);
 }
 
+.manage .ui.segment .ui.divider {
+  margin: 0 -14px 5px -14px;
+}
+
+.manage .ui.segment.groupList {
+  min-height: 200px !important;
+  max-height: 200px !important;
+}
+
 /*.manage .ui.grid .row + .ui.divider {
   margin: 0 1rem;
 }*/
@@ -20,3 +29,7 @@
 /*.manage .ui.form input[type="text"] {
   border-radius: 0px !important;
 }*/
+
+.manage .ui.card .content:first-child {
+  padding-bottom: 0;
+}
