@@ -12,7 +12,12 @@ import AuthSC from '../components/Auth/AuthSC';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
-const Routes = (props) => (
+/**
+ *  Routing component to render various page components.
+ *
+ *  @returns {Component} - Renders the route for main page components
+ */
+const Routes = () => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />

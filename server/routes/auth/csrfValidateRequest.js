@@ -9,9 +9,8 @@ const csrfValidateRequest = async (req, res, user) => {
       return true;
     }
     return false; //csrf failed
-  }).catch(error => {
-		console.error(error);
-		res.status(500).json({ message: `Error with DB groupExists: ${error}` });
+  }).catch(err => {
+		throw new Error('Error validateing CSRF with DB: ', err);
 	});
 
   return await valid;

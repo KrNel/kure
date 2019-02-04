@@ -54,6 +54,9 @@ hr {
   padding-top: 0;
 }*/
 
+.ui.small.modal {
+  width: 480px;
+}
 
 
 .ui.header, .ui.card .header {
@@ -74,17 +77,15 @@ hr {
   border-top: 1px solid var(--main-border);
 }
 
-.ui.grid .row + .ui.divider {
+/*.ui.grid .row + .ui.divider {
   margin: 0 1rem;
-}
+}*/
 
-.ui.form .fields {
+.manage .ui.form .fields {
   margin-bottom: 0;
 }
 
-
-
-.ui.segment, .ui.segments, .ui.menu, .ui.card, .ui.form input[type="text"], .ui.button, .ui.label, .ui.table {
+.ui.segment, .ui.segments, .ui.menu, .ui.card, .ui.form input[type="text"], .ui.button, .ui.label, .ui.table, .ui.dropdown {
     border-radius: 0px !important;
 }
 
@@ -113,6 +114,14 @@ hr {
   border: none var(--main-border) !important;
 }
 
+.ui.selection.dropdown {
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border: 1px solid var(--main-border) !important;
+  /*padding: 12px*/
+  /*min-height: 2.5em;*/
+}
 
 
 /* Vertically Divided */

@@ -5,7 +5,6 @@
   "proxy": "https://127.0.0.1:3001/",
   "dependencies": {
     "axios": "^0.18.0",
-    "axios-progress-bar": "^1.2.0",
     "babel-eslint": "^9.0.0",
     "moment": "^2.23.0",
     "prop-types": "^15.6.2",

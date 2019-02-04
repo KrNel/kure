@@ -1,3 +1,7 @@
+/**
+ *  Settings for the Steem Connect API.
+ */
+
 const scConfig = {
   sc: {
     app: 'kure.app',

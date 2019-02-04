@@ -1,7 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types'
+
 import SteemConnect from '../../../utilities/auth/scAPI';
 
-//const RecentPosts = ({post, isAuth}) => {
+/**
+ *  Component to display the post data sent.
+ *
+ *  @param {object} props - Component props
+ *  @param {object} props.post - The post data to display
+ *  @param {function} props.isAuth - Determines if user is authenticated
+ *  @returns {element} - Displays the post, or message if no posts are in the app
+ */
 const RecentPosts = ({post, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
   if (post.st_title) {
@@ -34,5 +43,10 @@ const RecentPosts = ({post, isAuth}) => {
     }
   }
 }
+
+RecentPosts.propTypes = {
+  post: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  isAuth: PropTypes.bool.isRequired,
+};
 
 export default RecentPosts;

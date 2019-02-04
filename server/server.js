@@ -29,7 +29,7 @@ MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrl
 	db = connection.db(config.db.name);
 	app.locals.db = db;
 }).catch(err => {
-	console.error('DB ERROR:', err);
+	throw new Error ('DB ERROR: ', err);
 });
 
 app.use('/auth', auth);
@@ -38,8 +38,7 @@ app.use('/api/groups', groups);
 app.use('/manage', manage);
 
 app.use((err, req, res) => {
-  console.error(err);
-  res.status(500).send('Something broke!');
+  throw new Error ('Something went wrong in the server: ', err);
 })
 
 export default app;

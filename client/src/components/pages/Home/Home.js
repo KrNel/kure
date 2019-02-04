@@ -4,29 +4,36 @@ import { Loader, Grid, Header, Segment } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import { fetchPostsIfNeeded } from '../../../actions/recentPostsActions';
-
 import RecentPosts from './RecentPosts'
-//import progress from '../../../utilities/axios-nprogress';
 import './Home.css';
 
+/**
+ *  Home page component.
+ *
+ *  Shows the recent activity on the site.
+ *  Recently added posts from all community groups are shown.
+ *
+ *  @param {object} props - Component props
+ *  @param {string} props.selected - Selected activity to display
+ *  @param {function} props.dispatch - Redux function to dispatch action
+ *  @param {object} props.posts - Contains data for recently added posts
+ *  @param {bool} props.isFetching - Determines if laoding spinner is to be shown
+ *  @param {bool} props.isAuth - Determines if user is authenticated
+ *  @returns {Component} - A component that displays the page data
+ */
 class Home extends Component {
-  
-  /*static propTypes = {
+
+  static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
-    posts: PropTypes.oneOf([PropTypes.object, PropTypes.array]),
-    isFetching: PropTypes.bool.isRequired
+    posts: PropTypes.arrayOf(PropTypes.object).isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    isAuth: PropTypes.bool.isRequired,
   };
-
-  static defaultProps = {
-    posts: []
-  };*/
 
   componentDidMount() {
     const {selected, dispatch} = this.props;
-    setTimeout(() => {
-      dispatch(fetchPostsIfNeeded(selected))
-    }, 1000);
+    dispatch(fetchPostsIfNeeded(selected));
   }
 
   componentDidUpdate(prevProps) {
@@ -38,18 +45,15 @@ class Home extends Component {
 
   render() {
 
-    const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
+    //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
+    const { posts, isFetching, isAuth } = this.props;
     const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
           ? <Loader active inline='centered' />
         : (isEmpty)
               ? 'No Posts'
-              : (posts.map((post, i) => <RecentPosts key={i} post={post} isAuth={isAuth} />));
-
-        /*(isEmpty)
-          ? (isFetching ? <Loader active inline='centered' /> : 'No Posts')
-          : (posts.map((post, i) => <RecentPosts key={i} post={post} isAuth={isAuth} />));*/
+              : (posts.map((post, i) => <RecentPosts key={post._id} post={post} isAuth={isAuth} />));
 
     return (
       <div className="home">
@@ -133,6 +137,12 @@ class Home extends Component {
   }
 }
 
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
 const mapStateToProps = state => {
   const { selected, recentActivity, auth } = state
   const {
@@ -153,15 +163,4 @@ const mapStateToProps = state => {
   }
 }
 
-/*const mapDispatchToProps = dispatch => (
-  {
-    getRecentPosts: (selected) => (
-      dispatch(fetchPostsIfNeeded(selected))
-    ),
-  }
-);*/
-
-export default connect(
-  mapStateToProps/*,
-  mapDispatchToProps*/
-)(Home);
+export default connect(mapStateToProps)(Home);

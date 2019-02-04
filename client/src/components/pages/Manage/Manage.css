@@ -33,3 +33,11 @@
 .manage .ui.card .content:first-child {
   padding-bottom: 0;
 }
+
+/*.manage .ui.selection.dropdown {
+  margin-top: 1rem;
+}*/
+
+.manage .ui.form .fields.user-access {
+    margin-top: 1rem;
+}

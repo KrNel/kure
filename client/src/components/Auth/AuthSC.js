@@ -1,13 +1,29 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types'
 
 import { handleLogin } from '../../actions/authActions';
-
-//import Error from '../Error/Error';
 import Loading from '../Loading/Loading';
 
+/**
+ *  Handles Steem Connect login responses.
+ *
+ *  Displays a loading spinner while user is authenticated.
+ *  After authentication, user is redirected to previous page.
+ *
+ *  @param {object} props - Component props
+ *  @param {bool} props.isAuth - Determines if user is authenticated
+ *  @param {bool} props.dispatch - Redux function to dispatch actions
+ *  @returns {Component} - Shows a loading spinner, then redirects user
+ */
 class AuthSC extends Component {
+
+  static propTypes = {
+    isAuth: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props);
 
@@ -27,6 +43,9 @@ class AuthSC extends Component {
     }
   }
 
+  /**
+   *  Gathers response data from Steem Coneect, and dispatches login reducer.
+   */
   authTokenServer = (url) => {
     let redirect = url.get('state')
     if (redirect === 'success' || redirect === 'login') redirect = '/';
@@ -57,6 +76,12 @@ class AuthSC extends Component {
   }
 }
 
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Authentication data
+ */
 const mapStateToProps = state => {
   const { isAuth } = state.auth;
 

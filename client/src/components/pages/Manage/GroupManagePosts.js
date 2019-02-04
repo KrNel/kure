@@ -1,9 +1,21 @@
 import React from 'react';
-import { Grid, Segment, Icon, Table } from "semantic-ui-react";
+import { Grid, Segment, Icon, Table, Dimmer, Loader } from "semantic-ui-react";
+import PropTypes from 'prop-types';
 
 import Settings from '../../../settings';
 
-const GroupManagePosts = ({posts, showModal}) => {
+/**
+ *  Table of posts for the selected group.
+ *
+ *  Button icon for deleting a post.
+ *
+ *  @param {object} props - Component props
+ *  @param {array} props.posts - Posts data to be mapped and displayed
+ *  @param {function} props.showModal - Sets the modal to be shown or hidden
+ *  @param {string} props.deletingPost - The post to be deleted
+ *  @returns {Component} - Table of post data
+ */
+const GroupManagePosts = ({posts, showModal, deletingPost}) => {
 
   if (!posts.length) {
     return (
@@ -20,17 +32,17 @@ const GroupManagePosts = ({posts, showModal}) => {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
-              <Table.HeaderCell>Likes</Table.HeaderCell>
-              <Table.HeaderCell>Views</Table.HeaderCell>
-              <Table.HeaderCell>Rating</Table.HeaderCell>
-              <Table.HeaderCell>Submitter</Table.HeaderCell>
-              <Table.HeaderCell>Remove</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Likes</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Views</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Rating</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Submitter</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Remove</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {
             posts.map((p, i) => (
-              <Table.Row key={i}>
+              <Table.Row key={p._id}>
                 <Table.Cell>
                   <a
                     href={Settings.baseSteemURL+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
@@ -40,11 +52,20 @@ const GroupManagePosts = ({posts, showModal}) => {
                       : p.st_title}
                   </a>
                 </Table.Cell>
-                <Table.Cell>{p.likes}</Table.Cell>
-                <Table.Cell>{p.views}</Table.Cell>
-                <Table.Cell>{p.rating}</Table.Cell>
-                <Table.Cell>{p.added_by}</Table.Cell>
-                <Table.Cell><a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}><Icon name='minus circle' color='blue' /></a></Table.Cell>
+                <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
+                <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
+                <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>
+                <Table.Cell collapsing textAlign='center'>{p.added_by}</Table.Cell>
+                <Table.Cell collapsing textAlign='center'>
+                  {
+                    (deletingPost === p.st_permlink)
+                      ? <Dimmer inverted active><Loader /></Dimmer>
+                      : ''
+                  }
+                  <a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}>
+                    <Icon name='delete' color='blue' />
+                  </a>
+                </Table.Cell>
               </Table.Row>
             ))
           }
@@ -54,5 +75,11 @@ const GroupManagePosts = ({posts, showModal}) => {
     )
   }
 }
+
+GroupManagePosts.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  showModal: PropTypes.func.isRequired,
+  deletingPost: PropTypes.string.isRequired,
+};
 
 export default GroupManagePosts;
