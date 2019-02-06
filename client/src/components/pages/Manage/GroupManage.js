@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Icon, Form, Label } from "semantic-ui-react";
+import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
 import axios from 'axios';
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
@@ -32,6 +32,7 @@ class GroupManage extends Component {
         posts: PropTypes.array.isRequired,
         users: PropTypes.array.isRequired,
     }).isRequired,
+    onPostUpdate: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -145,7 +146,6 @@ class GroupManage extends Component {
     }
 
     if(valid && !/^https?:\/\/([\w\d-]+\.)+\w{2,}(\/.+)?$/.test(newPost)) {
-
       errors["newPost"] = "Must be a valid URL";
       valid = false;
     }
@@ -183,6 +183,8 @@ class GroupManage extends Component {
             postExists: false,
             addPostLoading: false,
           });
+          const { onPostUpdate } = this.props;
+          onPostUpdate(group, 'inc');
         }else {
           //error adding in db...
           this.setState({
@@ -220,7 +222,9 @@ class GroupManage extends Component {
         this.setState({
           posts: newPosts,
           deletingPost: '',
-        })
+        });
+        const { onPostUpdate } = this.props;
+        onPostUpdate(group, 'dec');
       }/*else error deleting post*/
     }).catch(err => {
       throw new Error('Error deleting post: ', err);
@@ -348,8 +352,10 @@ class GroupManage extends Component {
       deletingUser,
     } = this.state;
 
-    const {manageGroup} = this.props;
-
+    const {
+      manageGroup,
+    } = this.props;
+console.log('manageGroup2', manageGroup)
     let addErrorPost = '';
     let addErrorUser = '';
 
@@ -366,7 +372,7 @@ class GroupManage extends Component {
           <Grid.Column floated='left' width={10}>
             <Header as='h2'>
               <Label size='big' color='blue'>Managing Group:</Label>
-              {'  '}
+              {'   '}
               {manageGroup.group.display}
             </Header>
           </Grid.Column>
@@ -451,6 +457,7 @@ class GroupManage extends Component {
           </Grid.Column>
         </Grid.Row>
 
+        <Divider />
       </React.Fragment>
     )
   }

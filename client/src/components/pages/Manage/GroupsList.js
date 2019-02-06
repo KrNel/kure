@@ -14,10 +14,10 @@ import Loading from '../../Loading/Loading';
  *  @param {object} props - Component props
  *  @param {array} props.groups - Array of obejcts for each group to view
  *  @param {bool} props.areGroupsLoading - Determines if loading spinner shown
- *  @param {function} props.handleManageGroup - Call parent function to maange a group
- *  @param {bool} props.noOwned - Determines if there are no Owned groups to show
- *  @param {bool} props.isGroupLoading - Determines if loading spinner shown for that group
- *  @param {bool} props.selectedGroup - Selected group will have spinner if loading data
+ *  @param {function} props.handleManageGroup - Parent function to manage group
+ *  @param {bool} props.noOwned - Determines if there are no Owned groups
+ *  @param {bool} props.isGroupLoading - Determines if to show loading spinner
+ *  @param {bool} props.selectedGroup - Selected group will have spinner
  *  @param {function} props.showModal - Sets the modal to be shown or hidden
  *  @returns {Component} - A list of group components is rendered
  */
@@ -31,6 +31,7 @@ const GroupsList = (props) => {
     isGroupLoading,
     selectedGroup,
     showModal,
+    type,
   } = props;
 
   if (areGroupsLoading) {
@@ -83,10 +84,10 @@ const GroupsList = (props) => {
                         <div>
                           {`Created: ${date}`}
                         </div>
-                        {/*<div>
+                        <div>
                           {'Posts: '}
                           {g.posts}
-                        </div>*/}
+                        </div>
                         {/*<div>Followers: {g.followers}</div>*/}
                         {/*<div>Likes: {g.likes}</div>*/}
                       </div>
@@ -100,13 +101,14 @@ const GroupsList = (props) => {
         </Grid.Row>
       )
     }else {
+      const message = (type === 'owned')
+        ? ("You don't own any community groups. You can create up to 4 community groups.")
+        : ("You don't belong to any other communities.")
       return (
         <Grid.Column width={8}>
           <Segment>
             <p>
-              {"You don't own any community groups."}
-              <br />
-              {"You can create up to 4 community groups."}
+              {message}
             </p>
           </Segment>
         </Grid.Column>
@@ -123,6 +125,7 @@ GroupsList.propTypes = {
   isGroupLoading: PropTypes.bool.isRequired,
   selectedGroup: PropTypes.string.isRequired,
   showModal: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default GroupsList;

@@ -7,34 +7,38 @@ import helmet from 'helmet';
 
 import config from './config';
 import auth from './routes/auth/auth';
-import recentPosts from './routes/api/recentPosts';
-import groups from './routes/api/groups';
+import api from './routes/api/api';
 import manage from './routes/manage/manage';
 
 const app = express();
 app.set('port', (config.app.server.port || 3001));
+
+//Access logging sent to console
 if (config.app.env !== 'TEST') {
   app.use(morgan('combined'));
 }
 
-//set headers on nginx sever when setup
+//Set headers on responses
+//TODO: set headers on nginx sever when setup
 app.use(helmet());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }))
 
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+//MongoDB connection to persist in app
 let db;
 MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrlParser: true }).then(connection => {
 	db = connection.db(config.db.name);
+  //persist db connection in app.locals
 	app.locals.db = db;
 }).catch(err => {
-	throw new Error ('DB ERROR: ', err);
+	throw new Error ('MongoDB Connectioon Error: ', err);
 });
 
+//Routes for React fetchs
 app.use('/auth', auth);
-app.use('/api/recentposts', recentPosts);
-app.use('/api/groups', groups);
+app.use('/api', api);
 app.use('/manage', manage);
 
 app.use((err, req, res) => {

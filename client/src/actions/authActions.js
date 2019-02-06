@@ -52,6 +52,7 @@ export const receiveLogout = () => ({
 /**
  *  Action creator for requesting a login.
  *
+ *  @param {string} user - User name
  *  @returns {object} - The action data
  */
 export const requestLogin = (user) => ({
@@ -117,10 +118,10 @@ const fetchLogout = (state) => dispatch => {
  *  @returns {function} - Dispatches returned action object
  */
 const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
-  const user = state.auth.userData.name;
+  //const user = state.auth.userData.name;
   dispatch(requestLogin(user));
 
-  return axios.post('/auth/validate', {
+  return axios.post('/auth/login', {
       expiresAt: expiresAt,
       accessToken: accessToken,
       user: user
@@ -137,7 +138,8 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
  *  @returns {function} - Dispatches returned action object
  */
 export const handleReturning = () => (dispatch, getState) => {
-  return dispatch(fetchReturning());
+  if (!getState().auth.isLoggingIn)
+    return dispatch(fetchReturning());
 }
 
 /**

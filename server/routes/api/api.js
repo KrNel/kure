@@ -1,14 +1,12 @@
 import { Router } from 'express';
 import groups from './groups';
-import posts from './posts';
-import users from './users';
+import recentPosts from './recentPosts';
 //const initialState = serialize(response);
 //var html = xss('<script>alert("xss");</script>');
 
-//Routes to use for /manage/ root
+//Routes to use for /api/ root path
 const router = new Router();
 router.use('/groups', groups);
-router.use('/posts', posts);
-router.use('/users', users);
+router.use('/recentPosts', recentPosts);
 
 export default router;

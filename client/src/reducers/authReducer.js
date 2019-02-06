@@ -39,7 +39,10 @@ export const auth = (
         lastUpdated: action.authedAt
       });
     case REQUEST_LOGIN: {
-      return state;
+      return ({
+        ...state,
+        isLoggingIn: true,
+      });
     }
     case RECEIVE_LOGIN: {
       return ({
