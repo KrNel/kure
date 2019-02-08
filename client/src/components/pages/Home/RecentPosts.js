@@ -5,11 +5,12 @@ import SteemConnect from '../../../utilities/auth/scAPI';
 
 /**
  *  Component to display the post data sent.
+ *  If posts exist, display them. If not, display message.
  *
- *  @param {object} props - Component props
- *  @param {object} props.post - The post data to display
- *  @param {function} props.isAuth - Determines if user is authenticated
- *  @returns {element} - Displays the post, or message if no posts are in the app
+ *  @param {object} props Component props
+ *  @param {object} props.post The post data to display
+ *  @param {function} props.isAuth Determines if user is authenticated
+ *  @returns {element} Displays the post, or message if no posts are in the app
  */
 const RecentPosts = ({post, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');

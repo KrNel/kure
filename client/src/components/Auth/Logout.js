@@ -13,10 +13,10 @@ import { handleLogout } from '../../actions/authActions';
  *  Remove token cookie on client side, and remove sessions data from database.
  *  Timer set to 2 seconds to wait and then redirect user to homepage.
  *
- *  @param {object} props - Component props
- *  @param {function} props.dispatch - Dispatches logout action
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @returns {Component} - Displays markup to wait 2 seconds for lofout
+ *  @param {object} props Component props
+ *  @param {function} props.dispatch Dispatches logout action
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @returns {Component} Displays markup to wait 2 seconds for lofout
  */
 class Logout extends Component {
 
@@ -35,14 +35,23 @@ class Logout extends Component {
     this.removeToken();
   }
 
+  /*
+   *  Wait 2 seconds, then redirect user.
+   */
   componentDidMount() {
     this.interval = setTimeout(() => this.setState({ redirect: true }), 2000);
   }
 
+  /*
+   *  Clear itnerval to prevent error.
+   */
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
+  /*
+   *  Dispatch the logout action and reducer.
+   */
   removeToken = () => {
     const { dispatch, isAuth } = this.props;
     if (isAuth) dispatch(handleLogout());

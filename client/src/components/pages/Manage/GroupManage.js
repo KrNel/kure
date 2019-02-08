@@ -16,11 +16,11 @@ import Settings from '../../../settings';
  *  Posts can be added and deleted.
  *  Users can be added with certain roles/access, and deleted.
  *
- *  @param {object} props - Component props
- *  @param {string} props.user - User name to use in Manage page
- *  @param {string} props.csrf - CSRF token to prevent CSRF attacks
- *  @param {object} props.manageGroup - The group being edited/managed
- *  @returns {Component} - Shows both posts and users to edit/manage for selected group
+ *  @param {object} props Component props
+ *  @param {string} props.user User name to use in Manage page
+ *  @param {string} props.csrf CSRF token to prevent CSRF attacks
+ *  @param {object} props.manageGroup The group being edited/managed
+ *  @returns {Component} Shows both posts and users to edit/manage for selected group
  */
 class GroupManage extends Component {
 
@@ -66,6 +66,12 @@ class GroupManage extends Component {
 
   }
 
+  /**
+   *  Prevent updates for simply selecting a different User Access/Role
+   *
+   *  @param {object} nextProps Next props before it becomes current props
+   *  @param {object} nextState Next state before it becomes current state
+   */
   shouldComponentUpdate(nextProps, nextState) {
     const {selectedAccess} = this.state;
      if(selectedAccess !== nextState.selectedAccess) {
@@ -74,6 +80,12 @@ class GroupManage extends Component {
      return true
    }
 
+  /**
+   *  Need to populate state from props updates passed down from parents comp.
+   *
+   *  @param {object} props Current props object
+   *  @param {object} state Current state object
+   */
   static getDerivedStateFromProps(props, state) {
     const group = props.manageGroup.group['name'];
     if (group !== state.group) {
@@ -88,6 +100,9 @@ class GroupManage extends Component {
 
   /**
    *  Shows the popup modal for user confirmation.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {object} modalData Post and user data for the modal
    */
   showModal = (e, modalData) => {
     e.preventDefault();
@@ -102,6 +117,8 @@ class GroupManage extends Component {
   /**
    *  Handle the Yes or No confirmation from the modal.
    *  If Yes, proceed with deletion of post or user.
+   *
+   *  @param {event} e Event triggered by element to handle
    */
   handleModalClick = (e) => {
     const confirm = e.target.dataset.confirm;
@@ -118,6 +135,14 @@ class GroupManage extends Component {
 
   }
 
+  /**
+   *  Set state values for when post input changes.
+   *  Reset post exists error flag.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} name Name of the element triggering the event
+   *  @param {string} value Value of the element triggering the event
+   */
   handleChange = (e, { name, value }) => {
     this.setState({
       [name]: value,
@@ -126,7 +151,11 @@ class GroupManage extends Component {
      });
   }
 
-  handleSubmitNewPost = (e) => {
+  /**
+   *  Validate then add new group to database.
+   *  Trim group name, validate it's structure, set loading flag.
+   */
+  handleSubmitNewPost = () => {
     let {newPost} = this.state;
     newPost = newPost.trim();
 
@@ -136,6 +165,12 @@ class GroupManage extends Component {
     }
   }
 
+  /**
+   *  Validate the new post to be added. Return errors through state.
+   *
+   *  @param {string} newPost New post to be validated
+   *  @returns {boolean} Determines if validation succeeded
+   */
   handlePostValidation = (newPost) => {
     let valid = true;
     let errors = {};
@@ -155,6 +190,13 @@ class GroupManage extends Component {
     return valid;
   }
 
+  /**
+   *  Send new post to be added to the database.
+   *  Reset the flags depending on errors or not, add new post to posts state.
+   *
+   *  @param {string} post Post to delete
+   *  @param {string} group Group name to delete from
+   */
   addPostFetch = (post, group) => {
     const {csrf, user} = this.props;
     axios.post('/manage/posts/add', {
@@ -198,6 +240,13 @@ class GroupManage extends Component {
     });
   }
 
+  /**
+   *  When user confirms Yes to delete, set post that's being deleted.
+   *  Clear modalData, then delete post.
+   *
+   *  @param {string} post Post to delete
+   *  @param {string} group Group name to delete from
+   */
   handleDeletePost = (post, group) => {
     this.setState({
       deletingPost: post,
@@ -206,6 +255,13 @@ class GroupManage extends Component {
     this.deletePostFetch(post, group);
   }
 
+  /**
+   *  Delete the post from the group.
+   *  On success, filter deleted post from posts state object.
+   *
+   *  @param {string} post Post to delete
+   *  @param {string} group Group name to delete from
+   */
   deletePostFetch = (post, group) => {
     axios.post('/manage/posts/delete', {
       post: post,
@@ -231,12 +287,22 @@ class GroupManage extends Component {
     })
   }
 
+  /**
+   *  Set state values for when user role option changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the role selected
+   */
   handleNewUserRoleChange = (e, {value}) => {
     this.setState({
       selectedAccess: value
      });
   }
 
+  /**
+   *  Validate then add new user to database.
+   *  Trim user name, validate it's structure, set loading flag.
+   */
   handleSubmitNewUser = () => {
     let { newUser, selectedAccess } = this.state;
     newUser = newUser.trim();
@@ -247,6 +313,12 @@ class GroupManage extends Component {
     }
   }
 
+  /**
+   *  Validate the new user to be added. Return errors through state.
+   *
+   *  @param {string} newUser New user name to be validated
+   *  @returns {boolean} Determines if validation succeeded
+   */
   handleUserValidation = (newUser) => {
     let valid = true;
     let errors = {};
@@ -272,6 +344,14 @@ class GroupManage extends Component {
     return valid;
   }
 
+  /**
+   *  Send new user to be added to the database.
+   *  Reset the addUserLoading flag depending on errors or not, set users state.
+   *
+   *  @param {string} newUser User name to delete
+   *  @param {string} group Group name to delete from
+   *  @param {number} access Access role level of logged in user
+   */
   addUserFetch = (newUser, group, access) => {
     axios.post('/manage/users/add', {
       user: this.user,
@@ -303,6 +383,13 @@ class GroupManage extends Component {
     });
   }
 
+  /**
+   *  When user confirms Yes to delete, set loading flag.
+   *  Clear modalData, then delete user.
+   *
+   *  @param {string} user User name to delete
+   *  @param {string} group Group name to delete from
+   */
   handleDeleteUser = (user, group) => {
     this.setState({
       deletingUser: user,
@@ -311,6 +398,14 @@ class GroupManage extends Component {
     this.deleteUserFetch(user, group);
   }
 
+  /**
+   *  Delete the user from the group.
+   *  On success, filter deleted user from users state object.
+   *  Reset loading flag.
+   *
+   *  @param {string} userToDel User name to delete
+   *  @param {string} group Group name to delete from
+   */
   deleteUserFetch = (userToDel, group) => {
     axios.post('/manage/users/delete', {
       group: group,
@@ -355,7 +450,9 @@ class GroupManage extends Component {
     const {
       manageGroup,
     } = this.props;
-console.log('manageGroup2', manageGroup)
+
+    const access = manageGroup.group.access;
+
     let addErrorPost = '';
     let addErrorUser = '';
 
@@ -412,6 +509,8 @@ console.log('manageGroup2', manageGroup)
             posts={posts}
             showModal={this.showModal}
             deletingPost={deletingPost}
+            access={access}
+            user={this.user}
           />
         </Grid.Row>
 
@@ -420,41 +519,45 @@ console.log('manageGroup2', manageGroup)
             users={users}
             showModal={this.showModal}
             deletingUser={deletingUser}
+            access={access}
           />
 
-          <Grid.Column floated='right' width={6}>
-            <div className="">
-              <Form size="tiny" onSubmit={this.handleSubmitNewUser}>
-                <Form.Group className='right'>
-                  <Form.Field>
-                    <Form.Input
-                      placeholder='Add a user'
-                      name='newUser'
-                      value={newUser}
-                      onChange={this.handleChange}
-                      errors={errors["newUser"]}
-                      loading={addUserLoading}
+          {
+            //if logged in user is mod or above, allow adding users to group
+            access < 3 &&
+            (
+              <Grid.Column floated='right' width={6}>
+                <Form size="tiny" onSubmit={this.handleSubmitNewUser}>
+                  <Form.Group className='right'>
+                    <Form.Field>
+                      <Form.Input
+                        placeholder='Add a user'
+                        name='newUser'
+                        value={newUser}
+                        onChange={this.handleChange}
+                        errors={errors["newUser"]}
+                        loading={addUserLoading}
+                      />
+                      {addErrorUser}
+                    </Form.Field>
+                    <Form.Button icon size="tiny" color="blue">
+                      <Icon name="plus" />
+                    </Form.Button>
+                  </Form.Group>
+                  <Form.Group className='right user-access'>
+                    <Picker
+                      onChange={this.handleNewUserRoleChange}
+                      options={[
+                        {key: 0, text: 'Member', value: '3'},
+                        {key: 1, text: 'Moderator', value: '2'},
+                        {key: 2, text: 'Admin', value: '1'}
+                      ]}
                     />
-                    {addErrorUser}
-                  </Form.Field>
-                  <Form.Button icon size="tiny" color="blue">
-                    <Icon name="plus" />
-                  </Form.Button>
-                </Form.Group>
-                <Form.Group className='right user-access'>
-                  <Picker
-                    onChange={this.handleNewUserRoleChange}
-                    options={[
-                      {key: 0, text: 'Member', value: '3'},
-                      {key: 1, text: 'Moderator', value: '2'},
-                      {key: 2, text: 'Admin', value: '1'}
-                    ]}
-                  />
-                </Form.Group>
-              </Form>
-
-            </div>
-          </Grid.Column>
+                  </Form.Group>
+                </Form>
+              </Grid.Column>
+            )
+          }
         </Grid.Row>
 
         <Divider />

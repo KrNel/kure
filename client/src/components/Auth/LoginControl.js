@@ -10,10 +10,10 @@ import PropTypes from 'prop-types';
  *  Controller for displaying if a user sees a Login or Logout in the menu.
  *  Also shows a Manage menu if user is logged in.
  *
- *  @param {object} props - Component props
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @param {function} props.loginURL - URL to login via Steem Connect
- *  @returns {Component} - Menu component that displays Login, or Logout & Manage
+ *  @param {object} props Component props
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @param {function} props.loginURL URL to login via Steem Connect
+ *  @returns {Component} Menu component that displays Login, or Logout & Manage
  */
 const LoginControl = ({isAuth, loginURL}) => {
   let menu;

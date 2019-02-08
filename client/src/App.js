@@ -11,9 +11,9 @@ import { handleReturning } from './actions/authActions';
 /**
  *  Root application compoenent.
  *
- *  @param {object} props - Component props
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @returns {Component} - Header and page components to render
+ *  @param {object} props Component props
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @returns {Component} Header and page components to render
  */
 class App extends Component {
 

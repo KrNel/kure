@@ -6,11 +6,13 @@ import { Form, Select, Label } from "semantic-ui-react";
  *  Dropdown selector for choosing user access/role.
  *
  *  When a new user is created, an access/role can be selected.
+ *  Roles are pass into the component through 'options'. Changes are sent
+ *  back up component hierarchy to find parent function for updating state.
  *
- *  @param {object} props - Component props
- *  @param {object} props.options - Array of objects for access roles to choose
- *  @param {function} props.onChange - Function to set state when choice is made
- *  @returns {Component} - Displays a dropdown menu to choose a user role.
+ *  @param {object} props Component props
+ *  @param {object} props.options Array of objects for access roles to choose
+ *  @param {function} props.onChange Function to set state when choice is made
+ *  @returns {Component} Displays a dropdown menu to choose a user role.
  */
 const Picker = ({ options, onChange }) => (
 

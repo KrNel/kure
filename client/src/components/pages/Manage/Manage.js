@@ -13,10 +13,10 @@ import './Manage.css';
  *  Loads the two Communiy Group list types: Owned and Joined.
  *  The logged in user name and CSRF token are passed to each.
  *
- *  @param {object} props - Component props
- *  @param {string} props.user - User name to use in Manage page
- *  @param {string} props.csrf - CSRF token to prevent CSRF attacks
- *  @returns {Component} - Loads various components to manage community groups
+ *  @param {object} props Component props
+ *  @param {string} props.user User name to use in Manage page
+ *  @param {string} props.csrf CSRF token to prevent CSRF attacks
+ *  @returns {Component} Loads various components to manage community groups
  */
 const Manage = ({user, csrf}) => (
   <div className="manage">
@@ -29,12 +29,14 @@ const Manage = ({user, csrf}) => (
             user={user}
             csrf={csrf}
             type='owned'
+            headerText='Communities You Own'
           />
-        
+
           <ManageGroups
             user={user}
             csrf={csrf}
             type='joined'
+            headerText='Communities You Joined'
           />
 
         </Grid>

@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 /**
  *  Component to display an error label for validation purposes.
  *
- *  @param {object} props - Component props
- *  @param {string} props.text - Message error to display
- *  @returns {Component} - Displays an error label
+ *  @param {object} props Component props
+ *  @param {string} props.text Message error to display
+ *  @returns {Component} Displays an error label
  */
 const ErrorLabel = ({text}) => {
   return (

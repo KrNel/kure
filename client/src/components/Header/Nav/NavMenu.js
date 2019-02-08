@@ -16,9 +16,9 @@ import './NavMenu.css';
  *  Renders the page navigation menu.
  *  LoginControl component used to detemine Login/Logout right menu display.
  *
- *  @param {object} props - Component props
- *  @param {string} props.loginURL - URL to login via Steem Connect
- *  @returns {Component} - Displays the menu
+ *  @param {object} props Component props
+ *  @param {string} props.loginURL URL to login via Steem Connect
+ *  @returns {Component} Displays the menu
  */
 const NavMenu = ({loginURL}) => {
 

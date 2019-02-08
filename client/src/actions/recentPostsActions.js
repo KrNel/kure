@@ -8,8 +8,8 @@ export const INVALIDATE_SECTION = 'INVALIDATE_SECTION';
 /**
  *  Action creator for selecting recent activity.
  *
- *  @param {string} section - Section selected
- *  @returns {object} - The action data
+ *  @param {string} section Section selected
+ *  @returns {object} The action data
  */
 export const selectSection = section => ({
   type: SELECT_SECTION,
@@ -19,8 +19,8 @@ export const selectSection = section => ({
 /**
  *  Action creator to invalidate the data for recent activity, forcing an update
  *
- *  @param {string} section - Section selected
- *  @returns {object} - The action data
+ *  @param {string} section Section selected
+ *  @returns {object} The action data
  */
 export const invalidateSection = section => ({
   type: INVALIDATE_SECTION,
@@ -30,8 +30,8 @@ export const invalidateSection = section => ({
 /**
  *  Action creator to request recent post activity.
  *
- *  @param {string} section - Section selected
- *  @returns {object} - The action data
+ *  @param {string} section Section selected
+ *  @returns {object} The action data
  */
 export const requestPosts = section => ({
   type: REQUEST_POSTS,
@@ -41,9 +41,9 @@ export const requestPosts = section => ({
 /**
  *  Action creator to receive recent post activity.
  *
- *  @param {string} section - Section selected
- *  @param {object} data - Data returned from database
- *  @returns {object} - The action data
+ *  @param {string} section Section selected
+ *  @param {object} data Data returned from database
+ *  @returns {object} The action data
  */
 export const receivePosts = (section, data) => ({
   type: RECEIVE_POSTS,
@@ -55,9 +55,9 @@ export const receivePosts = (section, data) => ({
 /**
  *  Function to fetch the recent activity from the database.
  *
- *  @param {string} section - Section selected
- *  @param {function} dispatch - Redux dispatch function
- *  @returns {function} - Dispatches returned action object
+ *  @param {string} section Section selected
+ *  @param {function} dispatch Redux dispatch function
+ *  @returns {function} Dispatches returned action object
  */
 const fetchPosts = section => dispatch => {
   dispatch(requestPosts(section))
@@ -70,9 +70,9 @@ const fetchPosts = section => dispatch => {
 /**
  *  Function to fetch the recent activity from the database.
  *
- *  @param {object} state - Redux state
- *  @param {string} section - Section selected
- *  @returns {bool} - Determines if a fetch should be done
+ *  @param {object} state Redux state
+ *  @param {string} section Section selected
+ *  @returns {bool} Determines if a fetch should be done
  */
 const shouldFetchPosts = (state, section) => {
   const posts = state.recentActivity[section];
@@ -88,9 +88,9 @@ const shouldFetchPosts = (state, section) => {
 /**
  *  Function to fetch the recent activity from the database.
  *
- *  @param {function} dispatch - Redux dispatch function
- *  @param {function} getState - Redux funtion to get the store state
- *  @returns {function} - Dispatches returned action object
+ *  @param {function} dispatch Redux dispatch function
+ *  @param {function} getState Redux funtion to get the store state
+ *  @returns {function} Dispatches returned action object
  */
 export const fetchPostsIfNeeded = section => (dispatch, getState) => {
   if (shouldFetchPosts(getState(), section)) {

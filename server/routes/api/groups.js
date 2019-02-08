@@ -97,22 +97,24 @@ const getUserGroups = async (db, user, type) => {
  */
 router.get('/:group/:user', async (req, res) => {
   const db = req.app.locals.db;
-  const { group } = req.params;
+  const { group, user } = req.params;
 
   const groupName = getGroupDisplayName(db, group);
+  const groupAccess = getGroupAccess(db, group, user)
   const groupPosts = getGroupPosts(db, group);
   const groupUsers = getGroupUsers(db, group);
 
   //Resolve promises for group name, group posts and group users
   //Return data to frontend
-  Promise.all([groupName, groupPosts, groupUsers]).then((result) => {
+  Promise.all([groupName, groupAccess, groupPosts, groupUsers]).then((result) => {
     res.json({
       group: {
         name: group,
-        display: result[0]['display']
+        display: result[0]['display'],
+        access: result[1]['access']
       },
-      posts: result[1],
-      users: result[2]
+      posts: result[2],
+      users: result[3]
     })
   })
 })
@@ -134,6 +136,23 @@ const getGroupDisplayName = async (db, group) => {
 }
 
 /**
+ *  Get a user's access level for group
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group Group to get data from
+ *  @param {string} user User logged in
+ *  @returns {object} Group name object to send to frontend
+ */
+const getGroupAccess = async (db, group, user) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups_access').findOne({group: group, user: user}, {projection: {access: 1, _id: 0 }}, (err, result) => {
+      if (result) resolve(result);
+      else reject();
+    })
+  })
+}
+
+/**
  *  Get a group's posts from DB.
  *
  *  @param {object} db MongoDB connection
@@ -144,7 +163,7 @@ const getGroupPosts = async (db, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kposts').find({group: group}).sort( { created: -1 } ).toArray().then(result => {
       if (result) resolve(result);
-      else reject;
+      else reject();
     })
   })
 }
@@ -160,7 +179,7 @@ const getGroupUsers = async (db, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups_access').find({group: group}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
-      else reject;
+      else reject();
     })
   })
   //do a join, aggregation

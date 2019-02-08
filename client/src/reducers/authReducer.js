@@ -8,11 +8,11 @@ import {
 } from '../actions/authActions';
 
 /**
- *  Reducer function to return recent posts data.
+ *  Reducer function for authentication data for logins or returning users.
  *
- *  @param {object} state - Redux state, default values set
- *  @param {object} action - Action dispatched
- *  @returns {object} - The authentication data, or default state
+ *  @param {object} state Redux state, default values set
+ *  @param {object} action Action dispatched
+ *  @returns {object} The authentication data, or default state
  */
 export const auth = (
   state = {

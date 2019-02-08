@@ -23,6 +23,7 @@ import ErrorLabel from '../../ErrorLabel/ErrorLabel';
  *  @param {string} props.user User name to use in Manage page
  *  @param {string} props.csrf CSRF token to prevent CSRF attacks
  *  @param {string} props.type Type of group list ['owned'|'joined']
+ *  @param {string} props.headerText Text to show for group type
  *  @returns {Component} Loads various components to manage community groups
  */
 class ManageGroups extends Component {
@@ -30,6 +31,7 @@ class ManageGroups extends Component {
     user: PropTypes.string.isRequired,
     csrf: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    headerText: PropTypes.string.isRequired,
   };
 
   constructor(props) {
@@ -70,7 +72,7 @@ class ManageGroups extends Component {
    *  Shows the popup modal for user confirmation.
    *
    *  @param {event} e Event triggered by element to handle
-   *  @param {object} modalData Group, post and user data for the modal
+   *  @param {object} modalData Group data for the modal
    */
   showModal = (e, modalData) => {
     e.preventDefault()
@@ -138,11 +140,9 @@ class ManageGroups extends Component {
 
   /**
    *  Validate then add new group to database.
-   *  Trim group name, validate it's structure, set loading flag
-   *
-   *  @param {event} e Event triggered by element to handle
+   *  Trim group name, validate it's structure, set loading flag.
    */
-  handleSubmitNewGroup = (e) => {
+  handleSubmitNewGroup = () => {
     let {newGroup} = this.state;
     newGroup = newGroup.trim();
 
@@ -153,7 +153,7 @@ class ManageGroups extends Component {
   }
 
   /**
-   *  Validate the new group text to be added. Return errors.
+   *  Validate the new group to be added. Return errors through state.
    *
    *  @param {string} newGroup New group name to be validated
    *  @returns {boolean} Determines if validation succeeded
@@ -184,7 +184,7 @@ class ManageGroups extends Component {
 
   /**
    *  Send new group to be added to the database.
-   *  Rset various flags depending on errors or not, set groups state.
+   *  Reset various flags depending on errors or not, set groups state.
    *
    *  @param {string} group Group name to create
    */
@@ -354,17 +354,17 @@ class ManageGroups extends Component {
       user,
       csrf,
       type,
+      headerText,
     } = this.props;
-console.log('manageGroup1', manageGroup)
+
+    //If there were errors during validation, show them in an ErrroLabel.
     let addError = '';
     if (groupExists) addError = <ErrorLabel text={this.existText} />;
     if (exceededGrouplimit) addError = <ErrorLabel text={this.exceededGrouplimit} />;
     if (errors["newGroup"] !== undefined) addError = <ErrorLabel text={errors["newGroup"]} />;
 
+    //Flag to know if there is an error to show.
     const newGroupError = groupExists || exceededGrouplimit;
-    const headerText = (type === 'owned')
-      ? 'Communities You Own'
-      : 'Communities You Joined';
 
     return (
       <React.Fragment>
@@ -381,9 +381,8 @@ console.log('manageGroup1', manageGroup)
               />*/
           }
           </Grid.Column>
-          {
-          (type === 'owned')
-            ? (
+          {type === 'owned' &&
+            (
               <Grid.Column floated='right' width={6}>
                 <div className="">
                   <Form size="tiny" onSubmit={this.handleSubmitNewGroup}>
@@ -406,8 +405,7 @@ console.log('manageGroup1', manageGroup)
                   </Form>
                 </div>
               </Grid.Column>
-              )
-            : ''
+            )
           }
         </Grid.Row>
 
@@ -430,16 +428,16 @@ console.log('manageGroup1', manageGroup)
         />
 
         {
-        (manageGroup && Object.entries(manageGroup).length)
-          ? (
+          (manageGroup && Object.entries(manageGroup).length > 0)
+          &&
+          (
             <GroupManage
               manageGroup={manageGroup}
               csrf={csrf}
               user={user}
               onPostUpdate={this.onPostUpdate}
             />
-            )
-          : ''
+          )
         }
       </React.Fragment>
     );

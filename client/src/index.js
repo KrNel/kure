@@ -11,8 +11,8 @@ import AppRoutes from './routes/Routes';
 /**
  *  Rendering of main application component with redux store.
  *
- *  @param {Component} Component - A component
- *  @returns {ReactDOM} - A React DOM object to inject into public/index.html
+ *  @param {Component} Component A component
+ *  @returns {ReactDOM} A React DOM object to inject into public/index.html
  */
 const renderApp = Component => {
   ReactDOM.render(

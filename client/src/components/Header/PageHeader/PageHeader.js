@@ -3,12 +3,12 @@ import { Helmet } from "react-helmet";
 import PropTypes from 'prop-types';
 
 /**
- *  The helmet header for index.html.
+ *  The Helmet header for index.html.
  *
- *  @param {object} props - Component props
- *  @param {string} props.title - Title of the page
- *  @param {string} props.description - Description of the page
- *  @returns {Component} - Helmet component for the HTML header
+ *  @param {object} props Component props
+ *  @param {string} props.title Title of the page
+ *  @param {string} props.description Description of the page
+ *  @returns {Component} Helmet component for the HTML header
  */
 const Header = ({title, description}) => {
   return (

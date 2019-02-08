@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 /**
  *  Component for no routes found in application.
  *
- *  @param {object} props - Component props
- *  @param {bool} props.location - Route location object
- *  @returns {element} - Renders markup for a route/page not found
+ *  @param {object} props Component props
+ *  @param {bool} props.location Route location object
+ *  @returns {element} Renders markup for a route/page not found
  */
 const NoMatch = ({ location }) => (
   <div className='ui inverted red raised very padded text container segment'>

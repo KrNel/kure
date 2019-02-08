@@ -10,7 +10,7 @@ export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
 /**
  *  Action creator for requesting returning user athentication.
  *
- *  @return {object} - The action data
+ *  @return {object} The action data
  */
 export const requestReturning = () => ({
   type: REQUEST_RETURNING
@@ -19,8 +19,8 @@ export const requestReturning = () => ({
 /**
  *  Action creator for requesting returning user athentication.
  *
- *  @param {object} res - Results of the database fetch
- *  @return {object} - The action data
+ *  @param {object} res Results of the database fetch
+ *  @return {object} The action data
  */
 export const receiveReturning = (res) => ({
   type: RECEIVE_RETURNING,
@@ -34,7 +34,7 @@ export const receiveReturning = (res) => ({
 /**
  *  Action creator for requesting a logout.
  *
- *  @returns {object} - The action data
+ *  @returns {object} The action data
  */
 export const requestLogout = () => ({
   type: REQUEST_LOGOUT
@@ -43,7 +43,7 @@ export const requestLogout = () => ({
 /**
  *  Action creator for receiving a logout from the database.
  *
- *  @returns {object} - The action data
+ *  @returns {object} The action data
  */
 export const receiveLogout = () => ({
   type: RECEIVE_LOGOUT
@@ -52,8 +52,8 @@ export const receiveLogout = () => ({
 /**
  *  Action creator for requesting a login.
  *
- *  @param {string} user - User name
- *  @returns {object} - The action data
+ *  @param {string} user User name
+ *  @returns {object} The action data
  */
 export const requestLogin = (user) => ({
   type: REQUEST_LOGIN,
@@ -63,8 +63,8 @@ export const requestLogin = (user) => ({
 /**
  *  Action creator for receiving user login from database.
  *
- *  @param {object} res - Results of the database fetch
- *  @returns {object} - The action data
+ *  @param {object} res Results of the database fetch
+ *  @returns {object} The action data
  */
 export const receiveLogin = (res) => ({
   type: RECEIVE_LOGIN,
@@ -77,8 +77,8 @@ export const receiveLogin = (res) => ({
 /**
  *  Function to fetch the returning user authentication from the database.
  *
- *  @param {function} dispatch - Redux dispatch function
- *  @returns {function} - Dispatches returned action object
+ *  @param {function} dispatch Redux dispatch function
+ *  @returns {function} Dispatches returned action object
  */
 const fetchReturning = () => dispatch => {
   dispatch(requestReturning());
@@ -92,9 +92,9 @@ const fetchReturning = () => dispatch => {
 /**
  *  Function to send a logout to the database.
  *
- *  @param {object} state - Redux state
- *  @param {function} dispatch - Redux dispatch function
- *  @returns {function} - Dispatches returned action object
+ *  @param {object} state Redux state
+ *  @param {function} dispatch Redux dispatch function
+ *  @returns {function} Dispatches returned action object
  */
 const fetchLogout = (state) => dispatch => {
   const user = state.auth.userData.name;
@@ -110,12 +110,12 @@ const fetchLogout = (state) => dispatch => {
 /**
  *  Function to send a login to the database.
  *
- *  @param {object} state - Redux state
- *  @param {number} expiresAt - Date when the token expires
- *  @param {string} accessToken - Token string received from Steem Connect
- *  @param {string} user - User who is logging in
- *  @param {function} dispatch - Redux dispatch function
- *  @returns {function} - Dispatches returned action object
+ *  @param {object} state Redux state
+ *  @param {number} expiresAt Date when the token expires
+ *  @param {string} accessToken Token string received from Steem Connect
+ *  @param {string} user User who is logging in
+ *  @param {function} dispatch Redux dispatch function
+ *  @returns {function} Dispatches returned action object
  */
 const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
   //const user = state.auth.userData.name;
@@ -133,9 +133,9 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
 /**
  *  Function to handle call for returning user authentication
  *
- *  @param {function} dispatch - Redux dispatch function
- *  @param {function} getState - Redux funtion to get the store state
- *  @returns {function} - Dispatches returned action object
+ *  @param {function} dispatch Redux dispatch function
+ *  @param {function} getState Redux funtion to get the store state
+ *  @returns {function} Dispatches returned action object
  */
 export const handleReturning = () => (dispatch, getState) => {
   if (!getState().auth.isLoggingIn)
@@ -145,9 +145,9 @@ export const handleReturning = () => (dispatch, getState) => {
 /**
  *  Function to handle call for user logout
  *
- *  @param {function} dispatch - Redux dispatch function
- *  @param {function} getState - Redux funtion to get the store state
- *  @returns {function} - Dispatches returned action object
+ *  @param {function} dispatch Redux dispatch function
+ *  @param {function} getState Redux funtion to get the store state
+ *  @returns {function} Dispatches returned action object
  */
 export const handleLogout = () => (dispatch, getState) => {
   return dispatch(fetchLogout(getState()));
@@ -156,12 +156,12 @@ export const handleLogout = () => (dispatch, getState) => {
 /**
  *  Function to handle call for user login
  *
- *  @param {number} expiresAt - Date when the token expires
- *  @param {string} accessToken - Token string received from Steem Connect
- *  @param {string} user - User who is logging in
- *  @param {function} dispatch - Redux dispatch function
- *  @param {function} getState - Redux funtion to get the store state
- *  @returns {function} - Dispatches returned action object
+ *  @param {number} expiresAt Date when the token expires
+ *  @param {string} accessToken Token string received from Steem Connect
+ *  @param {string} user User who is logging in
+ *  @param {function} dispatch Redux dispatch function
+ *  @param {function} getState Redux funtion to get the store state
+ *  @returns {function} Dispatches returned action object
  */
 export const handleLogin = (expiresAt, accessToken, user) => (dispatch, getState) => {
   return dispatch(fetchLogin(getState(), expiresAt, accessToken, user));
