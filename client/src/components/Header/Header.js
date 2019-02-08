@@ -6,11 +6,11 @@ import NavMenu from './Nav/NavMenu';
 import HelmetComponent from './PageHeader/PageHeader';
 
 /**
- *  Header component for HTML <head> and navigation menu.
+ *  Sets up the HTML <head> and navigation menu.
  *
- *  @param {object} props - Component props
- *  @param {string} props.loginURL - URL to login via Steem Connect
- *  @returns {Component} - Displays the menu, and modifeid the header.
+ *  @param {object} props Component props
+ *  @param {string} props.loginURL URL to login via Steem Connect
+ *  @returns {Component} Displays the menu, and modifeid the header.
  */
 const Header = ({loginURL}) => (
   <React.Fragment>

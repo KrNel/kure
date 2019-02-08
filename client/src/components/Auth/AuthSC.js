@@ -12,10 +12,10 @@ import Loading from '../Loading/Loading';
  *  Displays a loading spinner while user is authenticated.
  *  After authentication, user is redirected to previous page.
  *
- *  @param {object} props - Component props
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @param {bool} props.dispatch - Redux function to dispatch actions
- *  @returns {Component} - Shows a loading spinner, then redirects user
+ *  @param {object} props Component props
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @param {bool} props.dispatch Redux function to dispatch actions
+ *  @returns {Component} Shows a loading spinner, then redirects user
  */
 class AuthSC extends Component {
 
@@ -34,6 +34,10 @@ class AuthSC extends Component {
     };
   }
 
+  /*
+   *  Grab the URL. If it has the 'accessToken' set as a query parameter,
+   *  then send it get authenticated.
+   */
   componentDidMount() {
     const url = new URLSearchParams(window.location.search);
     if (url.has('access_token')) {
@@ -45,6 +49,8 @@ class AuthSC extends Component {
 
   /**
    *  Gathers response data from Steem Coneect, and dispatches login reducer.
+   *  Get 'state' query param from URL, set it as redirect for after Logging
+   * is done. Get the user, expiry and token from the URL as well, then dispatch.
    */
   authTokenServer = (url) => {
     let redirect = url.get('state')

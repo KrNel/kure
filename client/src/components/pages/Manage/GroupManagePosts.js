@@ -7,15 +7,17 @@ import Settings from '../../../settings';
 /**
  *  Table of posts for the selected group.
  *
- *  Button icon for deleting a post.
+ *  Shows the title, likes, views, rating, submitter and remove button icon
+ *  for deleting a post.
  *
- *  @param {object} props - Component props
- *  @param {array} props.posts - Posts data to be mapped and displayed
- *  @param {function} props.showModal - Sets the modal to be shown or hidden
- *  @param {string} props.deletingPost - The post to be deleted
- *  @returns {Component} - Table of post data
+ *  @param {object} props Component props
+ *  @param {array} props.posts Posts data to be mapped and displayed
+ *  @param {function} props.showModal Sets the modal to be shown or hidden
+ *  @param {string} props.deletingPost The post to be deleted
+ *  @returns {Component} Table of post data
  */
-const GroupManagePosts = ({posts, showModal, deletingPost}) => {
+const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
+  //const perm = Settings.kGroupsAccess.post.delete[access];
 
   if (!posts.length) {
     return (
@@ -62,9 +64,21 @@ const GroupManagePosts = ({posts, showModal, deletingPost}) => {
                       ? <Dimmer inverted active><Loader /></Dimmer>
                       : ''
                   }
-                  <a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}>
-                    <Icon name='delete' color='blue' />
-                  </a>
+                  {
+                    //if logged in user added post, or is mod or above
+                    //can delete the post
+                    //(user === p.added_by)
+                    //?
+                    access < Settings.kGroupsRolesRev['Member']
+                    &&
+                      (
+                        <a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}>
+                          <Icon name='delete' color='blue' />
+                        </a>
+                      )
+
+                    //:''
+                  }
                 </Table.Cell>
               </Table.Row>
             ))

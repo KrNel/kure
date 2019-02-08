@@ -6,9 +6,9 @@ import {
 /**
  *  Reducer function to return selected activity.
  *
- *  @param {object} state - Redux state, defaults to recent posts selection
- *  @param {object} action - Action dispatched
- *  @returns {object} - The selection made, or default state
+ *  @param {object} state Redux state, defaults to recent posts selection
+ *  @param {object} action Action dispatched
+ *  @returns {object} The selection made, or default state
  */
 export const selected = (state = 'recentPosts', action) => {
   switch (action.type) {
@@ -22,9 +22,9 @@ export const selected = (state = 'recentPosts', action) => {
 /**
  *  Reducer function to return recent posts data.
  *
- *  @param {object} state - Redux state, default values set
- *  @param {object} action - Action dispatched
- *  @returns {object} - The posts activity data, or default state
+ *  @param {object} state Redux state, default values set
+ *  @param {object} action Action dispatched
+ *  @returns {object} The posts activity data, or default state
  */
 const posts = (state = {
   isFetching: false,
@@ -60,9 +60,9 @@ const posts = (state = {
 /**
  *  Reducer function to return recent activity.
  *
- *  @param {object} state - Redux state, default values set
- *  @param {object} action - Action dispatched
- *  @returns {object} - The recent activity data, or default state
+ *  @param {object} state Redux state, default values set
+ *  @param {object} action Action dispatched
+ *  @returns {object} The recent activity data, or default state
  */
 export const recentActivity = (state = { }, action) => {
   switch (action.type) {

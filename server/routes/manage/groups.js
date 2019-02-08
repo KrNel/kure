@@ -1,30 +1,39 @@
 import { Router } from 'express';
-
 import csrfValidateRequest from '../auth/csrfValidateRequest';
 
 const router = new Router();
 
-//const initialState = serialize(response);
-//var html = xss('<script>alert("xss");</script>');
+/**
+ *  POST route to add a new community group.
+ *  Route: /manage/groups/add
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  and group to delete from.
+ *  CSRF validation is done. If valid, proceed with database query.
+ *  Database inserted object will be returned to the frontend.
+ */
 router.post('/add', async (req, res) => {
   const db = req.app.locals.db;
 
   let { group, user } = req.body;
   group = group.trim();
   const groupClean = group.toLowerCase().replace(/\s/g, '-');
-
   const csrfValid = await csrfValidateRequest(req, res, user);
 
+  //Respond to frontend with failed CSRF validation, else continue
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
+    //Check if group exists
     const exists = await groupExists(db, groupClean);
     if (exists) {
        res.json({exists: true});
     }else {
+      //Check if user has reached the number of allowed Owned Groups
       const exceeded = await exceededGrouplimit(db, user);
       if (exceeded) {
         res.json({exceeded: true});
       }else {
+        //Insert the group
         const created = groupUpsert(db, group, groupClean, user);
         res.json({
           group: {
@@ -42,6 +51,13 @@ router.post('/add', async (req, res) => {
   }
 })
 
+/**
+ *  Query the DB to see if a group already exists.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group Group to verify
+ *  @returns {boolean} Determines if group exists or not
+ */
 const groupExists = async (db, group) => {
   const exists = db.collection('kgroups').find({name: group}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
@@ -54,6 +70,13 @@ const groupExists = async (db, group) => {
   return await exists;
 }
 
+/**
+ *  Query the DB to see if a user has reached their Owned Group limit.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} user User to verify
+ *  @returns {boolean} Determines if a user has reached their limit
+ */
 const exceededGrouplimit = async (db, user) => {
   const exceeded = db.collection('users').find({name: user, 'owned_kgroups': {$gte: 4}}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
@@ -66,9 +89,18 @@ const exceededGrouplimit = async (db, user) => {
   return await exceeded;
 }
 
+/**
+ *  Insert the new group into the DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group New group full display name to insert
+ *  @param {string} groupTrim New group trimmed name to insert
+ *  @param {string} user Logged in user to insert
+ *  @returns {object} The date the group was created at
+ */
 const groupUpsert = (db, group, groupTrim, user) => {
   try {
-    //add to DB for returning user persistence
+    //Add group to 'kgroups' DB
     const created = new Date();
     db.collection('kgroups').updateOne(
       { name: groupTrim },
@@ -88,6 +120,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
       { upsert: true }
     )
 
+    //Increment the user's owned group count
     db.collection('users').updateOne(
       { name: user },
       {
@@ -98,6 +131,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
       }
     )
 
+    //Create new access entry for user and group
     db.collection('kgroups_access').insertOne(
       {
         group: groupTrim,
@@ -110,43 +144,58 @@ const groupUpsert = (db, group, groupTrim, user) => {
     return created;
   }catch (err) {
     throw new Error('Error inserting gruop to DB: ', err);
-    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
 }
 
+/**
+ *  POST route to add a new community group.
+ *  Route: /manage/groups/delete
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  and group to delete.
+ *  CSRF validation is done. If valid, proceed with database query.
+ *  Database inserted object will be returned to the frontend.
+ */
 router.post('/delete', async (req, res) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
 
+  //Respond to frontend with failed CSRF validation, else continue
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
+    //Delete group from DB
     const groupDeleted = await deleteGroup(db, group, user);
-    if (!groupDeleted) {
-       res.json(false);
-    }else {
-      res.json(true);
-    }
+    res.json(groupDeleted || false);
   }
 })
 
+/**
+ *  Delete a post from a community group.
+ *
+ *  @param {object} db MongoDB Connectioon
+ *  @param {string} post Post to remove from the group
+ *  @param {string} group Group name to remove from
+ *  @returns {boolean} Determines if deleting a post was a success
+ */
 const deleteGroup = (db, group, user) => {
   try {
-    //delete from kgroups collection
+    //Delete group from kgroups collection
     db.collection('kgroups').deleteOne(
       { name: group }
     )
 
-    //delete all group_access associated with group
+    //Delete all user accesses associated with group
     db.collection('kgroups_access').deleteMany(
       { group: group }
     )
 
-    //delete all posts associated with group
+    //Delete all posts associated with group
     db.collection('kposts').deleteMany(
       { group: group }
     )
 
+    //Decrement Owned Group count for user
     db.collection('users').updateOne(
       { name: user },
       {
@@ -159,7 +208,6 @@ const deleteGroup = (db, group, user) => {
     return true;
   }catch (err) {
     throw new Error('Error deleting group from DB: ', err);
-    //res.status(500).json({ message: `groupUpsert DB error: ${err}` });
   }
 }
 

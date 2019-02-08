@@ -6,13 +6,13 @@ import NotAuthorized from '../components/Auth/NotAuthorized';
 import Authorizing from '../components/Auth/Authorizing';
 
 /**
- *  Authenticating acess to certain routes passed in as a Component parameter.
+ *  Authenticating access to certain routes passed in as a Component parameter.
  *
- *  @param {object} props - Component props
- *  @param {Component} props.Component - Component passed in to allow authenticated access
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @param {bool} props.isAuthorizing - Shows a loading spinner for user authentication process
- *  @returns {Component} - Renders the route for component requesting authenticated access
+ *  @param {object} props Component props
+ *  @param {Component} props.Component Component passed in to allow authenticated access
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @param {bool} props.isAuthorizing Shows a loading spinner for user authentication process
+ *  @returns {Component} Renders the route for component requesting authenticated access
  */
 const PrivateRoute = ({ component: Component, isAuthorizing, isAuth, ...rest }) => (
   <Route

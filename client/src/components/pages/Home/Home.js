@@ -13,13 +13,13 @@ import './Home.css';
  *  Shows the recent activity on the site.
  *  Recently added posts from all community groups are shown.
  *
- *  @param {object} props - Component props
- *  @param {string} props.selected - Selected activity to display
- *  @param {function} props.dispatch - Redux function to dispatch action
- *  @param {object} props.posts - Contains data for recently added posts
- *  @param {bool} props.isFetching - Determines if laoding spinner is to be shown
- *  @param {bool} props.isAuth - Determines if user is authenticated
- *  @returns {Component} - A component that displays the page data
+ *  @param {object} props Component props
+ *  @param {string} props.selected Selected activity to display
+ *  @param {function} props.dispatch Redux function to dispatch action
+ *  @param {object} props.posts Contains data for recently added posts
+ *  @param {bool} props.isFetching Determines if laoding spinner is to be shown
+ *  @param {bool} props.isAuth Determines if user is authenticated
+ *  @returns {Component} A component that displays the page data
  */
 class Home extends Component {
 

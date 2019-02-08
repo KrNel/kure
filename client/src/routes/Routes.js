@@ -15,7 +15,7 @@ import NoMatch from './NoMatch';
 /**
  *  Routing component to render various page components.
  *
- *  @returns {Component} - Renders the route for main page components
+ *  @returns {Component} Renders the route for main page components
  */
 const Routes = () => (
   <App>
