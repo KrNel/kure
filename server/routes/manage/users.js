@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import csrfValidateRequest from '../auth/csrfValidateRequest';
+import { verifyAccess } from '../../utils/verifyAccess';
 
 const router = new Router();
 
@@ -21,14 +22,39 @@ router.post('/add', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Insert user in DB
-    const userAdd = await addUserToGroup(db, user, newUser, group, access);
-    if (userAdd) {
-       res.json({user: userAdd});
+    const exists = await userExists(db, newUser, group);
+    if (exists) {
+       res.json({exists: true});
     }else {
-      res.json({user: userAdd});
+      const userAdd = await verifyAccess(db, group, user, 'user', 'add') && await addUserToGroup(db, user, newUser, group, access);
+      if (userAdd) {
+         res.json({user: userAdd});
+      }else {
+        res.json({user: userAdd});
+      }
     }
   }
 })
+
+/**
+ *  Query the DB to see if a user already exists in the specific group.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} newUser New user to give access to the group
+ *  @param {string} group Group to verify if user exists in
+ *  @returns {boolean} Determines if user exists or not
+ */
+const userExists = async (db, newUser, group) => {
+  const exists = db.collection('kgroups_access').find({user: newUser, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
+    if (data.length) {
+      return true;
+    }
+    return false;
+  }).catch(err => {
+		throw new Error('Error verifying existing user from DB: ', err);
+	});
+  return await exists;
+}
 
 /**
  *  Add a user to give access to a community group.
@@ -86,7 +112,7 @@ router.post('/delete', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete user from DB
-    const userDeleted = await deleteUserFromGroup(db, userToDel, group);
+    const userDeleted = await verifyAccess(db, group, user, 'user', 'del') && await deleteUserFromGroup(db, userToDel, group);
     if (userDeleted) {
       res.json(true);
     }else {

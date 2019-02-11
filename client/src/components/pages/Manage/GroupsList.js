@@ -43,16 +43,18 @@ const GroupsList = (props) => {
           <Grid stackable>
             {
             groups.map((g, i) => {
-              const date = moment(g.created).format("YYYY-MM-DD");
+              const key = g._id || i;
+console.log('g: ', g)
+              const date = moment(g.created).format("ddd MMM DD, YYYY");
               return (
-                <Grid.Column key={g._id} width={4}>
-                  <Segment key={g._id} className='groupList'>
+                <Grid.Column key={key+1} width={4}>
+                  <Segment key={key+2} className='groupList'>
                     {
                       (selectedGroup === g.name)
                         ? <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
                         : ''
                     }
-                    <div key={g._id}>
+                    <div key={key+3}>
                       <h3 className='left'>
                         <a
                           href={'edit/'+g.name}

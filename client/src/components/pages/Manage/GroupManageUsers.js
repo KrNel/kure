@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Table, Icon, Dimmer, Loader } from "semantic-ui-react";
 
-import Settings from '../../../settings';
+import {BASE_STEEM_URL, roles} from '../../../settings';
 
 /**
  *  Table of user for the selected group.
@@ -29,10 +29,10 @@ const GroupManageUsers = ({users, showModal, deletingUser, access}) => (
       <Table.Body>
         {
           users.map((u, i) => {
-            const role = Settings.kGroupsRoles[u.access];
+            const role = roles.kGroupsRoles[u.access];
             return (
               <Table.Row key={u._id}>
-                <Table.Cell><a href={Settings.baseSteemURL+'@'+u.user}>{u.user}</a></Table.Cell>
+                <Table.Cell><a href={BASE_STEEM_URL+'/@'+u.user}>{u.user}</a></Table.Cell>
                 <Table.Cell collapsing textAlign='center'>{role}</Table.Cell>
                 <Table.Cell collapsing textAlign='center'>
                   {
@@ -43,7 +43,7 @@ const GroupManageUsers = ({users, showModal, deletingUser, access}) => (
                   {
                     //if user listed is owner, deny deleted
                     //if user logged in is admin, allow delete
-                    access < Settings.kGroupsRolesRev['Moderator']
+                    access < roles.kGroupsRolesRev['Moderator']
                     ? (u.access !== 0 && access < u.access)
                       ?
                         <a href={`/users/delete/${u.user}/`} onClick={e => showModal(e, {user: u.user})}><Icon name='delete' color='blue' /></a>

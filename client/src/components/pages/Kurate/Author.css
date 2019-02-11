@@ -1,0 +1,33 @@
+@import '../../../variables.css';
+
+.info {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  line-height: 1.7em;
+  margin: 0;
+  padding: 0;
+}
+
+.item.author a {
+  color: var(--charcoal-grey);
+}
+
+.item.payout {
+  color: var(--charcoal-grey);
+  font-size: 1em;
+  line-height: 2.0em;
+}
+
+ul.info li {
+  color: var(--medium-grey);
+  font-size: 1.1em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

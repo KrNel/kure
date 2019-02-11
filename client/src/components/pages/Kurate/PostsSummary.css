@@ -1,0 +1,42 @@
+@import '../../../variables.css';
+
+.content {
+
+}
+
+.block {
+  display: flex;
+  margin-top: 0.3em;
+}
+
+/* no longer used if keeping compontent */
+.thumbnail {
+  /*max-width: 250px;*/
+  max-width: 130px;
+  padding-right:10px;
+}
+
+/* no longer used if keeping compontent */
+.thumbnail {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.summary-content {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.summary-content a {
+  /*color: inherit;*/
+}
+.summary-content h4 {
+  font-size: 1.2em;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-content p {
+  margin: 0.2em 0 0.5em 0;
+}

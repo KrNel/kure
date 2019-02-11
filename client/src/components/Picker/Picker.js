@@ -14,22 +14,27 @@ import { Form, Select, Label } from "semantic-ui-react";
  *  @param {function} props.onChange Function to set state when choice is made
  *  @returns {Component} Displays a dropdown menu to choose a user role.
  */
-const Picker = ({ options, onChange }) => (
-
+const Picker = ({ options, onChange, onClick, addErrorPost, label = '' }) => (
   <React.Fragment>
-    <Label size='large' color='blue'>Role:</Label>
+    {
+      (label) ? <Label size='large' color='blue'>{label}</Label> : ''
+    }
     <Form.Field
       control={Select}
-      defaultValue={options[0].value}
+      placeholder='Select group'
       options={options}
       onChange={onChange}
+      onClick={onClick}
     />
+    {addErrorPost}
+    {/*defaultValue={options[0].value}*/}
   </React.Fragment>
 )
 
 Picker.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
   onChange: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 export default Picker

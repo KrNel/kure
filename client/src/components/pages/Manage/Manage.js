@@ -50,6 +50,12 @@ Manage.propTypes = {
   csrf: PropTypes.string.isRequired,
 };
 
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
 const mapStateToProps = state => {
   const { userData, csrf } = state.auth;
 
