@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import csrfValidateRequest from '../auth/csrfValidateRequest';
+import verifyAccess from '../../utils/verifyAccess';
 
 const router = new Router();
 
@@ -165,7 +166,7 @@ router.post('/delete', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete group from DB
-    const groupDeleted = await deleteGroup(db, group, user);
+    const groupDeleted = await verifyAccess(db, group, user, 'group', 'del') && await deleteGroup(db, group, user);
     res.json(groupDeleted || false);
   }
 })

@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
-import axios from 'axios';
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
 import GroupManageUsers from './GroupManageUsers';
-import ModalConfirm from '../../ModalConfirm/ModalConfirm';
+import ModalConfirm from '../../Modal/ModalConfirm';
 import Picker from '../../Picker/Picker';
-import Settings from '../../../settings';
+import {roles} from '../../../settings';
+import { addPost, deletePost, addUser, deleteUser } from './fetchFunctions';
+import { postValidation, userValidation } from './validationFunctions';
 
 /**
  *  The communtiy group editing/managing section of the page.
@@ -53,7 +54,7 @@ class GroupManage extends Component {
       addUserLoading: false,
       deletingPost: '',
       deletingUser: '',
-      selectedAccess: Object.keys(Settings.kGroupsAccess).find(key => Settings.kGroupsAccess[key] === 'Member')
+      selectedAccess: Object.keys(roles.kGroupsAccess).find(key => roles.kGroupsAccess[key] === 'Member')
 
     };
 
@@ -63,7 +64,7 @@ class GroupManage extends Component {
     this.csrf = csrf;
     this.user = user;
     this.groupName = manageGroup.group['name'];
-
+    this.steemPostData = {};
   }
 
   /**
@@ -78,7 +79,7 @@ class GroupManage extends Component {
           return false
      }
      return true
-   }
+  }
 
   /**
    *  Need to populate state from props updates passed down from parents comp.
@@ -125,14 +126,13 @@ class GroupManage extends Component {
     if (confirm === 'true') {
       this.onModalClose();
       const {modalData} = this.state;
-      const {post, user} = modalData;
+      const {author, post, user} = modalData;
       if (post) {
-        this.handleDeletePost(post, this.groupName)
+        this.handleDeletePost(author, post, this.groupName)
       }else {
         this.handleDeleteUser(user, this.groupName)
       }
     }else this.onModalClose();
-
   }
 
   /**
@@ -155,11 +155,11 @@ class GroupManage extends Component {
    *  Validate then add new group to database.
    *  Trim group name, validate it's structure, set loading flag.
    */
-  handleSubmitNewPost = () => {
+  handleSubmitNewPost = async () => {
     let {newPost} = this.state;
     newPost = newPost.trim();
 
-    if (this.handlePostValidation(newPost)) {
+    if (await this.handlePostValidation(newPost)) {
       this.setState({addPostLoading: true});
       this.addPostFetch(newPost, this.groupName);
     }
@@ -171,23 +171,12 @@ class GroupManage extends Component {
    *  @param {string} newPost New post to be validated
    *  @returns {boolean} Determines if validation succeeded
    */
-  handlePostValidation = (newPost) => {
-    let valid = true;
-    let errors = {};
-
-    if(!newPost){
-      errors["newPost"] = "Cannot be empty";
-      valid = false;
-    }
-
-    if(valid && !/^https?:\/\/([\w\d-]+\.)+\w{2,}(\/.+)?$/.test(newPost)) {
-      errors["newPost"] = "Must be a valid URL";
-      valid = false;
-    }
-
+  handlePostValidation = async (newPost) => {
+    const {valid, errors, res} = await postValidation(newPost);
+    this.steemPostData = res;
     this.setState({errors: errors});
 
-    return valid;
+    return await valid;
   }
 
   /**
@@ -198,16 +187,8 @@ class GroupManage extends Component {
    *  @param {string} group Group name to delete from
    */
   addPostFetch = (post, group) => {
-    const {csrf, user} = this.props;
-    axios.post('/manage/posts/add', {
-      post: post,
-      user: user,
-      group: group
-    }, {
-      headers: {
-        "x-csrf-token": csrf
-      }
-    }).then((res) => {
+    addPost({group, user: this.user, ...this.steemPostData}, this.csrf)
+    .then(res => {
       if (!res.data.invalidCSRF) {
         if (res.data.exists) {
           this.setState({
@@ -247,12 +228,12 @@ class GroupManage extends Component {
    *  @param {string} post Post to delete
    *  @param {string} group Group name to delete from
    */
-  handleDeletePost = (post, group) => {
+  handleDeletePost = (author, post, group) => {
     this.setState({
       deletingPost: post,
       modalData: {}
     });
-    this.deletePostFetch(post, group);
+    this.deletePostFetch(author, post, group);
   }
 
   /**
@@ -262,16 +243,9 @@ class GroupManage extends Component {
    *  @param {string} post Post to delete
    *  @param {string} group Group name to delete from
    */
-  deletePostFetch = (post, group) => {
-    axios.post('/manage/posts/delete', {
-      post: post,
-      group: group,
-      user: this.user
-    }, {
-      headers: {
-        "x-csrf-token": this.csrf
-      }
-    }).then(res => {
+  deletePostFetch = (author, post, group) => {
+    deletePost({author, group, user: this.user, post}, this.csrf)
+    .then(res => {
       if (res.data) {
         const {posts} = this.state;
         const newPosts = posts.filter(p => p.st_permlink !== post)
@@ -320,24 +294,7 @@ class GroupManage extends Component {
    *  @returns {boolean} Determines if validation succeeded
    */
   handleUserValidation = (newUser) => {
-    let valid = true;
-    let errors = {};
-
-    if(!newUser){
-      errors["newUser"] = "Cannot be empty";
-      valid = false;
-    }
-
-    if(valid && !/^[a-z\d\.-]{3,16}$/.test(newUser)) { // eslint-disable-line no-useless-escape
-      errors["newUser"] = "Invaid Steem name.";
-      valid = false;
-    }
-
-    /*//if user exists (check users obj)
-    if(valid)) {
-      errors["newUser"] = "Must be a valid URL";
-      valid = false;
-    }*/
+    const {valid, errors} = userValidation(newUser);
 
     this.setState({errors: errors});
 
@@ -353,18 +310,15 @@ class GroupManage extends Component {
    *  @param {number} access Access role level of logged in user
    */
   addUserFetch = (newUser, group, access) => {
-    axios.post('/manage/users/add', {
-      user: this.user,
-      newUser: newUser,
-      group: group,
-      access: access
-    }, {
-      headers: {
-        "x-csrf-token": this.csrf
-      }
-    }).then(res => {
+    addUser({group, user: this.user, newUser, access}, this.csrf)
+    .then(res => {
       if (!res.data.invalidCSRF) {
-        if (res.data.user) {
+        if (res.data.exists) {
+          this.setState({
+            userExists: true,
+            addUserLoading: false,
+          });
+        }else if (res.data.user) {
           const {users} = this.state;
           this.setState({
             users: [
@@ -407,15 +361,8 @@ class GroupManage extends Component {
    *  @param {string} group Group name to delete from
    */
   deleteUserFetch = (userToDel, group) => {
-    axios.post('/manage/users/delete', {
-      group: group,
-      user: this.user,
-      userToDel: userToDel
-    }, {
-      headers: {
-        "x-csrf-token": this.csrf
-      }
-    }).then(res => {
+    deleteUser({group, user: this.user, userToDel}, this.csrf)
+    .then(res => {
       if (res.data) {
         const {users} = this.state;
         const newUsers = users.filter(u => u.user !== userToDel)
@@ -552,6 +499,7 @@ class GroupManage extends Component {
                         {key: 1, text: 'Moderator', value: '2'},
                         {key: 2, text: 'Admin', value: '1'}
                       ]}
+                      label='Role: '
                     />
                   </Form.Group>
                 </Form>

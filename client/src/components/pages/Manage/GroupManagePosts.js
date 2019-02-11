@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Segment, Icon, Table, Dimmer, Loader } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
-import Settings from '../../../settings';
+import {BASE_STEEM_URL, roles} from '../../../settings';
 
 /**
  *  Table of posts for the selected group.
@@ -47,7 +47,7 @@ const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
               <Table.Row key={p._id}>
                 <Table.Cell>
                   <a
-                    href={Settings.baseSteemURL+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                    href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
                   >
                     {(p.st_title.length > 70)
                       ? p.st_title.substr(0,70) + " ..."
@@ -69,10 +69,10 @@ const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
                     //can delete the post
                     //(user === p.added_by)
                     //?
-                    access < Settings.kGroupsRolesRev['Member']
+                    access < roles.kGroupsRolesRev['Member']
                     &&
                       (
-                        <a href={'/post/delete/'+p.st_permlink} onClick={e => showModal(e, {post: p.st_permlink})}>
+                        <a href={'/post/delete/'+p.st_author+'/'+p.st_permlink} onClick={e => showModal(e, {author: p.st_author, post: p.st_permlink})}>
                           <Icon name='delete' color='blue' />
                         </a>
                       )

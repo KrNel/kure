@@ -2,5 +2,10 @@
     --light-blue: #4da2f2;
     --main-border: rgba(77, 162, 242, 0.4);
     /*--dark-blue: rgba(6, 87, 142, 1);*/
-    --dark-blue: #2185D0;
+    --dark-blue: #06578e;
+
+    --charcoal-grey: #363D44;
+    --medium-grey: #57636e;
+    --soft-grey: #cacaca;
+    /*--fade-grey: #e6e6e6;*/
 }

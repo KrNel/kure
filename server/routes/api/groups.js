@@ -43,6 +43,16 @@ const getUserGroups = async (db, user, type) => {
   }else {
     //If type is not Owned, then it's Joined Groups to return
     return new Promise((resolve, reject) => {
+
+      let groupAccess = {};
+      let order = {created: -1};
+      if (type === 'joined') {
+        groupAccess = {$gt: 0};
+        //order = {created: -1};
+      }else {
+        groupAccess = {$gte: 0};
+        order = {name: 1};
+      }
       //Get groups not owned, and whbich user has access to
       db.collection('kgroups_access').aggregate([
         {
@@ -51,7 +61,7 @@ const getUserGroups = async (db, user, type) => {
               {
                 user: user
               }, {
-                access: { $gt: 0 }
+                access: groupAccess
               }
             ]
           }
@@ -77,8 +87,9 @@ const getUserGroups = async (db, user, type) => {
             access: 1,
             added_on: 1
           }
+        },{
+          $sort: order
         }
-        //{        $sort: {          user: 1        }      }{ $project: { _id: 0 } }
       ]).toArray((err, result) => {
       err
         ? reject(err)
@@ -130,7 +141,7 @@ const getGroupDisplayName = async (db, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups').findOne({name: group}, {projection: {display: 1, _id: 0 }}, (err, result) => {
       if (result) resolve(result);
-      else reject;
+      else reject(false);
     })
   })
 }

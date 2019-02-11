@@ -9,9 +9,20 @@ import PropTypes from 'prop-types';
  *  @param {string} props.text Message error to display
  *  @returns {Component} Displays an error label
  */
-const ErrorLabel = ({text}) => {
+const ErrorLabel = ({text, position}) => {
+  let styling = {position:"absolute", zIndex: 10};
+  if (position) {
+    styling = {}
+  }else {
+    position = 'above';
+  }
   return (
-    <Label basic color='red' pointing style={{position:"absolute", zIndex: 10}}>
+    <Label
+      basic
+      color='red'
+      pointing={position}
+      style={styling}
+    >
       {text}
     </Label>
   )

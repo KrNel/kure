@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import { Grid, Header, Form, Icon, Label } from "semantic-ui-react";
 
 import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
-import ModalConfirm from '../../ModalConfirm/ModalConfirm';
+import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
+import { addGroup, deleteGroup, getUserGroups, getManageGroup } from './fetchFunctions';
+import { groupValidation } from './validationFunctions';
 
 /**
  *  Managment component to display the group lists a user has access to.
@@ -108,15 +109,15 @@ class ManageGroups extends Component {
    *  @param {string} user logged in user name
    */
   getGroupsFetch = (user) => {
-    axios.get(`/api/groups/user/${user}/${this.type}`, {
-    }).then((res) => {
+    getUserGroups(user, this.type)
+    .then(res => {
       this.setState({
         groups: res.data.groups,
         areGroupsLoading: false,
         noOwned: false,
         manageGroup: {}
      });
-    }).catch((err) => {
+    }).catch(err => {
       throw new Error('Error getting groups: ', err);
     });
   }
@@ -159,24 +160,7 @@ class ManageGroups extends Component {
    *  @returns {boolean} Determines if validation succeeded
    */
   handleGroupValidation = (newGroup) => {
-    let valid = true;
-    let errors = {};
-
-    if(!newGroup){
-      errors["newGroup"] = "Cannot be empty";
-      valid = false;
-    }
-
-    if(valid && (newGroup.length < 4 || newGroup.length > 17)){
-
-      errors["newGroup"] = "Must be between 4 and 17 chars.";
-      valid = false;
-    }
-
-    if(valid && !/^[\d\w\s_-]+$/.test(newGroup)) {
-      errors["newGroup"] = "Only letters, numbers, spaces, underscores or hyphens.";
-      valid = false;
-    }
+    const {valid, errors} = groupValidation(newGroup);
     this.setState({errors: errors});
 
     return valid;
@@ -189,14 +173,8 @@ class ManageGroups extends Component {
    *  @param {string} group Group name to create
    */
   addGroupFetch = (group) => {
-    axios.post('/manage/groups/add', {
-      group,
-      user: this.user
-    }, {
-      headers: {
-        "x-csrf-token": this.csrf
-      }
-    }).then((res) => {
+    addGroup({group, user: this.user}, this.csrf)
+    .then(res => {
       if (!res.data.invalidCSRF) {
         if (res.data.exists) {
           this.setState({
@@ -254,14 +232,8 @@ class ManageGroups extends Component {
    *  @param {string} group Group name to delete
    */
   deleteGroupFetch = (group) => {
-    axios.post('/manage/groups/delete', {
-      group,
-      user: this.user
-    }, {
-      headers: {
-        "x-csrf-token": this.csrf
-      }
-    }).then((res) => {
+    deleteGroup({group, user: this.user}, this.csrf)
+    .then((res) => {
       if (res.data) {
         const {groups} = this.state;
         const oldGroups = groups;
@@ -300,8 +272,8 @@ class ManageGroups extends Component {
    *  @param {string} group Group name to get post and user data for
    */
   manageGroupFetch = (group) => {
-    axios.get(`/api/groups/${group}/${this.user}`, {
-    }).then(res => {
+    getManageGroup(group, this.user)
+    .then(res => {
       this.setState({
         manageGroup: res.data,
         isGroupLoading: false,

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import csrfValidateRequest from '../auth/csrfValidateRequest';
+import { verifyAccess } from '../../utils/verifyAccess';
 
 const router = new Router();
 
@@ -14,35 +15,27 @@ const router = new Router();
  *  Databse inserted object will be returned to the frontend.
  */
 router.post('/add', async (req, res) => {
+
   //TODO?:do i need to verfiy access? no one can spoof a POST, right?
   const db = req.app.locals.db;
-  const { post, user, group } = req.body;
+  const { user, group, author, category, permlink, title } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
 
   //Respond to frontend with failed CSRF validation, else continue
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
-    //Parse URL for data
-    const [ match, domain, category, author, permlink ] = parseURL(post);// eslint-disable-line no-unused-vars
-
     //Check if post exists
-    const exists = await postExists(db, permlink, group);
+    const exists = await postExists(db, author, permlink, group);
     if (exists) {
        res.json({exists: true});
     }else {
+
       //Insert new post into DB
-      const postAdd = await addPost(db, user, group, category, author, permlink);
+      const postAdd = await verifyAccess(db, group, user, 'post', 'add') && await addPost(db, user, group, category, author, permlink, title);
       res.json({post: postAdd});
     }
   }
 })
-
-/**
- *  Split up the URL into data segments for inserting into DB.
- */
-const parseURL = (url) => {
-    return url.match(/:\/\/(:?[\d\w\.]+)?\/([\d\w_-]+)?\/@([\d\w_-]+)?\/([\d\w_-]+)?$/) // eslint-disable-line no-useless-escape
-}
 
 /**
  *  Query the DB to see if a post already exists.
@@ -52,8 +45,8 @@ const parseURL = (url) => {
  *  @param {string} group Group to verify if posts exists in
  *  @returns {boolean} Determines if post exists or not
  */
-const postExists = async (db, permlink, group) => {
-  const exists = db.collection('kposts').find({st_permlink: permlink, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
+const postExists = async (db, author, permlink, group) => {
+  const exists = db.collection('kposts').find({st_author: author, st_permlink: permlink, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
@@ -76,9 +69,11 @@ const postExists = async (db, permlink, group) => {
  *  @param {string} category Category of Steem post
  *  @param {string} author Author name of Steem post
  *  @param {string} permlink Permlink URL of Steem post
+ *  @param {string} title Title of Steem post
  *  @returns {object} Send inserted object back to frontend for use
  */
-const addPost = (db, user, group, category, author, permlink) => {
+const addPost = (db, user, group, category, author, permlink, title) => {
+  console.log('1')  
   try {
     const created = new Date();
 
@@ -91,10 +86,7 @@ const addPost = (db, user, group, category, author, permlink) => {
       st_permlink: permlink,
       st_author: author,
       st_category: category,
-      st_title: permlink,
-      st_upvotes: 0,
-      st_payout: "0",
-      st_comments: 0,
+      st_title: title,
       rating: 0
     }
 
@@ -130,14 +122,14 @@ const addPost = (db, user, group, category, author, permlink) => {
  */
 router.post('/delete', async (req, res) => {
   const db = req.app.locals.db;
-  let { post, group, user } = req.body;
+  let { author, post, group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
 
   //Respond to frontend with failed CSRF validation, else continue
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete post from DB
-    const postDeleted = await deletePost(db, post, group);
+    const postDeleted = await verifyAccess(db, group, user, 'post', 'del') && await deletePost(db, author, post, group);
     if (postDeleted) {
       res.json(true);
     }else {
@@ -154,11 +146,11 @@ router.post('/delete', async (req, res) => {
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a post was a success
  */
-const deletePost = (db, post, group) => {
+const deletePost = (db, author, post, group) => {
   try {
     //Delete post from kgroups collection
     db.collection('kposts').deleteOne(
-      { st_permlink: post, group: group }
+      { st_author: author, st_permlink: post, group: group }
     )
 
     //Decrement the post count for the group

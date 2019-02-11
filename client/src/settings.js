@@ -1,8 +1,9 @@
 /**
  *  Common data settings to use.
  */
-const Settings = {
-  baseSteemURL: "https://steemit.com/",
+
+export const BASE_STEEM_URL = "https://steemit.com";
+export const roles = {
   kGroupsRoles: {
     0: 'Owner',
     1: 'Admin',
@@ -27,4 +28,4 @@ const Settings = {
   }
 }
 
-export default Settings;
+export default BASE_STEEM_URL;
