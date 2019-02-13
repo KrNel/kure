@@ -50,7 +50,7 @@ class ModalGroup extends Component {
           <Dimmer inverted active={addPostLoading}><Loader /></Dimmer>
         }
         <Modal.Header>
-          {'Add to Group'}
+          {'Add to Community Group'}
         </Modal.Header>
         <Modal.Content>
           <div>
@@ -65,6 +65,7 @@ class ModalGroup extends Component {
                   options={groups}
                   label=''
                   addErrorPost={addErrorPost}
+                  type='community'
                 />
               </Form.Group>
             </Form>

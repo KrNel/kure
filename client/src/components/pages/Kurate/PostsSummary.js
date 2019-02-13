@@ -45,7 +45,7 @@ export const repLog10 = rep2 => {
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, openPost, nextPost, showModal}) => {
+const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
   //const postsExtracts = extractContent(posts);
 
   //var posts = [];
@@ -122,6 +122,7 @@ const PostsSummary = ({posts, openPost, nextPost, showModal}) => {
                   permlink={permlink}
                   title={title}
                   showModal={showModal}
+                  user={user}
                 />
               </div>
             </div>

@@ -2,10 +2,6 @@ import React from 'react';
 import './PostActions.css';
 import { Icon } from "semantic-ui-react";
 
-const like = (e) => {
-  e.preventDefault();
-}
-
 const vote = (e) => {
   e.preventDefault();
 }
@@ -15,10 +11,6 @@ const comment = (e) => {
 }
 
 const resteem = (e) => {
-  e.preventDefault();
-}
-
-const dislike = (e) => {
   e.preventDefault();
 }
 
@@ -39,22 +31,14 @@ const flag = (e) => {
  *  @param {string} title Post's title
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostActions = ({activeVotesCount, commentCount, author, category, permlink, title, showModal}) => (
+const PostActions = ({activeVotesCount, commentCount, author, category, permlink, title, showModal, user}) => (
   <div>
-    <ul className="meta">
+    <ul className="meta disabled">
       <li className="item">
-        <a href="/like" onClick={(e) => like(e)} title='Like this post on KURE'>
-          <Icon name='thumbs up outline' size='large' />
-        </a>
-        <strong>
-          {'0'}
-        </strong>
-      </li>
-      <li className="item">
-        <a href="/vote" onClick={(e) => vote(e)} title={`${activeVotesCount.length} upvotes on Steem`}>
+        <a href="/vote" onClick={(e) => vote(e)} title={`${activeVotesCount} upvotes on Steem`}>
           <Icon name='chevron up' size='large' />
         </a>
-        <strong>{activeVotesCount.length}</strong>
+        <strong>{activeVotesCount}</strong>
       </li>
       <li className="item">
         <a href="/comment" onClick={(e) => comment(e)} title={`${commentCount} comments`}>
@@ -68,20 +52,21 @@ const PostActions = ({activeVotesCount, commentCount, author, category, permlink
         </a>
       </li>
       <li className="item">
-        <a href="/dislike" onClick={(e) => dislike(e)} title="Dislike this post on KURE">
-          <Icon name='thumbs down outline' size='large' />
-        </a>
-      </li>
-      <li className="item">
         <a href="/flag" onClick={(e) => flag(e)} title="Flag this post on Steem">
           <Icon name='flag outline' size='large' />
         </a>
       </li>
     </ul>
     <div className='right'>
-      <a href="/group/add" onClick={(e) => showModal(e, {author, category, permlink, title})} title="Add to a community">
-        <Icon name='plus circle' size='large' />
-      </a>
+      {
+        (user)
+        ? (
+          <a href="/group/add" onClick={(e) => showModal(e, {author, category, permlink, title})} title="Add to a community">
+            <Icon name='plus circle' size='large' />
+          </a>
+        )
+        : ''
+      }
     </div>
   </div>
 )

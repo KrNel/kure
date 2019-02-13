@@ -67,19 +67,6 @@ class GroupManage extends Component {
     this.steemPostData = {};
   }
 
-  /**
-   *  Prevent updates for simply selecting a different User Access/Role
-   *
-   *  @param {object} nextProps Next props before it becomes current props
-   *  @param {object} nextState Next state before it becomes current state
-   */
-  shouldComponentUpdate(nextProps, nextState) {
-    const {selectedAccess} = this.state;
-     if(selectedAccess !== nextState.selectedAccess) {
-          return false
-     }
-     return true
-  }
 
   /**
    *  Need to populate state from props updates passed down from parents comp.
@@ -500,6 +487,7 @@ class GroupManage extends Component {
                         {key: 2, text: 'Admin', value: '1'}
                       ]}
                       label='Role: '
+                      type='role'
                     />
                   </Form.Group>
                 </Form>

@@ -1,13 +1,15 @@
 import React, {Component}  from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Client } from 'dsteem';
-import { Button } from "semantic-ui-react";
+import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
 import PostDetails from './PostDetails';
 import { getUserGroups, addPost } from '../Manage/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
+import Picker from '../../Picker/Picker';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -17,6 +19,11 @@ const client = new Client('https://hive.anyx.io/');
  *  to which the user belongs.
  */
 class Kurate extends Component {
+
+  static propTypes = {
+    user: PropTypes.string.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -31,16 +38,19 @@ class Kurate extends Component {
       newPost: '',
       postExists: false,
       addPostLoading: false,
+      tag: '',
+      selectedFilter: 'created',
     }
     this.existPost = "Post already in group.";
+    this.steemPostData = '';
   }
 
   componentDidMount() {
     this.getPosts();
     const {user} = this.props;
-    //this.getGroupsFetch(user);
-    this.getGroupsFetch('krnel');
+    this.getGroupsFetch(user);
   }
+
   /*shouldComponentUpdate(np, ns) {
      const {posts} = this.state;
      //if (ns.selectedGroup !== this.state.selectedGroup) return false;
@@ -230,31 +240,30 @@ class Kurate extends Component {
     this.setState({postsListShow: 'block'})
   }
 
-  /*openPost = (author, permlink) => {
-    client.database.call('get_content', [author, permlink]).then(result => {
-      this.setState({
-        post: result
-      });
-      this.onPostOpen();
-    });
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} name Name of the element triggering the event
+   *  @param {string} value Value of the element triggering the event
+   */
+  handleChange = (e, { name, value }) => {
+    this.setState({
+      [name]: value,
+     });
   }
 
-  onPostOpen = () => {
+  /**
+   *  Set state values for when filter option changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the role selected
+   */
+  handleFilterSelect = (e, {value}) => {
     this.setState({
-      postsListShow: 'none',
-      postShow: 'block',
-    })
+      selectedFilter: value
+     });
   }
-
-  onPostClose = () => {
-    this.setState({
-      postsListShow: 'block',
-      postShow: 'none',
-      post: {}
-    })
-  }*/
-
-
 
   render() {
     const {
@@ -268,15 +277,27 @@ class Kurate extends Component {
         groups,
         postExists,
         addPostLoading,
+        tag,
+        selectedFilter,
+      },
+      props: {
+        user
       }
     } = this;
     let addErrorPost = '';
 
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
+    const filters = [
+      {key: 0, value: 'created', text: 'New'},
+      {key: 1, value: 'hot', text: 'Hot'},
+      {key: 2, value: 'promoted', text: 'Promoted'},
+      {key: 3, value: 'trending', text: 'Trending'}
+    ];
+
     return (
       <React.Fragment>
-        <div>
+        <div className='controlContent'>
           <ModalGroup
             modalOpen={modalOpen}
             onModalClose={this.onModalClose}
@@ -287,7 +308,23 @@ class Kurate extends Component {
             addErrorPost={addErrorPost}
             addPostLoading={addPostLoading}
           />
-          <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+
+          <Form>
+            <Form.Group>
+              <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+              <Picker
+                onChange={this.handleFilterSelect}
+                options={filters}
+                label=''
+              />
+              <Form.Input
+                placeholder='Search a tag'
+                name='tag'
+                value={tag}
+                onChange={this.handleChange}
+              />
+            </Form.Group>
+          </Form>
         </div>
         <hr />
         <div>
@@ -298,6 +335,7 @@ class Kurate extends Component {
               nextPost={nextPost}
               showModal={this.showModal}
               handleGroupSelect={this.handleGroupSelect}
+              user={user}
             />
           </div>
 

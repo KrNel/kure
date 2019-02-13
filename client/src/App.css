@@ -27,6 +27,11 @@ hr {
   clear:both;
 }
 
+.disabled {
+  pointer-events:none;
+  opacity:0.6;
+}
+
 /*#wrapper {
   width:922px;
   margin: 0 auto;
