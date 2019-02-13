@@ -60,10 +60,9 @@ class GroupManage extends Component {
 
     this.existPost = "Post already in group.";
     this.existUser = "User already in group.";
-    const {csrf, user, manageGroup} = this.props;
+    const {csrf, user} = this.props;
     this.csrf = csrf;
     this.user = user;
-    this.groupName = manageGroup.group['name'];
     this.steemPostData = {};
   }
 
@@ -112,12 +111,12 @@ class GroupManage extends Component {
     const confirm = e.target.dataset.confirm;
     if (confirm === 'true') {
       this.onModalClose();
-      const {modalData} = this.state;
+      const {modalData, group} = this.state;
       const {author, post, user} = modalData;
       if (post) {
-        this.handleDeletePost(author, post, this.groupName)
+        this.handleDeletePost(author, post, group)
       }else {
-        this.handleDeleteUser(user, this.groupName)
+        this.handleDeleteUser(user, group)
       }
     }else this.onModalClose();
   }
@@ -148,7 +147,8 @@ class GroupManage extends Component {
 
     if (await this.handlePostValidation(newPost)) {
       this.setState({addPostLoading: true});
-      this.addPostFetch(newPost, this.groupName);
+      const {group} = this.state;
+      this.addPostFetch(newPost, group);
     }
   }
 
@@ -270,7 +270,8 @@ class GroupManage extends Component {
 
     if (this.handleUserValidation(newUser)) {
       this.setState({addUserLoading: true});
-      this.addUserFetch(newUser, this.groupName, selectedAccess);
+      const {group} = this.state;
+      this.addUserFetch(newUser, group, selectedAccess);
     }
   }
 
