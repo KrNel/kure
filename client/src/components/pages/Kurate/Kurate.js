@@ -47,8 +47,8 @@ class Kurate extends Component {
 
   componentDidMount() {
     this.getPosts();
-    const {user} = this.props;
-    this.getGroupsFetch(user);
+    //const {user} = this.props;
+    //this.getGroupsFetch(user);
   }
 
   /*shouldComponentUpdate(np, ns) {
@@ -112,6 +112,9 @@ class Kurate extends Component {
             });
           }
           this.onPostsGet();
+
+          const {user} = this.props;
+          if (user) this.getGroupsFetch(user);
         } else {
           //document.getElementById('postList').innerHTML = 'No result.';
         }
