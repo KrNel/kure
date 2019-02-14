@@ -47,8 +47,6 @@ class Kurate extends Component {
 
   componentDidMount() {
     this.getPosts();
-    //const {user} = this.props;
-    //this.getGroupsFetch(user);
   }
 
   /*shouldComponentUpdate(np, ns) {
@@ -59,13 +57,6 @@ class Kurate extends Component {
      }else return false;
    }*/
 
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (user !== prevProps.user) {
-      this.getGroupsFetch(user);
-    }
-  }*/
-
   /**
    *  When the page loads, this function will get the posts from Steem.
    *  THe list can be freshed with the Refresh button, or at the bottom
@@ -74,7 +65,7 @@ class Kurate extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {posts} = this.state;
+    const {posts, selectedFilter, tag} = this.state;
     let startAuthor = undefined;
     let startPermlink = undefined;
 
@@ -89,15 +80,16 @@ class Kurate extends Component {
     }
 
     const query = {
-      tag: '',
+      tag: tag,
       limit: 20,
       truncate_body: 0,
       start_author: startAuthor,
       start_permlink: startPermlink
     };
 
-    client.database.getDiscussions('created', query)
+    client.database.getDiscussions(selectedFilter, query)
       .then(result => {
+console.log(result)
         //console.log('Response received:', result);
         if (result) {
           if (nextPost) {
@@ -369,4 +361,6 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Kurate);
+const KurateWrap = connect(mapStateToProps)(Kurate);
+
+export default KurateWrap;
