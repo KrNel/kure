@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 
-import SteemConnect from '../../../utilities/auth/scAPI';
+import SteemConnect from '../../../utils/auth/scAPI';
 
 /**
  *  Component to display the post data sent.

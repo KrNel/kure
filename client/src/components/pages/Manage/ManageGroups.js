@@ -6,8 +6,8 @@ import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-import { addGroup, deleteGroup, getUserGroups, getManageGroup } from './fetchFunctions';
-import { groupValidation } from './validationFunctions';
+import { addGroup, deleteGroup, getUserGroups, getManageGroup } from '../../../utils/fetchFunctions';
+import { groupValidation } from '../../../utils/validationFunctions';
 
 /**
  *  Managment component to display the group lists a user has access to.

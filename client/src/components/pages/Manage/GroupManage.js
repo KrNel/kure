@@ -8,8 +8,8 @@ import GroupManageUsers from './GroupManageUsers';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import Picker from '../../Picker/Picker';
 import {roles} from '../../../settings';
-import { addPost, deletePost, addUser, deleteUser } from './fetchFunctions';
-import { postValidation, userValidation } from './validationFunctions';
+import { addPost, deletePost, addUser, deleteUser } from '../../../utils/fetchFunctions';
+import { postValidation, userValidation } from '../../../utils/validationFunctions';
 
 /**
  *  The communtiy group editing/managing section of the page.

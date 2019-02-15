@@ -153,9 +153,9 @@ MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrl
 });
 
 // logger api
-app.post('/logger', ( req, res ) => {
+app.post('/logger', (req, res) => {
   logger.log(req.body);
-  res.send( 'OK' );
+  res.send('OK');
 });
 
 //Routes for React fetchs

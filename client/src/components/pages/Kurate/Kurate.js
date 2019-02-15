@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Client } from 'dsteem';
 import { Form, Button } from "semantic-ui-react";
-import axios from 'axios';
 
 import PostsSummary from './PostsSummary';
 import PostDetails from './PostDetails';
-import { getUserGroups, addPost } from '../Manage/fetchFunctions';
+import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
@@ -228,8 +227,7 @@ class Kurate extends Component {
         groups
       });
     }).catch(err => {
-      axios.post('/logger', {level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
-      //throw new Error('Error getting groups: ', err);
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
   }
 
@@ -282,8 +280,8 @@ class Kurate extends Component {
         user
       }
     } = this;
-    let addErrorPost = '';
 
+    let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
     const filters = [

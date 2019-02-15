@@ -91,6 +91,15 @@ export const deleteUser = (params, csrf) => {
 }
 
 /**
+ *  Call/fetch for logging.
+ *
+ *  @param {object} params Data to pass to server fetch
+ */
+export const logger = (params) => {
+  return postData('/logger', params);
+}
+
+/**
  *  Axios fecther for the POST calls.
  *
  *  @param {string} path Server path to get data
