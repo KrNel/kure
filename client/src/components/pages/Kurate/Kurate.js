@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Client } from 'dsteem';
 import { Form, Button } from "semantic-ui-react";
+import axios from 'axios';
 
 import PostsSummary from './PostsSummary';
 import PostDetails from './PostDetails';
@@ -47,8 +48,6 @@ class Kurate extends Component {
 
   componentDidMount() {
     this.getPosts();
-    //const {user} = this.props;
-    //this.getGroupsFetch(user);
   }
 
   /*shouldComponentUpdate(np, ns) {
@@ -59,13 +58,6 @@ class Kurate extends Component {
      }else return false;
    }*/
 
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (user !== prevProps.user) {
-      this.getGroupsFetch(user);
-    }
-  }*/
-
   /**
    *  When the page loads, this function will get the posts from Steem.
    *  THe list can be freshed with the Refresh button, or at the bottom
@@ -74,7 +66,7 @@ class Kurate extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {posts} = this.state;
+    const {posts, selectedFilter, tag} = this.state;
     let startAuthor = undefined;
     let startPermlink = undefined;
 
@@ -89,14 +81,14 @@ class Kurate extends Component {
     }
 
     const query = {
-      tag: '',
+      tag: tag,
       limit: 20,
       truncate_body: 0,
       start_author: startAuthor,
       start_permlink: startPermlink
     };
 
-    client.database.getDiscussions('created', query)
+    client.database.getDiscussions(selectedFilter, query)
       .then(result => {
         //console.log('Response received:', result);
         if (result) {
@@ -227,14 +219,17 @@ class Kurate extends Component {
   getGroupsFetch = (user) => {
     getUserGroups(user, 'all')
     .then(res => {
+      //throw new Error('Woops!');
+      //throw(new Error('This should work'));
       const groups = res.data.groups.map((g, i) => {
         return {key: i, value: g.name, text: g.display, ...g}
       })
       this.setState({
         groups
       });
-    }).catch((err) => {
-      throw new Error('Error getting groups: ', err);
+    }).catch(err => {
+      axios.post('/logger', {level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
+      //throw new Error('Error getting groups: ', err);
     });
   }
 
@@ -369,4 +364,6 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Kurate);
+const KurateWrap = connect(mapStateToProps)(Kurate);
+
+export default KurateWrap;

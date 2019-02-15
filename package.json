@@ -30,11 +30,16 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "fs": "0.0.1-security",
     "helmet": "^3.15.0",
     "jsonwebtoken": "^8.4.0",
+    "log4js": "^4.0.2",
     "mongodb": "^3.1.10",
     "morgan": "^1.9.1",
+    "path": "^0.12.7",
     "serialize-javascript": "^1.6.1",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.7.0",
     "xss": "^1.0.3"
   },
   "devDependencies": {

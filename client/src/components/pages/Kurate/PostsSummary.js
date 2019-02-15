@@ -80,7 +80,7 @@ const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
       const permlink = post.permlink;
       const category = post.category;
       const thumb = post.image_link;
-      const payoutValue = post.total_payout_value;
+      const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
       //const created = new Date(post.created).toDateString();
       const createdFromNow = moment.utc(post.created).fromNow();
       const activeVotesCount = post.active_votes.length;

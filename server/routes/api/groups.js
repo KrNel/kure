@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+//import logger from '../../logger';
+
 const router = new Router();
 
 /**
@@ -9,19 +11,20 @@ const router = new Router();
  *  Gets the local DB object, user name and type of group (owned/joined).
  *  Retrieves the user's groups from the DB and reeturns them.
  */
-router.get('/user/:name/:type', (req, res) => {
+router.get('/user/:name/:type', (req, res, next) => {
   const db = req.app.locals.db;
   const user = req.params.name;
   const type = req.params.type;
+  const logger = req.app.locals.logger;
 
   //Get group data from DB and return
   getUserGroups(db, user, type)
     .then(data => {
+      //logger.info(data)
+      //throw new Error('xyz')
       res.json({ groups: data })
     })
-    .catch(err => {
-      throw new Error('Error getting groups from DB: ', err);
-    });
+    .catch(next);
 })
 
 /**
