@@ -90,7 +90,6 @@ class Kurate extends Component {
 
     client.database.getDiscussions(selectedFilter, query)
       .then(result => {
-console.log(result)
         //console.log('Response received:', result);
         if (result) {
           if (nextPost) {

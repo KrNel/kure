@@ -145,7 +145,8 @@ class GroupManage extends Component {
     let {newPost} = this.state;
     newPost = newPost.trim();
 
-    if (await this.handlePostValidation(newPost)) {
+    const validation = await this.handlePostValidation(newPost)
+    if (validation) {
       this.setState({addPostLoading: true});
       const {group} = this.state;
       this.addPostFetch(newPost, group);

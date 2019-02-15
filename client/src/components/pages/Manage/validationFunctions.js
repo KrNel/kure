@@ -16,17 +16,20 @@ export const groupValidation = (newGroup) => {
   if(!newGroup){
     errors["newGroup"] = "Cannot be empty";
     valid = false;
+    return {valid, errors};
   }
 
   if(valid && (newGroup.length < 4 || newGroup.length > 17)){
 
     errors["newGroup"] = "Must be between 4 and 17 chars.";
     valid = false;
+    return {valid, errors};
   }
 
   if(valid && !/^[\d\w\s_-]+$/.test(newGroup)) {
     errors["newGroup"] = "Only letters, numbers, spaces, underscores or hyphens.";
     valid = false;
+    return {valid, errors};
   }
 
   return {valid, errors};
@@ -45,11 +48,13 @@ export const postValidation = async (newPost) => {
   if(!newPost){
     errors["newPost"] = "Cannot be empty";
     valid = false;
+    return {valid, errors};
   }
 
   if(valid && !urlRegex.test(newPost)) {
-    errors["newPost"] = "Must be a valid URL";
+    errors["newPost"] = "Invalid URL";
     valid = false;
+    return {valid, errors};
   }
 
   const steemRes = await getFromSteem(newPost);
@@ -112,11 +117,13 @@ export const userValidation = (newUser) => {
   if(!newUser){
     errors["newUser"] = "Cannot be empty";
     valid = false;
+    return {valid, errors};
   }
 
   if(valid && !/^[a-z\d\.-]{3,16}$/.test(newUser)) { // eslint-disable-line no-useless-escape
     errors["newUser"] = "Invaid Steem name.";
     valid = false;
+    return {valid, errors};
   }
 
   /*//if user exists (check users obj)
