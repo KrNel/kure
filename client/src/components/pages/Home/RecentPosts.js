@@ -34,6 +34,8 @@ const RecentPosts = ({posts, isAuth}) => {
             <Table.Row key={p._id}>
               <Table.Cell>
                 <a
+                  target='_blank'
+                  rel='noopener noreferrer'
                   href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
                 >
                   {(p.st_title.length > 70)

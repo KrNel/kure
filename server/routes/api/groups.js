@@ -18,7 +18,7 @@ router.get('/user/:name/:type', (req, res, next) => {
 
 
   //Get group data from DB and return
-  getUserGroups(db, user, type)
+  getUserGroups(db, user, type, next)
     .then(data => {
       res.json({ groups: data })
     })
@@ -33,13 +33,12 @@ router.get('/user/:name/:type', (req, res, next) => {
  *  @param {string} type Type of group data to get ['owned'|'joined']
  *  @returns {object} Group data object to send to frontend
  */
-export const getUserGroups = async (db, user, type, limit) => {
+export const getUserGroups = async (db, user, type, limit, next) => {
   if (type === 'owned') {
     const groups = db.collection('kgroups').find({owner: user}).sort( { _id: -1 } ).toArray().then(result => {
       return result;
-    }).catch(err => {
-      throw new Error('Error getting owned groups from DB: ', err);
-    });
+    }).catch(next);
+
     return await groups;
   }else {
     //If type is not Owned, then it's Joined Groups to return

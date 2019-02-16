@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Loader, Grid, Header, Segment, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 import { fetchRecentIfNeeded } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
@@ -51,7 +52,7 @@ class Home extends Component {
   render() {
 
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
-    const { posts, groups, isFetching, isAuth, myComms } = this.props;
+    const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
     const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
@@ -59,6 +60,25 @@ class Home extends Component {
         : (isEmpty)
               ? 'No Posts'
               : <RecentPosts posts={posts} isAuth={isAuth} />;
+
+    moment.locale('en', {
+      relativeTime: {
+        future: 'in %s',
+        past: '%s ago',
+        s:  'seconds',
+        ss: '%ss',
+        m:  'a minute',
+        mm: '%dm',
+        h:  'an hour',
+        hh: '%dh',
+        d:  'a day',
+        dd: '%dd',
+        M:  'a month',
+        MM: '%dM',
+        y:  'a year',
+        yy: '%dY'
+      }
+    });
 
     return (
       <div className="home">
@@ -84,39 +104,37 @@ class Home extends Component {
               </Grid.Row>
 
               {
-                groups.map((g) => {
-                  return (
-                    <Grid.Column key={g.name} width={8}>
-                      <Segment.Group className='box'>
-                        <Segment>
-                          <Label attached='top' className='head'>
-                            <Header as='h3'>
-                              {g.display}
-                            </Header>
-                          </Label>
-                          <ul className='custom-list'>
-                            {
-                              g.posts.map((p) => {
-                                return (
-                                  <li key={p._id}>
-                                    <a
-                                      href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                                    >
-                                      {`\u2022\u00A0`}
-                                      {(p.st_title.length > 40)
-                                        ? p.st_title.substr(0,40) + " ..."
-                                        : p.st_title}
-                                    </a>
-                                  </li>
-                                )
-                              })
-                            }
-                          </ul>
-                        </Segment>
-                      </Segment.Group>
-                    </Grid.Column>
-                  )
-                })
+                groups.map(g => (
+                  <Grid.Column key={g.name} width={8}>
+                    <Segment.Group className='box'>
+                      <Segment>
+                        <Label attached='top' className='head'>
+                          <Header as='h3'>
+                            {g.display}
+                          </Header>
+                        </Label>
+                        <ul className='custom-list'>
+                          {
+                            g.posts.map(p => (
+                              <li key={p._id}>
+                                <a
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                                >
+                                  {`\u2022\u00A0`}
+                                  {(p.st_title.length > 40)
+                                    ? p.st_title.substr(0,40) + " ..."
+                                    : p.st_title}
+                                </a>
+                              </li>
+                            ))
+                          }
+                        </ul>
+                      </Segment>
+                    </Segment.Group>
+                  </Grid.Column>
+                ))
               }
             </Grid>
           </Grid.Column>
@@ -134,13 +152,13 @@ class Home extends Component {
                 </Label>
                 <ul className='custom-list'>
                   {
-                    myComms.map(c => {
-                      return (
-                        <li key={c._id}>
-                          {c.display}
-                        </li>
-                      )
-                    })
+                    myComms.map(c => (
+                      <li key={c._id}>
+                        <div className='left'>{c.display}</div>
+                        <div className='right'>{moment.utc(c.updated).fromNow()}</div>
+                        <div className='clear' />
+                      </li>
+                    ))
                   }
                 </ul>
               </Segment>
@@ -153,9 +171,33 @@ class Home extends Component {
                     {'My Submissions'}
                   </Header>
                 </Label>
-                <div>Post 1</div>
-                <div>Post 2</div>
-                <div>Post 3</div>
+                <ul className='custom-list'>
+                  {
+                    mySubs.map(p => (
+                      <li key={p._id}>
+                        <div className='left'>
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                          >
+                            {
+                              // eslint-disable-next-line
+                              (p.st_title.length > 14) //longer than 14 chars?
+                                //eslint-disable-next-line
+                                ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
+                                  ? p.st_title.substr(0,8) + " ..." //truncate non latin
+                                  : p.st_title.substr(0,14) + " ..." //truncate latin
+                                : p.st_title //no truncate
+                            }
+                          </a>
+                        </div>
+                        <div className='right'>{moment.utc(p.created).fromNow()}</div>
+                        <div className='clear' />
+                      </li>
+                    ))
+                  }
+                </ul>
               </Segment>
             </Segment.Group>
           </Grid.Column>
@@ -179,12 +221,14 @@ const mapStateToProps = state => {
     postItems: posts,
     groupItems: groups,
     myCommunities: myComms,
+    mySubmissions: mySubs,
   } = recentActivity[selected]
   || {
     isFetching: true,
     postItems: [],
     groupItems: [],
     myCommunities: [],
+    mySubmissions: [],
   }
 
   return {
@@ -192,6 +236,7 @@ const mapStateToProps = state => {
     posts,
     groups,
     myComms,
+    mySubs,
     isFetching,
     lastUpdated,
     isAuth: auth.isAuth,

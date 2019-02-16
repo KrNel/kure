@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { getRecentActivity } from '../utils/fetchFunctions';
 
 export const REQUEST_POSTS = 'REQUEST_POSTS';
 export const RECEIVE_POSTS = 'RECEIVE_POSTS';
@@ -64,7 +64,7 @@ export const receivePosts = (section, data) => ({
  */
 const fetchPosts = (section, user) => dispatch => {
   dispatch(requestPosts(section));
-  return axios.get(`/api/recentposts/${user}/10`) //limit 10 'my communities'
+  return getRecentActivity(user, 10) //limit 10 'my communities'
     .then(data => {
       dispatch(receivePosts(section, data.data));
     });

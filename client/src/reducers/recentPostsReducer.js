@@ -32,7 +32,7 @@ const posts = (state = {
   postItems: [],
   groupItems: [],
   myCommunities: [],
-  /*mySubmissions: [],*/
+  mySubmissions: [],
 }, action) => {
   switch (action.type) {
     case INVALIDATE_SECTION:
@@ -55,7 +55,7 @@ const posts = (state = {
         postItems: action.posts,
         groupItems: action.groups,
         myCommunities: action.myComms,
-        /*mySubmissions: action.mySubs,*/
+        mySubmissions: action.mySubs,
         lastUpdated: action.receivedAt
       }
     default:

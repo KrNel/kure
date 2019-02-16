@@ -20,6 +20,16 @@ export const getManageGroup = (group, user) => {
   return getData(`/api/groups/${group}/${user}`);
 }
 
+/**
+ *  Get the recent posts and community activity on the site, and the
+ *  recent group activity and submittions a user is assocaited with.
+ *
+ *  @param {string} user User to get groups for
+ *  @param {string} limit Limit of records to return
+ */
+export const getRecentActivity = (user, limit) => {
+  return getData(`/api/recentactivity/${user}/10`);
+}
 
 /**
  *  Axios fecther for the GET calls.
