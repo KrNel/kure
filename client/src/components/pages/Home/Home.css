@@ -47,6 +47,12 @@
   padding: 0;
 }
 
+.home ul.group-posts {
+  padding: 0;
+  list-style-type: none;
+  margin-bottom: 0;
+}
+
 /*.ui.segment hr {
   display: block;
   height: 1px;

@@ -48,7 +48,8 @@ export const requestPosts = section => ({
 export const receivePosts = (section, data) => ({
   type: RECEIVE_POSTS,
   section,
-  posts: data.posts.map(post => post),
+  posts: data.posts,
+  groups: data.groups,
   receivedAt: Date.now()
 });
 
@@ -60,7 +61,7 @@ export const receivePosts = (section, data) => ({
  *  @returns {function} Dispatches returned action object
  */
 const fetchPosts = section => dispatch => {
-  dispatch(requestPosts(section))
+  dispatch(requestPosts(section));
   return axios.get('/api/recentposts')
     .then(data => {
       dispatch(receivePosts(section, data.data));
@@ -74,7 +75,7 @@ const fetchPosts = section => dispatch => {
  *  @param {string} section Section selected
  *  @returns {bool} Determines if a fetch should be done
  */
-const shouldFetchPosts = (state, section) => {
+const shouldFetchRecent = (state, section) => {
   const posts = state.recentActivity[section];
   if (!posts) {
     return true;
@@ -92,8 +93,8 @@ const shouldFetchPosts = (state, section) => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const fetchPostsIfNeeded = section => (dispatch, getState) => {
-  if (shouldFetchPosts(getState(), section)) {
+export const fetchRecentIfNeeded = section => (dispatch, getState) => {
+  if (shouldFetchRecent(getState(), section)) {
     return dispatch(fetchPosts(section));
   }
 }

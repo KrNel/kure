@@ -85,7 +85,7 @@ const GroupsList = (props) => {
                         }
                       </div>
                       <div className='clear' />
-                      <Divider />
+                      <Divider className='header' />
                       <div>
                         {`Created: ${date}`}
                       </div>

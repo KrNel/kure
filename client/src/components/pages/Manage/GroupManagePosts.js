@@ -16,9 +16,7 @@ import {BASE_STEEM_URL, roles} from '../../../settings';
  *  @param {string} props.deletingPost The post to be deleted
  *  @returns {Component} Table of post data
  */
-const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
-  //const perm = Settings.kGroupsAccess.post.delete[access];
-
+const GroupManagePosts = ({posts, showModal, deletingPost, user, access, headers}) => {
   if (!posts.length) {
     return (
       <Grid.Column width={8}>
@@ -33,12 +31,13 @@ const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
         <Table striped>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Title</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Likes</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Views</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Rating</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Submitter</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Remove</Table.HeaderCell>
+              {
+                headers.map((h, i) => {
+                  let align = { 'textAlign': 'center' };
+                  if (i === 0) align = {};
+                  return <Table.HeaderCell {...align} key={h}>{h}</Table.HeaderCell>
+                })
+              }
             </Table.Row>
           </Table.Header>
           <Table.Body>

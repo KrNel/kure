@@ -23,24 +23,17 @@ app.set('env', config.env);
 app.use(bodyParser.json());
 app.set('port', (config.app.server.port || 3001));
 
-/*const logDir = 'logs';
+const logDir = './server/logs';
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
-}*/
-//const filename = path.join(logDir, 'results.log');
-if (config.env !== 'TEST') {
-  app.use(morgan('combined'));
 }
-/*
+
 if (app.get("env") === "production") {
   app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms', {stream: fs.createWriteStream(path.join(__dirname, './logs/access.log'), {flags: 'a'})}));
 }
 else {
   app.use(morgan("combined")); //log to console on development
 }
-*/
-
-
 
 //Log server settings
 let transportInfo = new transports.DailyRotateFile({
@@ -89,51 +82,9 @@ let logger = createLogger({
     )
   }));
 }
-
-//app.locals.logger = logger;
-
-/*const transports = {
-  console: new transports.Console({ level: 'info' }),
-  file: new transports.File({ filename: 'combined.log', level: 'info' })
-};*/
-
-/*logger.log({
-  level: 'info',
-  message: 'Hello distributed log files!'
-});
-
-logger.info('Hello again distributed logs');*/
-
-/*
-const enumerateErrorFormat = format(info => {
-  if (info.message instanceof Error) {
-    info.message = Object.assign({
-      message: info.message.message,
-      stack: info.message.stack
-    }, info.message);
-  }
-
-  if (info instanceof Error) {
-    return Object.assign({
-      message: info.message,
-      stack: info.stack
-    }, info);
-  }
-
-  return info;
-});
-
-const logger = createLogger({
-  format: format.combine(
-    enumerateErrorFormat(),
-    format.json()
-  ),
-  transports: [
-    new transports.Console()
-  ]
-});
 */
 
+//app.locals.logger = logger;
 //logger.error(new Error('whatever'));
 
 //Set headers on responses
@@ -162,8 +113,6 @@ app.post('/logger', (req, res) => {
 app.use('/auth', auth);
 app.use('/api', api);
 app.use('/manage', manage);
-
-
 
 app.use((err, req, res) => {
   logger.log({level: 'error', message: err});

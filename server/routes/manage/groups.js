@@ -44,6 +44,7 @@ router.post('/add', async (req, res) => {
             followers: 1,
             likes: 1,
             created: created,
+            updated: created,
             posts: 0
           }
         });

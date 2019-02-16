@@ -73,7 +73,7 @@ const postExists = async (db, author, permlink, group) => {
  *  @returns {object} Send inserted object back to frontend for use
  */
 const addPost = (db, user, group, category, author, permlink, title) => {
-  console.log('1')  
+  console.log('1')
   try {
     const created = new Date();
 
@@ -98,7 +98,7 @@ const addPost = (db, user, group, category, author, permlink, title) => {
     //Increment the post count for the group
     db.collection('kgroups').updateOne(
       { name: group },
-      {
+      { $set: { updated: created },
         $inc:
         {
           posts: 1

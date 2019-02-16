@@ -110,8 +110,7 @@ class Kurate extends Component {
           //document.getElementById('postList').innerHTML = 'No result.';
         }
       }).catch(err => {
-          //console.log(err);
-          //alert(`Error:${err}, try again`);
+        logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
       });
   }
 
@@ -148,10 +147,6 @@ class Kurate extends Component {
   handleModalClick = (e) => {
     const confirm = e.target.dataset.confirm;
     if (confirm === 'true') {
-      /*if (await this.handlePostValidation(newPost)) {
-        this.setState({addPostLoading: true});
-        this.addPostFetch(newPost, this.groupName);
-      }*/
       this.setState({addPostLoading: true});
       this.addPostFetch();
     }else this.onModalClose();
@@ -192,7 +187,7 @@ class Kurate extends Component {
         }*/
       }
     }).catch((err) => {
-      throw new Error('Error adding post: ', err);
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
   }
 
@@ -217,9 +212,7 @@ class Kurate extends Component {
    */
   getGroupsFetch = (user) => {
     getUserGroups(user, 'all')
-    .then(res => {
-      //throw new Error('Woops!');
-      //throw(new Error('This should work'));
+    .then(res => {    
       const groups = res.data.groups.map((g, i) => {
         return {key: i, value: g.name, text: g.display, ...g}
       })

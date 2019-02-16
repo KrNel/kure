@@ -19,7 +19,7 @@ export const groupValidation = (newGroup) => {
     return {valid, errors};
   }
 
-  if(valid && (newGroup.length < 4 || newGroup.length > 17)){
+  if(valid && (newGroup.length < 3 || newGroup.length > 17)){
 
     errors["newGroup"] = "Must be between 4 and 17 chars.";
     valid = false;

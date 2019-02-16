@@ -29,7 +29,8 @@ export const selected = (state = 'recentPosts', action) => {
 const posts = (state = {
   isFetching: false,
   didInvalidate: false,
-  items: []
+  postItems: [],
+  groupItems: []
 }, action) => {
   switch (action.type) {
     case INVALIDATE_SECTION:
@@ -49,7 +50,8 @@ const posts = (state = {
         isFetching: false,
         //didInvalidate: true,
         didInvalidate: false,
-        items: action.posts,
+        postItems: action.posts,
+        groupItems: action.groups,
         lastUpdated: action.receivedAt
       }
     default:
@@ -71,7 +73,7 @@ export const recentActivity = (state = { }, action) => {
     case REQUEST_POSTS:
       return {
         ...state,
-        [action.section]: posts(state[action.section], action)
+        [action.section]: posts(state[action.section], action),
       }
     default:
       return state

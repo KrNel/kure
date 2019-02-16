@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import { Table } from "semantic-ui-react";
 
 import SteemConnect from '../../../utils/auth/scAPI';
+import {BASE_STEEM_URL} from '../../../settings';
 
 /**
  *  Component to display the post data sent.
@@ -12,10 +14,43 @@ import SteemConnect from '../../../utils/auth/scAPI';
  *  @param {function} props.isAuth Determines if user is authenticated
  *  @returns {element} Displays the post, or message if no posts are in the app
  */
-const RecentPosts = ({post, isAuth}) => {
+const RecentPosts = ({posts, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
-  if (post.st_title) {
-    return <div className="recPost">{post.st_title}</div>;
+  if (posts) {
+    return (
+      <Table striped>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Title</Table.HeaderCell>
+            {/*<Table.HeaderCell textAlign='center'>Likes</Table.HeaderCell>
+            <Table.HeaderCell textAlign='center'>Views</Table.HeaderCell>
+            <Table.HeaderCell textAlign='center'>Rating</Table.HeaderCell>*/}
+            <Table.HeaderCell textAlign='center'>Group</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {
+          posts.map((p, i) => (
+            <Table.Row key={p._id}>
+              <Table.Cell>
+                <a
+                  href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                >
+                  {(p.st_title.length > 70)
+                    ? p.st_title.substr(0,70) + " ..."
+                    : p.st_title}
+                </a>
+              </Table.Cell>
+              {/*<Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
+              <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
+              <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>*/}
+              <Table.Cell collapsing textAlign='center'>{p.display}</Table.Cell>
+            </Table.Row>
+          ))
+        }
+        </Table.Body>
+      </Table>
+    )//<div className="recPost">{post.st_title}</div>;
   }else {
     if (isAuth)
       return (
@@ -46,7 +81,7 @@ const RecentPosts = ({post, isAuth}) => {
 }
 
 RecentPosts.propTypes = {
-  post: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  post: PropTypes.shape(PropTypes.object),
   isAuth: PropTypes.bool.isRequired,
 };
 

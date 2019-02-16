@@ -398,6 +398,15 @@ class GroupManage extends Component {
     if (userExists) addErrorUser = <ErrorLabel text={this.existUser} />;
     if (errors["newUser"] !== undefined) addErrorUser = <ErrorLabel text={errors["newUser"]} />;
 
+    const postHeaders = [
+      'Title',
+      'Likes',
+      'Views',
+      'Rating',
+      'Submitter',
+      'Remove',
+    ];
+
     return (
       <React.Fragment>
 
@@ -447,6 +456,7 @@ class GroupManage extends Component {
             deletingPost={deletingPost}
             access={access}
             user={this.user}
+            headers={postHeaders}
           />
         </Grid.Row>
 
@@ -498,7 +508,7 @@ class GroupManage extends Component {
           }
         </Grid.Row>
 
-        <Divider />
+        <Divider className='section' />
       </React.Fragment>
     )
   }

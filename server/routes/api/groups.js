@@ -15,13 +15,11 @@ router.get('/user/:name/:type', (req, res, next) => {
   const db = req.app.locals.db;
   const user = req.params.name;
   const type = req.params.type;
-  const logger = req.app.locals.logger;
+
 
   //Get group data from DB and return
   getUserGroups(db, user, type)
     .then(data => {
-      //logger.info(data)
-      //throw new Error('xyz')
       res.json({ groups: data })
     })
     .catch(next);
@@ -37,7 +35,7 @@ router.get('/user/:name/:type', (req, res, next) => {
  */
 const getUserGroups = async (db, user, type) => {
   if (type === 'owned') {
-    const groups = db.collection('kgroups').find({owner: user}).sort( { created: -1 } ).toArray().then(result => {
+    const groups = db.collection('kgroups').find({owner: user}).sort( { _id: -1 } ).toArray().then(result => {
       return result;
     }).catch(err => {
       throw new Error('Error getting owned groups from DB: ', err);
@@ -48,7 +46,7 @@ const getUserGroups = async (db, user, type) => {
     return new Promise((resolve, reject) => {
 
       let groupAccess = {};
-      let order = {created: -1};
+      let order = {_id: -1};
       if (type === 'joined') {
         groupAccess = {$gt: 0};
         //order = {created: -1};
@@ -175,7 +173,7 @@ const getGroupAccess = async (db, group, user) => {
  */
 const getGroupPosts = async (db, group) => {
   return new Promise((resolve, reject) => {
-    db.collection('kposts').find({group: group}).sort( { created: -1 } ).toArray().then(result => {
+    db.collection('kposts').find({group: group}).sort( { _id: -1 } ).toArray().then(result => {
       if (result) resolve(result);
       else reject();
     })
@@ -196,39 +194,6 @@ const getGroupUsers = async (db, group) => {
       else reject();
     })
   })
-  //do a join, aggregation
-  //kgroups_access.user === users.name
-  //https://gist.github.com/bertrandmartel/311dbe17c2a57e8a07610724310bf898
-  /*
-  return new Promise((resolve, reject) => {
-    db.collection('kgroups_access').aggregate([
-      {
-        $match : {
-          group : group
-        }
-      }, {
-        $lookup: {
-          from: 'kgroups',
-          let: { access_group: "$group" },
-          pipeline: [{
-            $match: {
-              $expr: {
-                $eq: [ "$name",  "$$access_group" ]
-              }
-            },
-              { $project: { user: 1, _id: 0 } }
-          }],
-          as: 'kgroup'
-        }
-      }//{        $sort: {          user: 1        }      }{ $project: { _id: 0 } }
-
-    ]).toArray((err, result) => {
-console.log("result: ", result);
-    err
-      ? reject(err)
-      : resolve(result);
-    })
-  })*/
 }
 
 export default router;

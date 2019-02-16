@@ -47,6 +47,36 @@ hr {
   padding-bottom: 0;
 }
 
+.ui.divider.section {
+  border-top: 1px solid var(--main-border);
+  color: var(--main-border);
+}
+
+.ui.segment .ui.divider.header {
+  margin: 0 -14px 5px -14px;
+}
+
+.ui.segment.box {
+  min-height: 100px !important;
+}
+
+.ui.segment.head {
+  /*margin: 0;*/
+  /*padding: 0;*/
+  border-bottom: none !important;
+}
+
+.ui.label.head {
+  border-bottom: 1px solid var(--main-border);
+  background-color: #fff;
+  color: var(--medium-blue)
+}
+
+.ui.top.attached.label:first-child + :not(.attached) {
+  margin-top: 2.5rem !important;
+}
+
+
 /*.ui.grid > .row.header-row > .column {
   vertical-align: bottom;
 }*/
@@ -65,7 +95,7 @@ hr {
 
 
 .ui.header, .ui.card .header {
-  color: var(--dark-blue) !important;
+  color: var(--medium-blue) !important;
 }
 
 .ui.header .label {
@@ -152,3 +182,9 @@ i.blue.icon {
 i.blue.icon:hover {
   color: var(--dark-blue) !important;
 }
+
+/*.ui.label.none {
+  background-color: #fff;
+  border-color: #fff;
+  color: var(--medium-blue)
+}*/
