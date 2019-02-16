@@ -32,12 +32,16 @@ class Home extends Component {
     isAuth: PropTypes.bool.isRequired,
   };
 
-  componentDidMount() {
-    const {selected, dispatch} = this.props;
-    dispatch(fetchRecentIfNeeded(selected));
-  }
+  /*componentDidMount() {
+    const {selected, dispatch, user} = this.props;
+    dispatch(fetchRecentIfNeeded(selected, user));
+  }*/
 
   componentDidUpdate(prevProps) {
+    const {selected, dispatch, user} = this.props;
+    if (prevProps.user !== user && user !== '') {
+      dispatch(fetchRecentIfNeeded(selected, user));
+    }
     /*if (prevProps.selectedSubreddit !== this.props.selectedSubreddit) {
       const { dispatch, selectedSubreddit } = this.props
       dispatch(fetchPostsIfNeeded(selectedSubreddit))
@@ -47,7 +51,7 @@ class Home extends Component {
   render() {
 
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
-    const { posts, groups, isFetching, isAuth } = this.props;
+    const { posts, groups, isFetching, isAuth, myComms } = this.props;
     const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
@@ -80,7 +84,7 @@ class Home extends Component {
               </Grid.Row>
 
               {
-                groups.map((g, i) => {
+                groups.map((g) => {
                   return (
                     <Grid.Column key={g.name} width={8}>
                       <Segment.Group className='box'>
@@ -90,9 +94,9 @@ class Home extends Component {
                               {g.display}
                             </Header>
                           </Label>
-                          <ul className='group-posts'>
+                          <ul className='custom-list'>
                             {
-                              g.posts.map((p, i) => {
+                              g.posts.map((p) => {
                                 return (
                                   <li key={p._id}>
                                     <a
@@ -114,8 +118,6 @@ class Home extends Component {
                   )
                 })
               }
-
-
             </Grid>
           </Grid.Column>
 
@@ -127,12 +129,20 @@ class Home extends Component {
               <Segment>
                 <Label attached='top' className='head'>
                   <Header as='h3'>
-                    My Groups
+                    {'My Communities'}
                   </Header>
                 </Label>
-                <div>Post 1</div>
-                <div>Post 2</div>
-                <div>Post 3</div>
+                <ul className='custom-list'>
+                  {
+                    myComms.map(c => {
+                      return (
+                        <li key={c._id}>
+                          {c.display}
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
               </Segment>
             </Segment.Group>
 
@@ -140,7 +150,7 @@ class Home extends Component {
               <Segment>
                 <Label attached='top' className='head'>
                   <Header as='h3'>
-                    My Submissions
+                    {'My Submissions'}
                   </Header>
                 </Label>
                 <div>Post 1</div>
@@ -149,9 +159,6 @@ class Home extends Component {
               </Segment>
             </Segment.Group>
           </Grid.Column>
-
-
-
         </Grid>
       </div>
     )
@@ -170,21 +177,25 @@ const mapStateToProps = state => {
     isFetching,
     lastUpdated,
     postItems: posts,
-    groupItems: groups
+    groupItems: groups,
+    myCommunities: myComms,
   } = recentActivity[selected]
   || {
     isFetching: true,
     postItems: [],
-    groupItems: []
+    groupItems: [],
+    myCommunities: [],
   }
 
   return {
     selected,
     posts,
     groups,
+    myComms,
     isFetching,
     lastUpdated,
-    isAuth: auth.isAuth
+    isAuth: auth.isAuth,
+    user: auth.userData.name,
   }
 }
 

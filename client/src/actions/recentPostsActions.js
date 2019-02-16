@@ -50,6 +50,8 @@ export const receivePosts = (section, data) => ({
   section,
   posts: data.posts,
   groups: data.groups,
+  myComms: data.myComms,
+  mySubs: data.mySubs,
   receivedAt: Date.now()
 });
 
@@ -60,9 +62,9 @@ export const receivePosts = (section, data) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchPosts = section => dispatch => {
+const fetchPosts = (section, user) => dispatch => {
   dispatch(requestPosts(section));
-  return axios.get('/api/recentposts')
+  return axios.get(`/api/recentposts/${user}/10`) //limit 10 'my communities'
     .then(data => {
       dispatch(receivePosts(section, data.data));
     });
@@ -93,8 +95,8 @@ const shouldFetchRecent = (state, section) => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const fetchRecentIfNeeded = section => (dispatch, getState) => {
+export const fetchRecentIfNeeded = (section, user) => (dispatch, getState) => {
   if (shouldFetchRecent(getState(), section)) {
-    return dispatch(fetchPosts(section));
+    return dispatch(fetchPosts(section, user));
   }
 }

@@ -30,7 +30,9 @@ const posts = (state = {
   isFetching: false,
   didInvalidate: false,
   postItems: [],
-  groupItems: []
+  groupItems: [],
+  myCommunities: [],
+  /*mySubmissions: [],*/
 }, action) => {
   switch (action.type) {
     case INVALIDATE_SECTION:
@@ -52,6 +54,8 @@ const posts = (state = {
         didInvalidate: false,
         postItems: action.posts,
         groupItems: action.groups,
+        myCommunities: action.myComms,
+        /*mySubmissions: action.mySubs,*/
         lastUpdated: action.receivedAt
       }
     default:

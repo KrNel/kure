@@ -112,6 +112,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
           name: groupTrim,
           display: group,
           created: created,
+          updated: created,
           owner: user,
           followers: 1,
           likes: 1,

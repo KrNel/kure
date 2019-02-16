@@ -149,7 +149,7 @@ class GroupManage extends Component {
     if (validation) {
       this.setState({addPostLoading: true});
       const {group} = this.state;
-      this.addPostFetch(newPost, group);
+      this.addPostFetch(group);
     }
   }
 
@@ -171,10 +171,10 @@ class GroupManage extends Component {
    *  Send new post to be added to the database.
    *  Reset the flags depending on errors or not, add new post to posts state.
    *
-   *  @param {string} post Post to delete
+   *  @param {string} post Post to add
    *  @param {string} group Group name to delete from
    */
-  addPostFetch = (post, group) => {
+  addPostFetch = (group) => {
     addPost({group, user: this.user, ...this.steemPostData}, this.csrf)
     .then(res => {
       if (!res.data.invalidCSRF) {

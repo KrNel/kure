@@ -33,7 +33,7 @@ router.get('/user/:name/:type', (req, res, next) => {
  *  @param {string} type Type of group data to get ['owned'|'joined']
  *  @returns {object} Group data object to send to frontend
  */
-const getUserGroups = async (db, user, type) => {
+export const getUserGroups = async (db, user, type, limit) => {
   if (type === 'owned') {
     const groups = db.collection('kgroups').find({owner: user}).sort( { _id: -1 } ).toArray().then(result => {
       return result;
@@ -52,7 +52,7 @@ const getUserGroups = async (db, user, type) => {
         //order = {created: -1};
       }else {
         groupAccess = {$gte: 0};
-        order = {name: 1};
+        order = limit ? {updated: -1} : {name: 1};
       }
       //Get groups not owned, and whbich user has access to
       db.collection('kgroups_access').aggregate([
@@ -85,11 +85,14 @@ const getUserGroups = async (db, user, type) => {
             like: '$kgroup.like',
             posts: '$kgroup.posts',
             rating: '$kgroup.rating',
+            updated: '$kgroup.updated',
             access: 1,
             added_on: 1
           }
-        },{
+        }, {
           $sort: order
+        }, {
+          $limit: limit || 20
         }
       ]).toArray((err, result) => {
       err
