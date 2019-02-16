@@ -21,7 +21,7 @@ const client = new Client('https://hive.anyx.io/');
 class Kurate extends Component {
 
   static propTypes = {
-    user: PropTypes.string.isRequired,
+    user: PropTypes.string,
   };
 
   constructor(props) {
@@ -89,7 +89,6 @@ class Kurate extends Component {
 
     client.database.getDiscussions(selectedFilter, query)
       .then(result => {
-        //console.log('Response received:', result);
         if (result) {
           if (nextPost) {
             this.setState({
@@ -110,7 +109,7 @@ class Kurate extends Component {
           //document.getElementById('postList').innerHTML = 'No result.';
         }
       }).catch(err => {
-        logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
+        logger('error', err);
       });
   }
 
@@ -212,7 +211,7 @@ class Kurate extends Component {
    */
   getGroupsFetch = (user) => {
     getUserGroups(user, 'all')
-    .then(res => {    
+    .then(res => {
       const groups = res.data.groups.map((g, i) => {
         return {key: i, value: g.name, text: g.display, ...g}
       })
@@ -355,6 +354,4 @@ const mapStateToProps = state => {
   }
 }
 
-const KurateWrap = connect(mapStateToProps)(Kurate);
-
-export default KurateWrap;
+export default connect(mapStateToProps)(Kurate);

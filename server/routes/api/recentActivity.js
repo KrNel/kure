@@ -18,12 +18,10 @@ router.get('/:user/:limit', (req, res, next) => {
 
   const recentPosts = getRecentPosts(db, next);
   const groupsActivity = getRecentGroupActivity(db, next);
-  const myCommunities = getUserGroups(db, user, 'all', limit, next);
+  const myCommunities = getUserGroups(db, next, user, 'all', limit);
   const mySubmissions = getMySubmissions(db, user, limit, next)
-  //const groupPosts = getGroupPosts(db, group);
 
-  //Resolve promises for group name, group posts and group users
-  //Return data to frontend
+  //Resolve promises
   Promise.all([recentPosts, groupsActivity, myCommunities, mySubmissions]).then((result) => {
     res.json({
       posts: result[0],
@@ -32,11 +30,15 @@ router.get('/:user/:limit', (req, res, next) => {
       mySubs: result[3]
     })
   }).catch(next);
-
-  //res.json({posts: result});
-
 })
 
+/**
+ *  Get the Owned or Joined user's groups from DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
+ *  @returns {object} Recent post data object to send to frontend
+ */
 const getRecentPosts = async (db, next) => {
   const limit = 50;
   return new Promise((resolve, reject) => {
@@ -68,9 +70,16 @@ const getRecentPosts = async (db, next) => {
     ]).toArray((err, result) => {
       err ? reject(err) : resolve(result);
     })
-  }).catch(next);
+  })
 }
 
+/**
+ *  Get the Owned or Joined user's groups from DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
+ *  @returns {object} Recent group activity  data object to send to frontend
+ */
 const getRecentGroupActivity = async (db, next) => {
   const groupLimit = 4;
   const postLimit = 5;
@@ -93,16 +102,24 @@ const getRecentGroupActivity = async (db, next) => {
     ]).toArray((err, result) => {
       err ? reject(err) : resolve(result);
     })
-  }).catch(next);
+  })
 }
 
+/**
+ *  Get the Owned or Joined user's groups from DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} user Logged in user name
+ *  @param {number} limit Limit for query return
+ *  @param {function} next Middleware function
+ *  @returns {object} Recent group activity  data object to send to frontend
+ */
 const getMySubmissions = (db, user, limit, next) => {
   return new Promise((resolve, reject) => {
     db.collection('kposts').find({added_by: user}).sort( { _id: -1 } ).limit(limit).toArray((err, result) => {
       err ? reject(err) : resolve(result);
     })
-  }).catch(next);
+  })
 }
-
 
 export default router;

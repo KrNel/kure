@@ -7,6 +7,6 @@ import recentActivity from './recentActivity';
 //Routes to use for /api/ root path
 const router = new Router();
 router.use('/groups', groups);
-router.use('/recentActivity', recentActivity);
+router.use('/recentactivity', recentActivity);
 
 export default router;

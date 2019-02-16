@@ -6,7 +6,7 @@ import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-import { addGroup, deleteGroup, getUserGroups, getManageGroup } from '../../../utils/fetchFunctions';
+import { addGroup, deleteGroup, getUserGroups, getManageGroup, logger } from '../../../utils/fetchFunctions';
 import { groupValidation } from '../../../utils/validationFunctions';
 
 /**
@@ -118,7 +118,7 @@ class ManageGroups extends Component {
         manageGroup: {}
      });
     }).catch(err => {
-      throw new Error('Error getting groups: ', err);
+      logger('error', err);
     });
   }
 
@@ -204,8 +204,8 @@ class ManageGroups extends Component {
           });
         }
       }
-    }).catch((err) => {
-      throw new Error('Error adding group: ', err);
+    }).catch(err => {
+      logger('error', err);
     });
   }
 
@@ -245,7 +245,7 @@ class ManageGroups extends Component {
         })
       }
     }).catch(err => {
-      throw new Error('Error deleting group: ', err);
+      logger('error', err);
     })
   }
 
@@ -279,7 +279,7 @@ class ManageGroups extends Component {
         isGroupLoading: false,
      });
     }).catch(err => {
-      throw new Error('Error getting group to manage: ', err);
+      logger('error', err);
     })
   }
 

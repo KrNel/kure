@@ -26,6 +26,10 @@ hr {
 .clear {
   clear:both;
 }
+.meta {
+  font-size: 0.9em;
+  opacity:0.6;
+}
 
 .disabled {
   pointer-events:none;

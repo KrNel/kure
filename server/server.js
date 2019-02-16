@@ -106,7 +106,7 @@ MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrl
 // logger api
 app.post('/logger', (req, res) => {
   logger.log(req.body);
-  res.send('OK');
+  res.json({msg: 'OK'});
 });
 
 //Routes for React fetchs
@@ -116,7 +116,7 @@ app.use('/manage', manage);
 
 app.use((err, req, res) => {
   logger.log({level: 'error', message: err});
-  res.send({ error: 'Something failed!' })
+  res.json({ error: 'Something failed!' })
 })
 
 export default app;

@@ -105,7 +105,20 @@ export const deleteUser = (params, csrf) => {
  *
  *  @param {object} params Data to pass to server fetch
  */
-export const logger = (params) => {
+export const logger = (type, msg) => {
+  const params = (type === 'error')
+    ? ({
+        level: 'error',
+        message: {
+          name: msg.name,
+          message: msg.message,
+          stack: msg.stack
+        }
+      })
+    : ({
+        level: 'info',
+        message: msg
+      });
   return postData('/logger', params);
 }
 

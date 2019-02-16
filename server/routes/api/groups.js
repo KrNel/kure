@@ -18,7 +18,7 @@ router.get('/user/:name/:type', (req, res, next) => {
 
 
   //Get group data from DB and return
-  getUserGroups(db, user, type, next)
+  getUserGroups(db, next, user, type)
     .then(data => {
       res.json({ groups: data })
     })
@@ -29,11 +29,13 @@ router.get('/user/:name/:type', (req, res, next) => {
  *  Get the Owned or Joined user's groups from DB.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
  *  @param {string} user Logged in user name
  *  @param {string} type Type of group data to get ['owned'|'joined']
+ *  @param {number} [limit] Limit for query return
  *  @returns {object} Group data object to send to frontend
  */
-export const getUserGroups = async (db, user, type, limit, next) => {
+export const getUserGroups = async (db, next, user, type, limit) => {
   if (type === 'owned') {
     const groups = db.collection('kgroups').find({owner: user}).sort( { _id: -1 } ).toArray().then(result => {
       return result;
@@ -98,7 +100,7 @@ export const getUserGroups = async (db, user, type, limit, next) => {
         ? reject(err)
         : resolve(result);
       })
-    })
+    }).catch(next);
   }
 }
 

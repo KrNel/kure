@@ -28,7 +28,11 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
+    user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
+    groups: PropTypes.arrayOf(PropTypes.object).isRequired,
+    myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
+    mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
   };
@@ -40,13 +44,9 @@ class Home extends Component {
 
   componentDidUpdate(prevProps) {
     const {selected, dispatch, user} = this.props;
-    if (prevProps.user !== user && user !== '') {
+    if (prevProps.user !== user) {
       dispatch(fetchRecentIfNeeded(selected, user));
     }
-    /*if (prevProps.selectedSubreddit !== this.props.selectedSubreddit) {
-      const { dispatch, selectedSubreddit } = this.props
-      dispatch(fetchPostsIfNeeded(selectedSubreddit))
-    }*/
   }
 
   render() {
@@ -65,9 +65,9 @@ class Home extends Component {
       relativeTime: {
         future: 'in %s',
         past: '%s ago',
-        s:  'seconds',
+        s:  'secs',
         ss: '%ss',
-        m:  'a minute',
+        m:  'a min',
         mm: '%dm',
         h:  'an hour',
         hh: '%dh',
@@ -146,19 +146,21 @@ class Home extends Component {
             <Segment.Group className='box'>
               <Segment>
                 <Label attached='top' className='head'>
-                  <Header as='h3'>
-                    {'My Communities'}
-                  </Header>
+                  <Header as='h3'>My Communities</Header>
                 </Label>
                 <ul className='custom-list'>
                   {
+                    myComms.length
+                    ?
                     myComms.map(c => (
                       <li key={c._id}>
                         <div className='left'>{c.display}</div>
-                        <div className='right'>{moment.utc(c.updated).fromNow()}</div>
+                        <div className='right meta'>{moment.utc(c.updated).fromNow()}</div>
                         <div className='clear' />
                       </li>
                     ))
+                    :
+                    <li>Must be logged in.</li>
                   }
                 </ul>
               </Segment>
@@ -167,12 +169,12 @@ class Home extends Component {
             <Segment.Group className='box'>
               <Segment>
                 <Label attached='top' className='head'>
-                  <Header as='h3'>
-                    {'My Submissions'}
-                  </Header>
+                  <Header as='h3'>My Submissions</Header>
                 </Label>
                 <ul className='custom-list'>
                   {
+                    mySubs.length
+                    ?
                     mySubs.map(p => (
                       <li key={p._id}>
                         <div className='left'>
@@ -192,10 +194,12 @@ class Home extends Component {
                             }
                           </a>
                         </div>
-                        <div className='right'>{moment.utc(p.created).fromNow()}</div>
+                        <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
                         <div className='clear' />
                       </li>
                     ))
+                    :
+                    <li>Must be logged in.</li>
                   }
                 </ul>
               </Segment>

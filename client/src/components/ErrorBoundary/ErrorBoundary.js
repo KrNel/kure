@@ -13,7 +13,7 @@ class ErrorBoundary extends Component {
       error: error,
       errorInfo: errorInfo
     })
-    logger({level: 'error', message: {name: error.toString(), message:'', stack: errorInfo}})
+    logger('error', {name: error.toString(), message:'', stack: errorInfo})
   }
 
   render() {

@@ -96,7 +96,7 @@ const shouldFetchRecent = (state, section) => {
  *  @returns {function} Dispatches returned action object
  */
 export const fetchRecentIfNeeded = (section, user) => (dispatch, getState) => {
-  if (shouldFetchRecent(getState(), section)) {
+  //if (shouldFetchRecent(getState(), section)) {
     return dispatch(fetchPosts(section, user));
-  }
+  //}
 }
