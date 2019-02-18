@@ -116,7 +116,7 @@ app.use('/manage', manage);
 
 app.use((err, req, res) => {
   logger.log({level: 'error', message: err});
-  res.json({ error: 'Something failed!' })
+  //res.json({ error: 'Something failed!' })
 })
 
 export default app;

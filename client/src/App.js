@@ -36,7 +36,7 @@ class App extends Component {
       children
     } = this.props;
 
-    const scState = `${window.location.pathname}`;
+    const scState = window.location.pathname;
     const loginURL = SteemConnect.getLoginURL(scState);
 
     return (

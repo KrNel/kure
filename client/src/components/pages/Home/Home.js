@@ -28,7 +28,7 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
-    user: PropTypes.string,
+    user: PropTypes.string.isRequired,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -37,11 +37,15 @@ class Home extends Component {
     isAuth: PropTypes.bool.isRequired,
   };
 
-  /*componentDidMount() {
+  //this fetches when page loaded after site loads from elsewhere (user defined)
+  componentDidMount() {
     const {selected, dispatch, user} = this.props;
-    dispatch(fetchRecentIfNeeded(selected, user));
-  }*/
+    if (user !== '') {
+      dispatch(fetchRecentIfNeeded(selected, user));
+    }
+  }
 
+  //need this for first page load, as user is empty and cant fetch on componentDidMount
   componentDidUpdate(prevProps) {
     const {selected, dispatch, user} = this.props;
     if (prevProps.user !== user) {
@@ -50,7 +54,6 @@ class Home extends Component {
   }
 
   render() {
-
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
     const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
     const isEmpty = posts.length === 0;
@@ -150,17 +153,18 @@ class Home extends Component {
                 </Label>
                 <ul className='custom-list'>
                   {
-                    myComms.length
-                    ?
-                    myComms.map(c => (
-                      <li key={c._id}>
-                        <div className='left'>{c.display}</div>
-                        <div className='right meta'>{moment.utc(c.updated).fromNow()}</div>
-                        <div className='clear' />
-                      </li>
-                    ))
-                    :
-                    <li>Must be logged in.</li>
+                    !isAuth
+                    ? <li>Must be logged in.</li>
+                    : myComms.length
+                      ?
+                      myComms.map(c => (
+                        <li key={c._id}>
+                          <div className='left'>{c.display}</div>
+                          <div className='right meta'>{moment.utc(c.updated).fromNow()}</div>
+                          <div className='clear' />
+                        </li>
+                      ))
+                      : <li>Create a community.</li>
                   }
                 </ul>
               </Segment>
@@ -173,33 +177,34 @@ class Home extends Component {
                 </Label>
                 <ul className='custom-list'>
                   {
-                    mySubs.length
-                    ?
-                    mySubs.map(p => (
-                      <li key={p._id}>
-                        <div className='left'>
-                          <a
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                          >
-                            {
-                              // eslint-disable-next-line
-                              (p.st_title.length > 14) //longer than 14 chars?
-                                //eslint-disable-next-line
-                                ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
-                                  ? p.st_title.substr(0,8) + " ..." //truncate non latin
-                                  : p.st_title.substr(0,14) + " ..." //truncate latin
-                                : p.st_title //no truncate
-                            }
-                          </a>
-                        </div>
-                        <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
-                        <div className='clear' />
-                      </li>
-                    ))
-                    :
-                    <li>Must be logged in.</li>
+                    !isAuth
+                    ? <li>Must be logged in.</li>
+                    : mySubs.length
+                      ?
+                      mySubs.map(p => (
+                        <li key={p._id}>
+                          <div className='left'>
+                            <a
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                            >
+                              {
+                                // eslint-disable-next-line
+                                (p.st_title.length > 14) //longer than 14 chars?
+                                  //eslint-disable-next-line
+                                  ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
+                                    ? p.st_title.substr(0,8) + " ..." //truncate non latin
+                                    : p.st_title.substr(0,14) + " ..." //truncate latin
+                                  : p.st_title //no truncate
+                              }
+                            </a>
+                          </div>
+                          <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
+                          <div className='clear' />
+                        </li>
+                      ))
+                      : <li>Curate some posts.</li>
                   }
                 </ul>
               </Segment>
@@ -218,7 +223,7 @@ class Home extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { selected, recentActivity, auth } = state
+  const { selected, recentActivity, auth } = state;
   const {
     isFetching,
     lastUpdated,

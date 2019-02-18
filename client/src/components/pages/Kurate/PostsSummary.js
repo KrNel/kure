@@ -1,41 +1,14 @@
 import React from 'react';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 import './PostsSummary.css';
-import Author from './Author';
+import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/formatters';
-import {BASE_STEEM_URL} from '../../../settings';
+import RepLog10 from '../../../utils/reputationCalc';
 
-/**
- *  Logarithmic part of rep calculations.
- */
-function log10(str) {
-    const leadingDigits = parseInt(str.substring(0, 4));
-    const log = Math.log(leadingDigits) / Math.LN10 + 0.00000001;
-    const n = str.length - 1;
-    return n + (log - parseInt(log));
-}
-
-/**
- *  Computer the author's reputation level.
- */
-export const repLog10 = rep2 => {
-    if (rep2 == null) return rep2;
-    let rep = String(rep2);
-    const neg = rep.charAt(0) === '-';
-    rep = neg ? rep.substring(1) : rep;
-
-    let out = log10(rep);
-    if (isNaN(out)) out = 0;
-    out = Math.max(out - 9, 0); // @ -9, $0.50 earned is approx magnitude 1
-    out = (neg ? -1 : 1) * out;
-    out = out * 9 + 25; // 9 points per magnitude. center at 25
-    // base-line 0 to darken and < 0 to auto hide (grep rephide)
-    out = parseInt(out);
-    return out;
-};
 
 /**
  *  Root container for post summaries.
@@ -52,14 +25,14 @@ const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
   if (posts.length) {
     return (
       posts.map((p, i) => {
+console.log('pp:',p)        
         if (nextPost) {
 					nextPost = false;
 					return false;
 				}
         const extract = extractContent(p);
-//console.log('extract: ', extract)
         const post = {...p, ...extract};
-//console.log('post: ', post)
+
       /*<div key={i} onClick={() => openPost(author, permlink)} role="presentation">
         <h4>{title}</h4>
         <p>
@@ -74,7 +47,7 @@ const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
       //const image = json.image ? json.image[0] : '';
       const title = post.title;
       const author = post.author;
-      const authorReputation = repLog10(post.author_reputation);
+      const authorReputation = RepLog10(post.author_reputation);
       const url = post.url;
       const desc = post.desc;
       const permlink = post.permlink;
@@ -88,7 +61,7 @@ const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
 
       return (
         <div key={i} className='post'>
-          <Author
+          <AuthorCatgoryTime
             author={author}
             authorReputation={authorReputation}
             category={category}
@@ -108,7 +81,9 @@ const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
             }
             <div className="summary-content" data-permlink={permlink}>
               <h4>
-                <a href={BASE_STEEM_URL+url}>{title}</a>
+                <Link to={url}>
+                  {title}
+                </Link>
               </h4>
               <p>
                 {desc}

@@ -5,9 +5,9 @@ import { Client } from 'dsteem';
 import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
-import PostDetails from './PostDetails';
 import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
+import ModalContent from '../../Modal/ModalContent';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
 
@@ -29,10 +29,8 @@ class Kurate extends Component {
     this.state = {
       posts: [],
       postsListShow: 'none',
-      postShow: 'none',
-      post: {},
       selectedGroup: '',
-      modalOpen: false,
+      modalOpenAddPost: false,
       addPostData: {},
       groups: [{key: 0, text: 'No Groups', value: '0'}],
       newPost: '',
@@ -40,6 +38,7 @@ class Kurate extends Component {
       addPostLoading: false,
       tag: '',
       selectedFilter: 'created',
+      modalOpenShowContent: false,
     }
     this.existPost = "Post already in group.";
     this.steemPostData = '';
@@ -48,14 +47,6 @@ class Kurate extends Component {
   componentDidMount() {
     this.getPosts();
   }
-
-  /*shouldComponentUpdate(np, ns) {
-     const {posts} = this.state;
-     //if (ns.selectedGroup !== this.state.selectedGroup) return false;
-     if (posts !== posts.length || posts !== ns.posts) {
-       return true;
-     }else return false;
-   }*/
 
   /**
    *  When the page loads, this function will get the posts from Steem.
@@ -66,6 +57,7 @@ class Kurate extends Component {
    */
   getPosts = (action = 'init') => {
     const {posts, selectedFilter, tag} = this.state;
+
     let startAuthor = undefined;
     let startPermlink = undefined;
 
@@ -90,17 +82,17 @@ class Kurate extends Component {
     client.database.getDiscussions(selectedFilter, query)
       .then(result => {
         if (result) {
+          let newPosts;
           if (nextPost) {
-            this.setState({
-              posts: [...posts, ...result.slice(1)],
-              nextPost,
-            });
+            newPosts = [...posts, ...result.slice(1)];
           }else {
-            this.setState({
-              posts: result,
-              nextPost,
-            });
+            newPosts = result;
           }
+          localStorage.setItem('kuratePosts', newPosts);
+          this.setState({
+            posts: newPosts,
+            nextPost,
+          });
           this.onPostsGet();
 
           const {user} = this.props;
@@ -119,22 +111,35 @@ class Kurate extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {object} modalData Post and user data for the modal
    */
-  showModal = async (e, data) => {
+  showModal = async (e, type, data) => {
     e.preventDefault();
     const {user, csrf} = this.props;
-    this.setState({
-      modalOpen: true,
-      addPostData: {...data, user, csrf},
-    });
+    if (type === 'addPost') {
+      this.setState({
+        modalOpenAddPost: true,
+        addPostData: {...data, user, csrf},
+      });
+    }else if (type === 'showContent') {
+      const url = data;
+      this.props.history.push(url);
+      /*this.setState({
+        modalOpenShowContent: true,
+        //addPostData: {...data, user, csrf},
+      });*/
+    }
   }
 
   /**
    *  Hides the popup modal.
    */
-  onModalClose = () => this.setState({
-    modalOpen: false,
+  onModalCloseAddPost = () => this.setState({
+    modalOpenAddPost: false,
     addPostLoading: false,
     postExists: false,
+  });
+
+  onModalCloseShowContent = () => this.setState({
+    modalOpenShowContent: false,
   });
 
   /**
@@ -143,12 +148,12 @@ class Kurate extends Component {
    *
    *  @param {event} e Event triggered by element to handle
    */
-  handleModalClick = (e) => {
+  handleModalClickAddPost = (e) => {
     const confirm = e.target.dataset.confirm;
     if (confirm === 'true') {
       this.setState({addPostLoading: true});
       this.addPostFetch();
-    }else this.onModalClose();
+    }else this.onModalCloseAddPost();
   }
 
   /**
@@ -176,14 +181,8 @@ class Kurate extends Component {
             postExists: false,
             addPostLoading: false,
           });
-          this.onModalClose();
-        }/*else {
-          //error adding in db...
-          this.setState({
-            postExists: false,
-            addPostLoading: false,
-          });
-        }*/
+          this.onModalCloseAddPost();
+        }
       }
     }).catch((err) => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
@@ -258,15 +257,14 @@ class Kurate extends Component {
       state: {
         posts,
         postsListShow,
-        postShow,
-        post,
         nextPost,
-        modalOpen,
+        modalOpenAddPost,
         groups,
         postExists,
         addPostLoading,
         tag,
         selectedFilter,
+        modalOpenShowContent,
       },
       props: {
         user
@@ -286,10 +284,14 @@ class Kurate extends Component {
     return (
       <React.Fragment>
         <div className='controlContent'>
+          <ModalContent
+            modalOpen={modalOpenShowContent}
+            onModalClose={this.onModalCloseShowContent}
+          />
           <ModalGroup
-            modalOpen={modalOpen}
-            onModalClose={this.onModalClose}
-            handleModalClick={this.handleModalClick}
+            modalOpen={modalOpenAddPost}
+            onModalClose={this.onModalCloseAddPost}
+            handleModalClick={this.handleModalClickAddPost}
             getGroupsFetch={this.getGroupsFetch}
             handleGroupSelect={this.handleGroupSelect}
             groups={groups}
@@ -325,12 +327,6 @@ class Kurate extends Component {
               handleGroupSelect={this.handleGroupSelect}
               user={user}
             />
-          </div>
-
-          <div id="postBody" style={{display: postShow}}>
-            {
-              (post) ? <PostDetails post={post} onPostClose={this.onPostClose} /> : ''
-            }
           </div>
         </div>
         <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>

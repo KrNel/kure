@@ -78,14 +78,15 @@ const fetchPosts = (section, user) => dispatch => {
  *  @returns {bool} Determines if a fetch should be done
  */
 const shouldFetchRecent = (state, section) => {
-  const posts = state.recentActivity[section];
-  if (!posts) {
+  const activity = state.recentActivity[section];
+
+  if (!activity) {
     return true;
   }
-  if (posts.isFetching) {
+  if (activity.isFetching) {
     return false;
   }
-  return posts.didInvalidate;
+  return activity.didInvalidate;
 }
 
 /**
@@ -96,7 +97,7 @@ const shouldFetchRecent = (state, section) => {
  *  @returns {function} Dispatches returned action object
  */
 export const fetchRecentIfNeeded = (section, user) => (dispatch, getState) => {
-  //if (shouldFetchRecent(getState(), section)) {
+  if (shouldFetchRecent(getState(), section)) {
     return dispatch(fetchPosts(section, user));
-  //}
+  }
 }

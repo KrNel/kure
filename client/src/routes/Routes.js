@@ -9,6 +9,7 @@ import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
+import PostDetails from '../components/Content/PostDetails';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -17,7 +18,7 @@ import NoMatch from './NoMatch';
  *
  *  @returns {Component} Renders the route for main page components
  */
-const Routes = () => (
+const Routes = (props) => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />
@@ -27,6 +28,7 @@ const Routes = () => (
       <Route path='/success' component={AuthSC} />
       <PrivateRoute path='/manage' component={Manage} />
       <Route path='/logout' component={Logout} />
+      <Route path='/:category/@:author/:permlink' component={PostDetails} />
       <Route component={NoMatch} />
     </Switch>
   </App>

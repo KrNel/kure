@@ -61,7 +61,7 @@ const PostActions = ({activeVotesCount, commentCount, author, category, permlink
       {
         (user)
         ? (
-          <a href="/group/add" onClick={(e) => showModal(e, {author, category, permlink, title})} title="Add to a community">
+          <a href="/group/add" onClick={(e) => showModal(e, 'addPost', {author, category, permlink, title})} title="Add to a community">
             <Icon name='plus circle' size='large' />
           </a>
         )

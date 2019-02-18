@@ -22,9 +22,6 @@ const RecentPosts = ({posts, isAuth}) => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Title</Table.HeaderCell>
-            {/*<Table.HeaderCell textAlign='center'>Likes</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Views</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Rating</Table.HeaderCell>*/}
             <Table.HeaderCell textAlign='center'>Group</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -43,16 +40,13 @@ const RecentPosts = ({posts, isAuth}) => {
                     : p.st_title}
                 </a>
               </Table.Cell>
-              {/*<Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
-              <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
-              <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>*/}
               <Table.Cell collapsing textAlign='center'>{p.display}</Table.Cell>
             </Table.Row>
           ))
         }
         </Table.Body>
       </Table>
-    )//<div className="recPost">{post.st_title}</div>;
+    )
   }else {
     if (isAuth)
       return (
