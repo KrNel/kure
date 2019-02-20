@@ -9,7 +9,6 @@ import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
-import PostDetails from '../components/Content/PostDetails';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -28,7 +27,7 @@ const Routes = (props) => (
       <Route path='/success' component={AuthSC} />
       <PrivateRoute path='/manage' component={Manage} />
       <Route path='/logout' component={Logout} />
-      <Route path='/:category/@:author/:permlink' component={PostDetails} />
+      <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route component={NoMatch} />
     </Switch>
   </App>

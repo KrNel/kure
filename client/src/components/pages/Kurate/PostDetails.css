@@ -1,9 +1,10 @@
-@import '../../variables.css';
+@import '../../../variables.css';
 
 .PostContent {
   font-size: 1.3rem;
   line-height: 2.0rem;
   font-family: "Georgia";
+  margin-bottom: 20em;
 }
 
 .PostContent .info {
@@ -16,27 +17,27 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
-h1 {
+.PostContent h1 {
   margin: 2.5rem 0 .3rem;
   font-size: 2.5rem;
 }
-h2 {
+.PostContent h2 {
   margin: 2.5rem 0 .3rem;
   font-size: 2.2rem;
 }
-h3 {
+.PostContent h3 {
   margin: 2rem 0 0.3rem;
   font-size: 2.0rem;
 }
-h4 {
+.PostContent h4 {
   margin: 1.5rem 0 0.2rem;
   font-size: 1.8rem;
 }
-h5 {
+.PostContent h5 {
   margin: 1rem 0 0.2rem;
   font-size: 1.6rem;
 }
-h6 {
+.PostContent h6 {
   margin: 1rem 0 0.2rem;
   font-size: 1.4rem;
 }
@@ -55,32 +56,32 @@ pre > code {
   display: block;
 }
 
-strong {
+.PostContent strong {
   font-weight: 600;
 }
 
-ol, ul {
+.PostContent ol, .PostContent ul {
   margin-left: 2rem;
 }
 
-table td {
+.PostContent table td {
   word-break: normal;
 }
 
-p {
+.PostContent p {
   font-size: 100%;
   line-height: 150%;
   margin: 0 0 1.5rem 0;
 }
 
-img {
+.PostContent img {
   width: auto;
   max-width: 100%;
   height: auto;
   max-height: none;
 }
 
-iframe {
+.PostContent iframe {
   max-width: 100%;
   max-height: 75vw;
 }

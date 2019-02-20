@@ -1,8 +1,9 @@
 import React from 'react';
 import { Grid, Segment, Icon, Table, Dimmer, Loader } from "semantic-ui-react";
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-import {BASE_STEEM_URL, roles} from '../../../settings';
+import {roles} from '../../../settings';
 
 /**
  *  Table of posts for the selected group.
@@ -45,15 +46,13 @@ const GroupManagePosts = ({posts, showModal, deletingPost, user, access, headers
             posts.map((p, i) => (
               <Table.Row key={p._id}>
                 <Table.Cell>
-                  <a
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                  >
-                    {(p.st_title.length > 70)
-                      ? p.st_title.substr(0,70) + " ..."
-                      : p.st_title}
-                  </a>
+                <Link
+                  to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                >
+                {(p.st_title.length > 70)
+                  ? p.st_title.substr(0,70) + " ..."
+                  : p.st_title}
+                </Link>
                 </Table.Cell>
                 <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
                 <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>

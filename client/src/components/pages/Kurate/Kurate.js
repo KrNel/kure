@@ -5,9 +5,9 @@ import { Client } from 'dsteem';
 import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
+import PostDetails from './PostDetails';
 import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
-import ModalContent from '../../Modal/ModalContent';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
 
@@ -38,7 +38,6 @@ class Kurate extends Component {
       addPostLoading: false,
       tag: '',
       selectedFilter: 'created',
-      modalOpenShowContent: false,
     }
     this.existPost = "Post already in group.";
     this.steemPostData = '';
@@ -88,7 +87,6 @@ class Kurate extends Component {
           }else {
             newPosts = result;
           }
-          localStorage.setItem('kuratePosts', newPosts);
           this.setState({
             posts: newPosts,
             nextPost,
@@ -119,13 +117,6 @@ class Kurate extends Component {
         modalOpenAddPost: true,
         addPostData: {...data, user, csrf},
       });
-    }else if (type === 'showContent') {
-      const url = data;
-      this.props.history.push(url);
-      /*this.setState({
-        modalOpenShowContent: true,
-        //addPostData: {...data, user, csrf},
-      });*/
     }
   }
 
@@ -136,10 +127,6 @@ class Kurate extends Component {
     modalOpenAddPost: false,
     addPostLoading: false,
     postExists: false,
-  });
-
-  onModalCloseShowContent = () => this.setState({
-    modalOpenShowContent: false,
   });
 
   /**
@@ -252,6 +239,15 @@ class Kurate extends Component {
      });
   }
 
+  /*onClickTitle = (e, url) => {
+    e.preventDefault();
+console.log('h:',this.props.history)
+    //this.context.history.push('/url');
+    //this.props.router.push(url)
+    this.props.history.push(url)
+  }*/
+
+
   render() {
     const {
       state: {
@@ -263,12 +259,15 @@ class Kurate extends Component {
         postExists,
         addPostLoading,
         tag,
-        selectedFilter,
-        modalOpenShowContent,
+        //selectedFilter,
       },
       props: {
-        user
-      }
+        user,
+        csrf,
+        match: {
+          path,
+        }
+      },
     } = this;
 
     let addErrorPost = '';
@@ -283,53 +282,65 @@ class Kurate extends Component {
 
     return (
       <React.Fragment>
-        <div className='controlContent'>
-          <ModalContent
-            modalOpen={modalOpenShowContent}
-            onModalClose={this.onModalCloseShowContent}
-          />
-          <ModalGroup
-            modalOpen={modalOpenAddPost}
-            onModalClose={this.onModalCloseAddPost}
-            handleModalClick={this.handleModalClickAddPost}
-            getGroupsFetch={this.getGroupsFetch}
-            handleGroupSelect={this.handleGroupSelect}
-            groups={groups}
-            addErrorPost={addErrorPost}
-            addPostLoading={addPostLoading}
-          />
-
-          <Form>
-            <Form.Group>
-              <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
-              <Picker
-                onChange={this.handleFilterSelect}
-                options={filters}
-                label=''
-              />
-              <Form.Input
-                placeholder='Search a tag'
-                name='tag'
-                value={tag}
-                onChange={this.handleChange}
-              />
-            </Form.Group>
-          </Form>
-        </div>
-        <hr />
-        <div>
-          <div id="postList" style={{display: postsListShow}}>
-            <PostsSummary
-              posts={posts}
-              openPost={this.openPost}
-              nextPost={nextPost}
+        <ModalGroup
+          modalOpen={modalOpenAddPost}
+          onModalClose={this.onModalCloseAddPost}
+          handleModalClick={this.handleModalClickAddPost}
+          getGroupsFetch={this.getGroupsFetch}
+          handleGroupSelect={this.handleGroupSelect}
+          groups={groups}
+          addErrorPost={addErrorPost}
+          addPostLoading={addPostLoading}
+        />
+        {
+          (path === '/kurate')
+          ?
+          (
+            <React.Fragment>
+              <div className='controlContent'>
+                <Form>
+                  <Form.Group>
+                    <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+                    <Picker
+                      onChange={this.handleFilterSelect}
+                      options={filters}
+                      label=''
+                    />
+                    <Form.Input
+                      placeholder='Search a tag'
+                      name='tag'
+                      value={tag}
+                      onChange={this.handleChange}
+                    />
+                  </Form.Group>
+                </Form>
+              </div>
+              <hr />
+              <div>
+                <div id="postList" style={{display: postsListShow}}>
+                  <PostsSummary
+                    posts={posts}
+                    nextPost={nextPost}
+                    showModal={this.showModal}
+                    user={user}
+                    csrf={csrf}
+                    onClickTitle={this.onClickTitle}
+                  />
+                </div>
+              </div>
+              <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+            </React.Fragment>
+          )
+          :
+          (
+            <PostDetails
+              match={this.props.match}
               showModal={this.showModal}
-              handleGroupSelect={this.handleGroupSelect}
               user={user}
+              csrf={csrf}
             />
-          </div>
-        </div>
-        <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+          )
+        }
       </React.Fragment>
     )
   }

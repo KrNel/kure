@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { Loader, Grid, Header, Segment, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 import { fetchRecentIfNeeded } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
 import './Home.css';
-import {BASE_STEEM_URL} from '../../../settings';
 
 /**
  *  Home page component.
@@ -56,13 +56,11 @@ class Home extends Component {
   render() {
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
     const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
-    const isEmpty = posts.length === 0;
+    //const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
           ? <Loader active inline='centered' />
-        : (isEmpty)
-              ? 'No Posts'
-              : <RecentPosts posts={posts} isAuth={isAuth} />;
+        : <RecentPosts posts={posts} isAuth={isAuth} />;
 
     moment.locale('en', {
       relativeTime: {
@@ -72,13 +70,13 @@ class Home extends Component {
         ss: '%ss',
         m:  'a min',
         mm: '%dm',
-        h:  'an hour',
+        h:  '1h',
         hh: '%dh',
         d:  'a day',
         dd: '%dd',
-        M:  'a month',
+        M:  'month',
         MM: '%dM',
-        y:  'a year',
+        y:  'year',
         yy: '%dY'
       }
     });
@@ -107,37 +105,47 @@ class Home extends Component {
               </Grid.Row>
 
               {
-                groups.map(g => (
-                  <Grid.Column key={g.name} width={8}>
-                    <Segment.Group className='box'>
+                groups.length
+                ?
+                  groups.map(g => (
+                    <Grid.Column key={g.name} width={8}>
+                      <Segment.Group className='box'>
+                        <Segment>
+                          <Label attached='top' className='head'>
+                            <Header as='h3'>
+                              {g.display}
+                            </Header>
+                          </Label>
+                          <ul className='custom-list'>
+                            {
+                              g.length
+                              ? g.posts.map(p => (
+                                <li key={p._id}>
+                                  <Link
+                                    to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                                  >
+                                    {`\u2022\u00A0`}
+                                    {(p.st_title.length > 40)
+                                      ? p.st_title.substr(0,40) + " ..."
+                                      : p.st_title}
+                                  </Link>
+                                </li>
+                              )) : 'No posts.'
+                            }
+                          </ul>
+                        </Segment>
+                      </Segment.Group>
+                    </Grid.Column>
+                  ))
+                : (
+                  <Grid.Row columns={1}>
+                    <Grid.Column>
                       <Segment>
-                        <Label attached='top' className='head'>
-                          <Header as='h3'>
-                            {g.display}
-                          </Header>
-                        </Label>
-                        <ul className='custom-list'>
-                          {
-                            g.posts.map(p => (
-                              <li key={p._id}>
-                                <a
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                                >
-                                  {`\u2022\u00A0`}
-                                  {(p.st_title.length > 40)
-                                    ? p.st_title.substr(0,40) + " ..."
-                                    : p.st_title}
-                                </a>
-                              </li>
-                            ))
-                          }
-                        </ul>
+                        {'No communities.'}
                       </Segment>
-                    </Segment.Group>
-                  </Grid.Column>
-                ))
+                    </Grid.Column>
+                  </Grid.Row>
+                )
               }
             </Grid>
           </Grid.Column>
@@ -184,10 +192,8 @@ class Home extends Component {
                       mySubs.map(p => (
                         <li key={p._id}>
                           <div className='left'>
-                            <a
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                            <Link
+                              to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
                             >
                               {
                                 // eslint-disable-next-line
@@ -198,7 +204,7 @@ class Home extends Component {
                                     : p.st_title.substr(0,14) + " ..." //truncate latin
                                   : p.st_title //no truncate
                               }
-                            </a>
+                            </Link>
                           </div>
                           <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
                           <div className='clear' />

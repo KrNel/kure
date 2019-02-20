@@ -36,14 +36,14 @@ else {
 }
 
 //Log server settings
-let transportInfo = new transports.DailyRotateFile({
+/*let transportInfo = new transports.DailyRotateFile({
   name:"infofile",
   filename: './server/logs/all/log-%DATE%.log',
   handleExceptions: true,
   datePattern: 'YYYY-MM-DD',
   level: app.get("env") === 'production' ? 'info' : 'debug',
   prettyPrint: true,
-});
+});*/
 
 //Filter error messages from log
 let transportError = new transports.DailyRotateFile({
@@ -53,6 +53,7 @@ let transportError = new transports.DailyRotateFile({
   datePattern: 'YYYY-MM-DD',
   level: 'error',
   prettyPrint: true,
+  silent: app.get("env") !== 'production',
 });
 
 let logger = createLogger({
@@ -63,7 +64,7 @@ let logger = createLogger({
     prettyPrint(),
   ),
   transports: [
-    transportInfo,
+    /*transportInfo,*/
     transportError,
     /*new transports.Console({ level: 'error' }),*/
   ],

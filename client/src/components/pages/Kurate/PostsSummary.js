@@ -14,18 +14,17 @@ import RepLog10 from '../../../utils/reputationCalc';
  *  Root container for post summaries.
  *
  *  @param {array} posts All the posts fetched
- *  @param {array} openPost Parent function to show post details
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, openPost, nextPost, showModal, user}) => {
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) => {
   //const postsExtracts = extractContent(posts);
 
   //var posts = [];
   if (posts.length) {
     return (
       posts.map((p, i) => {
-console.log('pp:',p)        
+
         if (nextPost) {
 					nextPost = false;
 					return false;
@@ -33,78 +32,72 @@ console.log('pp:',p)
         const extract = extractContent(p);
         const post = {...p, ...extract};
 
-      /*<div key={i} onClick={() => openPost(author, permlink)} role="presentation">
-        <h4>{title}</h4>
-        <p>
-          {'by '}
-          {author}
-        </p>
-        <center>
-          <img src={image} alt={title} style={{maxWidth: "450px"}} />
-        </center>
-        <p>{created}</p>
-      </div>*/
-      //const image = json.image ? json.image[0] : '';
-      const title = post.title;
-      const author = post.author;
-      const authorReputation = RepLog10(post.author_reputation);
-      const url = post.url;
-      const desc = post.desc;
-      const permlink = post.permlink;
-      const category = post.category;
-      const thumb = post.image_link;
-      const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
-      //const created = new Date(post.created).toDateString();
-      const createdFromNow = moment.utc(post.created).fromNow();
-      const activeVotesCount = post.active_votes.length;
-      const commentCount = post.children;
+        const title = post.title;
+        const author = post.author;
+        const authorReputation = RepLog10(post.author_reputation);
+        const url = post.url;
+        const desc = post.desc;
+        const permlink = post.permlink;
+        const category = post.category;
+        const thumb = post.image_link;
+        const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
+        //const created = new Date(post.created).toDateString();
+        const createdFromNow = moment.utc(post.created).fromNow();
+        const activeVotesCount = post.active_votes.length;
+        const commentCount = post.children;
 
-      return (
-        <div key={i} className='post'>
-          <AuthorCatgoryTime
-            author={author}
-            authorReputation={authorReputation}
-            category={category}
-            payoutValue={payoutValue}
-            createdFromNow={createdFromNow}
-          />
+        return (
+          <div key={i} className='post'>
+            <AuthorCatgoryTime
+              author={author}
+              authorReputation={authorReputation}
+              category={category}
+              payoutValue={payoutValue}
+              createdFromNow={createdFromNow}
+            />
 
-          <div className="block">
-            {
-              (thumb)
-                ? (
-                  <div className="thumbnail">
-                    <Thumbnail thumb={thumb} />
-                  </div>
-                  )
-                : ''
-            }
-            <div className="summary-content" data-permlink={permlink}>
-              <h4>
-                <Link to={url}>
-                  {title}
-                </Link>
-              </h4>
-              <p>
-                {desc}
-              </p>
-              <div className='post-actions'>
-                <PostActions
-                  activeVotesCount={activeVotesCount}
-                  commentCount={commentCount}
-                  author={author}
-                  category={category}
-                  permlink={permlink}
-                  title={title}
-                  showModal={showModal}
-                  user={user}
-                />
+            <div className="block">
+              {
+                (thumb)
+                  ? (
+                    <div className="thumbnail">
+                      <Thumbnail thumb={thumb} />
+                    </div>
+                    )
+                  : ''
+              }
+              <div className="summary-content" data-permlink={permlink}>
+                <h4>
+                  <Link to={url}>
+                    {title}
+                  </Link>
+                  {/*<Link to={{ pathname: url, state: { user: user, csrf: csrf} }}>
+                    {title}
+                  </Link>*/}
+                  {/*<a href='/postdetails' onClick={(e) => onClickTitle(e, url)}>
+                    {title}
+                  </a>*/}
+                </h4>
+                <p>
+                  {desc}
+                </p>
+                <div className='post-actions'>
+                  <PostActions
+                    activeVotesCount={activeVotesCount}
+                    commentCount={commentCount}
+                    author={author}
+                    category={category}
+                    permlink={permlink}
+                    title={title}
+                    showModal={showModal}
+                    user={user}
+                  />
+                </div>
               </div>
             </div>
+            <hr />
           </div>
-          <hr />
-        </div>
-      )
+        )
     })
   )
   }else return "No Posts";

@@ -102,8 +102,9 @@ const exceededGrouplimit = async (db, user) => {
  */
 const groupUpsert = (db, group, groupTrim, user) => {
   try {
-    //Add group to 'kgroups' DB
     const created = new Date();
+
+    //Add group to 'kgroups' DB
     db.collection('kgroups').updateOne(
       { name: groupTrim },
       {
@@ -129,7 +130,8 @@ const groupUpsert = (db, group, groupTrim, user) => {
       {
         $inc:
         {
-          owned_kgroups: 1
+          owned_kgroups: 1,
+          'groups.curating': 1
         }
       }
     )
@@ -204,13 +206,88 @@ const deleteGroup = (db, group, user) => {
       {
         $inc:
         {
-          owned_kgroups: -1
+          owned_kgroups: -1,
+          'groups.curating': -1
         }
       }
     )
     return true;
   }catch (err) {
     throw new Error('Error deleting group from DB: ', err);
+  }
+}
+
+
+/**
+ *  POST route to add a join request for a group.
+ *  Route: /manage/groups/join
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  and group to join.
+ *  CSRF validation is done. If valid, proceed with database query.
+ *  Database inserted object will be returned to the frontend.
+ */
+router.post('/join', async (req, res) => {
+  const db = req.app.locals.db;
+  let { group, user } = req.body;
+  const csrfValid = await csrfValidateRequest(req, res, user);
+
+  //Respond to frontend with failed CSRF validation, else continue
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    //Add join request to DB
+    const joinRequested = await requestJoinGroup(db, group, user);
+    res.json(joinRequested || false);
+  }
+})
+
+/**
+ *  Insert the new join request into the DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group New group full display name to insert
+ *  @param {string} user Logged in user to insert
+ *  @returns {object} The date the group was created at
+ */
+const requestJoinGroup = (db, group, user) => {
+  try {
+    const created = new Date();
+
+    //Create new access entry for user and group
+    db.collection('kgroups_access').insertOne(
+      {
+        group: group,
+        user: user,
+        access: 100,
+        added_on: created,
+      }
+    )
+
+    //Increment request count in user collection
+    db.collection('users').updateOne(
+      { name: user },
+      {
+        $inc:
+        {
+          'pendingJoinRequests.curating': 1
+        }
+      }
+    )
+
+    //Increment join request count for group
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          joinRequests: 1
+        }
+      }
+    )
+
+    return true;
+  }catch (err) {
+    throw new Error('Error inserting gruop to DB: ', err);
   }
 }
 

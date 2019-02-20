@@ -503,6 +503,10 @@ class GroupManage extends Component {
                     />
                   </Form.Group>
                 </Form>
+                <div className='clear' />
+                <Header>Users Awaiting Approval</Header>
+                <p>User 1</p>
+                <p>User 2</p>
               </Grid.Column>
             )
           }

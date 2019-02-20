@@ -27,8 +27,17 @@ export const getManageGroup = (group, user) => {
  *  @param {string} user User to get groups for
  *  @param {string} limit Limit of records to return
  */
-export const getRecentActivity = (user, limit) => {
-  return getData(`/api/recentactivity/${user}/10`);
+export const getRecentActivity = (user, limit = 10) => {
+  return getData(`/api/recentactivity/${user}/${limit}`);
+}
+
+/**
+ *  Get the list of communities on the site. Most recently created first.
+ *
+ *  @param {string} limit Limit of records to return
+ */
+export const getGroupsPage = (user, listLimit = 20) => {
+  return getData(`/api/groups/list/${listLimit}/${user}`);
 }
 
 /**
@@ -98,6 +107,10 @@ export const addUser = (params, csrf) => {
  */
 export const deleteUser = (params, csrf) => {
   return postData('/manage/users/delete', params, csrf);
+}
+
+export const requestToJoinGroup = (params, csrf) => {
+  return postData('/manage/groups/join', params, csrf);
 }
 
 /**

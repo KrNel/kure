@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import { Table } from "semantic-ui-react";
+import { Table, Segment } from "semantic-ui-react";
+import { Link } from 'react-router-dom';
 
 import SteemConnect from '../../../utils/auth/scAPI';
-import {BASE_STEEM_URL} from '../../../settings';
 
 /**
  *  Component to display the post data sent.
@@ -16,7 +16,7 @@ import {BASE_STEEM_URL} from '../../../settings';
  */
 const RecentPosts = ({posts, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
-  if (posts) {
+  if (posts.length) {
     return (
       <Table striped>
         <Table.Header>
@@ -30,15 +30,13 @@ const RecentPosts = ({posts, isAuth}) => {
           posts.map((p, i) => (
             <Table.Row key={p._id}>
               <Table.Cell>
-                <a
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  href={BASE_STEEM_URL+'/'+p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                >
-                  {(p.st_title.length > 70)
-                    ? p.st_title.substr(0,70) + " ..."
-                    : p.st_title}
-                </a>
+              <Link
+                to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+              >
+                {(p.st_title.length > 70)
+                  ? p.st_title.substr(0,70) + " ..."
+                  : p.st_title}
+              </Link>
               </Table.Cell>
               <Table.Cell collapsing textAlign='center'>{p.display}</Table.Cell>
             </Table.Row>
@@ -50,27 +48,31 @@ const RecentPosts = ({posts, isAuth}) => {
   }else {
     if (isAuth)
       return (
-        <div className="recPost">
-          {"There are no communities yet. Go to"}
-          <a href="/manage">
-            {"Manage"}
-          </a>
-          {"and be the first to create a community!"}
-        </div>
+        <Segment>
+          <div className="recPost">
+            {"There are no posts yet. Go to "}
+            <a href="/manage">
+              {"Manage"}
+            </a>
+            {" and create a community."}
+          </div>
+        </Segment>
       )
     else {
       return (
-        <div className="recPost">
-          {"There are no posts yet. "}
-          <a href={loginURL}>
-            {"Login"}
-          </a>
-          {" first, then "}
-          <a href="/manage">
-            {"create"}
-          </a>
-          {" a community."}
-        </div>
+        <Segment>
+          <div className="recPost">
+            {"There are no posts yet. "}
+            <a href={loginURL}>
+              {"Login"}
+            </a>
+            {" to "}
+            <a href="/manage">
+              {"create"}
+            </a>
+            {" or join a community."}
+          </div>
+        </Segment>
       )
     }
   }

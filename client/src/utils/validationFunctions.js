@@ -79,7 +79,7 @@ export const postValidation = async (newPost) => {
  */
 export const getFromSteem = async (url) => {
 
-  const [ match, domain, author, permlink ] = parseURL(url);// eslint-disable-line
+  const [ match, domain, author, permlink ] = parseURL(url);//eslint-disable-line
   const client = new Client('https://hive.anyx.io/');
 
   const res = client.database.call('get_content', [author, permlink]).then(result => {

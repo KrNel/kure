@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import {getRecentGroupActivity} from './recentActivity';
 //import logger from '../../logger';
 
 const router = new Router();
@@ -105,6 +106,45 @@ export const getUserGroups = async (db, next, user, type, limit) => {
 }
 
 /**
+ *  GET route to get groups foro the Communities page.
+ *  Route: /api/groups/
+ *
+ *  Gets the local DB object, group name.
+ *  Retrieves the post and user group data for which the user has access.
+ */
+router.get('/list/:listlimit/:user', async (req, res, next) => {
+  const db = req.app.locals.db;
+  const { listlimit, user } = req.params;
+
+  const groupLimit = 4;
+  const postLimit = 5;
+
+  //const groupsCreated = getGroupsCreated(db, next, listLimit);
+  const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
+
+  /*const groupName = getGroupDisplayName(db, group);
+  const groupAccess = getGroupAccess(db, group, user)
+  const groupPosts = getGroupPosts(db, group);
+  const groupUsers = getGroupUsers(db, group);*/
+
+  //
+  Promise.all([groupsActivity]).then((result) => {
+    res.json({
+      //groupsList,
+      groupsActivity: result[0],
+
+      /*group: {
+        name: group,
+        display: result[0]['display'],
+        access: result[1]['access']
+      },
+      posts: result[2],
+      users: result[3]*/
+    })
+  })
+})
+
+/**
  *  GET route to get posts and users data that belong to a group.
  *  Route: /api/groups/:group/:user
  *
@@ -199,5 +239,8 @@ const getGroupUsers = async (db, group) => {
     })
   })
 }
+
+
+
 
 export default router;

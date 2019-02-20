@@ -2,7 +2,7 @@
  *  Common data settings to use.
  */
 
-export const BASE_STEEM_URL = "https://steemit.com";
+export const BASE_STEEM_URL = "https://localhost:3000";
 export const roles = {
   kGroupsRoles: {
     0: 'Owner',
