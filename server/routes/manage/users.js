@@ -13,7 +13,7 @@ const router = new Router();
  *  CSRF validation is done. If valid, proceed with database query.
  *  Databse inserted object will be returned to the frontend.
  */
-router.post('/add', async (req, res) => {
+router.post('/add', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user, newUser, group, access } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -22,11 +22,11 @@ router.post('/add', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Insert user in DB
-    const exists = await userExists(db, newUser, group);
+    const exists = await userExists(db, next, newUser, group);
     if (exists) {
        res.json({exists: true});
     }else {
-      const userAdd = await verifyAccess(db, group, user, 'user', 'add') && await addUserToGroup(db, user, newUser, group, access);
+      const userAdd = await verifyAccess(db, next, group, user, 'user', 'add') && await addUserToGroup(db, next, user, newUser, group, access);
       if (userAdd) {
          res.json({user: userAdd});
       }else {
@@ -44,14 +44,14 @@ router.post('/add', async (req, res) => {
  *  @param {string} group Group to verify if user exists in
  *  @returns {boolean} Determines if user exists or not
  */
-const userExists = async (db, newUser, group) => {
+const userExists = async (db, next, newUser, group) => {
   const exists = db.collection('kgroups_access').find({user: newUser, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
     return false;
   }).catch(err => {
-		throw new Error('Error verifying existing user from DB: ', err);
+		next(err)
 	});
   return await exists;
 }
@@ -69,7 +69,7 @@ const userExists = async (db, newUser, group) => {
  *  @param {number} access Access role level for added user
  *  @returns {object} Send inserted object back to frontend for use
  */
-const addUserToGroup = async (db, user, newUser, group, access = 3) => {
+const addUserToGroup = async (db, next, user, newUser, group, access = 3) => {
   try {
     const date = new Date();
     const userAccess = {
@@ -90,7 +90,7 @@ const addUserToGroup = async (db, user, newUser, group, access = 3) => {
       })
     })
   }catch (err) {
-    throw new Error('Error adding user access group to DB: ', err);
+    next(err);
   }
 }
 
@@ -103,7 +103,7 @@ const addUserToGroup = async (db, user, newUser, group, access = 3) => {
  *  CSRF validation is done. If valid, proceed with database query.
  *  Databse delete will be true or false, return response to frontend.
  */
-router.post('/delete', async (req, res) => {
+router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user, userToDel } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -112,7 +112,7 @@ router.post('/delete', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete user from DB
-    const userDeleted = await verifyAccess(db, group, user, 'user', 'del') && await deleteUserFromGroup(db, userToDel, group);
+    const userDeleted = await verifyAccess(db, next, group, user, 'user', 'del') && await deleteUserFromGroup(db, next, userToDel, group);
     if (userDeleted) {
       res.json(true);
     }else {
@@ -129,14 +129,135 @@ router.post('/delete', async (req, res) => {
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a user was a success
  */
-const deleteUserFromGroup = (db, user, group) => {
+const deleteUserFromGroup = (db, next, user, group) => {
   try {
     db.collection('kgroups_access').deleteOne(
       { user: user, group: group }
     )
     return true;
   }catch (err) {
-    throw new Error('Error deleting post from DB: ', err);
+    next(err);
+  }
+}
+
+
+
+router.post('/approve', async (req, res, next) => {
+  const db = req.app.locals.db;
+  let { group, newUser, user } = req.body;
+
+  const csrfValid = await csrfValidateRequest(req, res, user);
+
+  //Respond to frontend with failed CSRF validation, else continue
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    const access = await verifyAccess(db, next, group, user, 'pending', 'add');
+    if (access) {
+      const approved = await approvalJoinGroup(db, next, group, newUser, user);
+      res.json({newUser: approved});
+    }
+  }
+})
+
+
+const approvalJoinGroup = (db, next, group, newUser, approver) => {
+  try {
+    const created = new Date();
+    const approved = {
+      group,
+      user: newUser,
+      access: 3,
+      added_on: created,
+      added_by: approver
+    }
+
+    //Create new access entry for user and group
+    db.collection('kgroups_access').updateOne(
+      { group: group, user: newUser },
+      {
+        $set: {
+          access: 3,
+          added_on: created,
+          added_by: approver
+        }
+      },
+      { upsert: true }
+    )
+
+    //Increment request count in user collection
+    db.collection('users').updateOne(
+      { name: newUser },
+      {
+        $inc:
+        {
+          'pendingJoinRequests.curating': -1
+        }
+      }
+    )
+
+    //Increment join request count for group
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          joinRequests: -1
+        }
+      }
+    )
+
+    return approved;
+  }catch (err) {
+    next(err);
+  }
+}
+
+router.post('/deny', async (req, res, next) => {
+  const db = req.app.locals.db;
+  let { group, newUser, user } = req.body;
+  const csrfValid = await csrfValidateRequest(req, res, user);
+
+  //Respond to frontend with failed CSRF validation, else continue
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    //Delete group from DB
+    const denied = await verifyAccess(db, next, group, user, 'pending', 'del') && await denyJoinGroup(db, next, group, newUser);
+    res.json(denied || false);
+  }
+})
+
+const denyJoinGroup = (db, next, group, newUser) => {
+  try {
+    //Create new access entry for user and group
+    db.collection('kgroups_access').deleteOne(
+      { group: group, user: newUser }
+    )
+
+    //Increment request count in user collection
+    db.collection('users').updateOne(
+      { name: newUser },
+      {
+        $inc:
+        {
+          'pendingJoinRequests.curating': -1
+        }
+      }
+    )
+
+    //Increment join request count for group
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          joinRequests: -1
+        }
+      }
+    )
+
+    return true;
+  }catch (err) {
+    next(err);
   }
 }
 

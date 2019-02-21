@@ -235,7 +235,7 @@ const getGroupPosts = async (db, group) => {
  */
 const getGroupUsers = async (db, group) => {
   return new Promise((resolve, reject) => {
-    db.collection('kgroups_access').find({group: group, access: {$ne: 100}}).sort( { user: 1 } ).toArray().then(result => {
+    db.collection('kgroups_access').find({group: group, access: {$lt: 100}}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
       else reject();
     })

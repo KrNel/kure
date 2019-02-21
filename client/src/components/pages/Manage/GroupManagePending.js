@@ -40,7 +40,7 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
                       }
                       <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='blue' /></a>
                       {' / '}
-                      <a href={`/reject/${u.user}/`} onClick={e => handleApproval(e, u.user, 'reject')}><Icon name='delete' color='blue' /></a>
+                      <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='blue' /></a>
 
                     </Table.Cell>
                   </Table.Row>

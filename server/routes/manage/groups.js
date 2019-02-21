@@ -170,7 +170,7 @@ router.post('/delete', async (req, res, next) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete group from DB
-    const groupDeleted = await verifyAccess(db, next, group, user, 'group', 'del') && await deleteGroup(db, group, user);
+    const groupDeleted = await verifyAccess(db, next, group, user, 'group', 'del') && await deleteGroup(db, next, group, user);
     res.json(groupDeleted || false);
   }
 })
@@ -286,76 +286,6 @@ const requestJoinGroup = (db, next, group, user) => {
     )
 
     return true;
-  }catch (err) {
-    next(err);
-  }
-}
-
-
-
-router.post('/approve', async (req, res, next) => {
-  const db = req.app.locals.db;
-  let { group, newUser, user } = req.body;
-
-  const csrfValid = await csrfValidateRequest(req, res, user);
-
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Add join request to DB
-    const approved = approvalJoinGroup(db, next, group, newUser, user);
-    res.json({newUser: approved});
-  }
-})
-
-
-const approvalJoinGroup = (db, next, group, newUser, approver) => {
-  try {
-    const created = new Date();
-    const approved = {
-      group,
-      user: newUser,
-      access: 3,
-      added_on: created,
-      added_by: approver
-    }
-
-    //Create new access entry for user and group
-    db.collection('kgroups_access').updateOne(
-      { group: group, user: newUser },
-      {
-        $set: {
-          access: 3,
-          added_on: created,
-          added_by: approver
-        }
-      },
-      { upsert: true }
-    )
-
-    //Increment request count in user collection
-    db.collection('users').updateOne(
-      { name: newUser },
-      {
-        $inc:
-        {
-          'pendingJoinRequests.curating': -1
-        }
-      }
-    )
-
-    //Increment join request count for group
-    db.collection('kgroups').updateOne(
-      { name: group },
-      {
-        $inc:
-        {
-          joinRequests: -1
-        }
-      }
-    )
-
-    return approved;
   }catch (err) {
     next(err);
   }

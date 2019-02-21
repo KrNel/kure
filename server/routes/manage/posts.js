@@ -14,7 +14,7 @@ const router = new Router();
  *  CSRF validation is done. If valid, proceed with database query.
  *  Databse inserted object will be returned to the frontend.
  */
-router.post('/add', async (req, res) => {
+router.post('/add', async (req, res, next) => {
 
   //TODO?:do i need to verfiy access? no one can spoof a POST, right?
   const db = req.app.locals.db;
@@ -25,13 +25,13 @@ router.post('/add', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Check if post exists
-    const exists = await postExists(db, author, permlink, group);
+    const exists = await postExists(db, next, author, permlink, group);
     if (exists) {
        res.json({exists: true});
     }else {
 
       //Insert new post into DB
-      const postAdd = await verifyAccess(db, group, user, 'post', 'add') && await addPost(db, user, group, category, author, permlink, title);
+      const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title);
       res.json({post: postAdd});
     }
   }
@@ -45,14 +45,14 @@ router.post('/add', async (req, res) => {
  *  @param {string} group Group to verify if posts exists in
  *  @returns {boolean} Determines if post exists or not
  */
-const postExists = async (db, author, permlink, group) => {
+const postExists = async (db, next, author, permlink, group) => {
   const exists = db.collection('kposts').find({st_author: author, st_permlink: permlink, group: group}, {projection: {_id: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
     return false;
   }).catch(err => {
-		throw new Error('Error verifying existing post from DB: ', err);
+		next(err);
 	});
   return await exists;
 }
@@ -72,7 +72,7 @@ const postExists = async (db, author, permlink, group) => {
  *  @param {string} title Title of Steem post
  *  @returns {object} Send inserted object back to frontend for use
  */
-const addPost = (db, user, group, category, author, permlink, title) => {
+const addPost = (db, next, user, group, category, author, permlink, title) => {
   console.log('1')
   try {
     const created = new Date();
@@ -107,7 +107,7 @@ const addPost = (db, user, group, category, author, permlink, title) => {
     )
     return post;
   }catch (err) {
-    throw new Error('Error adding post to DB: ', err);
+    next(err);
   }
 }
 
@@ -120,7 +120,7 @@ const addPost = (db, user, group, category, author, permlink, title) => {
  *  CSRF validation is done. If valid, proceed with database query.
  *  Databse delete will be true or false, return response to frontend.
  */
-router.post('/delete', async (req, res) => {
+router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   let { author, post, group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -129,7 +129,7 @@ router.post('/delete', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete post from DB
-    const postDeleted = await verifyAccess(db, group, user, 'post', 'del') && await deletePost(db, author, post, group);
+    const postDeleted = await verifyAccess(db, next, group, user, 'post', 'del') && await deletePost(db, next, author, post, group);
     if (postDeleted) {
       res.json(true);
     }else {
@@ -146,7 +146,7 @@ router.post('/delete', async (req, res) => {
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a post was a success
  */
-const deletePost = (db, author, post, group) => {
+const deletePost = (db, next, author, post, group) => {
   try {
     //Delete post from kgroups collection
     db.collection('kposts').deleteOne(
@@ -165,7 +165,7 @@ const deletePost = (db, author, post, group) => {
     )
     return true;
   }catch (err) {
-    throw new Error('Error deleting post from DB: ', err);
+    next(err);
   }
 }
 

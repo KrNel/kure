@@ -114,7 +114,11 @@ export const requestToJoinGroup = (params, csrf) => {
 }
 
 export const approveUser = (params, csrf) => {
-  return postData('/manage/groups/approve', params, csrf);
+  return postData('/manage/users/approve', params, csrf);
+}
+
+export const denyUser = (params, csrf) => {
+  return postData('/manage/users/deny', params, csrf);
 }
 
 /**

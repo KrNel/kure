@@ -10,7 +10,7 @@ import GroupManageUsers from './GroupManageUsers';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import Picker from '../../Picker/Picker';
 import {roles} from '../../../settings';
-import { addPost, deletePost, addUser, deleteUser, approveUser } from '../../../utils/fetchFunctions';
+import { addPost, deletePost, addUser, deleteUser, approveUser, denyUser } from '../../../utils/fetchFunctions';
 import { postValidation, userValidation } from '../../../utils/validationFunctions';
 
 /**
@@ -364,7 +364,7 @@ class GroupManage extends Component {
         this.setState({
           deletingUser: '',
           users: newUsers
-        })
+        });
       }/*else error deleting user*/
     }).catch(err => {
       throw new Error('Error deleting user: ', err);
@@ -376,7 +376,7 @@ class GroupManage extends Component {
     const {group} = this.state;
     this.setState({approvingUser: newUser});
     if (type === 'approve') this.approveUserFetch(group, newUser);
-    //else if (type === 'reject') this.rejectUserFetch(group, newUser);
+    else if (type === 'deny') this.denyUserFetch(group, newUser);
   }
 
   approveUserFetch = (group, newUser) => {
@@ -384,7 +384,6 @@ class GroupManage extends Component {
     .then(res => {
       if (!res.data.invalidCSRF) {
         if (res.data) {
-console.log('approveUser:', res.data)
           const {users, pending} = this.state;
           const newPending = pending.filter(u => u.user !== newUser)
           this.setState({
@@ -393,6 +392,29 @@ console.log('approveUser:', res.data)
               ...users,
               res.data.newUser,
             ],
+            approvingUser: '',
+          });
+        }else {
+          this.setState({
+            approvingUser: '',
+          });
+        }
+      }
+    }).catch(err => {
+      throw new Error('Error adding user: ', err);
+    });
+  }
+
+  denyUserFetch = (group, newUser) => {
+    denyUser({group, newUser, user: this.user}, this.csrf)
+    .then(res => {
+      if (!res.data.invalidCSRF) {
+        if (res.data) {
+          const {pending} = this.state;
+          const newPending = pending.filter(u => u.user !== newUser)
+
+          this.setState({
+            pending: newPending,
             approvingUser: '',
           });
         }else {
