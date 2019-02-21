@@ -151,7 +151,7 @@ router.get('/list/:listlimit/:user', async (req, res, next) => {
  *  Gets the local DB object, group name.
  *  Retrieves the post and user group data for which the user has access.
  */
-router.get('/:group/:user', async (req, res) => {
+router.get('/:group/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user } = req.params;
 
@@ -159,10 +159,11 @@ router.get('/:group/:user', async (req, res) => {
   const groupAccess = getGroupAccess(db, group, user)
   const groupPosts = getGroupPosts(db, group);
   const groupUsers = getGroupUsers(db, group);
+  const groupPendingUsers = getGroupPendingUsers(db, group);
 
   //Resolve promises for group name, group posts and group users
   //Return data to frontend
-  Promise.all([groupName, groupAccess, groupPosts, groupUsers]).then((result) => {
+  Promise.all([groupName, groupAccess, groupPosts, groupUsers, groupPendingUsers]).then((result) => {
     res.json({
       group: {
         name: group,
@@ -170,9 +171,10 @@ router.get('/:group/:user', async (req, res) => {
         access: result[1]['access']
       },
       posts: result[2],
-      users: result[3]
+      users: result[3],
+      pending: result[4]
     })
-  })
+  }).catch(next);
 })
 
 /**
@@ -233,7 +235,23 @@ const getGroupPosts = async (db, group) => {
  */
 const getGroupUsers = async (db, group) => {
   return new Promise((resolve, reject) => {
-    db.collection('kgroups_access').find({group: group}).sort( { user: 1 } ).toArray().then(result => {
+    db.collection('kgroups_access').find({group: group, access: {$ne: 100}}).sort( { user: 1 } ).toArray().then(result => {
+      if (result) resolve(result);
+      else reject();
+    })
+  })
+}
+
+/**
+ *  Get a group's pending user approvals from DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group Group to get data from
+ *  @returns {object} Group's users data object to send to frontend
+ */
+const getGroupPendingUsers = async (db, group) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups_access').find({group: group, access: 100}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
       else reject();
     })

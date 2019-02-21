@@ -5,27 +5,26 @@ import { Link } from 'react-router-dom';
 class GroupsRecent extends Component {
   state = {
     //reqJoinSent: false,
-    isRequestingJoin: false,
     //groupRequested: '',
   }
 
   render() {
 
     const {
-      state: {
+      /*state: {
         //reqJoinSent,
-        isRequestingJoin,
-      },
+      },*/
       props: {
         isAuth,
         groupsActivity,
-        areGroupsLoading,
         groupRequested,
+        onJoinGroup
       }
     } = this;
 
     if (groupsActivity.length) {
       return (
+
         <Grid columns={1} stackable id='GroupPage'>
           {
             groupsActivity.map((g,i) => (
@@ -42,15 +41,15 @@ class GroupsRecent extends Component {
                         {
                           (isAuth)
                           ? (groupRequested === g.name)
-                            ? <Dimmer inverted active={isRequestingJoin}><Loader /></Dimmer>
+                            ? <Dimmer inverted active><Loader /></Dimmer>
                             : (g.access && g.access.access !== 100)
                               ? ''
                               : (g.access && g.access.access === 100)
                                 ? 'Requested'
                                 : (
                                   <a
-                                    href={`/group/${g.name}/join`}
-                                    onClick={(e) => this.onJoinGroup(e, g.name)}
+                                    href={`/join/${g.name}`}
+                                    onClick={e => onJoinGroup(e, g.name)}
                                   >
                                     {'Join'}
                                   </a>
@@ -84,10 +83,6 @@ class GroupsRecent extends Component {
           }
         </Grid>
       );
-    }else if (areGroupsLoading) {
-      return (
-        <Loader />
-      )
     }else {
       return (
         <div>

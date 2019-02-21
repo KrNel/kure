@@ -118,7 +118,6 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
               },
               { $project: {
                 _id: 0,
-                joinRequested: 1,
                 access: 1
               } }
             ]

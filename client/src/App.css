@@ -111,6 +111,14 @@ ul.custom-list {
   padding-top: 0;
 }*/
 
+.ui.grid > .row.noPadBottom {
+  padding-bottom: 0;
+}
+
+.ui.header.noMarginTop {
+  margin-top: 0;
+}
+
 .ui.small.modal {
   width: 480px;
 }

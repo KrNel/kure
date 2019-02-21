@@ -113,6 +113,10 @@ export const requestToJoinGroup = (params, csrf) => {
   return postData('/manage/groups/join', params, csrf);
 }
 
+export const approveUser = (params, csrf) => {
+  return postData('/manage/groups/approve', params, csrf);
+}
+
 /**
  *  Call/fetch for logging.
  *

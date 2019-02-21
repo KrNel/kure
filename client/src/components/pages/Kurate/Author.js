@@ -1,6 +1,5 @@
 import React from 'react';
-
-import {BASE_STEEM_URL} from '../../../settings';
+import { Link } from 'react-router-dom';
 
 /**
  *  Displays the author hyperlink.
@@ -10,7 +9,11 @@ import {BASE_STEEM_URL} from '../../../settings';
  */
 const Author = ({author}) => (
   <strong>
-    <a href={BASE_STEEM_URL+'/@'+author}>{author}</a>
+    <Link
+      to={'@'+author}
+    >
+      {author}
+    </Link>
   </strong>
 )
 

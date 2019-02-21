@@ -236,8 +236,8 @@ class ManageGroups extends Component {
     .then((res) => {
       if (res.data) {
         const {groups} = this.state;
-        const oldGroups = groups;
-        const newGroup = oldGroups.filter(g => g.name !== group);
+        //const oldGroups = groups;
+        const newGroup = groups.filter(g => g.name !== group);
         this.setState({
           groups: newGroup,
           manageGroup: {},

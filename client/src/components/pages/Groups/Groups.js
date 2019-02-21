@@ -31,6 +31,7 @@ class Groups extends Component {
     const {user} = this.props;
     if (user) this.getGroups(user);
   }
+
   componentDidUpdate(prevProps) {
     const {user} = this.props;
     if (user && this.state.go) {
@@ -63,7 +64,6 @@ class Groups extends Component {
   onJoinGroup = (e, group) => {
     e.preventDefault();
     this.setState({
-      isRequestingJoin: true,
       groupRequested: group,
     });
     this.joinGroupRequest(group);
@@ -73,22 +73,36 @@ class Groups extends Component {
     const {user, csrf} = this.props;
     requestToJoinGroup({group, user}, csrf)
     .then(result => {
+      //let gActivity = groupsActivity;
       if (result.data) {
+        const {groupsActivity, groupRequested}= this.state;
+        const newGroup = groupsActivity.map(g => {
+          if (g.name === groupRequested) {
+            return {
+              ...g,
+              access: {
+                access: 100
+              }
+            }
+          }
+          return g;
+        });
+        //gActivity = newGroup;
         this.setState({
-          isRequestingJoin: false,
-          /*groupsActivity: {
-            ...groupsActivity,
-            access['access']: 100,
-          },*/
+          groupsActivity: newGroup,
           groupRequested: '',
-          //groupsActivity: result.data.groupsActivity,
         });
       }else {
         this.setState({
-          isRequestingJoin: false,
           groupRequested: '',
         });
       }
+      /*
+      this.setState({
+        groupsActivity: gActivity,
+        groupRequested: '',
+      });
+      */
     }).catch(err => {
       logger('error', err);
     });

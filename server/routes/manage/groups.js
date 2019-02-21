@@ -13,7 +13,7 @@ const router = new Router();
  *  CSRF validation is done. If valid, proceed with database query.
  *  Database inserted object will be returned to the frontend.
  */
-router.post('/add', async (req, res) => {
+router.post('/add', async (req, res, next) => {
   const db = req.app.locals.db;
 
   let { group, user } = req.body;
@@ -25,17 +25,17 @@ router.post('/add', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Check if group exists
-    const exists = await groupExists(db, groupClean);
+    const exists = await groupExists(db, next, groupClean);
     if (exists) {
        res.json({exists: true});
     }else {
       //Check if user has reached the number of allowed Owned Groups
-      const exceeded = await exceededGrouplimit(db, user);
+      const exceeded = await exceededGrouplimit(db, next, user);
       if (exceeded) {
         res.json({exceeded: true});
       }else {
         //Insert the group
-        const created = groupUpsert(db, group, groupClean, user);
+        const created = groupUpsert(db, next, group, groupClean, user);
         res.json({
           group: {
             name: groupClean,
@@ -60,14 +60,14 @@ router.post('/add', async (req, res) => {
  *  @param {string} group Group to verify
  *  @returns {boolean} Determines if group exists or not
  */
-const groupExists = async (db, group) => {
+const groupExists = async (db, next, group) => {
   const exists = db.collection('kgroups').find({name: group}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
     return false;
   }).catch(err => {
-		throw new Error('Error adding group to DB: ', err);
+		next(err);
 	});
   return await exists;
 }
@@ -79,14 +79,14 @@ const groupExists = async (db, group) => {
  *  @param {string} user User to verify
  *  @returns {boolean} Determines if a user has reached their limit
  */
-const exceededGrouplimit = async (db, user) => {
+const exceededGrouplimit = async (db, next, user) => {
   const exceeded = db.collection('users').find({name: user, 'owned_kgroups': {$gte: 4}}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }
     return false;
   }).catch(err => {
-		throw new Error('Error verifying group exists in DB: ', err);
+		next(err);
 	});
   return await exceeded;
 }
@@ -100,7 +100,7 @@ const exceededGrouplimit = async (db, user) => {
  *  @param {string} user Logged in user to insert
  *  @returns {object} The date the group was created at
  */
-const groupUpsert = (db, group, groupTrim, user) => {
+const groupUpsert = (db, next, group, groupTrim, user) => {
   try {
     const created = new Date();
 
@@ -148,7 +148,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
 
     return created;
   }catch (err) {
-    throw new Error('Error inserting gruop to DB: ', err);
+    next(err);
   }
 }
 
@@ -161,7 +161,7 @@ const groupUpsert = (db, group, groupTrim, user) => {
  *  CSRF validation is done. If valid, proceed with database query.
  *  Database inserted object will be returned to the frontend.
  */
-router.post('/delete', async (req, res) => {
+router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -170,7 +170,7 @@ router.post('/delete', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Delete group from DB
-    const groupDeleted = await verifyAccess(db, group, user, 'group', 'del') && await deleteGroup(db, group, user);
+    const groupDeleted = await verifyAccess(db, next, group, user, 'group', 'del') && await deleteGroup(db, group, user);
     res.json(groupDeleted || false);
   }
 })
@@ -183,7 +183,7 @@ router.post('/delete', async (req, res) => {
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a post was a success
  */
-const deleteGroup = (db, group, user) => {
+const deleteGroup = (db, next, group, user) => {
   try {
     //Delete group from kgroups collection
     db.collection('kgroups').deleteOne(
@@ -213,7 +213,7 @@ const deleteGroup = (db, group, user) => {
     )
     return true;
   }catch (err) {
-    throw new Error('Error deleting group from DB: ', err);
+    next(err);
   }
 }
 
@@ -227,7 +227,7 @@ const deleteGroup = (db, group, user) => {
  *  CSRF validation is done. If valid, proceed with database query.
  *  Database inserted object will be returned to the frontend.
  */
-router.post('/join', async (req, res) => {
+router.post('/join', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
   const csrfValid = await csrfValidateRequest(req, res, user);
@@ -236,7 +236,7 @@ router.post('/join', async (req, res) => {
   if (!csrfValid) res.json({invalidCSRF: true});
   else {
     //Add join request to DB
-    const joinRequested = await requestJoinGroup(db, group, user);
+    const joinRequested = await requestJoinGroup(db, next, group, user);
     res.json(joinRequested || false);
   }
 })
@@ -249,7 +249,7 @@ router.post('/join', async (req, res) => {
  *  @param {string} user Logged in user to insert
  *  @returns {object} The date the group was created at
  */
-const requestJoinGroup = (db, group, user) => {
+const requestJoinGroup = (db, next, group, user) => {
   try {
     const created = new Date();
 
@@ -287,7 +287,77 @@ const requestJoinGroup = (db, group, user) => {
 
     return true;
   }catch (err) {
-    throw new Error('Error inserting gruop to DB: ', err);
+    next(err);
+  }
+}
+
+
+
+router.post('/approve', async (req, res, next) => {
+  const db = req.app.locals.db;
+  let { group, newUser, user } = req.body;
+
+  const csrfValid = await csrfValidateRequest(req, res, user);
+
+  //Respond to frontend with failed CSRF validation, else continue
+  if (!csrfValid) res.json({invalidCSRF: true});
+  else {
+    //Add join request to DB
+    const approved = approvalJoinGroup(db, next, group, newUser, user);
+    res.json({newUser: approved});
+  }
+})
+
+
+const approvalJoinGroup = (db, next, group, newUser, approver) => {
+  try {
+    const created = new Date();
+    const approved = {
+      group,
+      user: newUser,
+      access: 3,
+      added_on: created,
+      added_by: approver
+    }
+
+    //Create new access entry for user and group
+    db.collection('kgroups_access').updateOne(
+      { group: group, user: newUser },
+      {
+        $set: {
+          access: 3,
+          added_on: created,
+          added_by: approver
+        }
+      },
+      { upsert: true }
+    )
+
+    //Increment request count in user collection
+    db.collection('users').updateOne(
+      { name: newUser },
+      {
+        $inc:
+        {
+          'pendingJoinRequests.curating': -1
+        }
+      }
+    )
+
+    //Increment join request count for group
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          joinRequests: -1
+        }
+      }
+    )
+
+    return approved;
+  }catch (err) {
+    next(err);
   }
 }
 

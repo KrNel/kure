@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
+import { Link } from 'react-router-dom';
+import moment from 'moment';
+import { Grid, Header, Icon, Form, Label, Divider, Table } from "semantic-ui-react";
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
@@ -8,7 +10,7 @@ import GroupManageUsers from './GroupManageUsers';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import Picker from '../../Picker/Picker';
 import {roles} from '../../../settings';
-import { addPost, deletePost, addUser, deleteUser } from '../../../utils/fetchFunctions';
+import { addPost, deletePost, addUser, deleteUser, approveUser } from '../../../utils/fetchFunctions';
 import { postValidation, userValidation } from '../../../utils/validationFunctions';
 
 /**
@@ -46,6 +48,8 @@ class GroupManage extends Component {
       errors: {},
       postExists: false,
       users: [],
+      pending: [],
+      approvingUser: '',
       group: '',
       modalOpen: false,
       modalData: {},
@@ -79,7 +83,8 @@ class GroupManage extends Component {
       return {
         group: group,
         posts: props.manageGroup.posts,
-        users: props.manageGroup.users
+        users: props.manageGroup.users,
+        pending: props.manageGroup.pending
       };
     }
     return null;
@@ -321,7 +326,7 @@ class GroupManage extends Component {
           addUserLoading: false,
         });
       }
-    }).catch((err) => {
+    }).catch(err => {
       throw new Error('Error adding user: ', err);
     });
   }
@@ -366,6 +371,41 @@ class GroupManage extends Component {
     })
   }
 
+  handleApproval = (e, newUser, type) => {
+    e.preventDefault();
+    const {group} = this.state;
+    this.setState({approvingUser: newUser});
+    if (type === 'approve') this.approveUserFetch(group, newUser);
+    //else if (type === 'reject') this.rejectUserFetch(group, newUser);
+  }
+
+  approveUserFetch = (group, newUser) => {
+    approveUser({group, newUser, user: this.user}, this.csrf)
+    .then(res => {
+      if (!res.data.invalidCSRF) {
+        if (res.data) {
+console.log('approveUser:', res.data)
+          const {users, pending} = this.state;
+          const newPending = pending.filter(u => u.user !== newUser)
+          this.setState({
+            pending: newPending,
+            users: [
+              ...users,
+              res.data.newUser,
+            ],
+            approvingUser: '',
+          });
+        }else {
+          this.setState({
+            approvingUser: '',
+          });
+        }
+      }
+    }).catch(err => {
+      throw new Error('Error adding user: ', err);
+    });
+  }
+
   render() {
     const {
       newPost,
@@ -374,6 +414,8 @@ class GroupManage extends Component {
       errors,
       postExists,
       users,
+      pending,
+      approvingUser,
       modalOpen,
       modalData,
       newUser,
@@ -409,16 +451,17 @@ class GroupManage extends Component {
 
     return (
       <React.Fragment>
-
+        <Divider />
         <Grid.Row className="header-row">
-          <Grid.Column floated='left' width={10}>
+          <Grid.Column floated='left' width={8}>
             <Header as='h2'>
               <Label size='big' color='blue'>Managing Group:</Label>
               {'   '}
               {manageGroup.group.display}
             </Header>
           </Grid.Column>
-          <Grid.Column floated='right' width={6}>
+          <Grid.Column floated='right' width={8}>
+            <div className='left'><Header>Posts</Header></div>
             <div className="">
               <Form size="tiny" onSubmit={this.handleSubmitNewPost}>
                 <Form.Group className='right'>
@@ -460,12 +503,22 @@ class GroupManage extends Component {
           />
         </Grid.Row>
 
+        <Divider />
+        <Grid.Row centered className='noPadBottom'>
+          <Grid.Column width={8} floated='right'>
+            <Header>Users</Header>
+          </Grid.Column>
+        </Grid.Row>
         <Grid.Row className="content">
+
           <GroupManageUsers
             users={users}
             showModal={this.showModal}
             deletingUser={deletingUser}
             access={access}
+            pending={pending}
+            handleApproval={this.handleApproval}
+            approvingUser={approvingUser}
           />
 
           {
@@ -503,10 +556,6 @@ class GroupManage extends Component {
                     />
                   </Form.Group>
                 </Form>
-                <div className='clear' />
-                <Header>Users Awaiting Approval</Header>
-                <p>User 1</p>
-                <p>User 2</p>
               </Grid.Column>
             )
           }
