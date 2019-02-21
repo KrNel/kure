@@ -6,8 +6,8 @@ import GroupsList from './GroupsList';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-import { addGroup, deleteGroup, getUserGroups, getManageGroup } from './fetchFunctions';
-import { groupValidation } from './validationFunctions';
+import { addGroup, deleteGroup, getUserGroups, getManageGroup, logger } from '../../../utils/fetchFunctions';
+import { groupValidation } from '../../../utils/validationFunctions';
 
 /**
  *  Managment component to display the group lists a user has access to.
@@ -118,7 +118,7 @@ class ManageGroups extends Component {
         manageGroup: {}
      });
     }).catch(err => {
-      throw new Error('Error getting groups: ', err);
+      logger('error', err);
     });
   }
 
@@ -204,8 +204,8 @@ class ManageGroups extends Component {
           });
         }
       }
-    }).catch((err) => {
-      throw new Error('Error adding group: ', err);
+    }).catch(err => {
+      logger('error', err);
     });
   }
 
@@ -236,8 +236,8 @@ class ManageGroups extends Component {
     .then((res) => {
       if (res.data) {
         const {groups} = this.state;
-        const oldGroups = groups;
-        const newGroup = oldGroups.filter(g => g.name !== group);
+        //const oldGroups = groups;
+        const newGroup = groups.filter(g => g.name !== group);
         this.setState({
           groups: newGroup,
           manageGroup: {},
@@ -245,7 +245,7 @@ class ManageGroups extends Component {
         })
       }
     }).catch(err => {
-      throw new Error('Error deleting group: ', err);
+      logger('error', err);
     })
   }
 
@@ -279,7 +279,7 @@ class ManageGroups extends Component {
         isGroupLoading: false,
      });
     }).catch(err => {
-      throw new Error('Error getting group to manage: ', err);
+      logger('error', err);
     })
   }
 

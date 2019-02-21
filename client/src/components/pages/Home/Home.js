@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Loader, Grid, Header, Segment } from "semantic-ui-react";
+import { Loader, Grid, Header, Segment, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
 
-import { fetchPostsIfNeeded } from '../../../actions/recentPostsActions';
+import { fetchRecentIfNeeded } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
 import './Home.css';
 
@@ -26,111 +28,194 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
+    user: PropTypes.string.isRequired,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
+    groups: PropTypes.arrayOf(PropTypes.object).isRequired,
+    myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
+    mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
   };
 
+  //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
-    const {selected, dispatch} = this.props;
-    dispatch(fetchPostsIfNeeded(selected));
+    const {selected, dispatch, user} = this.props;
+    if (user !== '') {
+      dispatch(fetchRecentIfNeeded(selected, user));
+    }
   }
 
+  //need this for first page load, as user is empty and cant fetch on componentDidMount
   componentDidUpdate(prevProps) {
-    /*if (prevProps.selectedSubreddit !== this.props.selectedSubreddit) {
-      const { dispatch, selectedSubreddit } = this.props
-      dispatch(fetchPostsIfNeeded(selectedSubreddit))
-    }*/
+    const {selected, dispatch, user} = this.props;
+    if (prevProps.user !== user) {
+      dispatch(fetchRecentIfNeeded(selected, user));
+    }
   }
 
   render() {
-
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
-    const { posts, isFetching, isAuth } = this.props;
-    const isEmpty = posts.length === 0;
+    const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
+    //const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
           ? <Loader active inline='centered' />
-        : (isEmpty)
-              ? 'No Posts'
-              : (posts.map((post, i) => <RecentPosts key={post._id} post={post} isAuth={isAuth} />));
+        : <RecentPosts posts={posts} isAuth={isAuth} />;
+
+    moment.locale('en', {
+      relativeTime: {
+        future: 'in %s',
+        past: '%s ago',
+        s:  'secs',
+        ss: '%ss',
+        m:  'a min',
+        mm: '%dm',
+        h:  '1h',
+        hh: '%dh',
+        d:  'a day',
+        dd: '%dd',
+        M:  'month',
+        MM: '%dM',
+        y:  'year',
+        yy: '%dY'
+      }
+    });
 
     return (
       <div className="home">
         <Grid columns={1} stackable>
-          <Grid.Column width={16} className="main">
+          <Grid.Column width={12} className="main">
             <Grid>
               <Grid.Row className="reducePad">
                 <Grid.Column>
-                  <Header as="h3">Recently Added</Header>
+                  <Label size='big' color='blue'><Header as="h3">Recently Added</Header></Label>
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Segment className="nopad">
-                    {recentPostsComp}
-                  </Segment>
+                  {recentPostsComp}
                 </Grid.Column>
               </Grid.Row>
 
-              {/*<Grid.Row className="reducePad">
+              <Grid.Row className="reducePad">
                 <Grid.Column>
-                  <Header as="h3">Community Activity</Header>
+                  <Label size='big' color='blue'><Header as="h3">Community Activity</Header></Label>
                 </Grid.Column>
               </Grid.Row>
 
-                <Grid.Column width={8}>
-                  <Segment>
-                    <p>1</p>
-                    <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
-                  </Segment>
-                </Grid.Column>
-                <Grid.Column width={8}>
-                  <Segment>
-                    <p>2</p>
-                    <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
-                  </Segment>
-                </Grid.Column>
-                <Grid.Column width={8}>
-                  <Segment>
-                    <p>3</p>
-                    <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
-                  </Segment>
-                </Grid.Column>
-                <Grid.Column width={8}>
-                  <Segment>
-                    <p>3</p>
-                    <p>Sample test to test the limits of the word wrap in a paragraph box.</p>
-                  </Segment>
-                </Grid.Column>*/}
-
+              {
+                groups.length
+                ?
+                  groups.map(g => (
+                    <Grid.Column key={g.name} width={8}>
+                      <Segment.Group className='box'>
+                        <Segment>
+                          <Label attached='top' className='head'>
+                            <Header as='h3'>
+                              {g.display}
+                            </Header>
+                          </Label>
+                          <ul className='custom-list'>
+                            {
+                              g.length
+                              ? g.posts.map(p => (
+                                <li key={p._id}>
+                                  <Link
+                                    to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                                  >
+                                    {`\u2022\u00A0`}
+                                    {(p.st_title.length > 40)
+                                      ? p.st_title.substr(0,40) + " ..."
+                                      : p.st_title}
+                                  </Link>
+                                </li>
+                              )) : 'No posts.'
+                            }
+                          </ul>
+                        </Segment>
+                      </Segment.Group>
+                    </Grid.Column>
+                  ))
+                : (
+                  <Grid.Row columns={1}>
+                    <Grid.Column>
+                      <Segment>
+                        {'No communities.'}
+                      </Segment>
+                    </Grid.Column>
+                  </Grid.Row>
+                )
+              }
             </Grid>
           </Grid.Column>
 
           {/*<Grid.Row><Header as="h1">Popular Groups:</Header></Grid.Row>*/}
           {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
 
-          {/*<Grid.Column width={4} className="sidebar">
-            <Card>
-              <Card.Content>
-                <Card.Header as="h3">My Groups</Card.Header>
-              </Card.Content>
-              <Card.Content>
-                <Feed>
-                  <Feed.Event>
-                    <Feed.Content>
-                      <Feed.Date content='1 day ago' />
-                      <Feed.Summary>
-                        Thumb - Post Title - Likes?
-                      </Feed.Summary>
-                    </Feed.Content>
-                  </Feed.Event>
-                </Feed>
-              </Card.Content>
-            </Card>
-          </Grid.Column>*/}
+          <Grid.Column width={4} className="sidebar">
+            <Segment.Group className='box'>
+              <Segment>
+                <Label attached='top' className='head'>
+                  <Header as='h3'>My Communities</Header>
+                </Label>
+                <ul className='custom-list'>
+                  {
+                    !isAuth
+                    ? <li>Must be logged in.</li>
+                    : myComms.length
+                      ?
+                      myComms.map(c => (
+                        <li key={c._id}>
+                          <div className='left'>{c.display}</div>
+                          <div className='right meta'>{moment.utc(c.updated).fromNow()}</div>
+                          <div className='clear' />
+                        </li>
+                      ))
+                      : <li>Create a community.</li>
+                  }
+                </ul>
+              </Segment>
+            </Segment.Group>
 
+            <Segment.Group className='box'>
+              <Segment>
+                <Label attached='top' className='head'>
+                  <Header as='h3'>My Submissions</Header>
+                </Label>
+                <ul className='custom-list'>
+                  {
+                    !isAuth
+                    ? <li>Must be logged in.</li>
+                    : mySubs.length
+                      ?
+                      mySubs.map(p => (
+                        <li key={p._id}>
+                          <div className='left'>
+                            <Link
+                              to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+                            >
+                              {
+                                // eslint-disable-next-line
+                                (p.st_title.length > 14) //longer than 14 chars?
+                                  //eslint-disable-next-line
+                                  ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
+                                    ? p.st_title.substr(0,8) + " ..." //truncate non latin
+                                    : p.st_title.substr(0,14) + " ..." //truncate latin
+                                  : p.st_title //no truncate
+                              }
+                            </Link>
+                          </div>
+                          <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
+                          <div className='clear' />
+                        </li>
+                      ))
+                      : <li>Curate some posts.</li>
+                  }
+                </ul>
+              </Segment>
+            </Segment.Group>
+          </Grid.Column>
         </Grid>
       </div>
     )
@@ -144,22 +229,33 @@ class Home extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { selected, recentActivity, auth } = state
+  const { selected, recentActivity, auth } = state;
   const {
     isFetching,
     lastUpdated,
-    items: posts
-  } = recentActivity[selected] || {
+    postItems: posts,
+    groupItems: groups,
+    myCommunities: myComms,
+    mySubmissions: mySubs,
+  } = recentActivity[selected]
+  || {
     isFetching: true,
-    items: []
+    postItems: [],
+    groupItems: [],
+    myCommunities: [],
+    mySubmissions: [],
   }
 
   return {
     selected,
     posts,
+    groups,
+    myComms,
+    mySubs,
     isFetching,
     lastUpdated,
-    isAuth: auth.isAuth
+    isAuth: auth.isAuth,
+    user: auth.userData.name,
   }
 }
 

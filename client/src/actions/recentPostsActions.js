@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { getRecentActivity } from '../utils/fetchFunctions';
 
 export const REQUEST_POSTS = 'REQUEST_POSTS';
 export const RECEIVE_POSTS = 'RECEIVE_POSTS';
@@ -48,7 +48,10 @@ export const requestPosts = section => ({
 export const receivePosts = (section, data) => ({
   type: RECEIVE_POSTS,
   section,
-  posts: data.posts.map(post => post),
+  posts: data.posts,
+  groups: data.groups,
+  myComms: data.myComms,
+  mySubs: data.mySubs,
   receivedAt: Date.now()
 });
 
@@ -59,9 +62,9 @@ export const receivePosts = (section, data) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchPosts = section => dispatch => {
-  dispatch(requestPosts(section))
-  return axios.get('/api/recentposts')
+const fetchPosts = (section, user) => dispatch => {
+  dispatch(requestPosts(section));
+  return getRecentActivity(user, 10) //limit 10 'my communities'
     .then(data => {
       dispatch(receivePosts(section, data.data));
     });
@@ -74,15 +77,16 @@ const fetchPosts = section => dispatch => {
  *  @param {string} section Section selected
  *  @returns {bool} Determines if a fetch should be done
  */
-const shouldFetchPosts = (state, section) => {
-  const posts = state.recentActivity[section];
-  if (!posts) {
+const shouldFetchRecent = (state, section) => {
+  const activity = state.recentActivity[section];
+
+  if (!activity) {
     return true;
   }
-  if (posts.isFetching) {
+  if (activity.isFetching) {
     return false;
   }
-  return posts.didInvalidate;
+  return activity.didInvalidate;
 }
 
 /**
@@ -92,8 +96,8 @@ const shouldFetchPosts = (state, section) => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const fetchPostsIfNeeded = section => (dispatch, getState) => {
-  if (shouldFetchPosts(getState(), section)) {
-    return dispatch(fetchPosts(section));
+export const fetchRecentIfNeeded = (section, user) => (dispatch, getState) => {
+  if (shouldFetchRecent(getState(), section)) {
+    return dispatch(fetchPosts(section, user));
   }
 }

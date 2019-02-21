@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import config from '../../config';
-import SteemConnect from '../../../client/src/utilities/auth/scAPI';
+import SteemConnect from '../../../client/src/utils/auth/scAPI';
 
 const router = new Router();
 const ORIGIN_HOST = `${config.app.client.host}:${config.app.client.port}`;

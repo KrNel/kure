@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import { Table, Segment } from "semantic-ui-react";
+import { Link } from 'react-router-dom';
 
-import SteemConnect from '../../../utilities/auth/scAPI';
+import SteemConnect from '../../../utils/auth/scAPI';
 
 /**
  *  Component to display the post data sent.
@@ -12,41 +14,72 @@ import SteemConnect from '../../../utilities/auth/scAPI';
  *  @param {function} props.isAuth Determines if user is authenticated
  *  @returns {element} Displays the post, or message if no posts are in the app
  */
-const RecentPosts = ({post, isAuth}) => {
+const RecentPosts = ({posts, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
-  if (post.st_title) {
-    return <div className="recPost">{post.st_title}</div>;
+  if (posts.length) {
+    return (
+      <Table striped>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Title</Table.HeaderCell>
+            <Table.HeaderCell textAlign='center'>Group</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {
+          posts.map((p, i) => (
+            <Table.Row key={p._id}>
+              <Table.Cell>
+              <Link
+                to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
+              >
+                {(p.st_title.length > 70)
+                  ? p.st_title.substr(0,70) + " ..."
+                  : p.st_title}
+              </Link>
+              </Table.Cell>
+              <Table.Cell collapsing textAlign='center'>{p.display}</Table.Cell>
+            </Table.Row>
+          ))
+        }
+        </Table.Body>
+      </Table>
+    )
   }else {
     if (isAuth)
       return (
-        <div className="recPost">
-          {"There are no communities yet. Go to"}
-          <a href="/manage">
-            {"Manage"}
-          </a>
-          {"and be the first to create a community!"}
-        </div>
+        <Segment>
+          <div className="recPost">
+            {"There are no posts yet. Go to "}
+            <a href="/manage">
+              {"Manage"}
+            </a>
+            {" and create a community."}
+          </div>
+        </Segment>
       )
     else {
       return (
-        <div className="recPost">
-          {"There are no posts yet. "}
-          <a href={loginURL}>
-            {"Login"}
-          </a>
-          {" first, then "}
-          <a href="/manage">
-            {"create"}
-          </a>
-          {" a community."}
-        </div>
+        <Segment>
+          <div className="recPost">
+            {"There are no posts yet. "}
+            <a href={loginURL}>
+              {"Login"}
+            </a>
+            {" to "}
+            <a href="/manage">
+              {"create"}
+            </a>
+            {" or join a community."}
+          </div>
+        </Segment>
       )
     }
   }
 }
 
 RecentPosts.propTypes = {
-  post: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  post: PropTypes.shape(PropTypes.object),
   isAuth: PropTypes.bool.isRequired,
 };
 

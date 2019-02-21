@@ -1,15 +1,5 @@
 @import '../../../variables.css';
 
-
-.manage .ui.divider {
-  border-top: 1px solid var(--main-border);
-  color: var(--main-border);
-}
-
-.manage .ui.segment .ui.divider {
-  margin: 0 -14px 5px -14px;
-}
-
 .manage .ui.segment.groupList {
   min-height: 200px !important;
   max-height: 200px !important;

@@ -4,9 +4,10 @@ import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import Header from './components/Header/Header';
-import SteemConnect from './utilities/auth/scAPI';
+import SteemConnect from './utils/auth/scAPI';
 import './App.css';
 import { handleReturning } from './actions/authActions';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 /**
  *  Root application compoenent.
@@ -30,16 +31,12 @@ class App extends Component {
     }
   }
 
-  componentWillUnmount() {
-    //this.signal.cancel('Api is being canceled');
-  }
-
   render () {
     const {
       children
     } = this.props;
 
-    const scState = `${window.location.pathname}`;
+    const scState = window.location.pathname;
     const loginURL = SteemConnect.getLoginURL(scState);
 
     return (
@@ -48,7 +45,9 @@ class App extends Component {
 
         <Grid container className="wrapper">
           <Grid.Column width={16}>
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </Grid.Column>
         </Grid>
       </React.Fragment>

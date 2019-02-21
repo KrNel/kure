@@ -1,13 +1,15 @@
 import React, {Component}  from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Client } from 'dsteem';
-import { Button } from "semantic-ui-react";
+import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
 import PostDetails from './PostDetails';
-import { getUserGroups, addPost } from '../Manage/fetchFunctions';
+import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
+import Picker from '../../Picker/Picker';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -17,44 +19,33 @@ const client = new Client('https://hive.anyx.io/');
  *  to which the user belongs.
  */
 class Kurate extends Component {
+
+  static propTypes = {
+    user: PropTypes.string,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
       postsListShow: 'none',
-      postShow: 'none',
-      post: {},
       selectedGroup: '',
-      modalOpen: false,
+      modalOpenAddPost: false,
       addPostData: {},
       groups: [{key: 0, text: 'No Groups', value: '0'}],
       newPost: '',
       postExists: false,
       addPostLoading: false,
+      tag: '',
+      selectedFilter: 'created',
     }
     this.existPost = "Post already in group.";
+    this.steemPostData = '';
   }
 
   componentDidMount() {
     this.getPosts();
-    const {user} = this.props;
-    //this.getGroupsFetch(user);
-    this.getGroupsFetch('krnel');
   }
-  /*shouldComponentUpdate(np, ns) {
-     const {posts} = this.state;
-     //if (ns.selectedGroup !== this.state.selectedGroup) return false;
-     if (posts !== posts.length || posts !== ns.posts) {
-       return true;
-     }else return false;
-   }*/
-
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (user !== prevProps.user) {
-      this.getGroupsFetch(user);
-    }
-  }*/
 
   /**
    *  When the page loads, this function will get the posts from Steem.
@@ -64,7 +55,8 @@ class Kurate extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {posts} = this.state;
+    const {posts, selectedFilter, tag} = this.state;
+
     let startAuthor = undefined;
     let startPermlink = undefined;
 
@@ -79,35 +71,35 @@ class Kurate extends Component {
     }
 
     const query = {
-      tag: '',
+      tag: tag,
       limit: 20,
       truncate_body: 0,
       start_author: startAuthor,
       start_permlink: startPermlink
     };
 
-    client.database.getDiscussions('created', query)
+    client.database.getDiscussions(selectedFilter, query)
       .then(result => {
-        //console.log('Response received:', result);
         if (result) {
+          let newPosts;
           if (nextPost) {
-            this.setState({
-              posts: [...posts, ...result.slice(1)],
-              nextPost,
-            });
+            newPosts = [...posts, ...result.slice(1)];
           }else {
-            this.setState({
-              posts: result,
-              nextPost,
-            });
+            newPosts = result;
           }
+          this.setState({
+            posts: newPosts,
+            nextPost,
+          });
           this.onPostsGet();
+
+          const {user} = this.props;
+          if (user) this.getGroupsFetch(user);
         } else {
           //document.getElementById('postList').innerHTML = 'No result.';
         }
       }).catch(err => {
-          //console.log(err);
-          //alert(`Error:${err}, try again`);
+        logger('error', err);
       });
   }
 
@@ -117,20 +109,22 @@ class Kurate extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {object} modalData Post and user data for the modal
    */
-  showModal = async (e, data) => {
+  showModal = async (e, type, data) => {
     e.preventDefault();
     const {user, csrf} = this.props;
-    this.setState({
-      modalOpen: true,
-      addPostData: {...data, user, csrf},
-    });
+    if (type === 'addPost') {
+      this.setState({
+        modalOpenAddPost: true,
+        addPostData: {...data, user, csrf},
+      });
+    }
   }
 
   /**
    *  Hides the popup modal.
    */
-  onModalClose = () => this.setState({
-    modalOpen: false,
+  onModalCloseAddPost = () => this.setState({
+    modalOpenAddPost: false,
     addPostLoading: false,
     postExists: false,
   });
@@ -141,16 +135,12 @@ class Kurate extends Component {
    *
    *  @param {event} e Event triggered by element to handle
    */
-  handleModalClick = (e) => {
+  handleModalClickAddPost = (e) => {
     const confirm = e.target.dataset.confirm;
     if (confirm === 'true') {
-      /*if (await this.handlePostValidation(newPost)) {
-        this.setState({addPostLoading: true});
-        this.addPostFetch(newPost, this.groupName);
-      }*/
       this.setState({addPostLoading: true});
       this.addPostFetch();
-    }else this.onModalClose();
+    }else this.onModalCloseAddPost();
   }
 
   /**
@@ -178,17 +168,11 @@ class Kurate extends Component {
             postExists: false,
             addPostLoading: false,
           });
-          this.onModalClose();
-        }/*else {
-          //error adding in db...
-          this.setState({
-            postExists: false,
-            addPostLoading: false,
-          });
-        }*/
+          this.onModalCloseAddPost();
+        }
       }
     }).catch((err) => {
-      throw new Error('Error adding post: ', err);
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
   }
 
@@ -220,8 +204,8 @@ class Kurate extends Component {
       this.setState({
         groups
       });
-    }).catch((err) => {
-      throw new Error('Error getting groups: ', err);
+    }).catch(err => {
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
   }
 
@@ -230,30 +214,38 @@ class Kurate extends Component {
     this.setState({postsListShow: 'block'})
   }
 
-  /*openPost = (author, permlink) => {
-    client.database.call('get_content', [author, permlink]).then(result => {
-      this.setState({
-        post: result
-      });
-      this.onPostOpen();
-    });
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} name Name of the element triggering the event
+   *  @param {string} value Value of the element triggering the event
+   */
+  handleChange = (e, { name, value }) => {
+    this.setState({
+      [name]: value,
+     });
   }
 
-  onPostOpen = () => {
+  /**
+   *  Set state values for when filter option changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the role selected
+   */
+  handleFilterSelect = (e, {value}) => {
     this.setState({
-      postsListShow: 'none',
-      postShow: 'block',
-    })
+      selectedFilter: value
+     });
   }
 
-  onPostClose = () => {
-    this.setState({
-      postsListShow: 'block',
-      postShow: 'none',
-      post: {}
-    })
+  /*onClickTitle = (e, url) => {
+    e.preventDefault();
+console.log('h:',this.props.history)
+    //this.context.history.push('/url');
+    //this.props.router.push(url)
+    this.props.history.push(url)
   }*/
-
 
 
   render() {
@@ -261,53 +253,94 @@ class Kurate extends Component {
       state: {
         posts,
         postsListShow,
-        postShow,
-        post,
         nextPost,
-        modalOpen,
+        modalOpenAddPost,
         groups,
         postExists,
         addPostLoading,
-      }
+        tag,
+        //selectedFilter,
+      },
+      props: {
+        user,
+        csrf,
+        match: {
+          path,
+        }
+      },
     } = this;
-    let addErrorPost = '';
 
+    let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
+
+    const filters = [
+      {key: 0, value: 'created', text: 'New'},
+      {key: 1, value: 'hot', text: 'Hot'},
+      {key: 2, value: 'promoted', text: 'Promoted'},
+      {key: 3, value: 'trending', text: 'Trending'}
+    ];
 
     return (
       <React.Fragment>
-        <div>
-          <ModalGroup
-            modalOpen={modalOpen}
-            onModalClose={this.onModalClose}
-            handleModalClick={this.handleModalClick}
-            getGroupsFetch={this.getGroupsFetch}
-            handleGroupSelect={this.handleGroupSelect}
-            groups={groups}
-            addErrorPost={addErrorPost}
-            addPostLoading={addPostLoading}
-          />
-          <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
-        </div>
-        <hr />
-        <div>
-          <div id="postList" style={{display: postsListShow}}>
-            <PostsSummary
-              posts={posts}
-              openPost={this.openPost}
-              nextPost={nextPost}
+        <ModalGroup
+          modalOpen={modalOpenAddPost}
+          onModalClose={this.onModalCloseAddPost}
+          handleModalClick={this.handleModalClickAddPost}
+          getGroupsFetch={this.getGroupsFetch}
+          handleGroupSelect={this.handleGroupSelect}
+          groups={groups}
+          addErrorPost={addErrorPost}
+          addPostLoading={addPostLoading}
+        />
+        {
+          (path === '/kurate')
+          ?
+          (
+            <React.Fragment>
+              <div className='controlContent'>
+                <Form>
+                  <Form.Group>
+                    <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+                    <Picker
+                      onChange={this.handleFilterSelect}
+                      options={filters}
+                      label=''
+                    />
+                    <Form.Input
+                      placeholder='Search a tag'
+                      name='tag'
+                      value={tag}
+                      onChange={this.handleChange}
+                    />
+                  </Form.Group>
+                </Form>
+              </div>
+              <hr />
+              <div>
+                <div id="postList" style={{display: postsListShow}}>
+                  <PostsSummary
+                    posts={posts}
+                    nextPost={nextPost}
+                    showModal={this.showModal}
+                    user={user}
+                    csrf={csrf}
+                    onClickTitle={this.onClickTitle}
+                  />
+                </div>
+              </div>
+              <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+            </React.Fragment>
+          )
+          :
+          (
+            <PostDetails
+              match={this.props.match}
               showModal={this.showModal}
-              handleGroupSelect={this.handleGroupSelect}
+              user={user}
+              csrf={csrf}
             />
-          </div>
-
-          <div id="postBody" style={{display: postShow}}>
-            {
-              (post) ? <PostDetails post={post} onPostClose={this.onPostClose} /> : ''
-            }
-          </div>
-        </div>
-        <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+          )
+        }
       </React.Fragment>
     )
   }

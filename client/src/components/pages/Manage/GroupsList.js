@@ -44,7 +44,6 @@ const GroupsList = (props) => {
             {
             groups.map((g, i) => {
               const key = g._id || i;
-console.log('g: ', g)
               const date = moment(g.created).format("ddd MMM DD, YYYY");
               return (
                 <Grid.Column key={key+1} width={4}>
@@ -86,7 +85,7 @@ console.log('g: ', g)
                         }
                       </div>
                       <div className='clear' />
-                      <Divider />
+                      <Divider className='header' />
                       <div>
                         {`Created: ${date}`}
                       </div>

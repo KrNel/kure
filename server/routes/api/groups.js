@@ -1,5 +1,8 @@
 import { Router } from 'express';
 
+import {getRecentGroupActivity} from './recentActivity';
+//import logger from '../../logger';
+
 const router = new Router();
 
 /**
@@ -9,49 +12,49 @@ const router = new Router();
  *  Gets the local DB object, user name and type of group (owned/joined).
  *  Retrieves the user's groups from the DB and reeturns them.
  */
-router.get('/user/:name/:type', (req, res) => {
+router.get('/user/:name/:type', (req, res, next) => {
   const db = req.app.locals.db;
   const user = req.params.name;
   const type = req.params.type;
 
+
   //Get group data from DB and return
-  getUserGroups(db, user, type)
+  getUserGroups(db, next, user, type)
     .then(data => {
       res.json({ groups: data })
     })
-    .catch(err => {
-      throw new Error('Error getting groups from DB: ', err);
-    });
+    .catch(next);
 })
 
 /**
  *  Get the Owned or Joined user's groups from DB.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
  *  @param {string} user Logged in user name
  *  @param {string} type Type of group data to get ['owned'|'joined']
+ *  @param {number} [limit] Limit for query return
  *  @returns {object} Group data object to send to frontend
  */
-const getUserGroups = async (db, user, type) => {
+export const getUserGroups = async (db, next, user, type, limit) => {
   if (type === 'owned') {
-    const groups = db.collection('kgroups').find({owner: user}).sort( { created: -1 } ).toArray().then(result => {
+    const groups = db.collection('kgroups').find({owner: user}).sort( { _id: -1 } ).toArray().then(result => {
       return result;
-    }).catch(err => {
-      throw new Error('Error getting owned groups from DB: ', err);
-    });
+    }).catch(next);
+
     return await groups;
   }else {
     //If type is not Owned, then it's Joined Groups to return
     return new Promise((resolve, reject) => {
 
       let groupAccess = {};
-      let order = {created: -1};
+      let order = {_id: -1};
       if (type === 'joined') {
         groupAccess = {$gt: 0};
         //order = {created: -1};
       }else {
         groupAccess = {$gte: 0};
-        order = {name: 1};
+        order = limit ? {updated: -1} : {name: 1};
       }
       //Get groups not owned, and whbich user has access to
       db.collection('kgroups_access').aggregate([
@@ -84,20 +87,62 @@ const getUserGroups = async (db, user, type) => {
             like: '$kgroup.like',
             posts: '$kgroup.posts',
             rating: '$kgroup.rating',
+            updated: '$kgroup.updated',
             access: 1,
             added_on: 1
           }
-        },{
+        }, {
           $sort: order
+        }, {
+          $limit: limit || 20
         }
       ]).toArray((err, result) => {
       err
         ? reject(err)
         : resolve(result);
       })
-    })
+    }).catch(next);
   }
 }
+
+/**
+ *  GET route to get groups foro the Communities page.
+ *  Route: /api/groups/
+ *
+ *  Gets the local DB object, group name.
+ *  Retrieves the post and user group data for which the user has access.
+ */
+router.get('/list/:listlimit/:user', async (req, res, next) => {
+  const db = req.app.locals.db;
+  const { listlimit, user } = req.params;
+
+  const groupLimit = 4;
+  const postLimit = 5;
+
+  //const groupsCreated = getGroupsCreated(db, next, listLimit);
+  const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
+
+  /*const groupName = getGroupDisplayName(db, group);
+  const groupAccess = getGroupAccess(db, group, user)
+  const groupPosts = getGroupPosts(db, group);
+  const groupUsers = getGroupUsers(db, group);*/
+
+  //
+  Promise.all([groupsActivity]).then((result) => {
+    res.json({
+      //groupsList,
+      groupsActivity: result[0],
+
+      /*group: {
+        name: group,
+        display: result[0]['display'],
+        access: result[1]['access']
+      },
+      posts: result[2],
+      users: result[3]*/
+    })
+  })
+})
 
 /**
  *  GET route to get posts and users data that belong to a group.
@@ -106,7 +151,7 @@ const getUserGroups = async (db, user, type) => {
  *  Gets the local DB object, group name.
  *  Retrieves the post and user group data for which the user has access.
  */
-router.get('/:group/:user', async (req, res) => {
+router.get('/:group/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user } = req.params;
 
@@ -114,10 +159,11 @@ router.get('/:group/:user', async (req, res) => {
   const groupAccess = getGroupAccess(db, group, user)
   const groupPosts = getGroupPosts(db, group);
   const groupUsers = getGroupUsers(db, group);
+  const groupPendingUsers = getGroupPendingUsers(db, group);
 
   //Resolve promises for group name, group posts and group users
   //Return data to frontend
-  Promise.all([groupName, groupAccess, groupPosts, groupUsers]).then((result) => {
+  Promise.all([groupName, groupAccess, groupPosts, groupUsers, groupPendingUsers]).then((result) => {
     res.json({
       group: {
         name: group,
@@ -125,9 +171,10 @@ router.get('/:group/:user', async (req, res) => {
         access: result[1]['access']
       },
       posts: result[2],
-      users: result[3]
+      users: result[3],
+      pending: result[4]
     })
-  })
+  }).catch(next);
 })
 
 /**
@@ -172,7 +219,7 @@ const getGroupAccess = async (db, group, user) => {
  */
 const getGroupPosts = async (db, group) => {
   return new Promise((resolve, reject) => {
-    db.collection('kposts').find({group: group}).sort( { created: -1 } ).toArray().then(result => {
+    db.collection('kposts').find({group: group}).sort( { _id: -1 } ).toArray().then(result => {
       if (result) resolve(result);
       else reject();
     })
@@ -188,44 +235,30 @@ const getGroupPosts = async (db, group) => {
  */
 const getGroupUsers = async (db, group) => {
   return new Promise((resolve, reject) => {
-    db.collection('kgroups_access').find({group: group}).sort( { user: 1 } ).toArray().then(result => {
+    db.collection('kgroups_access').find({group: group, access: {$lt: 100}}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
       else reject();
     })
   })
-  //do a join, aggregation
-  //kgroups_access.user === users.name
-  //https://gist.github.com/bertrandmartel/311dbe17c2a57e8a07610724310bf898
-  /*
-  return new Promise((resolve, reject) => {
-    db.collection('kgroups_access').aggregate([
-      {
-        $match : {
-          group : group
-        }
-      }, {
-        $lookup: {
-          from: 'kgroups',
-          let: { access_group: "$group" },
-          pipeline: [{
-            $match: {
-              $expr: {
-                $eq: [ "$name",  "$$access_group" ]
-              }
-            },
-              { $project: { user: 1, _id: 0 } }
-          }],
-          as: 'kgroup'
-        }
-      }//{        $sort: {          user: 1        }      }{ $project: { _id: 0 } }
-
-    ]).toArray((err, result) => {
-console.log("result: ", result);
-    err
-      ? reject(err)
-      : resolve(result);
-    })
-  })*/
 }
+
+/**
+ *  Get a group's pending user approvals from DB.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {string} group Group to get data from
+ *  @returns {object} Group's users data object to send to frontend
+ */
+const getGroupPendingUsers = async (db, group) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups_access').find({group: group, access: 100}).sort( { user: 1 } ).toArray().then(result => {
+      if (result) resolve(result);
+      else reject();
+    })
+  })
+}
+
+
+
 
 export default router;

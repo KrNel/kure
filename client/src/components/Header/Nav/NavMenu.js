@@ -24,9 +24,10 @@ const NavMenu = ({loginURL}) => {
 
   const items = [
     {name : "/", label : "Home"},
+    {name : "/kurate", label : "Kurate"},
     {name : "/groups", label : "Communities"},
-    {name : "/posts", label : "Posts"},
-    {name : "/kurate", label : "Kurate"}
+    {name : "/posts", label : "Kurated"},
+
   ];
 
   return (

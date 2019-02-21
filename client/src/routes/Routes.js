@@ -17,7 +17,7 @@ import NoMatch from './NoMatch';
  *
  *  @returns {Component} Renders the route for main page components
  */
-const Routes = () => (
+const Routes = (props) => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />
@@ -27,6 +27,7 @@ const Routes = () => (
       <Route path='/success' component={AuthSC} />
       <PrivateRoute path='/manage' component={Manage} />
       <Route path='/logout' component={Logout} />
+      <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route component={NoMatch} />
     </Switch>
   </App>
