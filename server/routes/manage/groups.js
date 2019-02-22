@@ -41,11 +41,14 @@ router.post('/add', async (req, res, next) => {
             name: groupClean,
             display: group,
             owner: user,
-            followers: 1,
-            likes: 1,
+            followers: 0,
+            likes: 0,
             created: created,
             updated: created,
-            posts: 0
+            posts: 0,
+            rating: 0,
+            users: 1,
+            joinRequests: 0
           }
         });
       }
@@ -57,6 +60,7 @@ router.post('/add', async (req, res, next) => {
  *  Query the DB to see if a group already exists.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Express middleware
  *  @param {string} group Group to verify
  *  @returns {boolean} Determines if group exists or not
  */
@@ -76,6 +80,7 @@ const groupExists = async (db, next, group) => {
  *  Query the DB to see if a user has reached their Owned Group limit.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Express middleware
  *  @param {string} user User to verify
  *  @returns {boolean} Determines if a user has reached their limit
  */
@@ -95,6 +100,7 @@ const exceededGrouplimit = async (db, next, user) => {
  *  Insert the new group into the DB.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Express middleware
  *  @param {string} group New group full display name to insert
  *  @param {string} groupTrim New group trimmed name to insert
  *  @param {string} user Logged in user to insert
@@ -115,10 +121,12 @@ const groupUpsert = (db, next, group, groupTrim, user) => {
           created: created,
           updated: created,
           owner: user,
-          followers: 1,
-          likes: 1,
+          followers: 0,
+          likes: 0,
           posts: 0,
-          rating: 0
+          rating: 0,
+          users: 1,
+          joinRequests: 0
         }
       },
       { upsert: true }
@@ -179,6 +187,7 @@ router.post('/delete', async (req, res, next) => {
  *  Delete a post from a community group.
  *
  *  @param {object} db MongoDB Connectioon
+ *  @param {function} next Express middleware
  *  @param {string} post Post to remove from the group
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a post was a success
@@ -242,11 +251,12 @@ router.post('/join', async (req, res, next) => {
 })
 
 /**
- *  Insert the new join request into the DB.
+ *  Insert the new user join request into the DB.
  *
  *  @param {object} db MongoDB connection
- *  @param {string} group New group full display name to insert
- *  @param {string} user Logged in user to insert
+ *  @param {function} next Express middleware
+ *  @param {string} group Group name to requset a join in
+ *  @param {string} user New user to approve
  *  @returns {object} The date the group was created at
  */
 const requestJoinGroup = (db, next, group, user) => {

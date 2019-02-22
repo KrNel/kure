@@ -271,6 +271,7 @@ class GroupManage extends Component {
    *  Trim user name, validate it's structure, set loading flag.
    */
   handleSubmitNewUser = () => {
+
     let { newUser, selectedAccess } = this.state;
     newUser = newUser.trim();
 
@@ -321,6 +322,8 @@ class GroupManage extends Component {
             ],
             newUser: '',
           });
+          const { onUserUpdate } = this.props;
+          onUserUpdate(group, 'inc');
         }
         this.setState({
           addUserLoading: false,
@@ -365,12 +368,20 @@ class GroupManage extends Component {
           deletingUser: '',
           users: newUsers
         });
+        const { onUserUpdate } = this.props;
+        onUserUpdate(group, 'dec');
       }/*else error deleting user*/
     }).catch(err => {
       throw new Error('Error deleting user: ', err);
     })
   }
 
+  /**
+   *  Call databse function for approve/deny of user join request.
+   *
+   *  @param {string} newUser User name to approve
+   *  @param {string} type Type of approval action (approve/deny)
+   */
   handleApproval = (e, newUser, type) => {
     e.preventDefault();
     const {group} = this.state;
@@ -379,6 +390,14 @@ class GroupManage extends Component {
     else if (type === 'deny') this.denyUserFetch(group, newUser);
   }
 
+  /**
+   *  New user to be approved to a community group.
+   *  Update the state with user list appended, and remove pending user.
+   *  Clear the `approvingUser` string to remove loader.
+   *
+   *  @param {string} group Group name to approve for
+   *  @param {string} newUser User name to aprove
+   */
   approveUserFetch = (group, newUser) => {
     approveUser({group, newUser, user: this.user}, this.csrf)
     .then(res => {
@@ -389,11 +408,13 @@ class GroupManage extends Component {
           this.setState({
             pending: newPending,
             users: [
-              ...users,
               res.data.newUser,
+              ...users,
             ],
             approvingUser: '',
           });
+          const { onUserUpdate } = this.props;
+          onUserUpdate(group, 'inc');
         }else {
           this.setState({
             approvingUser: '',
@@ -405,6 +426,14 @@ class GroupManage extends Component {
     });
   }
 
+  /**
+   *  New user to be denied joining a community group.
+   *  Update the state newUser removed from pending user list.
+   *  Clear the `approvingUser` string to remove loader.
+   *
+   *  @param {string} group Group name to deny for
+   *  @param {string} newUser User name to deny
+   */
   denyUserFetch = (group, newUser) => {
     denyUser({group, newUser, user: this.user}, this.csrf)
     .then(res => {

@@ -1,7 +1,5 @@
 /**
  * Based on ExtractContent.js from Steem condenser front-end by Steemit Inc. @ https://github.com/steemit/condenser/blob/master/src/app/utils/ExtractContent.js
- *
- *
  */
 
 import Remarkable from 'remarkable';

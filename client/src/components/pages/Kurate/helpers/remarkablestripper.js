@@ -1,3 +1,8 @@
+/**
+ *  Grabbed from Steemit's condenser
+ *  https://github.com/steemit/condenser/blob/master/src/app/utils/RemarkableStripper.js
+ */
+
 import Remarkable from 'remarkable';
 
 const remarkable = new Remarkable();

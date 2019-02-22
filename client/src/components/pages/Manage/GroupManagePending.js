@@ -1,13 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Table, Icon, Dimmer, Loader, Header, Segment } from "semantic-ui-react";
+import { Table, Icon, Dimmer, Loader, Header, Segment } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+/**
+ *  Table of user pending approval for community group.
+ *
+ *  Shows the user name, when they requested to join, and a button icon for
+ *  approval or denial of request to join.
+ *
+ *  @param {array} props.pending Data for user's pending approval for group
+ *  @param {function} props.handleApproval Handles approve/deny action
+ *  @param {string} props.approvingUser User being approved
+ *  @returns {Component} Table of user data
+ */
 const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
   <React.Fragment>
     <div className='clear' />
-    <Header className='noMarginTop'>Join Requests</Header>
+    <Header className='noMarginTop'>
+      {`Join Requests (${pending.length})`}
+    </Header>
     <div>
       {
         (pending.length)
@@ -41,7 +54,6 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
                       <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='blue' /></a>
                       {' / '}
                       <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='blue' /></a>
-
                     </Table.Cell>
                   </Table.Row>
                   )
@@ -55,5 +67,11 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
     </div>
   </React.Fragment>
 )
+
+GroupManagePending.propTypes = {
+  pending: PropTypes.arrayOf(PropTypes.object).isRequired,
+  handleApproval: PropTypes.func.isRequired,
+  approvingUser: PropTypes.string.isRequired,
+};
 
 export default GroupManagePending;

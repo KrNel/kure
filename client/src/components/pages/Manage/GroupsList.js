@@ -93,6 +93,14 @@ const GroupsList = (props) => {
                         {'Posts: '}
                         {g.posts}
                       </div>
+                      <div>
+                        {'Users: '}
+                        {g.users}
+                      </div>
+                      <div>
+                        {'Join Requests: '}
+                        {g.joinRequests}
+                      </div>
                       {/*<div>Followers: {g.followers}</div>*/}
                       {/*<div>Likes: {g.likes}</div>*/}
                     </div>

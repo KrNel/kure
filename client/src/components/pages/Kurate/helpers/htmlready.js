@@ -1,3 +1,8 @@
+/**
+ *  Grabbed from Steemit's condenser:
+ *  https://github.com/steemit/condenser/blob/master/src/shared/HtmlReady.js
+ */
+
 import xmldom from 'xmldom';
 //import linksRe, { any as linksAny } from './links';
 

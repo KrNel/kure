@@ -40,6 +40,7 @@ router.post('/add', async (req, res, next) => {
  *  Query the DB to see if a user already exists in the specific group.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Express middleware
  *  @param {string} newUser New user to give access to the group
  *  @param {string} group Group to verify if user exists in
  *  @returns {boolean} Determines if user exists or not
@@ -62,7 +63,8 @@ const userExists = async (db, next, newUser, group) => {
  *  userAccess object created from supplied data, then inserted
  *  to the 'kgroups_access' collection.
  *
- *  @param {object} db MongoDB Connectioon
+ *  @param {object} db MongoDB Connection
+ *  @param {function} next Express middleware
  *  @param {string} user User currently logged in
  *  @param {string} newUser New user to give access to the group
  *  @param {string} group Group name to add to
@@ -81,11 +83,23 @@ const addUserToGroup = async (db, next, user, newUser, group, access = 3) => {
     }
 
     return new Promise((resolve, reject) => {
-        db.collection('kgroups_access').insertOne(userAccess, (err, res) => {
+
+
+      db.collection('kgroups_access').insertOne(userAccess, (err, res) => {
         if(err) {
           reject('Error addUserToGroup DB: ', err);
         } else {
-         resolve(res.ops[0]);
+
+          db.collection('kgroups').updateOne(
+            { name: group },
+            {
+              $inc:
+              {
+                users: 1
+              }
+            }
+          )
+          resolve(res.ops[0]);
        }
       })
     })
@@ -124,7 +138,8 @@ router.post('/delete', async (req, res, next) => {
 /**
  *  Delete a user's access to a community group.
  *
- *  @param {object} db MongoDB Connectioon
+ *  @param {object} db MongoDB Connection
+ *  @param {function} next Express middleware
  *  @param {string} user User to remove access to the group
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a user was a success
@@ -134,6 +149,16 @@ const deleteUserFromGroup = (db, next, user, group) => {
     db.collection('kgroups_access').deleteOne(
       { user: user, group: group }
     )
+
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          users: -1
+        }
+      }
+    )
     return true;
   }catch (err) {
     next(err);
@@ -141,7 +166,15 @@ const deleteUserFromGroup = (db, next, user, group) => {
 }
 
 
-
+/**
+ *  POST route to approve a user's access to a community group.
+ *  Route: /manage/users/approve
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  user to approve, and group.
+ *  CSRF validation is done. If valid, proceed with database query.
+ *  Databse approve will return object of new user, return response to frontend.
+ */
 router.post('/approve', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, newUser, user } = req.body;
@@ -159,7 +192,16 @@ router.post('/approve', async (req, res, next) => {
   }
 })
 
-
+/**
+ *  Approve a user's access to a community group.
+ *
+ *  @param {object} db MongoDB Connection
+ *  @param {function} next Express middleware
+ *  @param {string} group Group name to approve from
+ *  @param {string} newUser User to approve access to
+ *  @param {string} user User that's doing the approving
+ *  @returns {object} The newUser data object
+ */
 const approvalJoinGroup = (db, next, group, newUser, approver) => {
   try {
     const created = new Date();
@@ -201,7 +243,8 @@ const approvalJoinGroup = (db, next, group, newUser, approver) => {
       {
         $inc:
         {
-          joinRequests: -1
+          joinRequests: -1,
+          users: 1
         }
       }
     )
@@ -212,6 +255,15 @@ const approvalJoinGroup = (db, next, group, newUser, approver) => {
   }
 }
 
+/**
+ *  POST route to deny/rejct a user's access to a community group.
+ *  Route: /manage/users/deny
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  user to approve, and group.
+ *  CSRF validation is done. If valid, proceed with database query.
+ *  Databse deny will return true/false, return response to frontend.
+ */
 router.post('/deny', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, newUser, user } = req.body;
@@ -226,6 +278,15 @@ router.post('/deny', async (req, res, next) => {
   }
 })
 
+/**
+ *  Deny a user's access to a community group.
+ *
+ *  @param {object} db MongoDB Connection
+ *  @param {function} next Express middleware
+ *  @param {string} group Group name to approve from
+ *  @param {string} newUser User to approve access to
+ *  @returns {boolean} Determines if denying a user was a success
+ */
 const denyJoinGroup = (db, next, group, newUser) => {
   try {
     //Create new access entry for user and group

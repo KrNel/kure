@@ -1,31 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Loader, Dimmer, Grid, Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-class GroupsRecent extends Component {
-  state = {
-    //reqJoinSent: false,
-    //groupRequested: '',
-  }
-
-  render() {
-
-    const {
-      /*state: {
-        //reqJoinSent,
-      },*/
-      props: {
-        isAuth,
-        groupsActivity,
-        groupRequested,
-        onJoinGroup
-      }
-    } = this;
-
-    if (groupsActivity.length) {
-      return (
-
-        <Grid columns={1} stackable id='GroupPage'>
+/**
+ *  Show the most recently active communities. Allow logged in users todo
+ *  request to join a community with the `Join` link. Once clicked, user sees
+ *  `Requested` which remains until request is approved or rejected.
+ *
+ *  @param {boolean} isAuth Determines if user is authenticated
+ *  @param {array} groupsActivity Data for active groups
+ *  @param {string} groupRequested The name of the group being requested to join
+ *  @param {function} onJoinGroup Handles a join request
+ */
+const GroupsRecent = ({ isAuth, groupsActivity, groupRequested, onJoinGroup }) => {
+  if (groupsActivity.length) {
+    return (
+      <React.Fragment>
+        <Label size='large' color='blue' className='adjMarginBot'><Header>Recently Active</Header></Label>
+        <Grid columns={1} stackable id='GroupPageRecent'>
           {
             groupsActivity.map((g,i) => (
               <Grid.Column key={i} width={8}>
@@ -61,7 +53,7 @@ class GroupsRecent extends Component {
                     </Label>
                     <ul className='custom-list'>
                       {
-                        g.length
+                        g.posts.length
                         ? g.posts.map(p => (
                           <li key={p._id}>
                             <Link
@@ -82,16 +74,9 @@ class GroupsRecent extends Component {
             ))
           }
         </Grid>
-      );
-    }else {
-      return (
-        <div>
-          No communities.
-        </div>
-      )
-    }
+      </React.Fragment>
+    );
   }
-
 }
 
 export default GroupsRecent;

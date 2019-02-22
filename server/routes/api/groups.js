@@ -112,14 +112,15 @@ export const getUserGroups = async (db, next, user, type, limit) => {
  *  Gets the local DB object, group name.
  *  Retrieves the post and user group data for which the user has access.
  */
-router.get('/list/:listlimit/:user', async (req, res, next) => {
+router.get('/list/:user', async (req, res, next) => {
   const db = req.app.locals.db;
-  const { listlimit, user } = req.params;
+  const { user } = req.params;
 
+  const listlimit = 20;
   const groupLimit = 4;
   const postLimit = 5;
 
-  //const groupsCreated = getGroupsCreated(db, next, listLimit);
+  const groupsCreated = getGroupsCreated(db, next, listlimit);
   const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
 
   /*const groupName = getGroupDisplayName(db, group);
@@ -128,10 +129,11 @@ router.get('/list/:listlimit/:user', async (req, res, next) => {
   const groupUsers = getGroupUsers(db, group);*/
 
   //
-  Promise.all([groupsActivity]).then((result) => {
+  Promise.all([groupsActivity, groupsCreated]).then((result) => {
     res.json({
       //groupsList,
       groupsActivity: result[0],
+      groupsCreated: result[1],
 
       /*group: {
         name: group,
@@ -141,8 +143,17 @@ router.get('/list/:listlimit/:user', async (req, res, next) => {
       posts: result[2],
       users: result[3]*/
     })
-  })
+  }).catch(next)
 })
+
+const getGroupsCreated = (db, next, listLimit) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups').find().sort( { _id: -1 } ).limit(listLimit).toArray().then(result => {
+      if (result) resolve(result);
+      else reject(false);
+    })
+  }).catch(next)
+}
 
 /**
  *  GET route to get posts and users data that belong to a group.
@@ -155,11 +166,11 @@ router.get('/:group/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user } = req.params;
 
-  const groupName = getGroupDisplayName(db, group);
-  const groupAccess = getGroupAccess(db, group, user)
-  const groupPosts = getGroupPosts(db, group);
-  const groupUsers = getGroupUsers(db, group);
-  const groupPendingUsers = getGroupPendingUsers(db, group);
+  const groupName = getGroupDisplayName(db, next, group);
+  const groupAccess = getGroupAccess(db, next, group, user)
+  const groupPosts = getGroupPosts(db, next, group);
+  const groupUsers = getGroupUsers(db, next, group);
+  const groupPendingUsers = getGroupPendingUsers(db, next, group);
 
   //Resolve promises for group name, group posts and group users
   //Return data to frontend
@@ -184,13 +195,13 @@ router.get('/:group/:user', async (req, res, next) => {
  *  @param {string} group Group to get data from
  *  @returns {object} Group name object to send to frontend
  */
-const getGroupDisplayName = async (db, group) => {
+const getGroupDisplayName = async (db, next, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups').findOne({name: group}, {projection: {display: 1, _id: 0 }}, (err, result) => {
       if (result) resolve(result);
-      else reject(false);
+      else reject(err);
     })
-  })
+  }).catch(next)
 }
 
 /**
@@ -201,13 +212,13 @@ const getGroupDisplayName = async (db, group) => {
  *  @param {string} user User logged in
  *  @returns {object} Group name object to send to frontend
  */
-const getGroupAccess = async (db, group, user) => {
+const getGroupAccess = async (db, next, group, user) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups_access').findOne({group: group, user: user}, {projection: {access: 1, _id: 0 }}, (err, result) => {
       if (result) resolve(result);
-      else reject();
+      else reject(err);
     })
-  })
+  }).catch(next)
 }
 
 /**
@@ -217,13 +228,13 @@ const getGroupAccess = async (db, group, user) => {
  *  @param {string} group Group to get data from
  *  @returns {object} Group's posts data object to send to frontend
  */
-const getGroupPosts = async (db, group) => {
+const getGroupPosts = async (db, next, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kposts').find({group: group}).sort( { _id: -1 } ).toArray().then(result => {
       if (result) resolve(result);
-      else reject();
+      else reject(false);
     })
-  })
+  }).catch(next)
 }
 
 /**
@@ -233,13 +244,13 @@ const getGroupPosts = async (db, group) => {
  *  @param {string} group Group to get data from
  *  @returns {object} Group's users data object to send to frontend
  */
-const getGroupUsers = async (db, group) => {
+const getGroupUsers = async (db, next, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups_access').find({group: group, access: {$lt: 100}}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
-      else reject();
+      else reject(false);
     })
-  })
+  }).catch(next)
 }
 
 /**
@@ -249,13 +260,13 @@ const getGroupUsers = async (db, group) => {
  *  @param {string} group Group to get data from
  *  @returns {object} Group's users data object to send to frontend
  */
-const getGroupPendingUsers = async (db, group) => {
+const getGroupPendingUsers = async (db, next, group) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups_access').find({group: group, access: 100}).sort( { user: 1 } ).toArray().then(result => {
       if (result) resolve(result);
-      else reject();
+      else reject(false);
     })
-  })
+  }).catch(next)
 }
 
 

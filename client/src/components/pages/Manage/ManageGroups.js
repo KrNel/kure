@@ -303,6 +303,26 @@ class ManageGroups extends Component {
     this.setState({groups: newGroups});
   }
 
+  /**
+   *  Increment or decrement the user value for group.
+   *
+   *  @param {string} groupToUpdate Group name to update
+   *  @param {string} action Increment or decrement post quantity
+   */
+  onUserUpdate = (groupToUpdate, action) => {
+    const { groups } = this.state;
+    const newGroups = groups.map(g => {
+      if (groupToUpdate === g.name) {
+        g = {
+          ...g,
+          users: g.users+(action === 'inc' ? 1 : -1)
+        };
+      }
+      return g;
+    });
+    this.setState({groups: newGroups});
+  }
+
   render() {
     const {
       newGroup,
@@ -342,16 +362,9 @@ class ManageGroups extends Component {
       <React.Fragment>
         <Grid.Row className="header-row">
           <Grid.Column floated='left' width={10}>
-
-            <Label size='big' color='blue'><Header as="h2">{headerText}</Header></Label>
-            {
-                /*<SearchComponent
-                onResultSelect={this.handleResultSelect}
-                onSearchChange={this.handleSearchChange}
-                results={searchResults}
-                value={searchValue}
-              />*/
-          }
+            <Label size='big' color='blue'>
+              <Header as="h2">{headerText}</Header>
+            </Label>
           </Grid.Column>
           {type === 'owned' &&
             (
@@ -408,6 +421,7 @@ class ManageGroups extends Component {
               csrf={csrf}
               user={user}
               onPostUpdate={this.onPostUpdate}
+              onUserUpdate={this.onUserUpdate}
             />
           )
         }

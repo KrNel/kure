@@ -41,6 +41,7 @@ router.post('/add', async (req, res, next) => {
  *  Query the DB to see if a post already exists.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
  *  @param {string} permlink Steem permlink of post
  *  @param {string} group Group to verify if posts exists in
  *  @returns {boolean} Determines if post exists or not
@@ -64,6 +65,7 @@ const postExists = async (db, next, author, permlink, group) => {
  *  to the 'kposts' collection.
  *
  *  @param {object} db MongoDB Connectioon
+ *  @param {function} next Middleware function
  *  @param {string} user User currently logged in
  *  @param {string} group Group name to add to
  *  @param {string} category Category of Steem post
@@ -73,7 +75,6 @@ const postExists = async (db, next, author, permlink, group) => {
  *  @returns {object} Send inserted object back to frontend for use
  */
 const addPost = (db, next, user, group, category, author, permlink, title) => {
-  console.log('1')
   try {
     const created = new Date();
 
@@ -142,6 +143,7 @@ router.post('/delete', async (req, res, next) => {
  *  Delete a post from a community group.
  *
  *  @param {object} db MongoDB Connectioon
+ *  @param {function} next Middleware function
  *  @param {string} post Post to remove from the group
  *  @param {string} group Group name to remove from
  *  @returns {boolean} Determines if deleting a post was a success
