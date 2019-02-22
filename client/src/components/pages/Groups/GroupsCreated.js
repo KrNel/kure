@@ -3,6 +3,11 @@ import { Header, Table, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+/**
+ *  Show the newly created groups as a table list.
+ *
+ *  @param {array} groupsCreated Data for newly created groups
+ */
 const GroupsCreated = ({ groupsCreated }) => {
   return (
 
