@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
-import { fetchRecentIfNeeded } from '../../../actions/recentPostsActions';
+import { fetchPosts } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
 import './Home.css';
 
@@ -41,7 +41,7 @@ class Home extends Component {
   componentDidMount() {
     const {selected, dispatch, user} = this.props;
     if (user !== '') {
-      dispatch(fetchRecentIfNeeded(selected, user));
+      dispatch(fetchPosts(selected, user));
     }
   }
 
@@ -49,7 +49,7 @@ class Home extends Component {
   componentDidUpdate(prevProps) {
     const {selected, dispatch, user} = this.props;
     if (prevProps.user !== user) {
-      dispatch(fetchRecentIfNeeded(selected, user));
+      dispatch(fetchPosts(selected, user));
     }
   }
 

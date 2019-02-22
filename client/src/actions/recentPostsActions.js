@@ -62,42 +62,10 @@ export const receivePosts = (section, data) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchPosts = (section, user) => dispatch => {
+export const fetchPosts = (section, user) => dispatch => {
   dispatch(requestPosts(section));
   return getRecentActivity(user, 10) //limit 10 'my communities'
     .then(data => {
       dispatch(receivePosts(section, data.data));
     });
-}
-
-/**
- *  Function to fetch the recent activity from the database.
- *
- *  @param {object} state Redux state
- *  @param {string} section Section selected
- *  @returns {bool} Determines if a fetch should be done
- */
-const shouldFetchRecent = (state, section) => {
-  const activity = state.recentActivity[section];
-
-  if (!activity) {
-    return true;
-  }
-  if (activity.isFetching) {
-    return false;
-  }
-  return activity.didInvalidate;
-}
-
-/**
- *  Function to fetch the recent activity from the database.
- *
- *  @param {function} dispatch Redux dispatch function
- *  @param {function} getState Redux funtion to get the store state
- *  @returns {function} Dispatches returned action object
- */
-export const fetchRecentIfNeeded = (section, user) => (dispatch, getState) => {
-  if (shouldFetchRecent(getState(), section)) {
-    return dispatch(fetchPosts(section, user));
-  }
 }

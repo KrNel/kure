@@ -75,11 +75,13 @@ const getRecentPosts = async (db, next, limit = 50) => {
     ]).toArray((err, result) => {
       err ? reject(err) : resolve(result);
     })
-  })
+  }).catch(next)
 }
 
 /**
- *  Get the Owned or Joined user's groups from DB.
+ *  Get the recent group activity.
+ *  If user logged in, then get a more complex data query of their access
+ *  level to the active groups.
  *
  *  @param {object} db MongoDB connection
  *  @param {function} next Middleware function
@@ -148,16 +150,16 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
         err ? reject(err) : resolve(result);
       })
     }
-  })
+  }).catch(next)
 }
 
 /**
- *  Get the Owned or Joined user's groups from DB.
+ *  Get the recent submissions for curation a user has made.
  *
  *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
  *  @param {string} user Logged in user name
  *  @param {number} limit Limit for query return
- *  @param {function} next Middleware function
  *  @returns {object} Recent group activity  data object to send to frontend
  */
 const getMySubmissions = (db, next, user, limit) => {
@@ -165,7 +167,7 @@ const getMySubmissions = (db, next, user, limit) => {
     db.collection('kposts').find({added_by: user}).sort( { _id: -1 } ).limit(limit).toArray((err, result) => {
       err ? reject(err) : resolve(result);
     })
-  })
+  }).catch(next)
 }
 
 export default router;

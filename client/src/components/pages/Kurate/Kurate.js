@@ -22,6 +22,8 @@ class Kurate extends Component {
 
   static propTypes = {
     user: PropTypes.string,
+    csrf: PropTypes.string,
+    match: PropTypes.arrayOf(PropTypes.object),
   };
 
   constructor(props) {
@@ -209,7 +211,9 @@ class Kurate extends Component {
     });
   }
 
-
+  /**
+   *  Change the style to show posts when data is returned.
+   */
   onPostsGet = () => {
     this.setState({postsListShow: 'block'})
   }
@@ -239,15 +243,6 @@ class Kurate extends Component {
      });
   }
 
-  /*onClickTitle = (e, url) => {
-    e.preventDefault();
-console.log('h:',this.props.history)
-    //this.context.history.push('/url');
-    //this.props.router.push(url)
-    this.props.history.push(url)
-  }*/
-
-
   render() {
     const {
       state: {
@@ -259,7 +254,6 @@ console.log('h:',this.props.history)
         postExists,
         addPostLoading,
         tag,
-        //selectedFilter,
       },
       props: {
         user,

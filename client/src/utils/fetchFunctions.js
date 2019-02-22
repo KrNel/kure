@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 /**
- *  Get the groups a user is assocaited with.
+ *  Get the community a user is assocaited with.
  *
- *  @param {string} user User to get groups for
+ *  @param {string} user User to get community for
  *  @param {string} type Type of group, 'owned', 'joined' or 'all'
  */
 export const getUserGroups = (user, type) => {
@@ -11,9 +11,9 @@ export const getUserGroups = (user, type) => {
 }
 
 /**
- *  Get the group to manage.
+ *  Get the community to manage.
  *
- *  @param {string} group Requested group
+ *  @param {string} group Requested community
  *  @param {string} user User to get groups for
  */
 export const getManageGroup = (group, user) => {
@@ -22,7 +22,7 @@ export const getManageGroup = (group, user) => {
 
 /**
  *  Get the recent posts and community activity on the site, and the
- *  recent group activity and submittions a user is assocaited with.
+ *  recent community activity and submittions a user is assocaited with.
  *
  *  @param {string} user User to get groups for
  *  @param {string} limit Limit of records to return
@@ -50,7 +50,7 @@ const getData = (path) => {
 }
 
 /**
- *  Call/fetch to add a group.
+ *  Call/fetch to add a community.
  *
  *  @param {object} params Data to pass to server fetch
  *  @param {string} csrf CSRF token
@@ -60,7 +60,7 @@ export const addGroup = (params, csrf) => {
 }
 
 /**
- *  Call/fetch to delete a group.
+ *  Call/fetch to delete a community.
  *
  *  @param {object} params Data to pass to server fetch
  *  @param {string} csrf CSRF token
@@ -109,14 +109,32 @@ export const deleteUser = (params, csrf) => {
   return postData('/manage/users/delete', params, csrf);
 }
 
+/**
+ *  Call/fetch to request joining a community.
+ *
+ *  @param {object} params Data to pass to server fetch
+ *  @param {string} csrf CSRF token
+ */
 export const requestToJoinGroup = (params, csrf) => {
   return postData('/manage/groups/join', params, csrf);
 }
 
+/**
+ *  Call/fetch to approve a user's request to join a community.
+ *
+ *  @param {object} params Data to pass to server fetch
+ *  @param {string} csrf CSRF token
+ */
 export const approveUser = (params, csrf) => {
   return postData('/manage/users/approve', params, csrf);
 }
 
+/**
+ *  Call/fetch to deny a user's request to join a community.
+ *
+ *  @param {object} params Data to pass to server fetch
+ *  @param {string} csrf CSRF token
+ */
 export const denyUser = (params, csrf) => {
   return postData('/manage/users/deny', params, csrf);
 }

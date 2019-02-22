@@ -1,36 +1,38 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import Remarkable from 'remarkable';
 import { Client } from 'dsteem';
 import { Grid } from "semantic-ui-react";
 import moment from 'moment';
 
-//import HtmlReady from '../pages/Kurate/helpers/htmlready';
-//import { extractContent } from '../pages/Kurate/helpers/formatters';
 import RepLog10 from '../../../utils/reputationCalc';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
 import PostActions from './PostActions';
 import replaceLinks from './helpers/replaceLinks';
 
-/*import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
-import ModalGroup from '../Modal/ModalGroup';
-import ErrorLabel from '../ErrorLabel/ErrorLabel';*/
-
 import './PostDetails.css'
 
 const client = new Client('https://hive.anyx.io/');
 
+/**
+ *  Renders the post details for Steem content for a user to view.
+ */
 class PostDetails extends Component {
+  static propTypes = {
+    match: PropTypes.arrayOf(PropTypes.object).isRequired,
+    showModal: PropTypes.func.isRequired,
+    user: PropTypes.string.isRequired,
+  };
+
   state = {
     post: {},
     isLoading: true,
-    /*modalOpenAddPost: false,
-    addPostData: {},
-    postExists: false,
-    addPostLoading: false,*/
   }
 
+  /**
+   *  Fetch post detail from Steem blockchain on component mount.
+   */
   componentDidMount() {
-//console.log('pp:',this.props)
     const {
       match: {
         params: {
@@ -43,10 +45,17 @@ class PostDetails extends Component {
     this.openPost(author, permlink);
   }
 
+  //Needed to `dangerouslySetInnerHTML`
   createMarkup = (html) => {
     return {__html: html};
   }
 
+  /**
+   *  Open the post for user to see.
+   *
+   *  @param {string} author Author of content
+   *  @param {string} permlink Permlink of content
+   */
   openPost = (author, permlink) => {
     client.database.call('get_content', [author, permlink]).then(result => {
       this.setState({
