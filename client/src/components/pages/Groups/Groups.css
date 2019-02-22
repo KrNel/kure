@@ -1,7 +1,13 @@
-#GroupPage .ui.label.head {
+
+
+#GroupPageRecent .ui.label.head {
   line-height: 1.3rem
 }
 
-#GroupPage .ui.label.head .right {
+#GroupPageRecent .ui.label.head .right {
   font-size: 1rem
+}
+
+.ui.label.adjMarginBot {
+  margin-bottom: 1em;
 }

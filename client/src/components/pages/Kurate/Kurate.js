@@ -23,7 +23,12 @@ class Kurate extends Component {
   static propTypes = {
     user: PropTypes.string,
     csrf: PropTypes.string,
-    match: PropTypes.arrayOf(PropTypes.object),
+    match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  };
+
+  static defaultProps = {
+    user: '',
+    csrf: '',
   };
 
   constructor(props) {

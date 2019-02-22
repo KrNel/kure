@@ -41,11 +41,14 @@ router.post('/add', async (req, res, next) => {
             name: groupClean,
             display: group,
             owner: user,
-            followers: 1,
-            likes: 1,
+            followers: 0,
+            likes: 0,
             created: created,
             updated: created,
-            posts: 0
+            posts: 0,
+            rating: 0,
+            users: 1,
+            joinRequests: 0
           }
         });
       }
@@ -118,10 +121,12 @@ const groupUpsert = (db, next, group, groupTrim, user) => {
           created: created,
           updated: created,
           owner: user,
-          followers: 1,
-          likes: 1,
+          followers: 0,
+          likes: 0,
           posts: 0,
-          rating: 0
+          rating: 0,
+          users: 1,
+          joinRequests: 0
         }
       },
       { upsert: true }

@@ -36,8 +36,8 @@ export const getRecentActivity = (user, limit = 10) => {
  *
  *  @param {string} limit Limit of records to return
  */
-export const getGroupsPage = (user, listLimit = 20) => {
-  return getData(`/api/groups/list/${listLimit}/${user}`);
+export const getGroupsPage = (user) => {
+  return getData(`/api/groups/list/${user}`);
 }
 
 /**

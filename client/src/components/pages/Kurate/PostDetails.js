@@ -19,7 +19,7 @@ const client = new Client('https://hive.anyx.io/');
  */
 class PostDetails extends Component {
   static propTypes = {
-    match: PropTypes.arrayOf(PropTypes.object).isRequired,
+    match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
     showModal: PropTypes.func.isRequired,
     user: PropTypes.string.isRequired,
   };

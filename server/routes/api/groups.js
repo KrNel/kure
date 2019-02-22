@@ -112,14 +112,15 @@ export const getUserGroups = async (db, next, user, type, limit) => {
  *  Gets the local DB object, group name.
  *  Retrieves the post and user group data for which the user has access.
  */
-router.get('/list/:listlimit/:user', async (req, res, next) => {
+router.get('/list/:user', async (req, res, next) => {
   const db = req.app.locals.db;
-  const { listlimit, user } = req.params;
+  const { user } = req.params;
 
+  const listlimit = 20;
   const groupLimit = 4;
   const postLimit = 5;
 
-  //const groupsCreated = getGroupsCreated(db, next, listLimit);
+  const groupsCreated = getGroupsCreated(db, next, listlimit);
   const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
 
   /*const groupName = getGroupDisplayName(db, group);
@@ -128,10 +129,11 @@ router.get('/list/:listlimit/:user', async (req, res, next) => {
   const groupUsers = getGroupUsers(db, group);*/
 
   //
-  Promise.all([groupsActivity]).then((result) => {
+  Promise.all([groupsActivity, groupsCreated]).then((result) => {
     res.json({
       //groupsList,
       groupsActivity: result[0],
+      groupsCreated: result[1],
 
       /*group: {
         name: group,
@@ -143,6 +145,15 @@ router.get('/list/:listlimit/:user', async (req, res, next) => {
     })
   }).catch(next)
 })
+
+const getGroupsCreated = (db, next, listLimit) => {
+  return new Promise((resolve, reject) => {
+    db.collection('kgroups').find().sort( { _id: -1 } ).limit(listLimit).toArray().then(result => {
+      if (result) resolve(result);
+      else reject(false);
+    })
+  }).catch(next)
+}
 
 /**
  *  GET route to get posts and users data that belong to a group.

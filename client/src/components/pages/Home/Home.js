@@ -118,7 +118,7 @@ class Home extends Component {
                           </Label>
                           <ul className='custom-list'>
                             {
-                              g.length
+                              g.posts.length
                               ? g.posts.map(p => (
                                 <li key={p._id}>
                                   <Link

@@ -18,7 +18,9 @@ import moment from 'moment';
 const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
   <React.Fragment>
     <div className='clear' />
-    <Header className='noMarginTop'>Join Requests</Header>
+    <Header className='noMarginTop'>
+      {`Join Requests (${pending.length})`}
+    </Header>
     <div>
       {
         (pending.length)
@@ -52,7 +54,6 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
                       <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='blue' /></a>
                       {' / '}
                       <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='blue' /></a>
-
                     </Table.Cell>
                   </Table.Row>
                   )

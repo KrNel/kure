@@ -18,7 +18,7 @@ import './Groups.css';
 class Groups extends Component {
   state = {
     areGroupsLoading: true,
-    groupsActivity: [],
+    groups: {},
     groupRequested: '',
     go: true,
   }
@@ -52,13 +52,12 @@ class Groups extends Component {
    *  @param {string} user User logged in
    */
   getGroups = (user) => {
-    const listLimit = 20;
-    getGroupsPage(user, listLimit)
+    getGroupsPage(user)
     .then(result => {
-      if (result) {
+      if (result.data) {
         this.setState({
           areGroupsLoading: false,
-          groupsActivity: result.data.groupsActivity,
+          groups: result.data,
           go: false
         });
       } else {
@@ -96,10 +95,16 @@ class Groups extends Component {
     const {user, csrf} = this.props;
     requestToJoinGroup({group, user}, csrf)
     .then(result => {
-      const {groupsActivity, groupRequested}= this.state;
-      let gActivity = groupsActivity;
+
+      const {
+        groups,
+        groupRequested
+      } = this.state;
+
+      let gActivity = groups.groupsActivity;
+
       if (result.data) {
-        const newGroup = groupsActivity.map(g => {
+        const newGroup = gActivity.map(g => {
           if (g.name === groupRequested) {
             return {
               ...g,
@@ -113,7 +118,10 @@ class Groups extends Component {
         gActivity = newGroup;
       }
       this.setState({
-        groupsActivity: gActivity,
+        groups: {
+          ...groups,
+          groupsActivity: gActivity,
+        },
         groupRequested: '',
       });
 
@@ -127,8 +135,8 @@ class Groups extends Component {
     const {
       state: {
         areGroupsLoading,
-        groupsActivity,
         groupRequested,
+        groups,
       },
       props: {
         isAuth,
@@ -141,9 +149,9 @@ class Groups extends Component {
       : (
         <GroupSummary
           isAuth={isAuth}
-          groupsActivity={groupsActivity}
           groupRequested={groupRequested}
           onJoinGroup={this.onJoinGroup}
+          groups={groups}
         />
       )
     )

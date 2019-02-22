@@ -32,7 +32,9 @@ const GroupManageUsers = ({users, showModal, deletingUser, access, pending, hand
     />
 
     <div className='clear' />
-    <Header>Membership</Header>
+    <Header>
+      {`Members (${users.length})`}
+    </Header>
 
     <Table striped>
       <Table.Header>

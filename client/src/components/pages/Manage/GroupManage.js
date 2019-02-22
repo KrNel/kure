@@ -271,6 +271,7 @@ class GroupManage extends Component {
    *  Trim user name, validate it's structure, set loading flag.
    */
   handleSubmitNewUser = () => {
+
     let { newUser, selectedAccess } = this.state;
     newUser = newUser.trim();
 
@@ -321,6 +322,8 @@ class GroupManage extends Component {
             ],
             newUser: '',
           });
+          const { onUserUpdate } = this.props;
+          onUserUpdate(group, 'inc');
         }
         this.setState({
           addUserLoading: false,
@@ -365,6 +368,8 @@ class GroupManage extends Component {
           deletingUser: '',
           users: newUsers
         });
+        const { onUserUpdate } = this.props;
+        onUserUpdate(group, 'dec');
       }/*else error deleting user*/
     }).catch(err => {
       throw new Error('Error deleting user: ', err);
@@ -408,6 +413,8 @@ class GroupManage extends Component {
             ],
             approvingUser: '',
           });
+          const { onUserUpdate } = this.props;
+          onUserUpdate(group, 'inc');
         }else {
           this.setState({
             approvingUser: '',

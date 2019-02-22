@@ -83,11 +83,23 @@ const addUserToGroup = async (db, next, user, newUser, group, access = 3) => {
     }
 
     return new Promise((resolve, reject) => {
-        db.collection('kgroups_access').insertOne(userAccess, (err, res) => {
+
+
+      db.collection('kgroups_access').insertOne(userAccess, (err, res) => {
         if(err) {
           reject('Error addUserToGroup DB: ', err);
         } else {
-         resolve(res.ops[0]);
+
+          db.collection('kgroups').updateOne(
+            { name: group },
+            {
+              $inc:
+              {
+                users: 1
+              }
+            }
+          )
+          resolve(res.ops[0]);
        }
       })
     })
@@ -136,6 +148,16 @@ const deleteUserFromGroup = (db, next, user, group) => {
   try {
     db.collection('kgroups_access').deleteOne(
       { user: user, group: group }
+    )
+
+    db.collection('kgroups').updateOne(
+      { name: group },
+      {
+        $inc:
+        {
+          users: -1
+        }
+      }
     )
     return true;
   }catch (err) {
@@ -221,7 +243,8 @@ const approvalJoinGroup = (db, next, group, newUser, approver) => {
       {
         $inc:
         {
-          joinRequests: -1
+          joinRequests: -1,
+          users: 1
         }
       }
     )
