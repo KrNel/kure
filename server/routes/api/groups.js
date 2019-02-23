@@ -12,9 +12,9 @@ const router = new Router();
  *  Gets the local DB object, user name and type of group (owned/joined).
  *  Retrieves the user's groups from the DB and reeturns them.
  */
-router.get('/user/:name/:type', (req, res, next) => {
+router.get('/user/:user/:type', (req, res, next) => {
   const db = req.app.locals.db;
-  const user = req.params.name;
+  const user = req.params.user;
   const type = req.params.type;
 
 
@@ -47,13 +47,13 @@ export const getUserGroups = async (db, next, user, type, limit) => {
     //If type is not Owned, then it's Joined Groups to return
     return new Promise((resolve, reject) => {
 
-      let groupAccess = {};
+      let groupAccess = [];
       let order = {_id: -1};
       if (type === 'joined') {
-        groupAccess = {$gt: 0};
+        groupAccess = [{$gt: 0}, {$lt: 100}];
         //order = {created: -1};
       }else {
-        groupAccess = {$gte: 0};
+        groupAccess = [{$gte: 0 }, {$lt: 100}];
         order = limit ? {updated: -1} : {name: 1};
       }
       //Get groups not owned, and whbich user has access to
@@ -64,7 +64,9 @@ export const getUserGroups = async (db, next, user, type, limit) => {
               {
                 user: user
               }, {
-                access: groupAccess
+                access: groupAccess[0]
+              }, {
+                access: groupAccess[1]
               }
             ]
           }
@@ -76,27 +78,32 @@ export const getUserGroups = async (db, next, user, type, limit) => {
             as: 'kgroup'
           }
         },
-        { $unwind: '$kgroup' },
+        /*{ $unwind: '$kgroup' },*/
         {
-          $project: {
-            name: '$kgroup.name',
-            display: '$kgroup.display',
-            created: '$kgroup.created',
-            owner: '$kgroup.owner',
-            followers: '$kgroup.followers',
-            like: '$kgroup.like',
-            posts: '$kgroup.posts',
-            rating: '$kgroup.rating',
-            updated: '$kgroup.updated',
-            access: 1,
-            added_on: 1
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: [
+                "$$ROOT", {
+                  "$arrayElemAt": [
+                    "$kgroup",
+                    0
+                  ]
+                }
+              ]
+            }
           }
-        }, {
+        },
+        {
+          "$project": {
+            "kgroup": 0
+          }
+        },{
           $sort: order
         }, {
           $limit: limit || 20
         }
       ]).toArray((err, result) => {
+
       err
         ? reject(err)
         : resolve(result);
@@ -148,7 +155,7 @@ router.get('/list/:user', async (req, res, next) => {
 
 const getGroupsCreated = (db, next, listLimit) => {
   return new Promise((resolve, reject) => {
-    db.collection('kgroups').find().sort( { _id: -1 } ).limit(listLimit).toArray().then(result => {
+    db.collection('kgroups').find().sort( { updated: -1 } ).limit(listLimit).toArray().then(result => {
       if (result) resolve(result);
       else reject(false);
     })

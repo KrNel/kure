@@ -44,7 +44,7 @@ const GroupsList = (props) => {
             {
             groups.map((g, i) => {
               const key = g._id || i;
-              const date = moment(g.created).format("ddd MMM DD, YYYY");
+              const date = moment(g.created).format("ddd MMM DD, YYYY - HH:MM");
               return (
                 <Grid.Column key={key+1} width={4}>
                   <Segment key={key+2} className='groupList'>
@@ -86,8 +86,8 @@ const GroupsList = (props) => {
                       </div>
                       <div className='clear' />
                       <Divider className='header' />
-                      <div>
-                        {`Created: ${date}`}
+                      <div title={date}>
+                        {`Created: ${moment.utc(g.created).fromNow()}`}
                       </div>
                       <div>
                         {'Posts: '}

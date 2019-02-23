@@ -24,13 +24,17 @@ import {roles} from '../../../settings';
  */
 const GroupManageUsers = ({users, showModal, deletingUser, access, pending, handleApproval, approvingUser}) => (
   <Grid.Column width={10}>
-
-    <GroupManagePending
-      pending={pending}
-      handleApproval={handleApproval}
-      approvingUser={approvingUser}
-    />
-
+    {
+    access <= roles.kGroupsRolesRev['Moderator']
+    ? (
+      <GroupManagePending
+        pending={pending}
+        handleApproval={handleApproval}
+        approvingUser={approvingUser}
+      />
+    )
+    : ''
+    }
     <div className='clear' />
     <Header>
       {`Members (${users.length})`}
