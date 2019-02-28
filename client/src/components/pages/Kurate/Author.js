@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 const Author = ({author}) => (
   <strong>
     <Link
-      to={'@'+author}
+      to={`/@${author}`}
     >
       {author}
     </Link>

@@ -19,7 +19,7 @@ router.get('/:user/:limit', (req, res, next) => {
   const myCommsLimit = limit;
   const mySubsLimit = limit;
   const recentPostLimit = 50;
-  const groupLimit = 4;
+  const groupLimit = 10;
   const postLimit = 5;
 
   const recentPosts = getRecentPosts(db, next, recentPostLimit);
@@ -88,13 +88,31 @@ const getRecentPosts = async (db, next, limit = 50) => {
  *  @returns {object} Recent group activity  data object to send to frontend
  */
 export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, user) => {
-  return new Promise((resolve, reject) => {
-    if (user) {
-      db.collection('kgroups').aggregate([
+  return getGroups(db, next, groupLimit, postLimit, user);
+}
 
+/**
+ *  Get the recent group activity.
+ *  If user logged in, then get a more complex data query of their access
+ *  level to the active groups.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
+ *  @returns {object} Recent group activity  data object to send to frontend
+ */
+export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy) => {
+  return new Promise((resolve, reject) => {
+    let sorting;
+    if (sortBy === 'created') {
+      sorting = { _id: -1 }
+    }else {
+      sorting = { updated: -1 }
+    }
+
+      db.collection('kgroups').aggregate([
         { $lookup: {
             from: 'kposts',
-            as: 'posts',
+            as: 'kposts',
             let: { kgroups_name : '$name' },
             pipeline: [
               { $match: {
@@ -105,7 +123,7 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
             ]
           }
         },
-        { $sort: { updated: -1 } },
+        { $sort: sorting },
         { $limit: groupLimit },
         {
           $lookup: {
@@ -130,26 +148,7 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
       ]).toArray((err, result) => {
         err ? reject(err) : resolve(result);
       })
-    }else {
-      db.collection('kgroups').aggregate([
-        { $lookup: {
-          from: 'kposts',
-          as: 'posts',
-          let: { kgroups_name : '$name' },
-          pipeline: [
-            { $match: {
-              $expr: { $eq: [ '$group', '$$kgroups_name' ] }
-            } },
-            { $sort: { _id: -1 } },
-            { $limit: postLimit }
-          ]
-        } },
-        { $sort: { updated: -1 } },
-        { $limit: groupLimit }
-      ]).toArray((err, result) => {
-        err ? reject(err) : resolve(result);
-      })
-    }
+
   }).catch(next)
 }
 

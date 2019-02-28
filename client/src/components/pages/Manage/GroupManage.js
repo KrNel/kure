@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
-import { Grid, Header, Icon, Form, Label, Divider, Table } from "semantic-ui-react";
+import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
@@ -480,7 +478,7 @@ class GroupManage extends Component {
       manageGroup,
     } = this.props;
 
-    const access = manageGroup.group.access;
+    const access = manageGroup.group.access.access;
 
     let addErrorPost = '';
     let addErrorUser = '';
@@ -490,15 +488,6 @@ class GroupManage extends Component {
 
     if (userExists) addErrorUser = <ErrorLabel text={this.existUser} />;
     if (errors["newUser"] !== undefined) addErrorUser = <ErrorLabel text={errors["newUser"]} />;
-
-    const postHeaders = [
-      'Title',
-      'Likes',
-      'Views',
-      'Rating',
-      'Submitter',
-      'Remove',
-    ];
 
     return (
       <React.Fragment>
@@ -550,7 +539,6 @@ class GroupManage extends Component {
             deletingPost={deletingPost}
             access={access}
             user={this.user}
-            headers={postHeaders}
           />
         </Grid.Row>
 

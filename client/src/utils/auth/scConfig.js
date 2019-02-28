@@ -6,7 +6,7 @@ const scConfig = {
   sc: {
     app: 'kure.app',
     callbackURLDev: 'https://localhost:3000/success',
-    callbackURLProd: 'https://localhost:3000/success',
+    callbackURLProd: 'https://thekure.net/success',
     accessToken: 'access_token',
     scope: ['vote', 'comment'],
   }

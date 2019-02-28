@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
 import morgan from 'morgan';
 import helmet from 'helmet';
-//import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import {createLogger, format, transports} from 'winston';
@@ -12,13 +12,14 @@ import 'winston-daily-rotate-file';
 
 
 import config from './config';
-import auth from './routes/auth/auth';
 import api from './routes/api/api';
-import manage from './routes/manage/manage';
+
 
 const app = express();
 
-app.set('env', config.env);
+dotenv.config();
+
+//app.set('env', config.env);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set('port', (config.app.server.port || 3001));
@@ -28,7 +29,7 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-if (app.get("env") === "production") {
+if (process.env.NODE_ENV === "production") {
   app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms', {stream: fs.createWriteStream(path.join(__dirname, './logs/access.log'), {flags: 'a'})}));
 }
 else {
@@ -41,7 +42,7 @@ else {
   filename: './server/logs/all/log-%DATE%.log',
   handleExceptions: true,
   datePattern: 'YYYY-MM-DD',
-  level: app.get("env") === 'production' ? 'info' : 'debug',
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   prettyPrint: true,
 });*/
 
@@ -53,11 +54,11 @@ let transportError = new transports.DailyRotateFile({
   datePattern: 'YYYY-MM-DD',
   level: 'error',
   prettyPrint: true,
-  silent: app.get("env") !== 'production',
+  silent: process.env.NODE_ENV !== 'production',
 });
 
 let logger = createLogger({
-  level: app.get("env") === 'production' ? 'info' : 'debug',
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: combine(
     timestamp(),
     json(),
@@ -72,7 +73,7 @@ let logger = createLogger({
 });
 
 
-/*if (app.get("env") !== 'production') {
+/*if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
     format: format.combine(
       format.colorize(),
@@ -93,28 +94,42 @@ let logger = createLogger({
 app.use(helmet());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }))
 
-
 //MongoDB connection to persist in app
 let db;
-MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`, { useNewUrlParser: true }).then(connection => {
+const mongoURL =
+  process.env.NODE_ENV === 'production'
+  ? process.env.MONGO_URL
+  : `mongodb://${config.db.host}:${config.db.port}`;
+
+MongoClient.connect(mongoURL, { useNewUrlParser: true }).then(connection => {
 	db = connection.db(config.db.name);
   //persist db connection in app.locals
 	app.locals.db = db;
 }).catch(err => {
-	throw new Error ('MongoDB Connectioon Error: ', err);
+	console.error('MongoDB Connection Error: ', err);
 });
 
+/*app.get('/hey', (req, res) => {
+  res.send('HEY!')
+})
+*/
 // logger api
-app.post('/logger', (req, res) => {
+app.post('/api/logger', (req, res) => {
   logger.log(req.body);
   res.json({msg: 'OK'});
 });
 
 //Routes for React fetchs
-app.use('/auth', auth);
 app.use('/api', api);
-app.use('/manage', manage);
+/*
+app.get('/api/greeting', (req, res) => {
+  const name = req.query.name || 'World';
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
+});
 
+
+*/
 app.use((err, req, res) => {
   logger.log({level: 'error', message: err});
   //res.json({ error: 'Something failed!' })

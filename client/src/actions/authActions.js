@@ -83,7 +83,7 @@ export const receiveLogin = (res) => ({
 const fetchReturning = () => dispatch => {
   dispatch(requestReturning());
 
-  return axios.get('/auth/returning', {
+  return axios.get('/api/auth/returning', {
   }).then(res => {
       dispatch(receiveReturning(res));
     });
@@ -100,7 +100,7 @@ const fetchLogout = (state) => dispatch => {
   const user = state.auth.userData.name;
   dispatch(requestLogout());
 
-  return axios.post('/auth/logout', {
+  return axios.post('/api/auth/logout', {
       user: user
     }).then(res => {
       dispatch(receiveLogout());
@@ -121,7 +121,7 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
   //const user = state.auth.userData.name;
   dispatch(requestLogin(user));
 
-  return axios.post('/auth/login', {
+  return axios.post('/api/auth/login', {
       expiresAt: expiresAt,
       accessToken: accessToken,
       user: user

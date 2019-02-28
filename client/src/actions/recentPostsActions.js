@@ -64,6 +64,7 @@ export const receivePosts = (section, data) => ({
  */
 export const fetchPosts = (section, user) => dispatch => {
   dispatch(requestPosts(section));
+  if (user === '') user = 'x';
   return getRecentActivity(user, 10) //limit 10 'my communities'
     .then(data => {
       dispatch(receivePosts(section, data.data));

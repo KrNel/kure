@@ -28,7 +28,7 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
-    user: PropTypes.string.isRequired,
+    user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -37,21 +37,23 @@ class Home extends Component {
     isAuth: PropTypes.bool.isRequired,
   };
 
+  static defaultProps = {
+    user: 'x'
+  };
+
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
     const {selected, dispatch, user} = this.props;
-    if (user !== '') {
-      dispatch(fetchPosts(selected, user));
-    }
+    dispatch(fetchPosts(selected, user));
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount
-  componentDidUpdate(prevProps) {
+  /*componentDidUpdate(prevProps) {
     const {selected, dispatch, user} = this.props;
     if (prevProps.user !== user) {
       dispatch(fetchPosts(selected, user));
     }
-  }
+  }*/
 
   render() {
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
@@ -62,7 +64,7 @@ class Home extends Component {
           ? <Loader active inline='centered' />
         : <RecentPosts posts={posts} isAuth={isAuth} />;
 
-    moment.locale('en', {
+      moment.updateLocale('en', {
       relativeTime: {
         future: 'in %s',
         past: '%s ago',
@@ -118,8 +120,8 @@ class Home extends Component {
                           </Label>
                           <ul className='custom-list'>
                             {
-                              g.posts.length
-                              ? g.posts.map(p => (
+                              g.kposts.length
+                              ? g.kposts.map(p => (
                                 <li key={p._id}>
                                   <Link
                                     to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
@@ -172,7 +174,12 @@ class Home extends Component {
                           <div className='clear' />
                         </li>
                       ))
-                      : <li>Create a community.</li>
+                      : (
+                        <li>
+                          <Link to='/Manage'>Create</Link>
+                          {' a community.'}
+                        </li>
+                      )
                   }
                 </ul>
               </Segment>
@@ -210,7 +217,12 @@ class Home extends Component {
                           <div className='clear' />
                         </li>
                       ))
-                      : <li>Curate some posts.</li>
+                      : (
+                        <li>
+                          <Link to='/kurate'>Kurate</Link>
+                          {' some posts.'}
+                        </li>
+                      )
                   }
                 </ul>
               </Segment>

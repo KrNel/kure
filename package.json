@@ -15,6 +15,8 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon start-server.js --exec babel-node --ignore client",
+    "prod": "pm2 start start-server.js",
+    "restart": "pm2 startOrRestart pm2.config.js",
     "client": "babel-node start-client.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

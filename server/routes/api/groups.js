@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import {getRecentGroupActivity} from './recentActivity';
+import {getRecentGroupActivity, getGroups} from './recentActivity';
 //import logger from '../../logger';
 
 const router = new Router();
@@ -50,11 +50,10 @@ export const getUserGroups = async (db, next, user, type, limit) => {
       let groupAccess = [];
       let order = {_id: -1};
       if (type === 'joined') {
-        groupAccess = [{$gt: 0}, {$lt: 100}];
-        //order = {created: -1};
+        groupAccess = [{$gt: 0}, {$lt: 100}];//above owner to less than requested
       }else {
-        groupAccess = [{$gte: 0 }, {$lt: 100}];
-        order = limit ? {updated: -1} : {name: 1};
+        groupAccess = [{$gte: 0 }, {$lt: 100}];//from owner to less than requested
+        order = limit ? {updated: -1} : {name: 1};//if limit, short by date desc, else sort by group name asc
       }
       //Get groups not owned, and whbich user has access to
       db.collection('kgroups_access').aggregate([
@@ -78,21 +77,8 @@ export const getUserGroups = async (db, next, user, type, limit) => {
             as: 'kgroup'
           }
         },
-        /*{ $unwind: '$kgroup' },*/
         {
-          $replaceRoot: {
-            newRoot: {
-              $mergeObjects: [
-                "$$ROOT", {
-                  "$arrayElemAt": [
-                    "$kgroup",
-                    0
-                  ]
-                }
-              ]
-            }
-          }
-        },
+          $replaceRoot: { newRoot: { $mergeObjects: ["$$ROOT", {"$arrayElemAt": [ "$kgroup",0 ]}]}}},
         {
           "$project": {
             "kgroup": 0
@@ -123,44 +109,29 @@ router.get('/list/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user } = req.params;
 
-  const listlimit = 20;
-  const groupLimit = 4;
+  const listlimit = 50;
+  const groupLimit = 10;
   const postLimit = 5;
 
-  const groupsCreated = getGroupsCreated(db, next, listlimit);
+  const groupsCreated = getGroups(db, next, groupLimit, postLimit, user, 'created');
   const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
 
-  /*const groupName = getGroupDisplayName(db, group);
-  const groupAccess = getGroupAccess(db, group, user)
-  const groupPosts = getGroupPosts(db, group);
-  const groupUsers = getGroupUsers(db, group);*/
-
-  //
   Promise.all([groupsActivity, groupsCreated]).then((result) => {
     res.json({
-      //groupsList,
       groupsActivity: result[0],
       groupsCreated: result[1],
-
-      /*group: {
-        name: group,
-        display: result[0]['display'],
-        access: result[1]['access']
-      },
-      posts: result[2],
-      users: result[3]*/
     })
   }).catch(next)
 })
 
-const getGroupsCreated = (db, next, listLimit) => {
+/*const getGroupsCreated = (db, next, listLimit) => {
   return new Promise((resolve, reject) => {
     db.collection('kgroups').find().sort( { updated: -1 } ).limit(listLimit).toArray().then(result => {
       if (result) resolve(result);
       else reject(false);
     })
   }).catch(next)
-}
+}*/
 
 /**
  *  GET route to get posts and users data that belong to a group.
@@ -170,11 +141,12 @@ const getGroupsCreated = (db, next, listLimit) => {
  *  Retrieves the post and user group data for which the user has access.
  */
 router.get('/:group/:user', async (req, res, next) => {
+
   const db = req.app.locals.db;
   const { group, user } = req.params;
 
   const groupName = getGroupDisplayName(db, next, group);
-  const groupAccess = getGroupAccess(db, next, group, user)
+  const groupAccess = user === 'x' ? '' : getGroupAccess(db, next, group, user);
   const groupPosts = getGroupPosts(db, next, group);
   const groupUsers = getGroupUsers(db, next, group);
   const groupPendingUsers = getGroupPendingUsers(db, next, group);
@@ -186,7 +158,7 @@ router.get('/:group/:user', async (req, res, next) => {
       group: {
         name: group,
         display: result[0]['display'],
-        access: result[1]['access']
+        access: result[1],
       },
       posts: result[2],
       users: result[3],

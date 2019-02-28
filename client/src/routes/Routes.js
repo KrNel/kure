@@ -21,12 +21,13 @@ const Routes = (props) => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />
-      <Route path='/groups' component={Groups} />
-      <Route path='/posts' component={Posts} />
-      <Route path='/kurate' component={Kurate} />
+      <Route exact path='/groups' component={Groups} />
+      <Route exact path='/posts' component={Posts} />
+      <Route exact path='/kurate' component={Kurate} />
       <Route path='/success' component={AuthSC} />
-      <PrivateRoute path='/manage' component={Manage} />
-      <Route path='/logout' component={Logout} />
+      <PrivateRoute exact path='/manage' component={Manage} />
+      <Route exact path='/logout' component={Logout} />
+      <Route exact path='/group/:group/' component={Groups} />
       <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route component={NoMatch} />
     </Switch>

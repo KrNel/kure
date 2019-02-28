@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Table, Icon, Dimmer, Loader, Header } from "semantic-ui-react";
-import { Link } from 'react-router-dom';
-import moment from 'moment';
+import { Grid } from "semantic-ui-react";
 
 import GroupManagePending from './GroupManagePending';
+import GroupUsers from '../../Common/GroupUsers'
 import {roles} from '../../../settings';
 
 /**
@@ -36,62 +35,13 @@ const GroupManageUsers = ({users, showModal, deletingUser, access, pending, hand
     : ''
     }
     <div className='clear' />
-    <Header>
-      {`Members (${users.length})`}
-    </Header>
 
-    <Table striped>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>User</Table.HeaderCell>
-          <Table.HeaderCell textAlign='center'>Role</Table.HeaderCell>
-          <Table.HeaderCell textAlign='center'>Joined</Table.HeaderCell>
-          <Table.HeaderCell textAlign='center'>Posts</Table.HeaderCell>
-          <Table.HeaderCell textAlign='center'>Remove</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {
-          users.map((u, i) => {
-            const role = roles.kGroupsRoles[u.access];
-            return (
-              <Table.Row key={i}>
-                <Table.Cell>
-                  <Link
-                    to={'@'+u.user}
-                  >
-                    {u.user}
-                  </Link>
-                </Table.Cell>
-                <Table.Cell collapsing textAlign='center'>{role}</Table.Cell>
-                <Table.Cell collapsing textAlign='center'>
-                  {moment.utc(u.added_on).fromNow()}
-                </Table.Cell>
-                <Table.Cell collapsing textAlign='center'></Table.Cell>
-                <Table.Cell collapsing textAlign='center'>
-                  {
-                    (deletingUser === u.user)
-                      ? <Dimmer inverted active><Loader /></Dimmer>
-                      : ''
-                  }
-                  {
-                    //if user listed is owner, deny deleted
-                    //if user logged in is admin, allow delete
-                    access < roles.kGroupsRolesRev['Moderator']
-                    ? (u.access !== 0 && access < u.access)
-                      ?
-                        <a href={`/users/delete/${u.user}/`} onClick={e => showModal(e, {user: u.user})}><Icon name='delete' color='blue' /></a>
-                      : ''
-                    : ''
-
-                  }
-                </Table.Cell>
-              </Table.Row>
-            )
-          })
-        }
-      </Table.Body>
-    </Table>
+    <GroupUsers
+      users={users}
+      showModal={showModal}
+      deletingUser={deletingUser}
+      access={access}
+    />
   </Grid.Column>
 );
 

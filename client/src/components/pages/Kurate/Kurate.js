@@ -40,7 +40,6 @@ class Kurate extends Component {
       modalOpenAddPost: false,
       addPostData: {},
       groups: [{key: 0, text: 'No Groups', value: '0'}],
-      newPost: '',
       postExists: false,
       addPostLoading: false,
       tag: '',

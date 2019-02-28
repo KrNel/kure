@@ -8,40 +8,44 @@ import moment from 'moment';
  *
  *  @param {array} groupsCreated Data for newly created groups
  */
-const GroupsCreated = ({ groupsCreated }) => {
-  return (
-
-    <React.Fragment>
-      <Label size='large' color='blue'><Header>Newly Created</Header></Label>
-
-      <Table striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Group</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Posts</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Users</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Created</Table.HeaderCell>
-            <Table.HeaderCell textAlign='center'>Owner</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {
-            groupsCreated.map((g, i) => {
-              return (
+const GroupsCreated = ({ groupsCreated}) => {
+  if (groupsCreated.length) {
+    return (
+      <React.Fragment>
+        <Label size='large' color='blue'><Header>Newly Created</Header></Label>
+        <Table striped>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Community</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Posts</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Users</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Created</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Owner</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {
+              groupsCreated.map((g, i) => (
                 <Table.Row key={g._id}>
-                  <Table.Cell>{g.display}</Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      to={`group/${g.name}`}
+                    >
+                      {g.display}
+                    </Link>
+                  </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.posts}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.users}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{moment.utc(g.created).fromNow()}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.owner}</Table.Cell>
                 </Table.Row>
-              )
-            })
-          }
-        </Table.Body>
-      </Table>
-    </React.Fragment>
-  )
+              ))
+            }
+          </Table.Body>
+        </Table>
+      </React.Fragment>
+    )
+  }
 }
 
 export default GroupsCreated;

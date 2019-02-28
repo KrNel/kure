@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Remarkable from 'remarkable';
 import { Client } from 'dsteem';
-import { Grid } from "semantic-ui-react";
+import { Grid, Loader } from "semantic-ui-react";
 import moment from 'moment';
 
 import RepLog10 from '../../../utils/reputationCalc';
@@ -134,7 +134,7 @@ class PostDetails extends Component {
                   </div>
                 </div>
               )
-              : ('Loading...')
+              : <Loader />
             }
           </Grid.Column>
         </Grid.Row>
