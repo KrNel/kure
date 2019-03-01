@@ -34,6 +34,8 @@ class GroupManage extends Component {
         users: PropTypes.array.isRequired,
     }).isRequired,
     onPostUpdate: PropTypes.func.isRequired,
+    onUserUpdate: PropTypes.func.isRequired,
+    onJoinRequestUpdate: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -411,8 +413,9 @@ class GroupManage extends Component {
             ],
             approvingUser: '',
           });
-          const { onUserUpdate } = this.props;
+          const { onUserUpdate, onJoinRequestUpdate } = this.props;
           onUserUpdate(group, 'inc');
+          onJoinRequestUpdate(group, 'dec');
         }else {
           this.setState({
             approvingUser: '',
@@ -439,6 +442,9 @@ class GroupManage extends Component {
         if (res.data) {
           const {pending} = this.state;
           const newPending = pending.filter(u => u.user !== newUser)
+
+          const { onJoinRequestUpdate } = this.props;
+          onJoinRequestUpdate(group, 'dec');
 
           this.setState({
             pending: newPending,

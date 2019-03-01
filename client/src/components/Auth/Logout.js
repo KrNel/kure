@@ -63,7 +63,7 @@ class Logout extends Component {
       <div>
         {
         (redirect)
-          ? <Redirect to={{pathname: '/', state: { prevPath: this.props.location.pathname }}} />
+          ? <Redirect to='/' />
           :
             (
               <Grid verticalAlign='middle' columns={5} centered style={{height: "80vh"}}>

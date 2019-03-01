@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon, Table, Dimmer, Loader } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 import {roles} from '../../settings';
 
@@ -15,6 +16,7 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
           <Table.HeaderCell textAlign='center'>Views</Table.HeaderCell>
           <Table.HeaderCell textAlign='center'>Rating</Table.HeaderCell>
           <Table.HeaderCell textAlign='center'>Submitter</Table.HeaderCell>
+          <Table.HeaderCell textAlign='center'>Date</Table.HeaderCell>
           {
             access < roles.kGroupsRolesRev['Member']
             && (<Table.HeaderCell textAlign='center'>Remove</Table.HeaderCell>)
@@ -38,6 +40,7 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
             <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.added_by}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'>{moment.utc(p.created).fromNow()}</Table.Cell>
             {
               (access <= 0)
               && (

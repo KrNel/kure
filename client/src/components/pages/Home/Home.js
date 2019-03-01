@@ -60,10 +60,10 @@ class Home extends Component {
       }
     } = this.props;
 
-    if ((!isAuth && user === 'x') || isAuth)
+    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
       dispatch(fetchPosts(selected, user));
     else if (csrf && !isAuth)
-      dispatch(fetchPosts(selected, 'x'));
+      dispatch(fetchPosts(selected, 'x'));//fetch data when logged out right after page refresh
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount

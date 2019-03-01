@@ -34,7 +34,8 @@ class GroupDetails extends Component {
     this.state = {
       groupData: {},
       isLoading: true,
-      groupRequested: ''
+      groupRequested: '',
+      notExists: false,
     };
   }
 
@@ -57,9 +58,9 @@ class GroupDetails extends Component {
       csrf,
     } = this.props;
 
-    if ((!isAuth && user === 'x') || isAuth)
+    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
       this.getGroupFetch(group, user);
-    else if (csrf && !isAuth)
+    else if (csrf && !isAuth)//fetch data when logged out right after page refresh
       this.getGroupFetch(group, 'x');
   }
 
@@ -77,8 +78,9 @@ class GroupDetails extends Component {
       isAuth,
     } = this.props;
 
-    if (prevProps.user !== user)
+    if (prevProps.user !== user) {
       this.getGroupFetch(group, user);
+    }
   }
 
   /**
@@ -89,9 +91,14 @@ class GroupDetails extends Component {
   getGroupFetch = (group, user) => {
     getGroupDetails(group, user)
     .then(result => {
-      if (result.data) {
+      if (Object.getOwnPropertyNames(result.data).length > 0) {
         this.setState({
           groupData: result.data.group,
+          isLoading: false,
+        });
+      }else {
+        this.setState({
+          notExists: true,
           isLoading: false,
         });
       }
@@ -151,16 +158,16 @@ class GroupDetails extends Component {
         groupData,
         isLoading,
         groupRequested,
+        notExists,
       },
       props: {
-        isAuth,
+        isAuth
       }
     } = this;
 
     return (
-      isLoading
-      ? <Loading />
-      : (
+      isLoading ? <Loading /> : !notExists
+      ? (
         <Grid columns={1} stackable>
           <Grid.Column>
             <Label size='large' color='blue'>
@@ -194,6 +201,7 @@ class GroupDetails extends Component {
           </Grid.Column>
         </Grid>
       )
+      : <Segment>That group doesn&apos;t exist.</Segment>
     )
   }
 }

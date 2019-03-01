@@ -323,6 +323,26 @@ class ManageGroups extends Component {
     this.setState({groups: newGroups});
   }
 
+  /**
+   *  Increment or decrement the pending 'Join Requests' value for group.
+   *
+   *  @param {string} groupToUpdate Group name to update
+   *  @param {string} action Increment or decrement post quantity
+   */
+  onJoinRequestUpdate = (groupToUpdate, action) => {
+    const { groups } = this.state;
+    const newGroups = groups.map(g => {
+      if (groupToUpdate === g.name) {
+        g = {
+          ...g,
+          joinRequests: g.joinRequests+(action === 'inc' ? 1 : -1)
+        };
+      }
+      return g;
+    });
+    this.setState({groups: newGroups});
+  }
+
   render() {
     const {
       newGroup,
@@ -422,6 +442,7 @@ class ManageGroups extends Component {
               user={user}
               onPostUpdate={this.onPostUpdate}
               onUserUpdate={this.onUserUpdate}
+              onJoinRequestUpdate={this.onJoinRequestUpdate}
             />
           )
         }

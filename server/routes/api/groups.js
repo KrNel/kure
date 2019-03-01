@@ -133,7 +133,6 @@ router.get('/list/:user', async (req, res, next) => {
 router.get('/group/:group/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user } = req.params;
-
   getGroupDetails(db, next, user, group)
     .then(result =>{
       res.json({group: result[0]})

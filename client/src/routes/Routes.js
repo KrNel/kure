@@ -28,8 +28,7 @@ const Routes = (props) => (
       <Route path='/success' component={AuthSC} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
-      {/*<Route exact path='/group/:group/' component={GroupDetails} />*/}
-      <Route exact path='/group/:group/' render={props => <GroupDetails key={Date.now()} {...props} />} />
+      <Route exact path='/group/:group/' component={GroupDetails} />
       <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route component={NoMatch} />
     </Switch>
