@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
-import { Grid, Header, Icon, Form, Label, Divider, Table } from "semantic-ui-react";
+import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
@@ -36,6 +34,8 @@ class GroupManage extends Component {
         users: PropTypes.array.isRequired,
     }).isRequired,
     onPostUpdate: PropTypes.func.isRequired,
+    onUserUpdate: PropTypes.func.isRequired,
+    onJoinRequestUpdate: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -413,8 +413,9 @@ class GroupManage extends Component {
             ],
             approvingUser: '',
           });
-          const { onUserUpdate } = this.props;
+          const { onUserUpdate, onJoinRequestUpdate } = this.props;
           onUserUpdate(group, 'inc');
+          onJoinRequestUpdate(group, 'dec');
         }else {
           this.setState({
             approvingUser: '',
@@ -441,6 +442,9 @@ class GroupManage extends Component {
         if (res.data) {
           const {pending} = this.state;
           const newPending = pending.filter(u => u.user !== newUser)
+
+          const { onJoinRequestUpdate } = this.props;
+          onJoinRequestUpdate(group, 'dec');
 
           this.setState({
             pending: newPending,
@@ -480,7 +484,7 @@ class GroupManage extends Component {
       manageGroup,
     } = this.props;
 
-    const access = manageGroup.group.access;
+    const access = manageGroup.group.access.access;
 
     let addErrorPost = '';
     let addErrorUser = '';
@@ -490,15 +494,6 @@ class GroupManage extends Component {
 
     if (userExists) addErrorUser = <ErrorLabel text={this.existUser} />;
     if (errors["newUser"] !== undefined) addErrorUser = <ErrorLabel text={errors["newUser"]} />;
-
-    const postHeaders = [
-      'Title',
-      'Likes',
-      'Views',
-      'Rating',
-      'Submitter',
-      'Remove',
-    ];
 
     return (
       <React.Fragment>
@@ -550,7 +545,6 @@ class GroupManage extends Component {
             deletingPost={deletingPost}
             access={access}
             user={this.user}
-            headers={postHeaders}
           />
         </Grid.Row>
 

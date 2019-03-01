@@ -1,4 +1,4 @@
-import config from '../../config';
+import config from '../../../config';
 
 /**
  *  Validate the CSRF token for POST fetch requests

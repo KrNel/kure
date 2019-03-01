@@ -2,9 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Loader, Grid, Header, Segment, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
-import moment from 'moment';
+
 import { Link } from 'react-router-dom';
 
+import Loading from '../../Loading/Loading';
+import GroupLink from '../../Common/GroupLink';
+import MyCommunities from './MyCommunities';
+import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
 import './Home.css';
@@ -28,7 +32,7 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
-    user: PropTypes.string.isRequired,
+    user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -37,21 +41,38 @@ class Home extends Component {
     isAuth: PropTypes.bool.isRequired,
   };
 
+  static defaultProps = {
+    user: 'x'
+  };
+
+  state = {};
+
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
-    const {selected, dispatch, user} = this.props;
-    if (user !== '') {
+    let {
+      selected,
+      dispatch,
+      user,
+      csrf,
+      isAuth,
+      location: {
+        state
+      }
+    } = this.props;
+
+    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
       dispatch(fetchPosts(selected, user));
-    }
+    else if (csrf && !isAuth)
+      dispatch(fetchPosts(selected, 'x'));//fetch data when logged out right after page refresh
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount
   componentDidUpdate(prevProps) {
     const {selected, dispatch, user} = this.props;
-    if (prevProps.user !== user) {
+    if (prevProps.user !== user)
       dispatch(fetchPosts(selected, user));
-    }
   }
+
 
   render() {
     //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
@@ -59,27 +80,8 @@ class Home extends Component {
     //const isEmpty = posts.length === 0;
     const recentPostsComp =
         (isFetching)
-          ? <Loader active inline='centered' />
+          ? <Loading />
         : <RecentPosts posts={posts} isAuth={isAuth} />;
-
-    moment.locale('en', {
-      relativeTime: {
-        future: 'in %s',
-        past: '%s ago',
-        s:  'secs',
-        ss: '%ss',
-        m:  'a min',
-        mm: '%dm',
-        h:  '1h',
-        hh: '%dh',
-        d:  'a day',
-        dd: '%dd',
-        M:  'month',
-        MM: '%dM',
-        y:  'year',
-        yy: '%dY'
-      }
-    });
 
     return (
       <div className="home">
@@ -113,13 +115,13 @@ class Home extends Component {
                         <Segment>
                           <Label attached='top' className='head'>
                             <Header as='h3'>
-                              {g.display}
+                              <GroupLink display={g.display} name={g.name} />
                             </Header>
                           </Label>
                           <ul className='custom-list'>
                             {
-                              g.posts.length
-                              ? g.posts.map(p => (
+                              g.kposts.length
+                              ? g.kposts.map(p => (
                                 <li key={p._id}>
                                   <Link
                                     to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
@@ -154,67 +156,8 @@ class Home extends Component {
           {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
 
           <Grid.Column width={4} className="sidebar">
-            <Segment.Group className='box'>
-              <Segment>
-                <Label attached='top' className='head'>
-                  <Header as='h3'>My Communities</Header>
-                </Label>
-                <ul className='custom-list'>
-                  {
-                    !isAuth
-                    ? <li>Must be logged in.</li>
-                    : myComms.length
-                      ?
-                      myComms.map(c => (
-                        <li key={c._id}>
-                          <div className='left'>{c.display}</div>
-                          <div className='right meta'>{moment.utc(c.updated).fromNow()}</div>
-                          <div className='clear' />
-                        </li>
-                      ))
-                      : <li>Create a community.</li>
-                  }
-                </ul>
-              </Segment>
-            </Segment.Group>
-
-            <Segment.Group className='box'>
-              <Segment>
-                <Label attached='top' className='head'>
-                  <Header as='h3'>My Submissions</Header>
-                </Label>
-                <ul className='custom-list'>
-                  {
-                    !isAuth
-                    ? <li>Must be logged in.</li>
-                    : mySubs.length
-                      ?
-                      mySubs.map(p => (
-                        <li key={p._id}>
-                          <div className='left'>
-                            <Link
-                              to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                            >
-                              {
-                                // eslint-disable-next-line
-                                (p.st_title.length > 14) //longer than 14 chars?
-                                  //eslint-disable-next-line
-                                  ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
-                                    ? p.st_title.substr(0,8) + " ..." //truncate non latin
-                                    : p.st_title.substr(0,14) + " ..." //truncate latin
-                                  : p.st_title //no truncate
-                              }
-                            </Link>
-                          </div>
-                          <div className='right meta'>{moment.utc(p.created).fromNow()}</div>
-                          <div className='clear' />
-                        </li>
-                      ))
-                      : <li>Curate some posts.</li>
-                  }
-                </ul>
-              </Segment>
-            </Segment.Group>
+            <MyCommunities myComms={myComms} isAuth={isAuth} />
+            <MySubmissions mySubs={mySubs} isAuth={isAuth} />
           </Grid.Column>
         </Grid>
       </div>
@@ -256,6 +199,7 @@ const mapStateToProps = state => {
     lastUpdated,
     isAuth: auth.isAuth,
     user: auth.userData.name,
+    csrf: auth.csrf,
   }
 }
 

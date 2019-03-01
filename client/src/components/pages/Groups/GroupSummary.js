@@ -9,11 +9,9 @@ import GroupsCreated from './GroupsCreated';
  *
  *  GroupRecent shows communities with recent activity in them.
  *
- *  @param {boolean} isAuth Determines if user is authenticated
  *  @param {array} groups Data for groups
- *  @param {function} onJoinGroup Handles a join request
  */
-const GroupSummary = ({isAuth, groupRequested, onJoinGroup, groups}) => {
+const GroupSummary = ({groups}) => {
   if (groups.groupsActivity.length) {
     return (
       <Grid columns={1} stackable>
@@ -22,10 +20,7 @@ const GroupSummary = ({isAuth, groupRequested, onJoinGroup, groups}) => {
             groupsCreated={groups.groupsCreated}
           />
           <GroupsRecent
-            isAuth={isAuth}
             groupsActivity={groups.groupsActivity}
-            groupRequested={groupRequested}
-            onJoinGroup={onJoinGroup}
           />
         </Grid.Column>
       </Grid>

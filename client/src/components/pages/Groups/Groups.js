@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Loader } from "semantic-ui-react";
-
 import PropTypes from 'prop-types';
 
-import { getGroupsPage, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
+import Loading from '../../Loading/Loading';
+import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
 import GroupSummary from './GroupSummary';
 import './Groups.css';
 
@@ -16,11 +15,18 @@ import './Groups.css';
  *  the community activity. From recently active, to popular, to newly created.
  */
 class Groups extends Component {
+
+  static propTypes = {
+    user: PropTypes.string,
+  };
+
+  static defaultProps = {
+    user: 'x',
+  };
+
   state = {
     areGroupsLoading: true,
     groups: {},
-    groupRequested: '',
-    go: true,
   }
 
   /**
@@ -28,8 +34,11 @@ class Groups extends Component {
    *  with props set and fetch data.
    */
   componentDidMount() {
-    const {user} = this.props;
-    if (user) this.getGroups(user);
+    const {
+      user
+    } = this.props;
+
+    this.getGroups(user);
   }
 
   /**
@@ -39,12 +48,12 @@ class Groups extends Component {
    *
    *  @param {object} prevProps Previous props
    */
-  componentDidUpdate(prevProps) {
+  /*componentDidUpdate(prevProps) {
     const {user} = this.props;
-    if (user && this.state.go) {
-      this.getGroups(user);
+    if (this.state.go) {
+      this.getGroups(user, '2');
     }
-  }
+  }*/
 
   /**
    *  Get the various community data to display on the page.
@@ -52,79 +61,13 @@ class Groups extends Component {
    *  @param {string} user User logged in
    */
   getGroups = (user) => {
+    if (user === '') user = 'x';
     getGroupsPage(user)
     .then(result => {
-      if (result.data) {
-        this.setState({
-          areGroupsLoading: false,
-          groups: result.data,
-          go: false
-        });
-      } else {
-        this.setState({
-          areGroupsLoading: false,
-          go: false
-        });
-      }
-    }).catch(err => {
-      logger('error', err);
-    });
-  }
-
-  /**
-   *  When user requests to join a community, send the request to DB
-   *  for processing.
-   *
-   *  @param {element} e Element onClick comes from
-   *  @param {string} group Group being requested to join
-   */
-  onJoinGroup = (e, group) => {
-    e.preventDefault();
-    this.setState({
-      groupRequested: group,
-    });
-    this.joinGroupRequest(group);
-  }
-
-  /**
-   *  Send request to DB, return true to remove `Join` for group.
-   *
-   *  @param {string} group Group being requested to join
-   */
-  joinGroupRequest = (group) => {
-    const {user, csrf} = this.props;
-    requestToJoinGroup({group, user}, csrf)
-    .then(result => {
-
-      const {
-        groups,
-        groupRequested
-      } = this.state;
-
-      let gActivity = groups.groupsActivity;
-
-      if (result.data) {
-        const newGroup = gActivity.map(g => {
-          if (g.name === groupRequested) {
-            return {
-              ...g,
-              access: {
-                access: 100
-              }
-            }
-          }
-          return g;
-        });
-        gActivity = newGroup;
-      }
       this.setState({
-        groups: {
-          ...groups,
-          groupsActivity: gActivity,
-        },
-        groupRequested: '',
+        areGroupsLoading: false,
+        groups: result.data,
       });
-
     }).catch(err => {
       logger('error', err);
     });
@@ -135,25 +78,18 @@ class Groups extends Component {
     const {
       state: {
         areGroupsLoading,
-        groupRequested,
         groups,
-      },
-      props: {
-        isAuth,
       }
     } = this;
 
     return (
       areGroupsLoading
-      ? <Loader />
-      : (
-        <GroupSummary
-          isAuth={isAuth}
-          groupRequested={groupRequested}
-          onJoinGroup={this.onJoinGroup}
-          groups={groups}
-        />
-      )
+        ? <Loading />
+        : (
+          <GroupSummary
+            groups={groups}
+          />
+        )
     )
   }
 }
@@ -165,12 +101,11 @@ class Groups extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf, isAuth } = state.auth;
+  const { userData, isAuth } = state.auth;
 
   return {
     user: userData.name,
-    csrf,
-    isAuth
+    isAuth,
   }
 }
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import csrfValidateRequest from '../auth/csrfValidateRequest';
-import { verifyAccess } from '../../utils/verifyAccess';
+import { verifyAccess } from '../../../utils/verifyAccess';
 
 const router = new Router();
 
@@ -95,6 +95,8 @@ const addPost = (db, next, user, group, category, author, permlink, title) => {
     db.collection('kposts').insertOne(
       post
     )
+
+    db.collection('kposts').createIndex({added_by: 1, group: 1});
 
     //Increment the post count for the group
     db.collection('kgroups').updateOne(

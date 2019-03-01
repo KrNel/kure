@@ -24,10 +24,12 @@
     "sanitize-html": "^1.20.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.85.0",
+    "source-map-explorer": "^1.7.0",
     "steemconnect": "^2.0.1",
     "xmldom": "^0.1.27"
   },
   "scripts": {
+  	"analyze": "source-map-explorer build/static/js/main.*",
     "start": "set HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

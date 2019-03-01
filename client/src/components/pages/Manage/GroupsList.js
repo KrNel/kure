@@ -4,6 +4,7 @@ import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react"
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
+import GroupLink from '../../Common/GroupLink';
 
 /**
  *  Display the community groups for a user to manage or delete.
@@ -44,7 +45,7 @@ const GroupsList = (props) => {
             {
             groups.map((g, i) => {
               const key = g._id || i;
-              const date = moment(g.created).format("ddd MMM DD, YYYY");
+              const date = moment(g.created).format("ddd MMM DD, YYYY - HH:MM");
               return (
                 <Grid.Column key={key+1} width={4}>
                   <Segment key={key+2} className='groupList'>
@@ -55,13 +56,7 @@ const GroupsList = (props) => {
                     }
                     <div key={key+3}>
                       <h3 className='left'>
-                        <a
-                          href={'edit/'+g.name}
-                          onClick={e => handleManageGroup(e, g.name)}
-                          title="Manage group"
-                        >
-                          {g.display}
-                        </a>
+                        <GroupLink display={g.display} name={g.name} />
                       </h3>
                       <div className='right'>
                         <a
@@ -86,8 +81,8 @@ const GroupsList = (props) => {
                       </div>
                       <div className='clear' />
                       <Divider className='header' />
-                      <div>
-                        {`Created: ${date}`}
+                      <div title={date}>
+                        {`Created: ${moment.utc(g.created).fromNow()}`}
                       </div>
                       <div>
                         {'Posts: '}

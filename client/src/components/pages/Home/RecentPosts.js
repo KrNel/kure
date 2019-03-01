@@ -4,6 +4,7 @@ import { Table, Segment } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import SteemConnect from '../../../utils/auth/scAPI';
+import GroupLink from '../../Common/GroupLink';
 
 /**
  *  Component to display the post data sent.
@@ -33,12 +34,14 @@ const RecentPosts = ({posts, isAuth}) => {
               <Link
                 to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
               >
-                {(p.st_title.length > 70)
-                  ? p.st_title.substr(0,70) + " ..."
+                {(p.st_title.length > 67)
+                  ? p.st_title.substr(0,67) + " ..."
                   : p.st_title}
               </Link>
               </Table.Cell>
-              <Table.Cell collapsing textAlign='center'>{p.display}</Table.Cell>
+              <Table.Cell collapsing textAlign='center'>
+                <GroupLink display={p.display} name={p.group} />
+              </Table.Cell>
             </Table.Row>
           ))
         }

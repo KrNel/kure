@@ -1,0 +1,8 @@
+{
+  "apps" : [{
+    "name"        : "kure",
+    "script"      : "./start-server.js",
+    "exec_interpreter" : "babel-node",
+    "exec_mode"        : "fork",
+  }]
+}

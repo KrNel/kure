@@ -1,6 +1,5 @@
 import React from 'react';
-
-import {BASE_STEEM_URL} from '../../../settings';
+import { Link } from 'react-router-dom';
 
 /**
  *  Displays the category hyperlink.
@@ -9,7 +8,11 @@ import {BASE_STEEM_URL} from '../../../settings';
  *  @returns {component} createdFromNow Time since post was created
  */
 const Category = ({category}) => (
-  <a href={BASE_STEEM_URL+'/'+category}>{category}</a>
+  <Link
+    to={`/created/${category}`}
+  >
+    {category}
+  </Link>
 )
 
 export default Category;

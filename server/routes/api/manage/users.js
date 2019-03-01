@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import csrfValidateRequest from '../auth/csrfValidateRequest';
-import { verifyAccess } from '../../utils/verifyAccess';
+import { verifyAccess } from '../../../utils/verifyAccess';
 
 const router = new Router();
 

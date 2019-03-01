@@ -34,10 +34,20 @@ export const getRecentActivity = (user, limit = 10) => {
 /**
  *  Get the list of communities on the site. Most recently created first.
  *
- *  @param {string} limit Limit of records to return
+ *  @param {string} user User logged in
  */
 export const getGroupsPage = (user) => {
   return getData(`/api/groups/list/${user}`);
+}
+
+/**
+ *  Get the community data to show.
+ *
+ *  @param {string} group Requested community
+ *  @param {string} user User's related data for the community
+ */
+export const getGroupDetails = (group, user) => {
+  return getData(`/api/groups/group/${group}/${user}`);
 }
 
 /**
@@ -169,7 +179,7 @@ export const logger = (type, msg) => {
  *  @param {string} csrf CSRF token
  */
 const postData = (path, params, csrf) => {
-  return axios.post(path, params, {
+  return axios.post('/api'+path, params, {
     headers: {
       "x-csrf-token": csrf
     }

@@ -3,11 +3,10 @@ import Tokens from 'csrf';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import config from '../../config';
-import SteemConnect from '../../../client/src/utils/auth/scAPI';
+import config from '../../../config';
+import SteemConnect from '../../../../client/src/utils/auth/scAPI';
 
 const router = new Router();
-const ORIGIN_HOST = `${config.app.client.host}:${config.app.client.port}`;
 let tokens = new Tokens();
 
 router.use(bodyParser.json());
@@ -44,19 +43,6 @@ router.post('/login', (req, res) => {
       if (isAuth) res.json({ isAuth: isAuth, user: {name: user} });
     }).catch(err => console.error(err) );
 })
-
-/*
-//Check if forwarded header matches ORIGIN from config settings
-const originPass = () => {
-  return new Promise((resolve) => {
-    if (ORIGIN_HOST !== req.headers['x-forwarded-host']) {
-      res.json({"isAuth": false});
-      resolve(false);
-    }
-    resolve(true);
-  });
-}
-*/
 
 /**
  *  Verify access token from connection attempt.
@@ -128,6 +114,7 @@ const initUser = (db, user) => {
         },
         { upsert:true }
       )
+      db.collection('user').createIndex({name: 1});
       success = true;
     }catch (err) {
       reject(success);
@@ -185,7 +172,7 @@ const newCSRF = (db, res, user) => {
  *  Responds with authentication object
  */
 router.get('/returning', (req, res) => {
-  if (ORIGIN_HOST !== req.headers['x-forwarded-host']) res.json({isAuth: false, user:''}); //log the CSRF attempt?
+  //if (ORIGIN_HOST !== req.headers['x-forwarded-host']) res.json({isAuth: false, user:''}); //log the CSRF attempt?
 
   const db = req.app.locals.db;
   const accessToken = req.cookies[config.scCookie];
