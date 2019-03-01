@@ -96,6 +96,8 @@ const addPost = (db, next, user, group, category, author, permlink, title) => {
       post
     )
 
+    db.collection('kposts').createIndex({added_by: 1, group: 1});
+
     //Increment the post count for the group
     db.collection('kgroups').updateOne(
       { name: group },

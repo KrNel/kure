@@ -4,6 +4,7 @@ import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react"
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
+import GroupLink from '../../Common/GroupLink';
 
 /**
  *  Display the community groups for a user to manage or delete.
@@ -55,13 +56,7 @@ const GroupsList = (props) => {
                     }
                     <div key={key+3}>
                       <h3 className='left'>
-                        <a
-                          href={'edit/'+g.name}
-                          onClick={e => handleManageGroup(e, g.name)}
-                          title="Manage group"
-                        >
-                          {g.display}
-                        </a>
+                        <GroupLink display={g.display} name={g.name} />
                       </h3>
                       <div className='right'>
                         <a

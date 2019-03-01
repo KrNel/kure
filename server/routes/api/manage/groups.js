@@ -132,6 +132,8 @@ const groupUpsert = (db, next, group, groupTrim, user) => {
       { upsert: true }
     )
 
+    db.collection('kgroups').createIndex({name: 1});
+
     //Increment the user's owned group count
     db.collection('users').updateOne(
       { name: user },
@@ -153,6 +155,8 @@ const groupUpsert = (db, next, group, groupTrim, user) => {
         added_on: created
       }
     )
+
+    db.collection('kgroups_access').createIndex({group: 1, user: 1});
 
     return created;
   }catch (err) {
@@ -265,12 +269,14 @@ const requestJoinGroup = (db, next, group, user) => {
 
     //Create new access entry for user and group
     db.collection('kgroups_access').insertOne(
-      {
-        group: group,
-        user: user,
-        access: 100,
-        added_on: created,
-      }
+
+        {
+          group: group,
+          user: user,
+          access: 100,
+          added_on: created,
+        }
+
     )
 
     //Increment request count in user collection

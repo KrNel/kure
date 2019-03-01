@@ -348,7 +348,7 @@ class ManageGroups extends Component {
       type,
       headerText,
     } = this.props;
-console.log('manageGroup:',manageGroup)
+
     //If there were errors during validation, show them in an ErrroLabel.
     let addError = '';
     if (groupExists) addError = <ErrorLabel text={this.existText} />;

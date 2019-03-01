@@ -2,6 +2,8 @@ import React from 'react';
 import { Grid, Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
+import GroupLink from '../../Common/GroupLink';
+
 /**
  *  Show the most recently active communities. Allow logged in users todo
  *  request to join a community with the `Join` link. Once clicked, user sees
@@ -23,11 +25,7 @@ const GroupsRecent = ({ groupsActivity }) => {
                     <Label attached='top' className='head'>
                       <div className='left'>
                         <Header as='h3'>
-                          <Link
-                            to={`group/${g.name}`}
-                          >
-                            {g.display}
-                          </Link>
+                          <GroupLink display={g.display} name={g.name} />
                         </Header>
                       </div>
                       <div className='clear' />

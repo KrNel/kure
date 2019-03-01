@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Loader } from "semantic-ui-react";
-
 import PropTypes from 'prop-types';
 
+import Loading from '../../Loading/Loading';
 import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
 import GroupSummary from './GroupSummary';
-import GroupDetails from './GroupDetails';
 import './Groups.css';
 
 //TODO: Show list of recent communities added. Option to sort by:
@@ -20,12 +18,10 @@ class Groups extends Component {
 
   static propTypes = {
     user: PropTypes.string,
-    csrf: PropTypes.string,
   };
 
   static defaultProps = {
     user: 'x',
-    csrf: '',
   };
 
   state = {
@@ -82,39 +78,18 @@ class Groups extends Component {
     const {
       state: {
         areGroupsLoading,
-        groupRequested,
         groups,
-      },
-      props: {
-        user,
-        match: {
-          path,
-          params,
-        },
-        isAuth,
-        csrf,
       }
     } = this;
 
     return (
-      (path === '/groups')
-      ? areGroupsLoading
-        ? <Loader />
+      areGroupsLoading
+        ? <Loading />
         : (
           <GroupSummary
-            groupRequested={groupRequested}
-            onJoinGroup={this.onJoinGroup}
             groups={groups}
           />
         )
-      : (
-        <GroupDetails
-          params={params}
-          user={user}
-          isAuth={isAuth}
-          csrf={csrf}
-        />
-      )
     )
   }
 }
@@ -126,11 +101,10 @@ class Groups extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf, isAuth } = state.auth;
+  const { userData, isAuth } = state.auth;
 
   return {
     user: userData.name,
-    csrf,
     isAuth,
   }
 }

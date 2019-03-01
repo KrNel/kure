@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {Grid, Label, Header, Loader, Segment} from "semantic-ui-react";
+import { connect } from 'react-redux';
+import {Grid, Label, Header, Segment} from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
+import Loading from '../../Loading/Loading';
 import GroupPosts from '../../Common/GroupPosts'
 import GroupUsers from '../../Common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
@@ -14,20 +16,26 @@ import joinCommunities from '../../../utils/joinCommunities';
 class GroupDetails extends Component {
 
   static propTypes = {
-    user: PropTypes.string.isRequired,
+    user: PropTypes.string,
+    csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
+    isAuth: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    user: 'x',
+    csrf: '',
+    isAuth: false,
+    match: {},
   };
 
   constructor(props) {
     super(props)
     this.state = {
-      group: {},
+      groupData: {},
       isLoading: true,
-      groupRequested: '',
-      update: true,
+      groupRequested: ''
     };
-
-    this.update = true;
   }
 
 
@@ -35,34 +43,41 @@ class GroupDetails extends Component {
    *  Fetch post detail from Steem blockchain on component mount.
    */
   componentDidMount() {
-    const {
-      params: {
-        group
+    let {
+      match: {
+        params: {
+          group
+        }
+      },
+      location: {
+        key
       },
       user,
       isAuth,
+      csrf,
     } = this.props;
-    if (isAuth)
+
+    if ((!isAuth && user === 'x') || isAuth)
       this.getGroupFetch(group, user);
+    else if (csrf && !isAuth)
+      this.getGroupFetch(group, 'x');
   }
 
   /**
    *  Fetch post detail from Steem blockchain on component update.
    */
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const {
-      props: {
+      match: {
         params: {
           group
-        },
-        user,
-        isAuth,
+        }
       },
-      state: {
-        update
-      }
-    } = this;
-    if (isAuth && this.update)
+      user,
+      isAuth,
+    } = this.props;
+
+    if (prevProps.user !== user)
       this.getGroupFetch(group, user);
   }
 
@@ -72,18 +87,12 @@ class GroupDetails extends Component {
    *  @param {string} user User logged in
    */
   getGroupFetch = (group, user) => {
-console.log('fetching')
-    if (user === '') user = 'x';
-console.log('user:',user)
     getGroupDetails(group, user)
     .then(result => {
-      this.update = false;
-console.log('data')
       if (result.data) {
         this.setState({
-          group: result.data,
+          groupData: result.data.group,
           isLoading: false,
-          update: false,
         });
       }
     }).catch(err => {
@@ -101,7 +110,7 @@ console.log('data')
   onJoinGroup = (e, group) => {
     e.preventDefault();
     this.setState({
-      groupRequested: group,
+      groupRequested: group
     });
     this.joinGroupRequest(group);
   }
@@ -115,36 +124,22 @@ console.log('data')
     const {user, csrf} = this.props;
     requestToJoinGroup({group, user}, csrf)
     .then(result => {
-
       const {
-        groups,
-        groupRequested
+        groupData,
       } = this.state;
 
-      let gActivity = groups.groupsActivity;
+      let kaccess = groupData.kaccess;
 
       if (result.data) {
-        const newGroup = gActivity.map(g => {
-          if (g.name === groupRequested) {
-            return {
-              ...g,
-              access: {
-                access: 100
-              }
-            }
-          }
-          return g;
-        });
-        gActivity = newGroup;
+        kaccess[0] = {access: 100};
       }
       this.setState({
-        groups: {
-          ...groups,
-          groupsActivity: gActivity,
+        groupData: {
+          ...groupData,
+          kaccess: kaccess,
         },
-        groupRequested: '',
+        groupRequested: ''
       });
-
     }).catch(err => {
       logger('error', err);
     });
@@ -153,38 +148,39 @@ console.log('data')
   render() {
     const {
       state: {
-        group,
+        groupData,
         isLoading,
         groupRequested,
       },
       props: {
         isAuth,
-        user,
       }
     } = this;
-console.log(group)
+
     return (
       isLoading
-      ? <Loader />
+      ? <Loading />
       : (
         <Grid columns={1} stackable>
           <Grid.Column>
             <Label size='large' color='blue'>
-              <Header as='h2'>{group.group.display}</Header>
+              <Header as='h2'>{groupData.display}</Header>
             </Label>
             <div className='right'>
-              <Label size='large'>
-                {'Membership: '}
-                {
-                  joinCommunities(isAuth, groupRequested, group.group.name, group.group.access, this.onJoinGroup)
-                }
-              </Label>
+              { isAuth && (
+                <Segment>
+                  {'Membership: '}
+                  {
+                    joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                  }
+                </Segment>
+              )}
             </div>
             {
-              group.posts.length
+              groupData.kposts.length
               ? (
                 <GroupPosts
-                  posts={group.posts}
+                  posts={groupData.kposts}
                 />
               ) : (
                 <Segment>
@@ -193,7 +189,7 @@ console.log(group)
               )
             }
             <GroupUsers
-              users={group.users}
+              users={groupData.kusers}
             />
           </Grid.Column>
         </Grid>
@@ -202,4 +198,20 @@ console.log(group)
   }
 }
 
-export default GroupDetails;
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
+const mapStateToProps = state => {
+  const { userData, csrf, isAuth } = state.auth;
+
+  return {
+    user: userData.name,
+    csrf,
+    isAuth,
+  }
+}
+
+export default connect(mapStateToProps)(GroupDetails);

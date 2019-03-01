@@ -17,7 +17,6 @@ router.get('/user/:user/:type', (req, res, next) => {
   const user = req.params.user;
   const type = req.params.type;
 
-
   //Get group data from DB and return
   getUserGroups(db, next, user, type)
     .then(data => {
@@ -124,14 +123,92 @@ router.get('/list/:user', async (req, res, next) => {
   }).catch(next)
 })
 
-/*const getGroupsCreated = (db, next, listLimit) => {
-  return new Promise((resolve, reject) => {
-    db.collection('kgroups').find().sort( { updated: -1 } ).limit(listLimit).toArray().then(result => {
-      if (result) resolve(result);
-      else reject(false);
+/**
+ *  GET route to get group data, posts and users for group detail page.
+ *  Route: /api/groups/group/...
+ *
+ *  Gets the local DB object, group name.
+ *  Retrieves the post, user and access group data for user, if logged in.
+ */
+router.get('/group/:group/:user', async (req, res, next) => {
+  const db = req.app.locals.db;
+  const { group, user } = req.params;
+
+  getGroupDetails(db, next, user, group)
+    .then(result =>{
+      res.json({group: result[0]})
     })
+    .catch(next);
+})
+
+/**
+ *  Get the recent group activity.
+ *  If user logged in, then get a more complex data query of their access
+ *  level to the active groups.
+ *
+ *  @param {object} db MongoDB connection
+ *  @param {function} next Middleware function
+ *  @param {string} user Logged in user name
+ *  @param {string} group Group to get data for
+ *  @returns {object} Recent group activity  data object to send to frontend
+ */
+export const getGroupDetails = async (db, next, user, group) => {
+  return new Promise((resolve, reject) => {
+
+      db.collection('kgroups').aggregate([
+        {
+          $match : {
+            name : group
+          }
+        },
+        { $lookup: {
+            from: 'kposts',
+            as: 'kposts',
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] }
+              } },
+              { $sort: { _id: -1 } },
+            ]
+          }
+        },
+        { $lookup: {
+            from: 'kgroups_access',
+            as: 'kusers',
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] }
+              } },
+              { $sort: { _id: -1 } },
+            ]
+          }
+        },
+        {
+          $lookup: {
+            from: "kgroups_access",
+            as: "kaccess",
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                user: user,
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] } }
+              },
+              { $project: {
+                _id: 0,
+                access: 1
+              } }
+            ]
+           }
+        }
+
+      ]).toArray((err, result) => {
+        err ? reject(err) : resolve(result);
+      })
+
   }).catch(next)
-}*/
+}
 
 /**
  *  GET route to get posts and users data that belong to a group.

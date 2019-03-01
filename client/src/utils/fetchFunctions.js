@@ -47,7 +47,7 @@ export const getGroupsPage = (user) => {
  *  @param {string} user User's related data for the community
  */
 export const getGroupDetails = (group, user) => {
-  return getData(`/api/groups/${group}/${user}`);
+  return getData(`/api/groups/group/${group}/${user}`);
 }
 
 /**

@@ -98,6 +98,10 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
  *
  *  @param {object} db MongoDB connection
  *  @param {function} next Middleware function
+ *  @param {number} groupLimit Limit for post group query return
+ *  @param {number} postLimit Limit for group count query return
+ *  @param {string} user Logged in user name
+ *  @param {string} sortBy Sort type for query
  *  @returns {object} Recent group activity  data object to send to frontend
  */
 export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy) => {

@@ -47,7 +47,7 @@ else {
 });*/
 
 //Filter error messages from log
-let transportError = new transports.DailyRotateFile({
+/*let transportError = new transports.DailyRotateFile({
   name:"errorfile",
   filename: './server/logs/errors/errors-%DATE%.log',
   handleExceptions: true,
@@ -65,26 +65,73 @@ let logger = createLogger({
     prettyPrint(),
   ),
   transports: [
-    /*transportInfo,*/
     transportError,
-    /*new transports.Console({ level: 'error' }),*/
   ],
   exitOnError: false,
 });
 
 
-/*if (process.env.NODE_ENV !== 'production') {
+const myFormat = printf(info => {
+    if(info instanceof Error) {
+        return `${info.timestamp} [${info.label}] ${info.level}: ${info.message} ${info.stack}`;
+    }
+    return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
+});
+
+if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
     format: format.combine(
       format.colorize(),
-      format.printf(
-        info =>
-          `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
-      ),
+      format.splat(),
+      timestamp(),
+      myFormat,
     )
   }));
-}
-*/
+}*/
+
+const enumerateErrorFormat = format(info => {
+  if (info.message instanceof Error) {
+    info.message = Object.assign({
+      message: info.message.message,
+      stack: info.message.stack
+    }, info.message);
+  }
+
+  if (info instanceof Error) {
+    return Object.assign({
+      message: info.message,
+      stack: info.stack
+    }, info);
+  }
+
+  return info;
+});
+
+const logger = createLogger({
+  format: format.combine(
+    enumerateErrorFormat(),
+    format.json(),
+    prettyPrint(),
+  ),
+  transports: [
+    new transports.Console()
+  ]
+});
+
+/*// Error as message
+console.log('Run FIRST test...');
+logger.log({ level: 'error', message: new Error('FIRST test error') });
+
+// Error as info (one argument)
+console.log('\nRun SECOND test...');
+const err = new Error('SECOND test error');
+err.level = 'info';
+logger.info(err);
+
+// Error as info (two arguments);
+console.log('\nRun THIRD test...');
+logger.log('info', new Error('THIRD test error'));*/
+
 
 //app.locals.logger = logger;
 //logger.error(new Error('whatever'));

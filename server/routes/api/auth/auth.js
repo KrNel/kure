@@ -7,7 +7,6 @@ import config from '../../../config';
 import SteemConnect from '../../../../client/src/utils/auth/scAPI';
 
 const router = new Router();
-//const ORIGIN_HOST = `${config.app.client.host}:${config.app.client.port}`;
 let tokens = new Tokens();
 
 router.use(bodyParser.json());
@@ -44,19 +43,6 @@ router.post('/login', (req, res) => {
       if (isAuth) res.json({ isAuth: isAuth, user: {name: user} });
     }).catch(err => console.error(err) );
 })
-
-/*
-//Check if forwarded header matches ORIGIN from config settings
-const originPass = () => {
-  return new Promise((resolve) => {
-    if (ORIGIN_HOST !== req.headers['x-forwarded-host']) {
-      res.json({"isAuth": false});
-      resolve(false);
-    }
-    resolve(true);
-  });
-}
-*/
 
 /**
  *  Verify access token from connection attempt.
@@ -128,6 +114,7 @@ const initUser = (db, user) => {
         },
         { upsert:true }
       )
+      db.collection('user').createIndex({name: 1});
       success = true;
     }catch (err) {
       reject(success);

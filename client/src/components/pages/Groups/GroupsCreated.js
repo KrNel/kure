@@ -1,7 +1,8 @@
 import React from 'react';
 import { Header, Table, Label } from "semantic-ui-react";
-import { Link } from 'react-router-dom';
 import moment from 'moment';
+
+import GroupLink from '../../Common/GroupLink';
 
 /**
  *  Show the newly created groups as a table list.
@@ -28,11 +29,7 @@ const GroupsCreated = ({ groupsCreated}) => {
               groupsCreated.map((g, i) => (
                 <Table.Row key={g._id}>
                   <Table.Cell>
-                    <Link
-                      to={`group/${g.name}`}
-                    >
-                      {g.display}
-                    </Link>
+                    <GroupLink display={g.display} name={g.name} />
                   </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.posts}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.users}</Table.Cell>
