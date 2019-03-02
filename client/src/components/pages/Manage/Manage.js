@@ -4,6 +4,7 @@ import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import ManageGroups from './ManageGroups';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Manage.css';
 
 
@@ -19,30 +20,32 @@ import './Manage.css';
  *  @returns {Component} Loads various components to manage community groups
  */
 const Manage = ({user, csrf}) => (
-  <div className="manage">
-    <Grid columns={1} stackable>
+  <ErrorBoundary>
+    <div className="manage">
+      <Grid columns={1} stackable>
 
-      <Grid.Column width={16} className="main">
-        <Grid>
+        <Grid.Column width={16} className="main">
+          <Grid>
 
-          <ManageGroups
-            user={user}
-            csrf={csrf}
-            type='owned'
-            headerText='Communities You Own'
-          />
+            <ManageGroups
+              user={user}
+              csrf={csrf}
+              type='owned'
+              headerText='Communities You Own'
+            />
 
-          <ManageGroups
-            user={user}
-            csrf={csrf}
-            type='joined'
-            headerText='Communities You Joined'
-          />
+            <ManageGroups
+              user={user}
+              csrf={csrf}
+              type='joined'
+              headerText='Communities You Joined'
+            />
 
-        </Grid>
-      </Grid.Column>
-    </Grid>
-  </div>
+          </Grid>
+        </Grid.Column>
+      </Grid>
+    </div>
+  </ErrorBoundary>
 )
 
 Manage.propTypes = {

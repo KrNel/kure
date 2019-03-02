@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import SteemConnect from '../../../utils/auth/scAPI';
 import GroupLink from '../../Common/GroupLink';
+import TitleLink from '../../Common/TitleLink';
 
 /**
  *  Component to display the post data sent.
@@ -31,13 +32,13 @@ const RecentPosts = ({posts, isAuth}) => {
           posts.map((p, i) => (
             <Table.Row key={p._id}>
               <Table.Cell>
-              <Link
-                to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-              >
-                {(p.st_title.length > 67)
-                  ? p.st_title.substr(0,67) + " ..."
-                  : p.st_title}
-              </Link>
+                <TitleLink
+                  title={p.st_title}
+                  category={p.st_category}
+                  author={p.st_author}
+                  permlink={p.st_permlin}
+                  cutoff={67}
+                />
               </Table.Cell>
               <Table.Cell collapsing textAlign='center'>
                 <GroupLink display={p.display} name={p.group} />

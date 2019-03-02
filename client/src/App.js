@@ -7,7 +7,7 @@ import Header from './components/Header/Header';
 import SteemConnect from './utils/auth/scAPI';
 import './App.css';
 import { handleReturning } from './actions/authActions';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+
 
 /**
  *  Root application compoenent.
@@ -45,9 +45,7 @@ class App extends Component {
 
         <Grid container className="wrapper">
           <Grid.Column width={16}>
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
+            {children}
           </Grid.Column>
         </Grid>
       </React.Fragment>

@@ -8,6 +8,7 @@ import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/formatters';
 import RepLog10 from '../../../utils/reputationCalc';
+import TitleLink from '../../Common/TitleLink';
 
 
 /**
@@ -68,15 +69,15 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
               }
               <div className="summary-content" data-permlink={permlink}>
                 <h4>
-                  <Link to={url}>
-                    {title}
-                  </Link>
-                  {/*<Link to={{ pathname: url, state: { user: user, csrf: csrf} }}>
+                  {/*<Link to={url}>
                     {title}
                   </Link>*/}
-                  {/*<a href='/postdetails' onClick={(e) => onClickTitle(e, url)}>
-                    {title}
-                  </a>*/}
+                  <TitleLink
+                    title={title}
+                    category={category}
+                    author={author}
+                    permlink={permlink}
+                  />
                 </h4>
                 <p>
                   {desc}

@@ -3,6 +3,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import DateFromNow from '../../Common/DateFromNow';
+import TitleLink from '../../Common/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
   <Segment.Group className='box'>
@@ -19,19 +20,14 @@ const MySubmissions = ({ isAuth, mySubs }) => (
             mySubs.map(p => (
               <li key={p._id}>
                 <div className='left'>
-                  <Link
-                    to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                  >
-                    {
-                      // eslint-disable-next-line
-                      (p.st_title.length > 14) //longer than 14 chars?
-                        //eslint-disable-next-line
-                        ? (/[^\u0000-\u007f]/.test(p.st_title)) //non latin?
-                          ? p.st_title.substr(0,8) + " ..." //truncate non latin
-                          : p.st_title.substr(0,14) + " ..." //truncate latin
-                        : p.st_title //no truncate
-                    }
-                  </Link>
+                  <TitleLink
+                    title={p.st_title}
+                    category={p.st_category}
+                    author={p.st_author}
+                    permlink={p.st_permlin}
+                    cutoff={14}
+                    multiCut={8}
+                  />
                 </div>
                 <div className='right meta'>
                   <DateFromNow date={p.created} />

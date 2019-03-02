@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import {roles} from '../../settings';
+import TitleLink from './TitleLink';
 
 const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
   return (
@@ -28,13 +29,13 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
         posts.map((p, i) => (
           <Table.Row key={p._id}>
             <Table.Cell>
-              <Link
-                to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-              >
-                {(p.st_title.length > 70)
-                  ? p.st_title.substr(0,70) + " ..."
-                  : p.st_title}
-              </Link>
+              <TitleLink
+                title={p.st_title}
+                category={p.st_category}
+                author={p.st_author}
+                permlink={p.st_permlin}
+                cutoff={70}
+              />
             </Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>

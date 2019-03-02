@@ -8,6 +8,7 @@ import GroupPosts from '../../Common/GroupPosts'
 import GroupUsers from '../../Common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
 /**
  *
@@ -168,38 +169,40 @@ class GroupDetails extends Component {
     return (
       isLoading ? <Loading /> : !notExists
       ? (
-        <Grid columns={1} stackable>
-          <Grid.Column>
-            <Label size='large' color='blue'>
-              <Header as='h2'>{groupData.display}</Header>
-            </Label>
-            <div className='right'>
-              { isAuth && (
-                <Segment>
-                  {'Membership: '}
-                  {
-                    joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                  }
-                </Segment>
-              )}
-            </div>
-            {
-              groupData.kposts.length
-              ? (
-                <GroupPosts
-                  posts={groupData.kposts}
-                />
-              ) : (
-                <Segment>
-                  {'No posts.'}
-                </Segment>
-              )
-            }
-            <GroupUsers
-              users={groupData.kusers}
-            />
-          </Grid.Column>
-        </Grid>
+        <ErrorBoundary>
+          <Grid columns={1} stackable>
+            <Grid.Column>
+              <Label size='large' color='blue'>
+                <Header as='h2'>{groupData.display}</Header>
+              </Label>
+              <div className='right'>
+                { isAuth && (
+                  <Segment>
+                    {'Membership: '}
+                    {
+                      joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                    }
+                  </Segment>
+                )}
+              </div>
+              {
+                groupData.kposts.length
+                ? (
+                  <GroupPosts
+                    posts={groupData.kposts}
+                  />
+                ) : (
+                  <Segment>
+                    {'No posts.'}
+                  </Segment>
+                )
+              }
+              <GroupUsers
+                users={groupData.kusers}
+              />
+            </Grid.Column>
+          </Grid>
+        </ErrorBoundary>
       )
       : <Segment>That group doesn&apos;t exist.</Segment>
     )

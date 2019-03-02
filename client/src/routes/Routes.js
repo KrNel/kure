@@ -25,11 +25,11 @@ const Routes = (props) => (
       <Route exact path='/groups' component={Groups} />
       <Route exact path='/posts' component={Posts} />
       <Route exact path='/kurate' component={Kurate} />
+      <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route path='/success' component={AuthSC} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
       <Route exact path='/group/:group/' component={GroupDetails} />
-      <Route path='/:category/@:author/:permlink' component={Kurate} />
       <Route component={NoMatch} />
     </Switch>
   </App>

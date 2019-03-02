@@ -10,6 +10,7 @@ import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -294,7 +295,7 @@ class Kurate extends Component {
           (path === '/kurate')
           ?
           (
-            <React.Fragment>
+            <ErrorBoundary>
               <div className='controlContent'>
                 <Form>
                   <Form.Group>
@@ -327,7 +328,7 @@ class Kurate extends Component {
                 </div>
               </div>
               <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
-            </React.Fragment>
+            </ErrorBoundary>
           )
           :
           (

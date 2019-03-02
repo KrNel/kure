@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
+import UserLink from '../../Common/UserLink';
 
 /**
  *  Displays the author hyperlink.
@@ -9,11 +10,7 @@ import { Link } from 'react-router-dom';
  */
 const Author = ({author}) => (
   <strong>
-    <Link
-      to={`/@${author}`}
-    >
-      {author}
-    </Link>
+    <UserLink user={author} />
   </strong>
 )
 

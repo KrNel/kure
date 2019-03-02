@@ -72,7 +72,7 @@ class PostDetails extends Component {
     } = this.props;
 
     const {post, isLoading} = this.state;
-
+    const nothing = undefined;
     const md = new Remarkable({
       html: true,
       linkify: true
@@ -98,6 +98,7 @@ class PostDetails extends Component {
     const commentCount = post.children;
 
     return (
+
       <Grid verticalAlign='middle' columns={1} centered>
         <Grid.Row>
           <Grid.Column width={12}>

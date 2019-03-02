@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 
 /**
  *  Displays the category hyperlink.
@@ -8,11 +8,20 @@ import { Link } from 'react-router-dom';
  *  @returns {component} createdFromNow Time since post was created
  */
 const Category = ({category}) => (
-  <Link
-    to={`/created/${category}`}
-  >
-    {category}
-  </Link>
+  <React.Fragment>
+    {/*<Link
+      to={`/created/${category}`}
+    >
+      {category}
+    </Link>*/}
+    <a
+      target='_blank'
+      rel='noopener noreferrer'
+      href={`https://steemit.com/created/${category}`}
+    >
+      {category}
+    </a>
+  </React.Fragment>
 )
 
 export default Category;

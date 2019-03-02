@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import {roles} from '../../settings';
+import UserLink from './UserLink';
 
 const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
   <React.Fragment>
@@ -31,11 +32,7 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
             return (
               <Table.Row key={i}>
                 <Table.Cell>
-                  <Link
-                    to={'@'+u.user}
-                  >
-                    {u.user}
-                  </Link>
+                  <UserLink user={u.user} />
                 </Table.Cell>
                 <Table.Cell collapsing textAlign='center'>{role}</Table.Cell>
                 <Table.Cell collapsing textAlign='center'>

@@ -138,7 +138,7 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
  *  @returns {function} Dispatches returned action object
  */
 export const handleReturning = () => (dispatch, getState) => {
-  if (!getState().auth.isLoggingIn)
+  if (!getState().auth.isAuth)
     return dispatch(fetchReturning());
 }
 
