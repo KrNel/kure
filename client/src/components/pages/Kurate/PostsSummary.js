@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -36,7 +35,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
         const title = post.title;
         const author = post.author;
         const authorReputation = RepLog10(post.author_reputation);
-        const url = post.url;
+        //const url = post.url;
         const desc = post.desc;
         const permlink = post.permlink;
         const category = post.category;

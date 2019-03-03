@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 import { Table, Segment } from "semantic-ui-react";
-import { Link } from 'react-router-dom';
 
 import SteemConnect from '../../../utils/auth/scAPI';
 import GroupLink from '../../Common/GroupLink';

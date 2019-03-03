@@ -1,7 +1,6 @@
 import React from 'react';
 import { Header, Icon, Table, Dimmer, Loader } from "semantic-ui-react";
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+//import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';
@@ -15,9 +14,9 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
     <Table striped>
       <Table.Header>
         <Table.Row>
-        <Table.HeaderCell>User</Table.HeaderCell>
-        <Table.HeaderCell textAlign='center'>Role</Table.HeaderCell>
-        <Table.HeaderCell textAlign='center'>Joined</Table.HeaderCell>
+          <Table.HeaderCell>User</Table.HeaderCell>
+          <Table.HeaderCell textAlign='center'>Role</Table.HeaderCell>
+          <Table.HeaderCell textAlign='center'>Joined</Table.HeaderCell>
           {
             access < roles.kGroupsRolesRev['Moderator']
             && (<Table.HeaderCell textAlign='center'>Remove</Table.HeaderCell>)

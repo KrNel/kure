@@ -4,10 +4,17 @@ import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import Header from './components/Header/Header';
+import NavMenu from './components/Nav/NavMenu';
 import SteemConnect from './utils/auth/scAPI';
 import './App.css';
 import { handleReturning } from './actions/authActions';
 
+const items = [
+  {name : "/", label : "Home"},
+  {name : "/kurate", label : "Kurate"},
+  {name : "/groups", label : "Communities"},
+  {name : "/posts", label : "Kurated"},
+];
 
 /**
  *  Root application compoenent.
@@ -41,13 +48,19 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <Header loginURL={loginURL} />
+        <Header />
+        {/*<Grid className="navMenu">
+          <Grid.Column>
 
-        <Grid container className="wrapper">
-          <Grid.Column width={16}>
-            {children}
           </Grid.Column>
-        </Grid>
+        </Grid>*/}
+        <NavMenu loginURL={loginURL} items={items}>
+          <Grid container className="wrapper">
+            <Grid.Column width={16}>
+              {children}
+            </Grid.Column>
+          </Grid>
+        </NavMenu>
       </React.Fragment>
     )
   }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Icon, Table, Dimmer, Loader } from "semantic-ui-react";
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+//import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';

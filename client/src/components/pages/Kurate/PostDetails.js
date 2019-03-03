@@ -72,7 +72,7 @@ class PostDetails extends Component {
     } = this.props;
 
     const {post, isLoading} = this.state;
-    const nothing = undefined;
+
     const md = new Remarkable({
       html: true,
       linkify: true

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid, Header, Segment, Label } from "semantic-ui-react";
-import { Link } from 'react-router-dom';
 
 import GroupLink from '../../Common/GroupLink';
 import TitleLink from '../../Common/TitleLink';

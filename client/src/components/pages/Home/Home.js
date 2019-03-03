@@ -45,8 +45,6 @@ class Home extends Component {
     user: 'x'
   };
 
-  state = {};
-
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
     let {
@@ -54,10 +52,7 @@ class Home extends Component {
       dispatch,
       user,
       csrf,
-      isAuth,
-      location: {
-        state
-      }
+      isAuth
     } = this.props;
 
     if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view

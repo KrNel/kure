@@ -296,38 +296,40 @@ class Kurate extends Component {
           ?
           (
             <ErrorBoundary>
-              <div className='controlContent'>
-                <Form>
-                  <Form.Group>
-                    <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
-                    <Picker
-                      onChange={this.handleFilterSelect}
-                      options={filters}
-                      label=''
-                    />
-                    <Form.Input
-                      placeholder='Search a tag'
-                      name='tag'
-                      value={tag}
-                      onChange={this.handleChange}
-                    />
-                  </Form.Group>
-                </Form>
-              </div>
-              <hr />
-              <div>
-                <div id="postList" style={{display: postsListShow}}>
-                  <PostsSummary
-                    posts={posts}
-                    nextPost={nextPost}
-                    showModal={this.showModal}
-                    user={user}
-                    csrf={csrf}
-                    onClickTitle={this.onClickTitle}
-                  />
+              <React.Fragment>
+                <div className='controlContent'>
+                  <Form>
+                    <Form.Group>
+                      <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+                      <Picker
+                        onChange={this.handleFilterSelect}
+                        options={filters}
+                        label=''
+                      />
+                      <Form.Input
+                        placeholder='Search a tag'
+                        name='tag'
+                        value={tag}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                  </Form>
                 </div>
-              </div>
-              <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+                <hr />
+                <div>
+                  <div id="postList" style={{display: postsListShow}}>
+                    <PostsSummary
+                      posts={posts}
+                      nextPost={nextPost}
+                      showModal={this.showModal}
+                      user={user}
+                      csrf={csrf}
+                      onClickTitle={this.onClickTitle}
+                    />
+                  </div>
+                </div>
+                <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+              </React.Fragment>
             </ErrorBoundary>
           )
           :

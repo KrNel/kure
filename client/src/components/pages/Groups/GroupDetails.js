@@ -51,9 +51,6 @@ class GroupDetails extends Component {
           group
         }
       },
-      location: {
-        key
-      },
       user,
       isAuth,
       csrf,
@@ -75,8 +72,7 @@ class GroupDetails extends Component {
           group
         }
       },
-      user,
-      isAuth,
+      user
     } = this.props;
 
     if (prevProps.user !== user) {
