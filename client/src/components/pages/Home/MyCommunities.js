@@ -2,8 +2,8 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import GroupLink from '../../Common/GroupLink';
-import DateFromNow from '../../Common/DateFromNow';
+import GroupLink from '../../common/GroupLink';
+import DateFromNow from '../../common/DateFromNow';
 
 const MyCommunities = ({ isAuth, myComms }) => (
   <Segment.Group className='box'>

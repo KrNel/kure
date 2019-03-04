@@ -4,7 +4,7 @@ import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react"
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../Common/GroupLink';
+import GroupLink from '../../common/GroupLink';
 
 /**
  *  Display the community groups for a user to manage or delete.

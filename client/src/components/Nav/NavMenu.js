@@ -6,7 +6,6 @@ import {
   Menu,
   Sidebar,
   Responsive,
-  Segment,
   Container,
 } from "semantic-ui-react";
 import PropTypes from 'prop-types';
@@ -26,8 +25,7 @@ import './NavMenu.css';
  *  LoginControl component used to detemine Login/Logout right menu display.
  *
  *  @param {object} props Component props
- *  @param {string} props.loginURL URL to login via Steem Connect
- *  @returns {Component} Displays the menu
+ *  @returns {Component} Displays the desktop and mobile menus
  */
 class NavMenu extends Component {
 
@@ -73,10 +71,30 @@ class NavMenu extends Component {
   }
 }
 
+/**
+ *  Children passed from main NavMenu component. These are the pages that
+ *  need to go through the Nav so that the Sidebar renders properly over them.
+ *
+ *  @param {object} props Component props
+ *  @param {object} props.children App pages to view
+ *  @returns {Component} Container with children
+ */
 const NavBarChildren = ({ children }) => (
   <Container>{children}</Container>
 );
 
+/**
+ *  Mobile NavMenu, displaying the mobile icon for a sidebar to open up.
+ *
+ *  @param {object} props Component props
+ *  @param {array} props.items Menu items to render
+ *  @param {function} props.onPusherClick Shows the sidebar
+ *  @param {function} props.onToggle Toggles show or hide
+ *  @param {boolean} props.visible Determinse if sidebar is seen or not
+ *  @param {string} props.loginURL URL to login via Steem Connect
+ *  @param {object} props.children Pages for the app
+ *  @returns {Component} Displays the mobile menu
+ */
 const NavMobile = ({
   items,
   onPusherClick,
@@ -85,7 +103,7 @@ const NavMobile = ({
   loginURL,
   children
 }) => (
-  <Sidebar.Pushable as={Segment}>
+  <Sidebar.Pushable>
     <Sidebar
       as={Menu}
       animation="overlay"
@@ -127,6 +145,14 @@ const NavMobile = ({
   </Sidebar.Pushable>
 );
 
+/**
+ *  Desktop NavMenu
+ *
+ *  @param {object} props Component props
+ *  @param {array} props.items Menu items to render
+ *  @param {string} props.loginURL URL to login via Steem Connect
+ *  @returns {Component} Displays the mobile menu
+ */
 const NavDesktop = ({ items, loginURL }) => (
   <Menu color="blue" secondary size="huge" className="navMenu">
     <Menu.Item className="nopad">
@@ -150,29 +176,5 @@ const NavDesktop = ({ items, loginURL }) => (
     </Menu.Menu>
   </Menu>
 );
-
-{/*<React.Fragment>
-  <Menu color="blue" secondary stackable size="huge">
-    <Menu.Item className="nopad"><Image src={logo} alt="logo" /></Menu.Item>
-    {
-      items.map(item => (
-        <Menu.Item
-          exact
-          as={NavLink}
-          to={item.name}
-          key={item.name}
-          header
-        >
-          {item.label}
-        </Menu.Item>
-      ))
-    }
-    <Menu.Menu position="right">
-      <LoginControl loginURL={loginURL} />
-    </Menu.Menu>
-  </Menu>
-</React.Fragment>*/}
-
-
 
 export default NavMenu;

@@ -2,8 +2,8 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import DateFromNow from '../../Common/DateFromNow';
-import TitleLink from '../../Common/TitleLink';
+import DateFromNow from '../../common/DateFromNow';
+import TitleLink from '../../common/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
   <Segment.Group className='box'>

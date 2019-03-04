@@ -7,7 +7,7 @@ import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/formatters';
 import RepLog10 from '../../../utils/reputationCalc';
-import TitleLink from '../../Common/TitleLink';
+import TitleLink from '../../common/TitleLink';
 
 
 /**

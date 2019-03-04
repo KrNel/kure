@@ -4,8 +4,8 @@ import {Grid, Label, Header, Segment} from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPosts from '../../Common/GroupPosts'
-import GroupUsers from '../../Common/GroupUsers'
+import GroupPosts from '../../common/GroupPosts'
+import GroupUsers from '../../common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';

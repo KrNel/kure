@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UserLink from '../../Common/UserLink';
+import UserLink from '../../common/UserLink';
 
 /**
  *  Displays the author hyperlink.

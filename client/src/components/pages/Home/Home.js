@@ -4,12 +4,12 @@ import { Grid, Header, Segment, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../Common/GroupLink';
+import GroupLink from '../../common/GroupLink';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
 import RecentPosts from './RecentPosts'
-import TitleLink from '../../Common/TitleLink';
+import TitleLink from '../../common/TitleLink';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
 

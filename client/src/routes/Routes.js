@@ -10,6 +10,7 @@ import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
+import Write from '../components/Write/Write';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -30,6 +31,7 @@ const Routes = (props) => (
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
       <Route exact path='/group/:group/' component={GroupDetails} />
+      <Route exact path='/write' component={Write} />
       <Route component={NoMatch} />
     </Switch>
   </App>
