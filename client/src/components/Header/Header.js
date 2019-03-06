@@ -1,6 +1,7 @@
 import React from 'react';
 
 import HelmetComponent from './PageHeader/PageHeader';
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 
 /**
  *  Sets up the HTML <head> and navigation menu.
@@ -10,7 +11,9 @@ import HelmetComponent from './PageHeader/PageHeader';
  *  @returns {Component} Displays the menu, and modifeid the header.
  */
 const Header = () => (
-  <HelmetComponent title='KURE - Curation Network Remedy for Steem' description='Kindred United to Reward Everyone' />
+  <ErrorBoundary>
+    <HelmetComponent title='KURE - Curation Network Remedy for Steem' description='Kindred United to Reward Everyone' />
+  </ErrorBoundary>
 )
 
 export default Header;

@@ -1,11 +1,12 @@
 /**
- * Based on ExtractContent.js from Steem condenser front-end by Steemit Inc. @ https://github.com/steemit/condenser/blob/master/src/app/utils/ExtractContent.js
+ *  Based on ExtractContent.js from Steem condenser front-end by Steemit Inc.
+ *  @ https://github.com/steemit/condenser/blob/master/src/app/utils/ExtractContent.js
  */
 
 import Remarkable from 'remarkable';
 import sanitize from 'sanitize-html';
 import remarkableStripper from './remarkablestripper';
-import HtmlReady from './htmlready';
+import HtmlReady from './steemitHtmlReady';
 
 export const remarkable = new Remarkable({ html: true, linkify: false });
 
@@ -61,12 +62,12 @@ export function extractContent(post) {
   } = post;
 
   //const body = get(content, 'body');
-  let jsonMetadata = JSON.parse(json_metadata);
+  let jsonMetadata = {};
   let image_link;
   try {
     //in case of metadata being double encoded
-    if (typeof jsonMetadata == 'string') {
-      jsonMetadata = JSON.parse(jsonMetadata);
+    if (typeof json_metadata == 'string') {
+      jsonMetadata = JSON.parse(json_metadata);
     }
     // First, attempt to find an image url in the json metadata
     if (jsonMetadata && jsonMetadata.image) {

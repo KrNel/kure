@@ -11,6 +11,7 @@ import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import Loading from '../../Loading/Loading';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -45,14 +46,42 @@ class Kurate extends Component {
       addPostLoading: false,
       tag: '',
       selectedFilter: 'created',
+      isLoading: true,
+      noMore: false,
     }
     this.existPost = "Post already in group.";
     this.steemPostData = '';
   }
 
   componentDidMount() {
+    const {match: {path}} = this.props;
+    if (path === '/kurate') {
+      this.scrollListener = window.addEventListener("scroll", e => {
+        this.handleScroll(e);
+      });
+    }
     this.getPosts();
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll, false);
+  }
+
+  /**
+   *  Infinite scroll. Checks to see if the last post in the list is reached,
+   *  then calls fetch to get new posts.
+   */
+  handleScroll = () => {
+    const {isLoading, noMore} = this.state;
+    if (!isLoading && !noMore) {
+      var lastLi = document.querySelector("#postList > div.post:last-child");
+      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      var pageOffset = window.pageYOffset + window.innerHeight;
+      if (pageOffset > lastLiOffset) {
+           this.getPosts('more');
+      }
+    }
+  };
 
   /**
    *  When the page loads, this function will get the posts from Steem.
@@ -103,7 +132,9 @@ class Kurate extends Component {
           const {user} = this.props;
           if (user) this.getGroupsFetch(user);
         } else {
-          //document.getElementById('postList').innerHTML = 'No result.';
+          this.setState({
+            noMore: true,
+          });
         }
       }).catch(err => {
         logger('error', err);
@@ -220,7 +251,10 @@ class Kurate extends Component {
    *  Change the style to show posts when data is returned.
    */
   onPostsGet = () => {
-    this.setState({postsListShow: 'block'})
+    this.setState({
+      postsListShow: 'block',
+      isLoading: false,
+    })
   }
 
   /**
@@ -259,6 +293,7 @@ class Kurate extends Component {
         postExists,
         addPostLoading,
         tag,
+        isLoading,
       },
       props: {
         user,
@@ -328,18 +363,22 @@ class Kurate extends Component {
                     />
                   </div>
                 </div>
-                <Button id='more' color='blue' style={{display: postsListShow}} type="button" onClick={() => this.getPosts('more')}>Get More Posts</Button>
+                {
+                  isLoading && <Loading />
+                }
               </React.Fragment>
             </ErrorBoundary>
           )
           :
           (
-            <PostDetails
-              match={this.props.match}
-              showModal={this.showModal}
-              user={user}
-              csrf={csrf}
-            />
+            <ErrorBoundary>
+              <PostDetails
+                match={this.props.match}
+                showModal={this.showModal}
+                user={user}
+                csrf={csrf}
+              />
+            </ErrorBoundary>
           )
         }
       </React.Fragment>

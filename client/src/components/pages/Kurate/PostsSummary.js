@@ -5,7 +5,7 @@ import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
-import { extractContent } from './helpers/formatters';
+import { extractContent } from './helpers/extractContent';
 import RepLog10 from '../../../utils/reputationCalc';
 import TitleLink from '../../common/TitleLink';
 
@@ -18,9 +18,6 @@ import TitleLink from '../../common/TitleLink';
  *  @param {function} showModal Parent function to show the add post modal
  */
 const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) => {
-  //const postsExtracts = extractContent(posts);
-
-  //var posts = [];
   if (posts.length) {
     return (
       posts.map((p, i) => {
@@ -68,9 +65,6 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
               }
               <div className="summary-content" data-permlink={permlink}>
                 <h4>
-                  {/*<Link to={url}>
-                    {title}
-                  </Link>*/}
                   <TitleLink
                     title={title}
                     category={category}

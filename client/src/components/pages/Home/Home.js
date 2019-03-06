@@ -124,7 +124,7 @@ class Home extends Component {
                                       title={p.st_title}
                                       category={p.st_category}
                                       author={p.st_author}
-                                      permlink={p.st_permlin}
+                                      permlink={p.st_permlink}
                                       cutoff={40}
                                     />
                                   </li>

@@ -1,19 +1,20 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import Remarkable from 'remarkable';
 import { Client } from 'dsteem';
 import { Grid } from "semantic-ui-react";
 import moment from 'moment';
-import _ from 'lodash';
-
-import PostBody, { getHtml } from './PostBody';
-import { getFromMetadata, extractImageTags } from './helpers/parser';
-import { getProxyImageURL } from './helpers/image';
-import PostFeedEmbed from './PostFeedEmbed';
 
 import RepLog10 from '../../../utils/reputationCalc';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
 import PostActions from './PostActions';
+import replaceLinks from './helpers/replaceLinks';
+
+import PostBody, { getHtml } from './PostBody';
+import { getFromMetadata, extractImageTags } from './helpers/busy/parser';
+
 import Loading from '../../Loading/Loading';
+
 import './PostDetails.css'
 
 const client = new Client('https://hive.anyx.io/');
@@ -38,6 +39,9 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+
+    //this.handleClick = this.handleClick.bind(this);
+    //this.handleContentClick = this.handleContentClick.bind(this);
   }
 
 
@@ -69,6 +73,7 @@ class PostDetails extends Component {
    *  @param {string} permlink Permlink of content
    */
   openPost = (author, permlink) => {
+console.log('openPost')
     client.database.call('get_content', [author, permlink]).then(result => {
       this.setState({
         post: result,
@@ -77,36 +82,6 @@ class PostDetails extends Component {
     });
   }
 
-
-  renderDtubeEmbedPlayer(post) {
-    const parsedJsonMetaData = _.attempt(JSON.parse, post.json_metadata);
-
-    if (_.isError(parsedJsonMetaData)) {
-      return null;
-    }
-
-    const video = getFromMetadata(post.json_metadata, 'video');
-    const isDtubeVideo = _.has(video, 'content.videohash') && _.has(video, 'info.snaphash');
-
-    if (isDtubeVideo) {
-      const videoTitle = _.get(video, 'info.title', '');
-      const author = _.get(video, 'info.author', '');
-      const permlink = _.get(video, 'info.permlink', '');
-      const dTubeEmbedUrl = `https://emb.d.tube/#!/${author}/${permlink}/true`;
-      const dTubeIFrame = `<iframe width="100%" height="340" src="${dTubeEmbedUrl}" title="${videoTitle}" allowFullScreen></iframe>`;
-      const embed = {
-        type: 'video',
-        provider_name: 'DTube',
-        embed: dTubeIFrame,
-        thumbnail: getProxyImageURL(`https://ipfs.io/ipfs/${video.info.snaphash}`, 'preview'),
-      };
-      return <PostFeedEmbed embed={embed} />;
-    }
-
-    return null;
-  }
-
-
   render() {
     const {
       showModal,
@@ -114,6 +89,7 @@ class PostDetails extends Component {
     } = this.props;
 
     const {post, isLoading} = this.state;
+console.log('post.body')
     /*const md = new Remarkable({
       html: true,
       linkify: true
@@ -139,16 +115,19 @@ class PostDetails extends Component {
     const commentCount = post.children;
 
 
-
+console.log('post.body:',post.body)
     let signedBody = post.body || '';
+    /*if (signature) {
+      signedBody = `${post.body}<hr>${signature}`;
+    }*/
 
     const parsedBody = getHtml(signedBody, {}, 'text');
-
+console.log('parsedBody:',parsedBody)
     this.images = extractImageTags(parsedBody);
 
     //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
-
+console.log('tags:',tags)
     //let content = null;
     /*if (isPostDeleted(post)) {
       content = <StoryDeleted />;
@@ -195,7 +174,6 @@ class PostDetails extends Component {
                   />
                   <hr />
                   {/*<div dangerouslySetInnerHTML={this.createMarkup(body)} />*/}
-                  {this.renderDtubeEmbedPlayer(post)}
                   <PostBody
                     full
                     rewriteLinks={false}
