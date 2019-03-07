@@ -48,12 +48,6 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <Header />
-        {/*<Grid className="navMenu">
-          <Grid.Column>
-
-          </Grid.Column>
-        </Grid>*/}
         <NavMenu loginURL={loginURL} items={items}>
           <Grid container className="wrapper">
             <Grid.Column width={16}>

@@ -11,7 +11,7 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
     <Header>
       {`Members (${users.length})`}
     </Header>
-    <Table striped>
+    <Table>
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>User</Table.HeaderCell>

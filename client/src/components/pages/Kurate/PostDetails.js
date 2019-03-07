@@ -172,6 +172,25 @@ class PostDetails extends Component {
       );*/
     //}
 
+    /*<Helmet>
+      <title>{title}</title>
+      <link rel="canonical" href={canonicalUrl} />
+      <link rel="amphtml" href={ampUrl} />
+      <meta property="description" content={desc} />
+      <meta property="og:title" content={metaTitle} />
+      <meta property="og:type" content="article" />
+      <meta property="og:url" content={url} />
+      <meta property="og:image" content={image} />
+      <meta property="og:description" content={desc} />
+      <meta property="og:site_name" content="Busy" />
+      <meta property="article:tag" content={category} />
+      <meta property="article:published_time" content={created} />
+      <meta property="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+      <meta property="twitter:site" content={'@busyorg'} />
+      <meta property="twitter:title" content={metaTitle} />
+      <meta property="twitter:description" content={desc} />
+      <meta property="twitter:image" content={image} />
+    </Helmet>*/
     return (
 
       <Grid verticalAlign='middle' columns={1} centered>

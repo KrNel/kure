@@ -19,7 +19,7 @@ const RecentPosts = ({posts, isAuth}) => {
   const loginURL = SteemConnect.getLoginURL('/');
   if (posts.length) {
     return (
-      <Table striped>
+      <Table>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Title</Table.HeaderCell>

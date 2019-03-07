@@ -17,7 +17,7 @@ import {
 export const auth = (
   state = {
     isAuth: false,
-    isAuthorizing: true,
+    isAuthorizing: false,
     csrf: '',
     userData: { name: '' }
   },
@@ -41,7 +41,7 @@ export const auth = (
     case REQUEST_LOGIN: {
       return ({
         ...state,
-        isLoggingIn: true,
+        isAuthorizing: true,
       });
     }
     case RECEIVE_LOGIN: {

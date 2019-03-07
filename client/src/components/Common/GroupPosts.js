@@ -8,7 +8,7 @@ import TitleLink from './TitleLink';
 
 const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
   return (
-    <Table striped>
+    <Table>
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Title</Table.HeaderCell>

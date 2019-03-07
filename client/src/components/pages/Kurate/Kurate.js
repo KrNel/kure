@@ -51,27 +51,31 @@ class Kurate extends Component {
     }
     this.existPost = "Post already in group.";
     this.steemPostData = '';
+
+    //this.handleScroll = this.handleScroll.bind(this);
+    //handleScroll = () => this.handleScroll()
   }
 
   componentDidMount() {
     const {match: {path}} = this.props;
     if (path === '/kurate') {
-      this.scrollListener = window.addEventListener("scroll", e => {
+      /*this.scrollListener = window.addEventListener("scroll", e => {
         this.handleScroll(e);
-      });
+      });*/
+      window.addEventListener("scroll", this.handleScroll);
     }
     this.getPosts();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, false);
+    window.removeEventListener("scroll", this.handleScroll);
   }
 
   /**
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = () => {
+  handleScroll = (e) => {
     const {isLoading, noMore} = this.state;
     if (!isLoading && !noMore) {
       var lastLi = document.querySelector("#postList > div.post:last-child");
@@ -234,10 +238,13 @@ class Kurate extends Component {
    *  @param {string} user User to get groups for
    */
   getGroupsFetch = (user) => {
+    const {groups} = this.state;
+    if (groups[0].text !== "No Groups") return;
+
     getUserGroups(user, 'all')
     .then(res => {
       const groups = res.data.groups.map((g, i) => {
-        return {key: i, value: g.name, text: g.display, ...g}
+        return {key: i, value: g.name, text: g.display}
       })
       this.setState({
         groups
