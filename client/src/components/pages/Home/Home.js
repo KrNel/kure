@@ -195,7 +195,7 @@ const mapStateToProps = state => {
     isFetching,
     lastUpdated,
     isAuth: auth.isAuth,
-    user: auth.userData.name,
+    user: auth.user,
     csrf: auth.csrf,
   }
 }

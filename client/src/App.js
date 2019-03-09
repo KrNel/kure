@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
-import Header from './components/Header/Header';
 import NavMenu from './components/Nav/NavMenu';
 import SteemConnect from './utils/auth/scAPI';
 import './App.css';

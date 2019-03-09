@@ -40,7 +40,7 @@ router.post('/login', (req, res) => {
       if (init) return newCSRF(db, res, user)
     }).then(isAuth => {
       //Return authentication object
-      if (isAuth) res.json({ isAuth: isAuth, user: {name: user} });
+      if (isAuth) res.json({ isAuth: isAuth, user: user });
     }).catch(err => console.error(err) );
 })
 
@@ -210,9 +210,7 @@ const returning = async (db, res, accessToken) => {
   return (newCSRF(db, res, user))
     ? {
         isAuth: true,
-        user: {
-          name: user
-        }
+        user: user,
       }
     : fail;
 }

@@ -104,10 +104,10 @@ class Groups extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, isAuth } = state.auth;
+  const { user, isAuth } = state.auth;
 
   return {
-    user: userData.name,
+    user,
     isAuth,
   }
 }

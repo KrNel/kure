@@ -60,10 +60,10 @@ Manage.propTypes = {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf } = state.auth;
+  const { user, csrf } = state.auth;
 
   return {
-    user: userData.name,
+    user,
     csrf
   }
 }

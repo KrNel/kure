@@ -212,10 +212,10 @@ class GroupDetails extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf, isAuth } = state.auth;
+  const { user, csrf, isAuth } = state.auth;
 
   return {
-    user: userData.name,
+    user,
     csrf,
     isAuth,
   }

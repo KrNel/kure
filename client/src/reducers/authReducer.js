@@ -19,7 +19,7 @@ export const auth = (
     isAuth: false,
     isAuthorizing: false,
     csrf: '',
-    userData: { name: '' }
+    user: '',
   },
   action) => {
 
@@ -34,7 +34,7 @@ export const auth = (
         ...state,
         isAuth: action.isAuth,
         isAuthorizing: action.isAuthorizing,
-        userData: action.userData,
+        user: action.user,
         csrf: action.csrf || '',
         lastUpdated: action.authedAt
       });
@@ -49,7 +49,7 @@ export const auth = (
         ...state,
         isAuth: action.isAuth,
         isAuthorizing: false,
-        userData: action.userData,
+        user: action.user,
         csrf: action.csrf,
         lastUpdated: action.authedAt
       });
@@ -60,7 +60,7 @@ export const auth = (
       return ({
         ...state,
         isAuth: false,
-        userData: { name: '' }
+        user: '',
       });
     default:
       return state;

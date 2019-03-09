@@ -16,7 +16,7 @@ import './AuthorCatgoryTime.css';
  */
 const AuthorCatgoryTime = ({author, authorReputation, category, payoutValue, createdFromNow}) => (
   <ul className="info">
-    <li className="item avatar"><Avatar author={author} /></li>
+    <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
     <li className="item author" data-author={author}>
       {'\u00A0'}
       <Author author={author} />

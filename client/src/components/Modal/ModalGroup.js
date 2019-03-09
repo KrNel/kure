@@ -31,8 +31,7 @@ class ModalGroup extends Component {
   }
 
   onGroupSelect = (e, {value}) => {
-    //addErrorPost = '';
-    this.props.handleGroupSelect(e, {value});
+    this.props.handleGroupSelect(value);
   }
 
   onClick = (e) => {

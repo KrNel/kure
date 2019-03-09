@@ -114,17 +114,6 @@ class PostDetails extends Component {
     } = this.props;
 
     const {post, isLoading} = this.state;
-    /*const md = new Remarkable({
-      html: true,
-      linkify: true
-    });
-
-    let body;
-
-    if (post.body) {
-      body = replaceLinks(post.body);
-    }
-    body = md.render(body)*/
 
     const title = post.title;
     const author = post.author;
@@ -149,29 +138,6 @@ class PostDetails extends Component {
     //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
-    //let content = null;
-    /*if (isPostDeleted(post)) {
-      content = <StoryDeleted />;
-    } else {*/
-      /*content = (
-        <div
-          role="presentation"
-          ref={div => {
-            this.contentDiv = div;
-          }}
-          onClick={this.handleContentClick}
-        >
-          {this.renderDtubeEmbedPlayer()}
-          <PostBody
-            full
-            rewriteLinks={false}
-            body={signedBody}
-            json_metadata={post.json_metadata}
-          />
-        </div>
-      );*/
-    //}
-
     /*<Helmet>
       <title>{title}</title>
       <link rel="canonical" href={canonicalUrl} />
@@ -182,14 +148,9 @@ class PostDetails extends Component {
       <meta property="og:url" content={url} />
       <meta property="og:image" content={image} />
       <meta property="og:description" content={desc} />
-      <meta property="og:site_name" content="Busy" />
+      <meta property="og:site_name" content="Kure" />
       <meta property="article:tag" content={category} />
       <meta property="article:published_time" content={created} />
-      <meta property="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
-      <meta property="twitter:site" content={'@busyorg'} />
-      <meta property="twitter:title" content={metaTitle} />
-      <meta property="twitter:description" content={desc} />
-      <meta property="twitter:image" content={image} />
     </Helmet>*/
     return (
 
@@ -213,7 +174,6 @@ class PostDetails extends Component {
                     createdFromNow={createdFromNow}
                   />
                   <hr />
-                  {/*<div dangerouslySetInnerHTML={this.createMarkup(body)} />*/}
                   {this.renderDtubeEmbedPlayer(post)}
                   <PostBody
                     full

@@ -6,12 +6,12 @@ import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
 import PostDetails from './PostDetails';
-import { getUserGroups, addPost, logger } from '../../../utils/fetchFunctions';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
+import * as contentActions from '../../../actions/steemContentActions'
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -36,21 +36,11 @@ class Kurate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
-      postsListShow: 'none',
-      selectedGroup: '',
-      modalOpenAddPost: false,
-      addPostData: {},
-      groups: [{key: 0, text: 'No Groups', value: '0'}],
-      postExists: false,
-      addPostLoading: false,
       tag: '',
       selectedFilter: 'created',
-      isLoading: true,
-      noMore: false,
     }
     this.existPost = "Post already in group.";
-    this.steemPostData = '';
+    //this.steemPostData = '';
 
     //this.handleScroll = this.handleScroll.bind(this);
     //handleScroll = () => this.handleScroll()
@@ -76,8 +66,8 @@ class Kurate extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = (e) => {
-    const {isLoading, noMore} = this.state;
-    if (!isLoading && !noMore) {
+    const {isFetching, noMore} = this.props;
+    if (!isFetching && !noMore) {
       var lastLi = document.querySelector("#postList > div.post:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
@@ -95,7 +85,8 @@ class Kurate extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {posts, selectedFilter, tag} = this.state;
+    const {selectedFilter, tag} = this.state;
+    const {getContent, posts} = this.props;
 
     let startAuthor = undefined;
     let startPermlink = undefined;
@@ -118,150 +109,7 @@ class Kurate extends Component {
       start_permlink: startPermlink
     };
 
-    client.database.getDiscussions(selectedFilter, query)
-      .then(result => {
-        if (result) {
-          let newPosts;
-          if (nextPost) {
-            newPosts = [...posts, ...result.slice(1)];
-          }else {
-            newPosts = result;
-          }
-          this.setState({
-            posts: newPosts,
-            nextPost,
-          });
-          this.onPostsGet();
-
-          const {user} = this.props;
-          if (user) this.getGroupsFetch(user);
-        } else {
-          this.setState({
-            noMore: true,
-          });
-        }
-      }).catch(err => {
-        logger('error', err);
-      });
-  }
-
-  /**
-   *  Shows the popup modal for user confirmation.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {object} modalData Post and user data for the modal
-   */
-  showModal = async (e, type, data) => {
-    e.preventDefault();
-    const {user, csrf} = this.props;
-    if (type === 'addPost') {
-      this.setState({
-        modalOpenAddPost: true,
-        addPostData: {...data, user, csrf},
-      });
-    }
-  }
-
-  /**
-   *  Hides the popup modal.
-   */
-  onModalCloseAddPost = () => this.setState({
-    modalOpenAddPost: false,
-    addPostLoading: false,
-    postExists: false,
-  });
-
-  /**
-   *  Handle the Yes or No confirmation from the modal.
-   *  If Yes, proceed with deletion of post or user.
-   *
-   *  @param {event} e Event triggered by element to handle
-   */
-  handleModalClickAddPost = (e) => {
-    const confirm = e.target.dataset.confirm;
-    if (confirm === 'true') {
-      this.setState({addPostLoading: true});
-      this.addPostFetch();
-    }else this.onModalCloseAddPost();
-  }
-
-  /**
-   *  Send new post to be added to the database.
-   *  Reset the flags depending on errors or not, add new post to posts state.
-   */
-  addPostFetch = () => {
-    const {
-      addPostData: {
-        csrf,
-         ...rest
-      },
-      selectedGroup,
-    } = this.state;
-    addPost({group: selectedGroup, ...rest}, csrf)
-    .then(res => {
-      if (!res.data.invalidCSRF) {
-        if (res.data.exists) {
-          this.setState({
-            postExists: true,
-            addPostLoading: false,
-          });
-        }else if (res.data.post) {
-          this.setState({
-            postExists: false,
-            addPostLoading: false,
-          });
-          this.onModalCloseAddPost();
-        }
-      }
-    }).catch((err) => {
-      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
-    });
-  }
-
-  /**
-   *  Set state values for when group select changes.
-   *  Reset post exists error flag.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {string} value Value of the element triggering the event
-   */
-  handleGroupSelect = (e, {value}) => {
-    this.setState({
-      selectedGroup: value,
-      postExists: false,
-     });
-  }
-
-  /**
-   *  Fetch the groups for groups selection when adding a post.
-   *
-   *  @param {string} user User to get groups for
-   */
-  getGroupsFetch = (user) => {
-    const {groups} = this.state;
-    if (groups[0].text !== "No Groups") return;
-
-    getUserGroups(user, 'all')
-    .then(res => {
-      const groups = res.data.groups.map((g, i) => {
-        return {key: i, value: g.name, text: g.display}
-      })
-      this.setState({
-        groups
-      });
-    }).catch(err => {
-      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
-    });
-  }
-
-  /**
-   *  Change the style to show posts when data is returned.
-   */
-  onPostsGet = () => {
-    this.setState({
-      postsListShow: 'block',
-      isLoading: false,
-    })
+    getContent(selectedFilter, query, nextPost)
   }
 
   /**
@@ -292,22 +140,23 @@ class Kurate extends Component {
   render() {
     const {
       state: {
-        posts,
-        postsListShow,
         nextPost,
-        modalOpenAddPost,
-        groups,
-        postExists,
-        addPostLoading,
         tag,
-        isLoading,
       },
       props: {
         user,
         csrf,
-        match: {
-          path,
-        }
+        posts,
+        isFetching,
+        match,
+        groups,
+        modalOpenAddPost,
+        postExists,
+        addPostLoading,
+        showModal,
+        handleModalClickAddPost,
+        onModalCloseAddPost,
+        handleGroupSelect,
       },
     } = this;
 
@@ -325,16 +174,15 @@ class Kurate extends Component {
       <React.Fragment>
         <ModalGroup
           modalOpen={modalOpenAddPost}
-          onModalClose={this.onModalCloseAddPost}
-          handleModalClick={this.handleModalClickAddPost}
-          getGroupsFetch={this.getGroupsFetch}
-          handleGroupSelect={this.handleGroupSelect}
+          onModalClose={onModalCloseAddPost}
+          handleModalClick={handleModalClickAddPost}
+          handleGroupSelect={handleGroupSelect}
           groups={groups}
           addErrorPost={addErrorPost}
           addPostLoading={addPostLoading}
         />
         {
-          (path === '/kurate')
+          (match.path === '/kurate')
           ?
           (
             <ErrorBoundary>
@@ -359,19 +207,18 @@ class Kurate extends Component {
                 </div>
                 <hr />
                 <div>
-                  <div id="postList" style={{display: postsListShow}}>
+                  <div id="postList">
                     <PostsSummary
                       posts={posts}
                       nextPost={nextPost}
-                      showModal={this.showModal}
+                      showModal={showModal}
                       user={user}
                       csrf={csrf}
-                      onClickTitle={this.onClickTitle}
                     />
                   </div>
                 </div>
                 {
-                  isLoading && <Loading />
+                  isFetching && <Loading />
                 }
               </React.Fragment>
             </ErrorBoundary>
@@ -380,8 +227,8 @@ class Kurate extends Component {
           (
             <ErrorBoundary>
               <PostDetails
-                match={this.props.match}
-                showModal={this.showModal}
+                match={match}
+                showModal={showModal}
                 user={user}
                 csrf={csrf}
               />
@@ -400,12 +247,56 @@ class Kurate extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf } = state.auth;
+  const {
+    auth: {
+      user, csrf
+    },
+    steemContent: {
+      posts,
+      isFetching,
+      noMore,
+      groups,
+      postExists,
+      addPostLoading,
+      modalOpenAddPost,
+      selectedGroup,
+      addPostData,
+    }
+  } = state;
 
   return {
-    user: userData.name,
-    csrf
+    user,
+    csrf,
+    posts,
+    isFetching,
+    noMore,
+    groups,
+    postExists,
+    addPostLoading,
+    modalOpenAddPost,
+    selectedGroup,
+    addPostData,
   }
 }
 
-export default connect(mapStateToProps)(Kurate);
+const mapDispatchToProps = (dispatch) => (
+  {
+    getContent: (selectedFilter, query, nextPost) => (
+      dispatch(contentActions.getSteemContent(selectedFilter, query, nextPost))
+    ),
+    showModal: (e, type, data) => (
+      dispatch(contentActions.showModal(e, type, data))
+    ),
+    handleModalClickAddPost: (e) => (
+      dispatch(contentActions.handleModalClickAddPost(e))
+    ),
+    onModalCloseAddPost: () => (
+      dispatch(contentActions.onModalCloseAddPost())
+    ),
+    handleGroupSelect: (value) => (
+      dispatch(contentActions.handleGroupSelect(value))
+    ),
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Kurate);
