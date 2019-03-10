@@ -49,7 +49,6 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf}) => {
               author={author}
               authorReputation={authorReputation}
               category={category}
-              payoutValue={payoutValue}
               createdFromNow={createdFromNow}
             />
 
@@ -81,6 +80,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf}) => {
                     commentCount={commentCount}
                     author={author}
                     category={category}
+                    payoutValue={payoutValue}
                     permlink={permlink}
                     title={title}
                     showModal={showModal}

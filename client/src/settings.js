@@ -8,13 +8,15 @@ export const roles = {
     0: 'Owner',
     1: 'Admin',
     2: 'Moderator',
-    3: 'Member'
+    3: 'Member',
+    100: 'Requested'
   },
   kGroupsRolesRev: {
     'Owner': 0,
     'Admin': 1,
     'Moderator': 2,
-    'Member': 3
+    'Member': 3,
+    'Requested': 100
   },
   kGroupsAccess: {
     post: {

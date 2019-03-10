@@ -50,7 +50,6 @@ const posts = (state = {
       return {
         ...state,
         isFetching: false,
-        //didInvalidate: true,
         didInvalidate: false,
         postItems: action.posts,
         groupItems: action.groups,
