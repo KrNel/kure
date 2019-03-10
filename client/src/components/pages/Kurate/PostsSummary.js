@@ -9,7 +9,6 @@ import { extractContent } from './helpers/extractContent';
 import RepLog10 from '../../../utils/reputationCalc';
 import TitleLink from '../../common/TitleLink';
 
-
 /**
  *  Root container for post summaries.
  *
@@ -17,7 +16,7 @@ import TitleLink from '../../common/TitleLink';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf}) => {
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isUpvoting, upvotePayload}) => {
   if (posts.length) {
     return (
       posts.map((p, i) => {
@@ -44,7 +43,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf}) => {
         const commentCount = post.children;
 
         return (
-          <div key={i} className='post'>
+          <div key={p.id} className='post'>
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -85,6 +84,9 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf}) => {
                     title={title}
                     showModal={showModal}
                     user={user}
+                    isUpvoting={isUpvoting}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
                   />
                 </div>
               </div>

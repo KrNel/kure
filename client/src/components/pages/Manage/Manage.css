@@ -31,3 +31,7 @@
 .manage .ui.form .fields.user-access {
     margin-top: 1rem;
 }
+
+.manage div.meta {
+  line-height: 1.5rem;
+}

@@ -32,6 +32,8 @@ export const upvotePost = (
         csrf: action.csrf || '',
         lastUpdated: action.authedAt*/
       });
+    default:
+      return state;
   }
 }
 

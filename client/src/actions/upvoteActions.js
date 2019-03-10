@@ -26,16 +26,9 @@ export const upvoteStart = () => ({
  */
 export const upvoteSuccess = (res, author, permlink) => ({
   type: UPVOTE_SUCCESS,
-  payload: {
-    author,
-    permlink,
-  }
-  /*isAuth: res.data.isAuth,
-  isAuthorizing: false,
-  userData: res.data.user,
-  csrf: res.headers['x-csrf-token'],
-  authedAt: Date.now()*/
-})
+  author,
+  permlink,
+});
 
 /**
  *  Function to fetch the returning user authentication from the database.

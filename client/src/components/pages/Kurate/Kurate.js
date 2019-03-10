@@ -22,11 +22,16 @@ class Kurate extends Component {
     user: PropTypes.string,
     csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+    isFetching: PropTypes.bool,
+    noMore: PropTypes.bool,
+
   };
 
   static defaultProps = {
     user: '',
     csrf: '',
+    isFetching: false,
+    noMore: false,
   };
 
   constructor(props) {
@@ -35,19 +40,11 @@ class Kurate extends Component {
       tag: '',
       selectedFilter: 'created',
     }
-
-    //this.steemPostData = '';
-
-    //this.handleScroll = this.handleScroll.bind(this);
-    //handleScroll = () => this.handleScroll()
   }
 
   componentDidMount() {
     const {match: {path}} = this.props;
     if (path === '/kurate') {
-      /*this.scrollListener = window.addEventListener("scroll", e => {
-        this.handleScroll(e);
-      });*/
       window.addEventListener("scroll", this.handleScroll);
     }
     this.getPosts();
@@ -153,6 +150,9 @@ class Kurate extends Component {
         handleModalClickAddPost,
         onModalCloseAddPost,
         handleGroupSelect,
+        handleUpvote,
+        isUpvoting,
+        upvotePayload,
       },
     } = this;
 
@@ -206,6 +206,9 @@ class Kurate extends Component {
                   showModal={showModal}
                   user={user}
                   csrf={csrf}
+                  handleUpvote={handleUpvote}
+                  isUpvoting={isUpvoting}
+                  upvotePayload={upvotePayload}
                 />
               </div>
             </div>
@@ -240,6 +243,8 @@ const mapStateToProps = state => {
       modalOpenAddPost,
       selectedGroup,
       addPostData,
+      isUpvoting,
+      upvotePayload,
     }
   } = state;
 
@@ -255,6 +260,8 @@ const mapStateToProps = state => {
     modalOpenAddPost,
     selectedGroup,
     addPostData,
+    isUpvoting,
+    upvotePayload,
   }
 }
 
@@ -274,6 +281,9 @@ const mapDispatchToProps = (dispatch) => (
     ),
     handleGroupSelect: (value) => (
       dispatch(contentActions.handleGroupSelect(value))
+    ),
+    handleUpvote: (voter, author, permlink, weight) => (
+      dispatch(contentActions.upvotePost(voter, author, permlink, weight))
     ),
   }
 );

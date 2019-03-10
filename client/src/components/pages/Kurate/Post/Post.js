@@ -9,7 +9,7 @@ import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
 import * as contentActions from '../../../../actions/steemContentActions'
 
 /**
-
+ *  Container to render post details from Steem.
  */
 class Post extends Component {
 

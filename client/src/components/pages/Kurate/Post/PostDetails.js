@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Client } from 'dsteem';
 import { Grid } from "semantic-ui-react";
 import moment from 'moment';
 import _ from 'lodash';
@@ -9,6 +8,7 @@ import Helmet from 'react-helmet';
 import PostBody, { getHtml } from './PostBody';
 import { getFromMetadata, extractImageTags } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
+import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
 
 import RepLog10 from '../../../../utils/reputationCalc';
@@ -17,10 +17,8 @@ import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import './PostDetails.css'
 
-const client = new Client('https://hive.anyx.io/');
-
 /**
- *  Renders the post details for Steem content for a user to view.
+ *  Renders the post details view for Steem content.
  */
 class PostDetails extends Component {
   static propTypes = {
@@ -41,6 +39,9 @@ class PostDetails extends Component {
     return {__html: html};
   }
 
+  /**
+   *  Lifted from busy.org source code to play d.tube videos on-site.
+   */
   renderDtubeEmbedPlayer(post) {
     const parsedJsonMetaData = _.attempt(JSON.parse, post.json_metadata);
 
@@ -69,7 +70,6 @@ class PostDetails extends Component {
     return null;
   }
 
-
   render() {
     const {
       showModal,
@@ -81,7 +81,6 @@ class PostDetails extends Component {
     const title = post.title;
     const author = post.author;
     const authorReputation = RepLog10(post.author_reputation);
-    const url = post.url;
     const permlink = post.permlink;
     const category = post.category;
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
@@ -89,24 +88,25 @@ class PostDetails extends Component {
     const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotesCount = (post.active_votes) ? post.active_votes.length : 0;
     const commentCount = post.children;
-
-
-    //const canonicalUrl =
+    const canonicalUrl = `https://thekure.net${post.url}`;
+    const url = `https://thekure.net${post.url}`;
+    const ampUrl = `${url}/amp`;
+    const metaTitle = `${title} - KURE`;
+    const desc = post.desc;
+    const postMetaData = jsonParse(post.json_metadata);
+    const postMetaImage = postMetaData && postMetaData.image && postMetaData.image[0];
+    const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
     const body = post.body || '';
-
     const parsedBody = getHtml(body, {}, 'text');
-
     this.images = extractImageTags(parsedBody);
 
     //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
-
-
     return (
       <React.Fragment>
-        {/*<Helmet>
+        <Helmet>
           <title>{title}</title>
           <link rel="canonical" href={canonicalUrl} />
           <link rel="amphtml" href={ampUrl} />
@@ -119,7 +119,7 @@ class PostDetails extends Component {
           <meta property="og:site_name" content="Kure" />
           <meta property="article:tag" content={category} />
           <meta property="article:published_time" content={created} />
-        </Helmet>*/}
+        </Helmet>
         <Grid verticalAlign='middle' columns={1} centered>
           <Grid.Row>
             <Grid.Column width={12}>

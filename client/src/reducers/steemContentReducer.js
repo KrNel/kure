@@ -9,6 +9,8 @@ import {
   GROUP_SELECT,
   MODAL_SHOW,
   MODAL_CLOSE,
+  UPVOTE_START,
+  UPVOTE_SUCCESS,
 } from '../actions/steemContentActions';
 
 /**
@@ -30,6 +32,8 @@ export const steemContent = (
     selectedGroup: '',
     addPostData: {},
     post: {},
+    isUpvoting: false,
+    upvotePayload: {}
   },
   action) => {
   switch (action.type) {
@@ -86,6 +90,18 @@ export const steemContent = (
         modalOpenAddPost: false,
         addPostLoading: false,
         postExists: false,
+      });
+    case UPVOTE_START:
+      return ({
+        ...state,
+        isUpvoting: true,
+        upvotePayload: action.payload,
+      });
+    case UPVOTE_SUCCESS:
+      return ({
+        ...state,
+        isUpvoting: false,
+        upvotePayload: action.payload,
       });
     default:
       return state

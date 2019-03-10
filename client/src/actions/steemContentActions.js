@@ -2,6 +2,7 @@
 import { Client } from 'dsteem';
 
 import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
+import SteemConnect from '../utils/auth/scAPI';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -15,9 +16,11 @@ export const ADD_POST_START = 'ADD_POST_START';
 export const GROUP_SELECT = 'GROUP_SELECT';
 export const MODAL_SHOW = 'MODAL_SHOW';
 export const MODAL_CLOSE = 'MODAL_CLOSE';
+export const UPVOTE_START = 'UPVOTE_START';
+export const UPVOTE_SUCCESS = 'UPVOTE_SUCCESS';
 
 /**
- *  Action creator for requesting returning user athentication.
+ *  Action creator for starting retrieval of post summary data.
  *
  *  @return {object} The action data
  */
@@ -26,7 +29,7 @@ export const summaryStart = () => ({
 });
 
 /**
- *  Action creator for requesting returning user athentication.
+ *  Action creator for successful retrieval of post summary data.
  *
  *  @param {array} posts Posts to display
  *  @param {boolean} noMore If there are more posts to fetch
@@ -39,7 +42,7 @@ export const summarySuccess = (posts, noMore) => ({
 });
 
 /**
- *  Action creator for requesting returning user athentication.
+ *  Action creator for starting retrieval of post detail data.
  *
  *  @return {object} The action data
  */
@@ -48,9 +51,9 @@ export const detailsStart = () => ({
 });
 
 /**
- *  Action creator for requesting returning user athentication.
+ *  Action creator for successful retrieval of post detail data.
  *
- *  @param {array} post Post to display
+ *  @param {object} post Post to display
  *  @return {object} The action data
  */
 export const detailsSuccess = (post) => ({
@@ -58,16 +61,33 @@ export const detailsSuccess = (post) => ({
   post,
 });
 
-
+/**
+ *  Action creator for successful retrieval of group data.
+ *
+ *  @param {array} groups Groups to select from
+ *  @return {object} The action data
+ */
 export const groupsSuccess = (groups) => ({
   type: GET_GROUPS_SUCCESS,
   groups,
 });
 
+/**
+ *  Action creator for starting post add.
+ *
+ *  @return {object} The action data
+ */
 export const addPostStart = () => ({
   type: ADD_POST_START,
 });
 
+
+/**
+ *  Action creator for requesting returning user athentication.
+ *
+ *  @param {boolean} postExists Post to display
+ *  @return {object} The action data
+ */
 export const addPostExists = (postExists) => ({
   type: ADD_POST_EXISTS,
   postExists,
@@ -77,8 +97,8 @@ export const addPostExists = (postExists) => ({
  *  Set state values for when group select changes.
  *  Reset post exists error flag.
  *
- *  @param {event} e Event triggered by element to handle
  *  @param {string} value Value of the element triggering the event
+ *  @return {object} The action data
  */
 export const handleGroupSelect = (value) => ({
   type: GROUP_SELECT,
@@ -89,7 +109,10 @@ export const handleGroupSelect = (value) => ({
  *  Shows the popup modal for user confirmation.
  *
  *  @param {event} e Event triggered by element to handle
+ *  @param {string} type Type of modal being used
+ *  @param {object} data Data from the modal to process
  *  @param {object} modalData Post and user data for the modal
+ *  @return {object} The action data
  */
 export const showModal = (e, type, data) => {
   e.preventDefault();
@@ -107,9 +130,41 @@ export const onModalCloseAddPost = () => ({
 });
 
 /**
- *  Function to fetch the returning user authentication from the database.
+ *  Action creator for starting an upvote
  *
- *  @param {function} dispatch Redux dispatch function
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @return {object} The action data
+ */
+export const upvoteStart = (author, permlink) => ({
+  type: UPVOTE_START,
+  payload: {
+    author,
+    permlink,
+  }
+});
+
+/**
+ *  Action creator for successful upvote
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @return {object} The action data
+ */
+export const upvoteSuccess = (author, permlink) => ({
+  type: UPVOTE_SUCCESS,
+  payload: {
+    author,
+    permlink,
+  }
+});
+
+/**
+ *  Fetch the post details from Steem.
+ *
+ *  @param {string} selectedFilter Filter sort order
+ *  @param {object} query Steem query to fetch.
+ *  @param {boolean} nextPost If there are preceeding posts
  *  @returns {function} Dispatches returned action object
  */
 export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch, getState) => {
@@ -141,6 +196,13 @@ export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch,
     });
 }
 
+/**
+ *  Fetch the post details from Steem.
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @returns {function} Dispatches returned action object
+ */
 export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
   return client.database.call('get_content', [author, permlink])
@@ -158,6 +220,7 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
  *  Fetch the groups for groups selection when adding a post.
  *
  *  @param {string} user User to get groups for
+ *  @returns {function} Dispatches returned action object
  */
 const getGroupsFetch = (user) => (dispatch, getState) => {
   const {groups} = getState().steemContent;
@@ -179,6 +242,7 @@ const getGroupsFetch = (user) => (dispatch, getState) => {
  *  If Yes, proceed with deletion of post or user.
  *
  *  @param {event} e Event triggered by element to handle
+ *  @returns {function} Dispatches returned action object
  */
 export const handleModalClickAddPost = (e) => dispatch => {
   const confirm = e.target.dataset.confirm;
@@ -219,5 +283,6 @@ const addPostFetch = () => (dispatch, getState) => {
     logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
   });
 }
+
 
 export default getSummaryContent;

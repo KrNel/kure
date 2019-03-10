@@ -19,6 +19,9 @@ import improve from '../helpers/improve';
 import PostFeedEmbed from '../PostFeedEmbed';
 //import './Body.less';
 
+/**
+ *  Markdown rendering object
+ */
 export const remarkable = new Remarkable({
   html: true, // Remarkable renders first then sanitize runs...
   breaks: true,
@@ -27,6 +30,11 @@ export const remarkable = new Remarkable({
   quotes: '“”‘’',
 });
 
+/**
+ * Returns an embed link for videos.
+ *
+ *  @param {string} link Link to embed
+ */
 const getEmbed = link => {
   const embed = embedjs.get(link, { width: '100%', height: 400, autoplay: false });
 
@@ -102,6 +110,9 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
   return <div dangerouslySetInnerHTML={{ __html: sections.join('') }} />;
 }
 
+/**
+ *  Takes the post body and jsonMetadata and renders to the page.
+ */
 const Body = props => {
   const options = {
     appUrl: "http://localhost:3000",
