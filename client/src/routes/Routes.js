@@ -5,11 +5,13 @@ import App from '../App';
 import Home from '../components/pages/Home/Home';
 import Groups from '../components/pages/Groups/Groups';
 import GroupDetails from '../components/pages/Groups/GroupDetails';
-import Posts from '../components/pages/Posts/Posts';
+//import Posts from '../components/pages/Posts/Posts';
+import Post from '../components/pages/Kurate/Post/Post';
 import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
+import Write from '../components/Write/Write';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -23,13 +25,14 @@ const Routes = (props) => (
     <Switch>
       <Route exact path='/' component={Home} />
       <Route exact path='/groups' component={Groups} />
-      <Route exact path='/posts' component={Posts} />
+      {/*<Route exact path='/kurated' component={Posts} />*/}
       <Route exact path='/kurate' component={Kurate} />
+      <Route path='/:category/@:author/:permlink' component={Post} />
       <Route path='/success' component={AuthSC} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
       <Route exact path='/group/:group/' component={GroupDetails} />
-      <Route path='/:category/@:author/:permlink' component={Kurate} />
+      <Route exact path='/write' component={Write} />
       <Route component={NoMatch} />
     </Switch>
   </App>

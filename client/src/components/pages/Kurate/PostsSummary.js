@@ -1,14 +1,13 @@
 import React from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
-import { extractContent } from './helpers/formatters';
+import { extractContent } from './helpers/extractContent';
 import RepLog10 from '../../../utils/reputationCalc';
-
+import TitleLink from '../../common/TitleLink';
 
 /**
  *  Root container for post summaries.
@@ -17,10 +16,7 @@ import RepLog10 from '../../../utils/reputationCalc';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) => {
-  //const postsExtracts = extractContent(posts);
-
-  //var posts = [];
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isUpvoting, upvotePayload}) => {
   if (posts.length) {
     return (
       posts.map((p, i) => {
@@ -35,7 +31,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
         const title = post.title;
         const author = post.author;
         const authorReputation = RepLog10(post.author_reputation);
-        const url = post.url;
+        //const url = post.url;
         const desc = post.desc;
         const permlink = post.permlink;
         const category = post.category;
@@ -47,12 +43,11 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
         const commentCount = post.children;
 
         return (
-          <div key={i} className='post'>
+          <div key={p.id} className='post'>
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
               category={category}
-              payoutValue={payoutValue}
               createdFromNow={createdFromNow}
             />
 
@@ -68,15 +63,12 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
               }
               <div className="summary-content" data-permlink={permlink}>
                 <h4>
-                  <Link to={url}>
-                    {title}
-                  </Link>
-                  {/*<Link to={{ pathname: url, state: { user: user, csrf: csrf} }}>
-                    {title}
-                  </Link>*/}
-                  {/*<a href='/postdetails' onClick={(e) => onClickTitle(e, url)}>
-                    {title}
-                  </a>*/}
+                  <TitleLink
+                    title={title}
+                    category={category}
+                    author={author}
+                    permlink={permlink}
+                  />
                 </h4>
                 <p>
                   {desc}
@@ -87,10 +79,14 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, onClickTitle}) =>
                     commentCount={commentCount}
                     author={author}
                     category={category}
+                    payoutValue={payoutValue}
                     permlink={permlink}
                     title={title}
                     showModal={showModal}
                     user={user}
+                    isUpvoting={isUpvoting}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
                   />
                 </div>
               </div>

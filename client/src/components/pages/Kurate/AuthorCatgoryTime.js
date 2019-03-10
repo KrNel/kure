@@ -14,9 +14,9 @@ import './AuthorCatgoryTime.css';
  *  @param {number} payoutValue Post payout value
  *  @param {string} createdFromNow Time since post was created
  */
-const AuthorCatgoryTime = ({author, authorReputation, category, payoutValue, createdFromNow}) => (
+const AuthorCatgoryTime = ({author, authorReputation, category, createdFromNow}) => (
   <ul className="info">
-    <li className="item avatar"><Avatar author={author} /></li>
+    <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
     <li className="item author" data-author={author}>
       {'\u00A0'}
       <Author author={author} />
@@ -27,9 +27,8 @@ const AuthorCatgoryTime = ({author, authorReputation, category, payoutValue, cre
       <Category category={category} />
     </li>
     <li className="item timeago">
-      {`\u00A0\u2022\u00A0${createdFromNow}\u00A0\u00A0\u2022`}
+      {`\u00A0\u2022\u00A0${createdFromNow}`}
     </li>
-    <li className="item payout">{`\u00A0\u0024${payoutValue}`}</li>
   </ul>
 )
 

@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
-import Header from './components/Header/Header';
+import NavMenu from './components/Nav/NavMenu';
 import SteemConnect from './utils/auth/scAPI';
 import './App.css';
 import { handleReturning } from './actions/authActions';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 /**
  *  Root application compoenent.
@@ -41,15 +40,13 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <Header loginURL={loginURL} />
-
-        <Grid container className="wrapper">
-          <Grid.Column width={16}>
-            <ErrorBoundary>
+        <NavMenu loginURL={loginURL}>
+          <Grid container className="wrapper">
+            <Grid.Column width={16}>
               {children}
-            </ErrorBoundary>
-          </Grid.Column>
-        </Grid>
+            </Grid.Column>
+          </Grid>
+        </NavMenu>
       </React.Fragment>
     )
   }

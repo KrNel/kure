@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Table, Label } from "semantic-ui-react";
 import moment from 'moment';
 
-import GroupLink from '../../Common/GroupLink';
+import GroupLink from '../../common/GroupLink';
 
 /**
  *  Show the newly created groups as a table list.

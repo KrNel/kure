@@ -30,6 +30,10 @@
   padding: 0;
 }
 
+.home .ui.segments.box {
+  min-width: 165px
+}
+
 /*.home .ui.segment:first-child {
   padding-top: 10px;
 }*/

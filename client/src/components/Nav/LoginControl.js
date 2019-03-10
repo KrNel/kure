@@ -1,8 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu } from "semantic-ui-react";
+import { Menu, Dropdown, Divider } from "semantic-ui-react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
+import Avatar from '../pages/Kurate/Avatar';
+
+const trigger = (user) => (
+  <Avatar author={user} height='30px' width='30px' />
+)
 
 /**
  *  Menu component for Login/Logout display.
@@ -15,8 +21,9 @@ import PropTypes from 'prop-types';
  *  @param {function} props.loginURL URL to login via Steem Connect
  *  @returns {Component} Menu component that displays Login, or Logout & Manage
  */
-const LoginControl = ({isAuth, loginURL}) => {
+const LoginControl = ({isAuth, user, loginURL}) => {
   let menu;
+  const avatar = trigger(user);
 
   if (isAuth) {
     menu =
@@ -30,14 +37,37 @@ const LoginControl = ({isAuth, loginURL}) => {
         >
           {'Manage'}
         </Menu.Item>
-        <Menu.Item
-          exact
-          as={NavLink}
-          to="/logout"
-          header
-        >
-          {'Logout'}
-        </Menu.Item>
+        <Dropdown trigger={avatar} item>
+          <Dropdown.Menu>
+
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              className="header item"
+              href={`https://steemit.com/@${user}/feed`}
+            >
+              {'Feed'}
+            </a>
+
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              className="header item"
+              href={`https://steemit.com/@${user}`}
+            >
+              {'Blog'}
+            </a>
+
+            <Dropdown.Item
+              exact
+              as={NavLink}
+              to="/logout"
+            >
+              {'Logout'}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+
       </React.Fragment>
     )
   }else {
@@ -61,10 +91,11 @@ LoginControl.propTypes = {
  *  @returns {object} - Authentication data
  */
 const mapStateToProps = state => {
-  const { isAuth } = state.auth;
+  const { isAuth, user } = state.auth;
 
   return {
-    isAuth
+    isAuth,
+    user,
   }
 }
 

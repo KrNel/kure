@@ -17,9 +17,9 @@ import {
 export const auth = (
   state = {
     isAuth: false,
-    isAuthorizing: true,
+    isAuthorizing: false,
     csrf: '',
-    userData: { name: '' }
+    user: '',
   },
   action) => {
 
@@ -34,14 +34,14 @@ export const auth = (
         ...state,
         isAuth: action.isAuth,
         isAuthorizing: action.isAuthorizing,
-        userData: action.userData,
+        user: action.user,
         csrf: action.csrf || '',
         lastUpdated: action.authedAt
       });
     case REQUEST_LOGIN: {
       return ({
         ...state,
-        isLoggingIn: true,
+        isAuthorizing: true,
       });
     }
     case RECEIVE_LOGIN: {
@@ -49,7 +49,7 @@ export const auth = (
         ...state,
         isAuth: action.isAuth,
         isAuthorizing: false,
-        userData: action.userData,
+        user: action.user,
         csrf: action.csrf,
         lastUpdated: action.authedAt
       });
@@ -60,7 +60,7 @@ export const auth = (
       return ({
         ...state,
         isAuth: false,
-        userData: { name: '' }
+        user: '',
       });
     default:
       return state;

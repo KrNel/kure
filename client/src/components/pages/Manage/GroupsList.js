@@ -4,7 +4,7 @@ import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react"
 import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../Common/GroupLink';
+import GroupLink from '../../common/GroupLink';
 
 /**
  *  Display the community groups for a user to manage or delete.
@@ -80,24 +80,28 @@ const GroupsList = (props) => {
                         }
                       </div>
                       <div className='clear' />
+
                       <Divider className='header' />
-                      <div title={date}>
-                        {`Created: ${moment.utc(g.created).fromNow()}`}
+
+                      <div title={date} className='meta'>
+                        <Icon name='calendar alternate outline' color='blue' />
+                        {`${moment.utc(g.created).fromNow()}`}
                       </div>
-                      <div>
-                        {'Posts: '}
+                      <div className='meta'>
+                        <Icon name='newspaper outline' color='blue' />
                         {g.posts}
+                        {g.posts === 0 || g.posts > 1 ? ' posts' : ' post'}
                       </div>
-                      <div>
-                        {'Users: '}
+                      <div className='meta'>
+                        <Icon name='user outline' color='blue' />
                         {g.users}
+                        {g.posts === 0 || g.posts > 1 ? ' users' : ' user'}
                       </div>
-                      <div>
-                        {'Join Requests: '}
+                      <div className='meta'>
+                        <Icon name='street view' color='blue' />
                         {g.joinRequests}
+                        {g.posts === 0 || g.posts > 1 ? ' join requests' : ' join request'}
                       </div>
-                      {/*<div>Followers: {g.followers}</div>*/}
-                      {/*<div>Likes: {g.likes}</div>*/}
                     </div>
                   </Segment>
                 </Grid.Column>

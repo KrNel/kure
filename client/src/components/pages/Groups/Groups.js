@@ -6,6 +6,7 @@ import Loading from '../../Loading/Loading';
 import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
 import GroupSummary from './GroupSummary';
 import './Groups.css';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
 //TODO: Show list of recent communities added. Option to sort by:
 //New, Popular (Likes), Activity (Recent submissions), Rating
@@ -86,9 +87,11 @@ class Groups extends Component {
       areGroupsLoading
         ? <Loading />
         : (
-          <GroupSummary
-            groups={groups}
-          />
+          <ErrorBoundary>
+            <GroupSummary
+              groups={groups}
+            />
+          </ErrorBoundary>
         )
     )
   }
@@ -101,10 +104,10 @@ class Groups extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, isAuth } = state.auth;
+  const { user, isAuth } = state.auth;
 
   return {
-    user: userData.name,
+    user,
     isAuth,
   }
 }

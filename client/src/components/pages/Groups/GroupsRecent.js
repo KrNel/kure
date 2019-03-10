@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, Header, Segment, Label } from "semantic-ui-react";
-import { Link } from 'react-router-dom';
 
-import GroupLink from '../../Common/GroupLink';
+import GroupLink from '../../common/GroupLink';
+import TitleLink from '../../common/TitleLink';
 
 /**
  *  Show the most recently active communities. Allow logged in users todo
@@ -35,14 +35,14 @@ const GroupsRecent = ({ groupsActivity }) => {
                         g.kposts.length
                         ? g.kposts.map(p => (
                           <li key={p._id}>
-                            <Link
-                              to={p.st_category+'/@'+p.st_author+'/'+p.st_permlink}
-                            >
-                              {`\u2022\u00A0`}
-                              {(p.st_title.length > 40)
-                                ? p.st_title.substr(0,40) + " ..."
-                                : p.st_title}
-                            </Link>
+                            {`\u2022\u00A0`}
+                            <TitleLink
+                              title={p.st_title}
+                              category={p.st_category}
+                              author={p.st_author}
+                              permlink={p.st_permlink}
+                              cutoff={40}
+                            />
                           </li>
                         )) : 'No posts.'
                       }

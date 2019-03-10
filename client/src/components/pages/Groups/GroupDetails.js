@@ -4,10 +4,11 @@ import {Grid, Label, Header, Segment} from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPosts from '../../Common/GroupPosts'
-import GroupUsers from '../../Common/GroupUsers'
+import GroupPosts from '../../common/GroupPosts'
+import GroupUsers from '../../common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
 /**
  *
@@ -50,9 +51,6 @@ class GroupDetails extends Component {
           group
         }
       },
-      location: {
-        key
-      },
       user,
       isAuth,
       csrf,
@@ -74,8 +72,7 @@ class GroupDetails extends Component {
           group
         }
       },
-      user,
-      isAuth,
+      user
     } = this.props;
 
     if (prevProps.user !== user) {
@@ -168,38 +165,40 @@ class GroupDetails extends Component {
     return (
       isLoading ? <Loading /> : !notExists
       ? (
-        <Grid columns={1} stackable>
-          <Grid.Column>
-            <Label size='large' color='blue'>
-              <Header as='h2'>{groupData.display}</Header>
-            </Label>
-            <div className='right'>
-              { isAuth && (
-                <Segment>
-                  {'Membership: '}
-                  {
-                    joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                  }
-                </Segment>
-              )}
-            </div>
-            {
-              groupData.kposts.length
-              ? (
-                <GroupPosts
-                  posts={groupData.kposts}
-                />
-              ) : (
-                <Segment>
-                  {'No posts.'}
-                </Segment>
-              )
-            }
-            <GroupUsers
-              users={groupData.kusers}
-            />
-          </Grid.Column>
-        </Grid>
+        <ErrorBoundary>
+          <Grid columns={1} stackable>
+            <Grid.Column>
+              <Label size='large' color='blue'>
+                <Header as='h2'>{groupData.display}</Header>
+              </Label>
+              <div className='right'>
+                { isAuth && (
+                  <Segment>
+                    {'Membership: '}
+                    {
+                      joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                    }
+                  </Segment>
+                )}
+              </div>
+              {
+                groupData.kposts.length
+                ? (
+                  <GroupPosts
+                    posts={groupData.kposts}
+                  />
+                ) : (
+                  <Segment>
+                    {'No posts.'}
+                  </Segment>
+                )
+              }
+              <GroupUsers
+                users={groupData.kusers}
+              />
+            </Grid.Column>
+          </Grid>
+        </ErrorBoundary>
       )
       : <Segment>That group doesn&apos;t exist.</Segment>
     )
@@ -213,10 +212,10 @@ class GroupDetails extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { userData, csrf, isAuth } = state.auth;
+  const { user, csrf, isAuth } = state.auth;
 
   return {
-    user: userData.name,
+    user,
     csrf,
     isAuth,
   }

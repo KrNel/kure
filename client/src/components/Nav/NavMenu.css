@@ -1,10 +1,11 @@
-@import '../../../variables.css';
+@import '../../variables.css';
 
 .ui.menu {
   border-radius: 0px !important;
   /*min-height: 65px;*/
 }
-.ui.menu .item {
+.ui.menu .item,
+.navMenu .ui.item.dropdown .menu.transition.visible {
   border-radius: 0px !important;
 }
 
@@ -16,7 +17,7 @@
   margin:1px;
 }
 
-.ui.grid.navMenu {
+.ui.navMenu.menu {
   /*height: 80px !important;*/
   border-bottom: 1px solid var(--light-blue);
   /*max-height:88px;*/
@@ -29,7 +30,8 @@
 }
 
 .ui.secondary.menu .item.nopad {
-  /*padding-bottom: 0;*/
+  padding-top: 10;
+  padding-bottom: 5px;
 }
 
 /*.ui.secondary.menu a.item {
@@ -40,17 +42,35 @@
   border: 1px solid var(--main-color) !important;
 }*/
 
-.ui.blue.menu a.item.active, .ui.blue.menu a.item.active .header {
+.ui.blue.menu a.header.item.active,
+.ui.vertical.sidebar.menu a.header.item.active {
   background-color: var(--light-blue);
   border-color: var(--light-blue);
   color:#fff !important;
   font-weight: bold;
 }
 
-.ui.blue.menu a.item:hover, .ui.blue.menu a.item:hover .header {
+.ui.blue.menu a.header.item:hover,
+.ui.vertical.sidebar.menu a.header.item:hover,
+.navMenu .ui.item.dropdown .menu.transition.visible a.item:hover {
   background-color: var(--light-blue) !important;
   border-color: var(--light-blue) !important;
   color:#fff !important;
+}
+
+.navMenu .ui.item.dropdown:hover {
+  background-color: var(--light-blue) !important;
+  border-color: var(--light-blue) !important;
+  color:#fff !important;
+  padding: 7.1px 15.786px;
+}
+
+.navMenu .ui.item.dropdown .menu.transition.visible {
+  margin:0;
+  border-color: var(--light-blue) !important;
+}
+.ui.secondary.menu .item.dropdown {
+  padding: 7.1px 15.786px;
 }
 
 /*-------------------

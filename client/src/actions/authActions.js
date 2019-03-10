@@ -26,7 +26,7 @@ export const receiveReturning = (res) => ({
   type: RECEIVE_RETURNING,
   isAuth: res.data.isAuth,
   isAuthorizing: false,
-  userData: res.data.user,
+  user: res.data.user,
   csrf: res.headers['x-csrf-token'],
   authedAt: Date.now()
 })
@@ -57,7 +57,7 @@ export const receiveLogout = () => ({
  */
 export const requestLogin = (user) => ({
   type: REQUEST_LOGIN,
-  userData: {name: user}
+  user,
 });
 
 /**
@@ -69,7 +69,7 @@ export const requestLogin = (user) => ({
 export const receiveLogin = (res) => ({
   type: RECEIVE_LOGIN,
   isAuth: res.data.isAuth,
-  userData: res.data.user,
+  user: res.data.user,
   csrf: res.headers['x-csrf-token'],
   authedAt: Date.now()
 });
@@ -97,7 +97,7 @@ const fetchReturning = () => dispatch => {
  *  @returns {function} Dispatches returned action object
  */
 const fetchLogout = (state) => dispatch => {
-  const user = state.auth.userData.name;
+  const {user} = state.auth;
   dispatch(requestLogout());
 
   return axios.post('/api/auth/logout', {
@@ -137,9 +137,10 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const handleReturning = () => (dispatch, getState) => {
-  if (!getState().auth.isLoggingIn)
-    return dispatch(fetchReturning());
+export const handleReturning = () => async (dispatch, getState) => {
+  const {isAuth, isAuthorizing} = getState().auth;
+  if (!isAuth && !isAuthorizing)
+    return await dispatch(fetchReturning());
 }
 
 /**
