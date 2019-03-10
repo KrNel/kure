@@ -1,19 +1,15 @@
 import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Client } from 'dsteem';
 import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
-import PostDetails from './PostDetails';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import Picker from '../../Picker/Picker';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import * as contentActions from '../../../actions/steemContentActions'
-
-const client = new Client('https://hive.anyx.io/');
 
 /**
  *  Kurate gets the Steem blockchain content and dusplays a list of post
@@ -39,7 +35,7 @@ class Kurate extends Component {
       tag: '',
       selectedFilter: 'created',
     }
-    this.existPost = "Post already in group.";
+
     //this.steemPostData = '';
 
     //this.handleScroll = this.handleScroll.bind(this);
@@ -181,60 +177,43 @@ class Kurate extends Component {
           addErrorPost={addErrorPost}
           addPostLoading={addPostLoading}
         />
-        {
-          (match.path === '/kurate')
-          ?
-          (
-            <ErrorBoundary>
-              <React.Fragment>
-                <div className='controlContent'>
-                  <Form>
-                    <Form.Group>
-                      <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
-                      <Picker
-                        onChange={this.handleFilterSelect}
-                        options={filters}
-                        label=''
-                      />
-                      <Form.Input
-                        placeholder='Search a tag'
-                        name='tag'
-                        value={tag}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                  </Form>
-                </div>
-                <hr />
-                <div>
-                  <div id="postList">
-                    <PostsSummary
-                      posts={posts}
-                      nextPost={nextPost}
-                      showModal={showModal}
-                      user={user}
-                      csrf={csrf}
-                    />
-                  </div>
-                </div>
-                {
-                  isFetching && <Loading />
-                }
-              </React.Fragment>
-            </ErrorBoundary>
-          )
-          :
-          (
-            <ErrorBoundary>
-              <PostDetails
-                match={match}
-                showModal={showModal}
-                user={user}
-                csrf={csrf}
-              />
-            </ErrorBoundary>
-          )
-        }
+        <ErrorBoundary>
+          <React.Fragment>
+            <div className='controlContent'>
+              <Form>
+                <Form.Group>
+                  <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
+                  <Picker
+                    onChange={this.handleFilterSelect}
+                    options={filters}
+                    label=''
+                  />
+                  <Form.Input
+                    placeholder='Search a tag'
+                    name='tag'
+                    value={tag}
+                    onChange={this.handleChange}
+                  />
+                </Form.Group>
+              </Form>
+            </div>
+            <hr />
+            <div>
+              <div id="postList">
+                <PostsSummary
+                  posts={posts}
+                  nextPost={nextPost}
+                  showModal={showModal}
+                  user={user}
+                  csrf={csrf}
+                />
+              </div>
+            </div>
+            {
+              isFetching && <Loading />
+            }
+          </React.Fragment>
+        </ErrorBoundary>
       </React.Fragment>
     )
   }
@@ -282,7 +261,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => (
   {
     getContent: (selectedFilter, query, nextPost) => (
-      dispatch(contentActions.getSteemContent(selectedFilter, query, nextPost))
+      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost))
     ),
     showModal: (e, type, data) => (
       dispatch(contentActions.showModal(e, type, data))

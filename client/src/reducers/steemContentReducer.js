@@ -1,6 +1,8 @@
 import {
-  GET_CONTENT_START,
-  GET_CONTENT_SUCCESS,
+  GET_SUMMARY_START,
+  GET_SUMMARY_SUCCESS,
+  GET_DETAILS_START,
+  GET_DETAILS_SUCCESS,
   GET_GROUPS_SUCCESS,
   ADD_POST_EXISTS,
   ADD_POST_START,
@@ -27,20 +29,28 @@ export const steemContent = (
     modalOpenAddPost: false,
     selectedGroup: '',
     addPostData: {},
+    post: {},
   },
   action) => {
   switch (action.type) {
-    case GET_CONTENT_START:
+    case GET_SUMMARY_START:
+    case GET_DETAILS_START:
       return ({
         ...state,
         isFetching: true,
       });
-    case GET_CONTENT_SUCCESS:
+    case GET_SUMMARY_SUCCESS:
       return ({
         ...state,
         isFetching: false,
         posts: action.posts,
         noMore: action.noMore,
+      });
+    case GET_DETAILS_SUCCESS:
+      return ({
+        ...state,
+        isFetching: false,
+        post: action.post,
       });
     case GET_GROUPS_SUCCESS:
       return ({

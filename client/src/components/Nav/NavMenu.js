@@ -17,6 +17,12 @@ import "semantic-ui-css/components/transition.min.css";
 import logo from '../../images/logo.png';
 import './NavMenu.css';
 
+const items = [
+  {name : "/", label : "Home"},
+  {name : "/kurate", label : "Kurate"},
+  {name : "/groups", label : "Communities"},
+  //{name : "/kurated", label : "Kurated"},
+];
 
 /**
  *  Navigation menu.
@@ -46,7 +52,7 @@ class NavMenu extends Component {
   handleToggle = () => this.setState(prevState  => ({ visible: !prevState.visible }));
 
   render() {
-    const { items, loginURL, children } = this.props;
+    const { loginURL, children } = this.props;
     const { visible } = this.state;
 
     return (

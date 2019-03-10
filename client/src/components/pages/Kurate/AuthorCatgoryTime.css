@@ -17,12 +17,6 @@
   color: var(--charcoal-grey);
 }
 
-.item.payout {
-  color: var(--charcoal-grey);
-  font-size: 1em;
-  line-height: 2.0em;
-}
-
 ul.info li {
   color: var(--medium-grey);
   font-size: 1.1em;

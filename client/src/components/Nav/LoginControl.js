@@ -39,13 +39,22 @@ const LoginControl = ({isAuth, user, loginURL}) => {
         </Menu.Item>
         <Dropdown trigger={avatar} item>
           <Dropdown.Menu>
-            <Dropdown.Item
+            {/*}<Dropdown.Item
               exact
               as={NavLink}
               to="/feed"
             >
               {'Feed'}
-            </Dropdown.Item>
+            </Dropdown.Item>*/}
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              className="header item"
+              href={`https://steemit.com/@${user}/feed`}
+            >
+              {'Feed'}
+            </a>
+
             <Dropdown.Item
               exact
               as={NavLink}

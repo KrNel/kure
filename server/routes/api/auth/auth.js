@@ -139,6 +139,7 @@ const newCSRF = (db, res, user) => {
     const secret = tokens.secretSync();
     const csrf = tokens.create(secret);
     let success = false;
+
     try {
       //add to DB for returning user persistence
       db.collection('sessions').updateOne(

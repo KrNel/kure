@@ -11,12 +11,12 @@ import classNames from 'classnames';
 import sanitizeHtml from 'sanitize-html';
 import Remarkable from 'remarkable';
 import embedjs from 'embedjs';
-import { jsonParse } from './helpers/formatter';
-import sanitizeConfig from './helpers/SanitizeConfig';
-import { imageRegex, dtubeImageRegex, rewriteRegex } from './helpers/regexHelpers';
-import htmlReady from './helpers/steemitHtmlReady';
-import improve from './helpers/improve';
-import PostFeedEmbed from './PostFeedEmbed';
+import { jsonParse } from '../helpers/formatter';
+import sanitizeConfig from '../helpers/SanitizeConfig';
+import { imageRegex, dtubeImageRegex, rewriteRegex } from '../helpers/regexHelpers';
+import htmlReady from '../helpers/steemitHtmlReady';
+import improve from '../helpers/improve';
+import PostFeedEmbed from '../PostFeedEmbed';
 //import './Body.less';
 
 export const remarkable = new Remarkable({
@@ -103,11 +103,6 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
 }
 
 const Body = props => {
-  /*const options = {
-    appUrl: props.appUrl,
-    rewriteLinks: props.rewriteLinks,
-    secureLinks: props.exitPageSetting,
-  };*/
   const options = {
     appUrl: "http://localhost:3000",
     rewriteLinks: false,

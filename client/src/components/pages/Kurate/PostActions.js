@@ -31,9 +31,10 @@ const flag = (e) => {
  *  @param {string} title Post's title
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostActions = ({activeVotesCount, commentCount, author, category, permlink, title, showModal, user}) => (
+const PostActions = ({activeVotesCount, commentCount, author, category, payoutValue, permlink, title, showModal, user}) => (
   <div>
     <ul className="meta disabled">
+      <li className="item">{payoutValue}</li>
       <li className="item">
         <a href="/vote" onClick={(e) => vote(e)} title={`${activeVotesCount} upvotes on Steem`}>
           <Icon name='chevron up' size='large' />

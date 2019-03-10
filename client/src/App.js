@@ -8,13 +8,6 @@ import SteemConnect from './utils/auth/scAPI';
 import './App.css';
 import { handleReturning } from './actions/authActions';
 
-const items = [
-  {name : "/", label : "Home"},
-  {name : "/kurate", label : "Kurate"},
-  {name : "/groups", label : "Communities"},
-  {name : "/posts", label : "Kurated"},
-];
-
 /**
  *  Root application compoenent.
  *
@@ -47,7 +40,7 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <NavMenu loginURL={loginURL} items={items}>
+        <NavMenu loginURL={loginURL}>
           <Grid container className="wrapper">
             <Grid.Column width={16}>
               {children}

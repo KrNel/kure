@@ -137,10 +137,10 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const handleReturning = () => (dispatch, getState) => {
+export const handleReturning = () => async (dispatch, getState) => {
   const {isAuth, isAuthorizing} = getState().auth;
   if (!isAuth && !isAuthorizing)
-    return dispatch(fetchReturning());
+    return await dispatch(fetchReturning());
 }
 
 /**

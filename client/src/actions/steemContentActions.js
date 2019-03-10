@@ -5,8 +5,10 @@ import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
 
 const client = new Client('https://hive.anyx.io/');
 
-export const GET_CONTENT_START = 'GET_CONTENT_START';
-export const GET_CONTENT_SUCCESS = 'GET_CONTENT_SUCCESS';
+export const GET_SUMMARY_START = 'GET_SUMMARY_START';
+export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
+export const GET_DETAILS_START = 'GET_DETAILS_START';
+export const GET_DETAILS_SUCCESS = 'GET_DETAILS_SUCCESS';
 export const GET_GROUPS_SUCCESS = 'GET_GROUPS_SUCCESS';
 export const ADD_POST_EXISTS = 'ADD_POST_EXISTS';
 export const ADD_POST_START = 'ADD_POST_START';
@@ -19,22 +21,43 @@ export const MODAL_CLOSE = 'MODAL_CLOSE';
  *
  *  @return {object} The action data
  */
-export const contentStart = () => ({
-  type: GET_CONTENT_START,
+export const summaryStart = () => ({
+  type: GET_SUMMARY_START,
 });
 
 /**
  *  Action creator for requesting returning user athentication.
  *
- *  @param {array} posts Postst to display
+ *  @param {array} posts Posts to display
  *  @param {boolean} noMore If there are more posts to fetch
  *  @return {object} The action data
  */
-export const contentSuccess = (posts, noMore) => ({
-  type: GET_CONTENT_SUCCESS,
+export const summarySuccess = (posts, noMore) => ({
+  type: GET_SUMMARY_SUCCESS,
   posts,
   noMore,
 });
+
+/**
+ *  Action creator for requesting returning user athentication.
+ *
+ *  @return {object} The action data
+ */
+export const detailsStart = () => ({
+  type: GET_DETAILS_START,
+});
+
+/**
+ *  Action creator for requesting returning user athentication.
+ *
+ *  @param {array} post Post to display
+ *  @return {object} The action data
+ */
+export const detailsSuccess = (post) => ({
+  type: GET_DETAILS_SUCCESS,
+  post,
+});
+
 
 export const groupsSuccess = (groups) => ({
   type: GET_GROUPS_SUCCESS,
@@ -89,11 +112,9 @@ export const onModalCloseAddPost = () => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-export const getSteemContent = (selectedFilter, query, nextPost) => (dispatch, getState) => {
+export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch, getState) => {
+  dispatch(summaryStart());
 
-  dispatch(contentStart());
-
-  //return client.database.getDiscussions(selectedFilter, query)
   return client.database.getDiscussions(selectedFilter, query)
     .then(result => {
       let noMore = false;
@@ -114,10 +135,23 @@ export const getSteemContent = (selectedFilter, query, nextPost) => (dispatch, g
       if (user)
         dispatch(getGroupsFetch(user));
 
-      dispatch(contentSuccess(newPosts, noMore));
+      dispatch(summarySuccess(newPosts, noMore));
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
+}
+
+export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
+  dispatch(detailsStart());
+  return client.database.call('get_content', [author, permlink])
+    .then(result => {
+
+      const {user} = getState().auth;
+      if (user)
+        dispatch(getGroupsFetch(user));
+
+      dispatch(detailsSuccess(result));
+  })
 }
 
 /**
@@ -186,4 +220,4 @@ const addPostFetch = () => (dispatch, getState) => {
   });
 }
 
-export default getSteemContent;
+export default getSummaryContent;

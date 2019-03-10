@@ -19,6 +19,7 @@ router.post('/add', async (req, res, next) => {
   //TODO?:do i need to verfiy access? no one can spoof a POST, right?
   const db = req.app.locals.db;
   const { user, group, author, category, permlink, title } = req.body;
+
   const csrfValid = await csrfValidateRequest(req, res, user);
 
   //Respond to frontend with failed CSRF validation, else continue
@@ -29,7 +30,6 @@ router.post('/add', async (req, res, next) => {
     if (exists) {
        res.json({exists: true});
     }else {
-
       //Insert new post into DB
       const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title);
       res.json({post: postAdd});
