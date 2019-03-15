@@ -52,21 +52,14 @@ class Posts extends Component {
     this.getPosts();
   }
 
-  /*shouldComponentUpdate(nextProps, nextState) {
-console.log('nextProps.match.url:',nextProps.match.url)
-console.log('this.props.match.url:',this.props.match.url)
-    if (nextProps.match.url !== this.props.match.url)
-      return true;
-  }*/
-
   componentDidUpdate(prevProps) {
-console.log('componentDidUpdate')
-    // Typical usage (don't forget to compare props):
-    if (this.props.match.url !== prevProps.match.url) {
-console.log('cdu - getPosts')
-      this.tag = this.props.match.params.tag;
+    const {match} = this.props;
+    if (match.url !== prevProps.match.url) {
+      if (match.params.tag)
+        this.tag = match.params.tag;
+      else
+        this.tag = '';
       this.getPosts();
-      //this.getPosts('force');
     }
   }
 
@@ -122,11 +115,8 @@ console.log('cdu - getPosts')
     }else if (match.path === '/@:author') {
       tag = match.params.author;
       filter = 'blog';
-    }/*else if (action === 'force') {
-      tag = match.params.author;
-      filter = 'blog';
-    }*/else {
-      window.history.pushState({}, '', `/${filter}/${tag}`);
+    }else {
+      window.history.replaceState({}, '', `/${filter}/${tag}`);
     }
 
     const query = {
