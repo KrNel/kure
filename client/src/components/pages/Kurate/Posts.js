@@ -6,11 +6,12 @@ import {Header, Label} from 'semantic-ui-react';
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import FilterPosts from './FilterPosts';
-import * as contentActions from '../../../actions/steemContentActions'
+import * as contentActions from '../../../actions/steemContentActions';
+//import VoteSlider from './VoteSlider';
+import 'react-rangeslider/lib/index.css';
 
 /**
  *  Kurate gets the Steem blockchain content and dusplays a list of post
@@ -136,6 +137,10 @@ class Posts extends Component {
     getContent(filter, query, nextPost)
   }
 
+  /**
+   *  Handle the filter and tag values pass up to parent, then
+   *  getPosts with that new data.
+   */
   handleSubmitFilter = (selectedFilter, tag) => {
     this.selectedFilter = selectedFilter;
     this.tag = tag;

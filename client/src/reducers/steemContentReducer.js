@@ -99,7 +99,7 @@ export const steemContent = (
       return ({
         ...state,
         upvotePayload: {
-          isUpvoting: false,
+          isUpvoting: true,
           ...action.payload,
         }
       });

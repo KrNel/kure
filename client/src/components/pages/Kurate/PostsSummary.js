@@ -17,6 +17,7 @@ import TitleLink from '../../common/TitleLink';
  *  @param {function} showModal Parent function to show the add post modal
  */
 const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload, isFetching}) => {
+
   if (!posts.length && !isFetching) {
     return "No Posts";
   }else {

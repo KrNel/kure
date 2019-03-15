@@ -296,9 +296,12 @@ const addPostFetch = () => (dispatch, getState) => {
 }
 
 /**
+ *  Uses SteemConnect to upvote a post by author and permlink with specified
+ *  vote weight percentage.
  *
- *
- *  @param {function} dispatch Redux dispatch function
+ *  @param {string} author Author to upvote
+ *  @param {string} permlink Post permlink to upvote
+ *  @param {number} weight Vote weight percentage to upvote with
  *  @returns {function} Dispatches returned action object
  */
 export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
@@ -310,19 +313,15 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
     },
   } = getState();
 
-  /*const voters = client.database.call('get_active_votes', [author, permlink]);
-  if (voters.some(v => v.voter === user)) {
-    return null;
-  }*/
-
   const accessToken = Cookies.get('SC-TOKEN')
   SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {
-console.log('res:',res)
-      const voters = client.database.call('get_active_votes', [author, permlink])
-      dispatch(upvoteSuccess(author, permlink, voters));
+      client.database.call('get_active_votes', [author, permlink])
+        .then(voters => {
+          dispatch(upvoteSuccess(author, permlink, voters));
+        })
     }).catch((err) => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
