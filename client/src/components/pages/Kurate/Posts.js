@@ -185,18 +185,15 @@ class Posts extends Component {
             <hr />
             <div>
               <div id="postList">
-                {
-                  !isFetching && (
-                  <PostsSummary
-                    posts={posts}
-                    showModal={showModal}
-                    user={user}
-                    csrf={csrf}
-                    handleUpvote={handleUpvote}
-                    upvotePayload={upvotePayload}
-                  />
-                  )
-                }
+                <PostsSummary
+                  posts={posts}
+                  showModal={showModal}
+                  user={user}
+                  csrf={csrf}
+                  handleUpvote={handleUpvote}
+                  upvotePayload={upvotePayload}
+                  isFetching={isFetching}
+                />
               </div>
             </div>
             {

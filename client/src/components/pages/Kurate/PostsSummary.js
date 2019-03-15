@@ -16,8 +16,10 @@ import TitleLink from '../../common/TitleLink';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload}) => {
-  if (posts.length) {
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload, isFetching}) => {
+  if (!posts.length && !isFetching) {
+    return "No Posts";
+  }else {
     return (
       posts.map((p, i) => {
 
@@ -102,9 +104,9 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
             <hr />
           </div>
         )
-    })
-  )
-  }else return "No Posts";
+      })
+    )
+  }
 }
 
 export default PostsSummary;
