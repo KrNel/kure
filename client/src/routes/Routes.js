@@ -7,6 +7,8 @@ import Groups from '../components/pages/Groups/Groups';
 import GroupDetails from '../components/pages/Groups/GroupDetails';
 //import Posts from '../components/pages/Posts/Posts';
 import Post from '../components/pages/Kurate/Post/Post';
+import Feed from '../components/pages/Kurate/Feed/Feed';
+import Blog from '../components/pages/Kurate/Blog/Blog';
 import Kurate from '../components/pages/Kurate/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
@@ -24,13 +26,15 @@ const Routes = (props) => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />
+      <Route exact path='/kurate' component={Kurate} />
       <Route exact path='/groups' component={Groups} />
       {/*<Route exact path='/kurated' component={Posts} />*/}
-      <Route exact path='/kurate' component={Kurate} />
-      <Route path='/:category/@:author/:permlink' component={Post} />
-      <Route path='/success' component={AuthSC} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
+      <Route path='/:category/@:author/:permlink' component={Post} />
+      <Route path='/@:author/feed' component={Feed} />
+      <Route path='/@:author' component={Blog} />
+      <Route path='/success' component={AuthSC} />
       <Route exact path='/group/:group/' component={GroupDetails} />
       <Route exact path='/write' component={Write} />
       <Route component={NoMatch} />

@@ -51,7 +51,7 @@
   font-size: 1.4rem;
 }
 
-code {
+.Body code {
   padding: 0.2rem;
   font-size: 85%;
   border-radius: 3px;
@@ -61,7 +61,7 @@ code {
   overflow: scroll;
 }
 
-pre > code {
+.Body pre > code {
   display: block;
 }
 
