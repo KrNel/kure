@@ -31,6 +31,10 @@ const Routes = (props) => (
       {/*<Route exact path='/kurated' component={Posts} />*/}
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
+      <Route path='/created/:tag?' component={Kurate} />
+      <Route path='/hot/:tag?' component={Kurate} />
+      <Route path='/promoted/:tag?' component={Kurate} />
+      <Route path='/trending/:tag?' component={Kurate} />
       <Route path='/:category/@:author/:permlink' component={Post} />
       <Route path='/@:author/feed' component={Feed} />
       <Route path='/@:author' component={Blog} />

@@ -44,10 +44,11 @@ class Posts extends Component {
   }
 
   componentDidMount() {
-    const {match: {path}} = this.props;
-    if (path === '/kurate') {
-      window.addEventListener("scroll", this.handleScroll);
+    const {match: {params: {tag}}} = this.props;
+    if (tag) {
+      this.tag = tag;
     }
+    window.addEventListener("scroll", this.handleScroll);
     this.getPosts();
   }
 
@@ -96,15 +97,17 @@ class Posts extends Component {
 
     let tag = '';
     let filter = ''
-    if (match.path === '/kurate') {
-      tag = this.tag;
-      filter = this.selectedFilter;
-    }else if (match.path === '/@:author/feed') {
+
+    if (match.path === '/@:author/feed') {
       tag = match.params.author;
       filter = 'feed';
     }else if (match.path === '/@:author') {
       tag = match.params.author;
       filter = 'blog';
+    }else {
+      tag = this.tag;
+      filter = this.selectedFilter;
+      window.history.pushState({}, '', `/${filter}/${tag}`);
     }
 
     const query = {
@@ -147,7 +150,7 @@ class Posts extends Component {
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
-console.log('page:',this.props)
+
     return (
       <React.Fragment>
         <ModalGroup
@@ -162,7 +165,7 @@ console.log('page:',this.props)
         <ErrorBoundary>
           <React.Fragment>
             {
-              match.path === '/kurate'
+              !match.path.includes('/@author')
               && (
                 <FilterPosts
                   handleSubmitFilter={this.handleSubmitFilter}

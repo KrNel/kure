@@ -3,6 +3,9 @@ import { Form, Button } from "semantic-ui-react";
 
 import Picker from '../../Picker/Picker';
 
+/**
+ *  Displays and sets state for filtering Steem contentActions
+ */
 class FitlerPosts extends Component {
 
   constructor(props) {
