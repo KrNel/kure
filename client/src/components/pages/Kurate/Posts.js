@@ -67,7 +67,7 @@ class Posts extends Component {
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
-           this.getPosts('more');
+        this.getPosts('more');
       }
     }
   };
@@ -95,8 +95,8 @@ class Posts extends Component {
       nextPost = true;
     }
 
-    let tag = '';
-    let filter = ''
+    let tag = this.tag;
+    let filter = this.selectedFilter;
 
     if (match.path === '/@:author/feed') {
       tag = match.params.author;
@@ -105,8 +105,6 @@ class Posts extends Component {
       tag = match.params.author;
       filter = 'blog';
     }else {
-      tag = this.tag;
-      filter = this.selectedFilter;
       window.history.pushState({}, '', `/${filter}/${tag}`);
     }
 
@@ -147,7 +145,7 @@ class Posts extends Component {
         upvotePayload,
       }
     } = this;
-console.log('match',match)
+
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 

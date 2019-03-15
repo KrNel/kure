@@ -1,5 +1,5 @@
 import React from 'react';
-//import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 /**
  *  Displays the category hyperlink.
@@ -9,18 +9,11 @@ import React from 'react';
  */
 const Category = ({category}) => (
   <React.Fragment>
-    {/*<Link
+    <Link
       to={`/created/${category}`}
     >
       {category}
-    </Link>*/}
-    <a
-      target='_blank'
-      rel='noopener noreferrer'
-      href={`https://steemit.com/created/${category}`}
-    >
-      {category}
-    </a>
+    </Link>
   </React.Fragment>
 )
 
