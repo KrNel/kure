@@ -52,6 +52,24 @@ class Posts extends Component {
     this.getPosts();
   }
 
+  /*shouldComponentUpdate(nextProps, nextState) {
+console.log('nextProps.match.url:',nextProps.match.url)
+console.log('this.props.match.url:',this.props.match.url)
+    if (nextProps.match.url !== this.props.match.url)
+      return true;
+  }*/
+
+  componentDidUpdate(prevProps) {
+console.log('componentDidUpdate')
+    // Typical usage (don't forget to compare props):
+    if (this.props.match.url !== prevProps.match.url) {
+console.log('cdu - getPosts')
+      this.tag = this.props.match.params.tag;
+      this.getPosts();
+      //this.getPosts('force');
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
   }
@@ -104,7 +122,10 @@ class Posts extends Component {
     }else if (match.path === '/@:author') {
       tag = match.params.author;
       filter = 'blog';
-    }else {
+    }/*else if (action === 'force') {
+      tag = match.params.author;
+      filter = 'blog';
+    }*/else {
       window.history.pushState({}, '', `/${filter}/${tag}`);
     }
 
@@ -145,7 +166,7 @@ class Posts extends Component {
         upvotePayload,
       }
     } = this;
-
+console.log('props:',this.props)
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
