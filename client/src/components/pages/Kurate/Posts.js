@@ -147,7 +147,7 @@ class Posts extends Component {
         upvotePayload,
       }
     } = this;
-
+console.log('match',match)
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
@@ -165,7 +165,7 @@ class Posts extends Component {
         <ErrorBoundary>
           <React.Fragment>
             {
-              !match.path.includes('/@author')
+              !match.path.includes('/@:author')
               && (
                 <FilterPosts
                   handleSubmitFilter={this.handleSubmitFilter}
@@ -187,14 +187,18 @@ class Posts extends Component {
             <hr />
             <div>
               <div id="postList">
-                <PostsSummary
-                  posts={posts}
-                  showModal={showModal}
-                  user={user}
-                  csrf={csrf}
-                  handleUpvote={handleUpvote}
-                  upvotePayload={upvotePayload}
-                />
+                {
+                  !isFetching && (
+                  <PostsSummary
+                    posts={posts}
+                    showModal={showModal}
+                    user={user}
+                    csrf={csrf}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                  />
+                  )
+                }
               </div>
             </div>
             {
