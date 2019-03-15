@@ -1,8 +1,16 @@
 //import axios from 'axios';
+import axios from 'axios';
 import { Client } from 'dsteem';
+import Cookies from 'js-cookie';
 
-import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
+import { getUserGroups, addPost, logger, upvote } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
+
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common = {
+  "X-Requested-With": "XMLHttpRequest",
+  //"X-CSRFToken": "example-of-custom-header"
+};
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -141,6 +149,7 @@ export const upvoteStart = (author, permlink) => ({
   payload: {
     author,
     permlink,
+    voters: [],
   }
 });
 
@@ -151,11 +160,12 @@ export const upvoteStart = (author, permlink) => ({
  *  @param {string} permlink Permlink of post
  *  @return {object} The action data
  */
-export const upvoteSuccess = (author, permlink) => ({
+export const upvoteSuccess = (author, permlink, voters) => ({
   type: UPVOTE_SUCCESS,
   payload: {
     author,
     permlink,
+    voters,
   }
 });
 
@@ -268,6 +278,7 @@ const addPostFetch = () => (dispatch, getState) => {
       addPostData
     }
   } = getState();
+
   addPost({group: selectedGroup, user, ...addPostData}, csrf)
   .then(res => {
     if (!res.data.invalidCSRF) {
@@ -284,5 +295,38 @@ const addPostFetch = () => (dispatch, getState) => {
   });
 }
 
+/**
+ *
+ *
+ *  @param {function} dispatch Redux dispatch function
+ *  @returns {function} Dispatches returned action object
+ */
+export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
+  dispatch(upvoteStart(author, permlink));
+
+  const {
+    auth: {
+      user
+    },
+  } = getState();
+
+  /*const voters = client.database.call('get_active_votes', [author, permlink]);
+  if (voters.some(v => v.voter === user)) {
+    return null;
+  }*/
+
+  const accessToken = Cookies.get('SC-TOKEN')
+  SteemConnect.setAccessToken(accessToken);
+
+  return SteemConnect.vote(user, author, permlink, weight)
+    .then(res => {
+console.log('res:',res)
+      const voters = client.database.call('get_active_votes', [author, permlink])
+      dispatch(upvoteSuccess(author, permlink, voters));
+    }).catch((err) => {
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
+    });
+
+}
 
 export default getSummaryContent;

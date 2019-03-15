@@ -39,7 +39,13 @@ const LoginControl = ({isAuth, user, loginURL}) => {
         </Menu.Item>
         <Dropdown trigger={avatar} item>
           <Dropdown.Menu>
-
+            {/*}<Dropdown.Item
+              exact
+              as={NavLink}
+              to="/feed"
+            >
+              {'Feed'}
+            </Dropdown.Item>*/}
             <a
               target='_blank'
               rel='noopener noreferrer'

@@ -95,12 +95,12 @@ const GroupsList = (props) => {
                       <div className='meta'>
                         <Icon name='user outline' color='blue' />
                         {g.users}
-                        {g.posts === 0 || g.posts > 1 ? ' users' : ' user'}
+                        {g.users === 0 || g.users > 1 ? ' users' : ' user'}
                       </div>
                       <div className='meta'>
                         <Icon name='street view' color='blue' />
                         {g.joinRequests}
-                        {g.posts === 0 || g.posts > 1 ? ' join requests' : ' join request'}
+                        {g.joinRequests === 0 || g.joinRequests > 1 ? ' join requests' : ' join request'}
                       </div>
                     </div>
                   </Segment>

@@ -33,7 +33,11 @@ export const steemContent = (
     addPostData: {},
     post: {},
     isUpvoting: false,
-    upvotePayload: {}
+    upvotePayload: {
+      author: '',
+      permlink: '',
+      voters: []
+    }
   },
   action) => {
   switch (action.type) {
@@ -94,14 +98,18 @@ export const steemContent = (
     case UPVOTE_START:
       return ({
         ...state,
-        isUpvoting: true,
-        upvotePayload: action.payload,
+        upvotePayload: {
+          isUpvoting: false,
+          ...action.payload,
+        }
       });
     case UPVOTE_SUCCESS:
       return ({
         ...state,
-        isUpvoting: false,
-        upvotePayload: action.payload,
+        upvotePayload: {
+          isUpvoting: false,
+          ...action.payload,
+        }
       });
     default:
       return state

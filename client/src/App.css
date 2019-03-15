@@ -147,7 +147,7 @@ ul.custom-list {
 }
 
 .ui.segment, .ui.segments, .ui.menu, .ui.card, .ui.form input[type="text"], .ui.button, .ui.label, .ui.table, .ui.dropdown {
-    border-radius: 0px !important;
+    /*border-radius: 3px !important;*/
 }
 
 .ui.segment, .ui.segments {

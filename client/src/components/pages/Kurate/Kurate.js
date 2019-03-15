@@ -1,14 +1,14 @@
 import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Button } from "semantic-ui-react";
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-import Picker from '../../Picker/Picker';
+
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
+import FilterPosts from './FilterPosts';
 import * as contentActions from '../../../actions/steemContentActions'
 
 /**
@@ -36,10 +36,9 @@ class Kurate extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      tag: '',
-      selectedFilter: 'created',
-    }
+
+    this.selectedFilter = 'created';
+    this.tag = '';
   }
 
   componentDidMount() {
@@ -78,7 +77,6 @@ class Kurate extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {selectedFilter, tag} = this.state;
     const {getContent, posts} = this.props;
 
     let startAuthor = undefined;
@@ -95,47 +93,24 @@ class Kurate extends Component {
     }
 
     const query = {
-      tag: tag,
+      tag: this.tag,
       limit: 20,
       truncate_body: 0,
       start_author: startAuthor,
       start_permlink: startPermlink
     };
 
-    getContent(selectedFilter, query, nextPost)
+    getContent(this.selectedFilter, query, nextPost)
   }
 
-  /**
-   *  Set state values for when tag input text changes.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {string} name Name of the element triggering the event
-   *  @param {string} value Value of the element triggering the event
-   */
-  handleChange = (e, { name, value }) => {
-    this.setState({
-      [name]: value,
-     });
-  }
-
-  /**
-   *  Set state values for when filter option changes.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {string} value Value of the role selected
-   */
-  handleFilterSelect = (e, {value}) => {
-    this.setState({
-      selectedFilter: value
-     });
+  handleSubmitFilter = (selectedFilter, tag) => {
+    this.selectedFilter = selectedFilter;
+    this.tag = tag;
+    this.getPosts('init');
   }
 
   render() {
     const {
-      state: {
-        nextPost,
-        tag,
-      },
       props: {
         user,
         csrf,
@@ -151,20 +126,12 @@ class Kurate extends Component {
         onModalCloseAddPost,
         handleGroupSelect,
         handleUpvote,
-        isUpvoting,
         upvotePayload,
       },
     } = this;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
-
-    const filters = [
-      {key: 0, value: 'created', text: 'New'},
-      {key: 1, value: 'hot', text: 'Hot'},
-      {key: 2, value: 'promoted', text: 'Promoted'},
-      {key: 3, value: 'trending', text: 'Trending'}
-    ];
 
     return (
       <React.Fragment>
@@ -179,35 +146,18 @@ class Kurate extends Component {
         />
         <ErrorBoundary>
           <React.Fragment>
-            <div className='controlContent'>
-              <Form>
-                <Form.Group>
-                  <Button id='init' color='blue' onClick={() => this.getPosts('init')}>Refresh Posts</Button>
-                  <Picker
-                    onChange={this.handleFilterSelect}
-                    options={filters}
-                    label=''
-                  />
-                  <Form.Input
-                    placeholder='Search a tag'
-                    name='tag'
-                    value={tag}
-                    onChange={this.handleChange}
-                  />
-                </Form.Group>
-              </Form>
-            </div>
+            <FilterPosts
+              handleSubmitFilter={this.handleSubmitFilter}
+            />
             <hr />
             <div>
               <div id="postList">
                 <PostsSummary
                   posts={posts}
-                  nextPost={nextPost}
                   showModal={showModal}
                   user={user}
                   csrf={csrf}
                   handleUpvote={handleUpvote}
-                  isUpvoting={isUpvoting}
                   upvotePayload={upvotePayload}
                 />
               </div>
@@ -243,7 +193,6 @@ const mapStateToProps = state => {
       modalOpenAddPost,
       selectedGroup,
       addPostData,
-      isUpvoting,
       upvotePayload,
     }
   } = state;
@@ -260,7 +209,6 @@ const mapStateToProps = state => {
     modalOpenAddPost,
     selectedGroup,
     addPostData,
-    isUpvoting,
     upvotePayload,
   }
 }

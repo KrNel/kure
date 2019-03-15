@@ -1,4 +1,5 @@
 :root {
+    --pale-blue: #7fc1ff;
     --light-blue: #4da2f2;
     --medium-blue: #2185d0;
     --main-border: rgba(77, 162, 242, 0.4);
@@ -8,8 +9,9 @@
     --charcoal-grey: #363D44;
     --medium-grey: #57636e;
     --soft-grey: #cacaca;
+    --action-grey: rgba(202, 202, 202, 0.8);
     /*--fade-grey: #e6e6e6;*/
-    --font-content: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-content: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     /*
     Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"
     */

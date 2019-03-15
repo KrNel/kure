@@ -16,7 +16,7 @@ import TitleLink from '../../common/TitleLink';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isUpvoting, upvotePayload}) => {
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload}) => {
   if (posts.length) {
     return (
       posts.map((p, i) => {
@@ -39,8 +39,16 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isU
         const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
         //const created = new Date(post.created).toDateString();
         const createdFromNow = moment.utc(post.created).fromNow();
-        const activeVotesCount = post.active_votes.length;
         const commentCount = post.children;
+        const activeVotes = post.active_votes;
+
+        const totalPayout =
+          parseFloat(post.pending_payout_value) +
+          parseFloat(post.total_payout_value) +
+          parseFloat(post.curator_payout_value);
+        const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
+        const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
+
 
         return (
           <div key={p.id} className='post'>
@@ -75,7 +83,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isU
                 </p>
                 <div className='post-actions'>
                   <PostActions
-                    activeVotesCount={activeVotesCount}
+                    activeVotes={activeVotes}
                     commentCount={commentCount}
                     author={author}
                     category={category}
@@ -84,9 +92,9 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, isU
                     title={title}
                     showModal={showModal}
                     user={user}
-                    isUpvoting={isUpvoting}
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
+                    ratio={ratio}
                   />
                 </div>
               </div>

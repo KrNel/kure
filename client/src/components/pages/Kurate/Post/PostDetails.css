@@ -3,12 +3,17 @@
 .PostContent {
   font-size: 1.3rem;
   line-height: 2.0rem;
-  font-family: "Roboto";
+  font-family: var(--font-content);
   margin-bottom: 10em;
 }
 
 .PostContent .info {
-  font-family: "Roboto";
+  font-family: var(--font-content);
+  font-size: 1.1rem;
+}
+
+.PostContent .footer .meta {
+  font-family: var(--font-content);
   font-size: 1.1rem;
 }
 

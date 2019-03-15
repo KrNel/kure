@@ -76,6 +76,8 @@ class PostDetails extends Component {
       user,
       post,
       isFetching,
+      handleUpvote,
+      upvotePayload,
     } = this.props;
 
     const title = post.title;
@@ -86,7 +88,15 @@ class PostDetails extends Component {
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
     const created = new Date(post.created).toDateString();
     const createdFromNow = moment.utc(post.created).fromNow();
-    const activeVotesCount = (post.active_votes) ? post.active_votes.length : 0;
+    const activeVotes = post.active_votes;
+
+    const totalPayout =
+      parseFloat(post.pending_payout_value) +
+      parseFloat(post.total_payout_value) +
+      parseFloat(post.curator_payout_value);
+    const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
+    const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
+
     const commentCount = post.children;
     const canonicalUrl = `https://thekure.net${post.url}`;
     const url = `https://thekure.net${post.url}`;
@@ -152,7 +162,7 @@ class PostDetails extends Component {
                       <a
                         target='_blank'
                         rel='noopener noreferrer'
-                        href={`https://steemit.com${url}`}
+                        href={`https://steemit.com${post.url}`}
                       >
                         {'Steemit'}
                       </a>
@@ -169,7 +179,7 @@ class PostDetails extends Component {
                     <hr />
                     <div className='post-actions'>
                       <PostActions
-                        activeVotesCount={activeVotesCount}
+                        activeVotes={activeVotes}
                         commentCount={commentCount}
                         author={author}
                         category={category}
@@ -178,6 +188,9 @@ class PostDetails extends Component {
                         title={title}
                         showModal={showModal}
                         user={user}
+                        handleUpvote={handleUpvote}
+                        upvotePayload={upvotePayload}
+                        ratio={ratio}
                       />
                     </div>
                   </div>
