@@ -18,14 +18,14 @@ const vote = (e, handleUpvote, user, author, permlink, weight) => {
   if (!user) {
     return null;
   }
-  //handleUpvote(author, permlink, weight);
 
-  //upvote();
-  /*SteemConnect.vote('krnel', 'informationwar', 're-krnel-100-unofficially-confirmed-the-u-s-justice-department-is-going-after-julian-assange-wikileaks-20190306t024510422z', 1)
-    .then((err, res) => {
-console.log('err:',err)
-console.log('res:',res)
-    });*/
+  const upvote = document.querySelector("#upvote");
+  if (upvote.classList.contains("votedOn")) {
+    return null;
+  }
+
+  handleUpvote(author, permlink, weight);
+
 }
 
 const comment = (e) => {
@@ -99,7 +99,7 @@ const PostActions = ({activeVotes, commentCount, author, category, payoutValue, 
         <li className="item payout">{payoutValue}</li>
         <li className="item upvote">
           <a href="/vote" onClick={e => vote(e, handleUpvote, user, author, permlink, weight)} title={`${votesCount} upvotes on Steem`}>
-            <Icon name='chevron up circle' size='large' className={upvoteClasses} />
+            <Icon id='upvote' name='chevron up circle' size='large' className={upvoteClasses} />
           </a>
           {/*<Slider
               min={100}

@@ -41,6 +41,11 @@ class Posts extends Component {
 
     this.selectedFilter = 'created';
     this.tag = '';
+    this.isPageLoading = false;
+
+    /*this.state = {
+      isPageLoading: true,
+    }*/
   }
 
   componentDidMount() {
@@ -55,6 +60,7 @@ class Posts extends Component {
   componentDidUpdate(prevProps) {
     const {match} = this.props;
     if (match.url !== prevProps.match.url) {
+      this.isPageLoading = true;
       if (match.params.tag)
         this.tag = match.params.tag;
       else
@@ -154,9 +160,12 @@ class Posts extends Component {
         handleGroupSelect,
         handleUpvote,
         upvotePayload,
-      }
+      },
+      /*state: {
+        isPageLoading
+      }*/
     } = this;
-console.log('props:',this.props)
+
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
@@ -196,15 +205,21 @@ console.log('props:',this.props)
             <hr />
             <div>
               <div id="postList">
-                <PostsSummary
-                  posts={posts}
-                  showModal={showModal}
-                  user={user}
-                  csrf={csrf}
-                  handleUpvote={handleUpvote}
-                  upvotePayload={upvotePayload}
-                  isFetching={isFetching}
-                />
+                {
+                  !this.isPageLoading && !isFetching
+                  && (
+                    <PostsSummary
+                      posts={posts}
+                      showModal={showModal}
+                      user={user}
+                      csrf={csrf}
+                      handleUpvote={handleUpvote}
+                      upvotePayload={upvotePayload}
+                      isFetching={isFetching}
+                    />
+                  )
+                }
+
               </div>
             </div>
             {
