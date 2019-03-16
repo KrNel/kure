@@ -33,6 +33,9 @@ class PostActions extends Component {
   }
   createRef = createRef();
 
+  /**
+   *  Initial voting requests to process.
+   */
   vote = (e, user) => {
     e.preventDefault();
 
@@ -51,17 +54,26 @@ class PostActions extends Component {
     this.setState({showSlider: true});
   }
 
+  /**
+   *  Changes to the weight for the slider.
+   */
   handleWeightChange = weight => {
     this.setState({ sliderWeight: weight });
   };
 
-  handleUpvote = (e, author, permlink, weight) => {
+  /**
+   *  The real upvote is sent here.
+   */
+  handleVote = (e, author, permlink, weight) => {
     e.preventDefault();
+    const {handleUpvote} = this.props;
     this.setState({ showSlider: false });
-    //this.props.handleUpvote(author, permlink, weight);
-    this.props.handleUpvote(author, permlink, 1);
+    handleUpvote(author, permlink, weight);
   }
 
+  /**
+   *  Exit out of unvote when already voted.
+   */
   handleCloseUnvote = () => {
     this.setState({unvote: false});
   }
@@ -137,7 +149,7 @@ class PostActions extends Component {
               <a
                 href='/upvote'
                 className='accept-weight'
-                onClick={e => this.handleUpvote(e, author, permlink, sliderWeight)}
+                onClick={e => this.handleVote(e, author, permlink, sliderWeight)}
               >
                 <Icon name='chevron up circle' size='big' color='green' />
               </a>

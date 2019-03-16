@@ -5,12 +5,7 @@ import Cookies from 'js-cookie';
 
 import { getUserGroups, addPost, logger, upvote } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
-
-axios.defaults.withCredentials = true;
-axios.defaults.headers.common = {
-  "X-Requested-With": "XMLHttpRequest",
-  //"X-CSRFToken": "example-of-custom-header"
-};
+import {SC_COOKIE} from '../settings';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -313,7 +308,7 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
     },
   } = getState();
 
-  const accessToken = Cookies.get('SC-TOKEN')
+  const accessToken = Cookies.get(SC_COOKIE)
   SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)

@@ -43,10 +43,6 @@ class Posts extends Component {
     this.selectedFilter = 'created';
     this.tag = '';
     this.isPageLoading = false;
-
-    /*this.state = {
-      isPageLoading: true,
-    }*/
   }
 
   componentDidMount() {
@@ -58,6 +54,10 @@ class Posts extends Component {
     this.getPosts();
   }
 
+  /**
+   *  Need to check if different request for data being done through
+   *  url route. If so, getPosts(), otherwise the page data stays the same.
+   */
   componentDidUpdate(prevProps) {
     const {match} = this.props;
     if (match.url !== prevProps.match.url) {
@@ -165,10 +165,7 @@ class Posts extends Component {
         handleGroupSelect,
         handleUpvote,
         upvotePayload,
-      },
-      /*state: {
-        isPageLoading
-      }*/
+      }
     } = this;
 
     let addErrorPost = '';
@@ -211,7 +208,7 @@ class Posts extends Component {
             <div>
               <div id="postList">
                 {
-                  !this.isPageLoading && !isFetching
+                  !this.isPageLoading
                   && (
                     <PostsSummary
                       posts={posts}

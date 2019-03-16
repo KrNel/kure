@@ -30,4 +30,6 @@ export const roles = {
   }
 }
 
+export const SC_COOKIE = "SC-TOKEN";
+
 export default BASE_URL;
