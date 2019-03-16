@@ -149,11 +149,6 @@ export const denyUser = (params, csrf) => {
   return postData('/manage/users/deny', params, csrf);
 }
 
-
-export const upvote = () => {
-  return postData('/steem/upvote/post');
-}
-
 /**
  *  Call/fetch for logging.
  *

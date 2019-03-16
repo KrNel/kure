@@ -3,12 +3,17 @@
 .PostContent {
   font-size: 1.3rem;
   line-height: 2.0rem;
-  font-family: "Roboto";
+  font-family: var(--font-content);
   margin-bottom: 10em;
 }
 
 .PostContent .info {
-  font-family: "Roboto";
+  font-family: var(--font-content);
+  font-size: 1.1rem;
+}
+
+.PostContent .footer .meta {
+  font-family: var(--font-content);
   font-size: 1.1rem;
 }
 
@@ -46,7 +51,7 @@
   font-size: 1.4rem;
 }
 
-code {
+.Body code {
   padding: 0.2rem;
   font-size: 85%;
   border-radius: 3px;
@@ -56,7 +61,7 @@ code {
   overflow: scroll;
 }
 
-pre > code {
+.Body pre > code {
   display: block;
 }
 

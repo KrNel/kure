@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import {roles} from '../../settings';
 import TitleLink from './TitleLink';
+import UserLink from './UserLink';
 
 const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
   return (
@@ -39,7 +40,7 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
             <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>
-            <Table.Cell collapsing textAlign='center'>{p.added_by}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'><UserLink user={p.added_by} /></Table.Cell>
             <Table.Cell collapsing textAlign='center'>{moment.utc(p.created).fromNow()}</Table.Cell>
             {
               (access <= 0)

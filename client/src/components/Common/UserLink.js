@@ -1,19 +1,15 @@
 import React from 'react';
-//import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
+/**
+ *  Builds the '/@user' link
+ */
 const UserLink = ({user}) => (
-  <a
-    target='_blank'
-    rel='noopener noreferrer'
-    href={`https://steemit.com/@${user}`}
+  <Link
+    to={'/@'+user}
   >
     {user}
-  </a>
+  </Link>
 )
-{/*<Link
-  to={'/@'+user}
->
-  {user}
-</Link>*/}
 
 export default UserLink;

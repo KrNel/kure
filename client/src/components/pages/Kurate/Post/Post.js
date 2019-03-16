@@ -7,6 +7,7 @@ import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
 import * as contentActions from '../../../../actions/steemContentActions'
+import hasLength from '../../helpers/helpers';
 
 /**
  *  Container to render post details from Steem.
@@ -51,6 +52,8 @@ class Post extends Component {
       post,
       isFetching,
       getContent,
+      handleUpvote,
+      upvotePayload
     } = this.props;
 
     let addErrorPost = '';
@@ -69,7 +72,8 @@ class Post extends Component {
             addPostLoading={addPostLoading}
           />
           {
-            post && (
+            (hasLength(post))
+            && (
               <PostDetails
                 match={match}
                 showModal={showModal}
@@ -77,7 +81,8 @@ class Post extends Component {
                 csrf={csrf}
                 getContent={getContent}
                 post={post}
-
+                handleUpvote={handleUpvote}
+                upvotePayload={upvotePayload}
               />
             )
           }
@@ -108,6 +113,7 @@ class Post extends Component {
        selectedGroup,
        addPostData,
        post,
+       upvotePayload,
      }
    } = state;
 
@@ -122,6 +128,7 @@ class Post extends Component {
      selectedGroup,
      addPostData,
      post,
+     upvotePayload,
    }
  }
 
@@ -141,6 +148,9 @@ const mapDispatchToProps = (dispatch) => (
     ),
     handleGroupSelect: (value) => (
       dispatch(contentActions.handleGroupSelect(value))
+    ),
+    handleUpvote: (voter, author, permlink, weight) => (
+      dispatch(contentActions.upvotePost(voter, author, permlink, weight))
     ),
   }
 );

@@ -1,8 +1,11 @@
 //import axios from 'axios';
+import axios from 'axios';
 import { Client } from 'dsteem';
+import Cookies from 'js-cookie';
 
-import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
+import { getUserGroups, addPost, logger, upvote } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
+import {SC_COOKIE} from '../settings';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -141,6 +144,7 @@ export const upvoteStart = (author, permlink) => ({
   payload: {
     author,
     permlink,
+    voters: [],
   }
 });
 
@@ -151,11 +155,12 @@ export const upvoteStart = (author, permlink) => ({
  *  @param {string} permlink Permlink of post
  *  @return {object} The action data
  */
-export const upvoteSuccess = (author, permlink) => ({
+export const upvoteSuccess = (author, permlink, voters) => ({
   type: UPVOTE_SUCCESS,
   payload: {
     author,
     permlink,
+    voters,
   }
 });
 
@@ -268,6 +273,7 @@ const addPostFetch = () => (dispatch, getState) => {
       addPostData
     }
   } = getState();
+
   addPost({group: selectedGroup, user, ...addPostData}, csrf)
   .then(res => {
     if (!res.data.invalidCSRF) {
@@ -284,5 +290,37 @@ const addPostFetch = () => (dispatch, getState) => {
   });
 }
 
+/**
+ *  Uses SteemConnect to upvote a post by author and permlink with specified
+ *  vote weight percentage.
+ *
+ *  @param {string} author Author to upvote
+ *  @param {string} permlink Post permlink to upvote
+ *  @param {number} weight Vote weight percentage to upvote with
+ *  @returns {function} Dispatches returned action object
+ */
+export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
+  dispatch(upvoteStart(author, permlink));
+
+  const {
+    auth: {
+      user
+    },
+  } = getState();
+
+  const accessToken = Cookies.get(SC_COOKIE)
+  SteemConnect.setAccessToken(accessToken);
+
+  return SteemConnect.vote(user, author, permlink, weight)
+    .then(res => {
+      client.database.call('get_active_votes', [author, permlink])
+        .then(voters => {
+          dispatch(upvoteSuccess(author, permlink, voters));
+        })
+    }).catch((err) => {
+      logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
+    });
+
+}
 
 export default getSummaryContent;

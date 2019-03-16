@@ -31,12 +31,13 @@
 }
 
 .post-actions .large.icon {
-  color: var(--light-blue);
+  /*color: var(--pale-blue);*/
+  color: var(--action-grey);
   font-size: 1.2em;
   /*opacity: 0.6;*/
 }
 .post-actions .large.icon:hover {
-  color: var(--medium-blue);
+  color: var(--light-blue);
   /*opacity: 1;*/
 }
 
@@ -84,6 +85,10 @@
   color: var(--charcoal-grey);
 }
 
-.item.upvote .chevron.up.circle {
+.item.upvote .chevron.up.circle:hover {
 
+}
+
+.chevron.up.circle.votedOn {
+  color: var(--light-blue);
 }

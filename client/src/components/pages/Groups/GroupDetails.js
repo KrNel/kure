@@ -9,6 +9,7 @@ import GroupUsers from '../../common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import {hasLength} from '../helpers/helpers';
 
 /**
  *
@@ -88,7 +89,7 @@ class GroupDetails extends Component {
   getGroupFetch = (group, user) => {
     getGroupDetails(group, user)
     .then(result => {
-      if (Object.getOwnPropertyNames(result.data).length > 0) {
+      if (hasLength(result.data)) {
         this.setState({
           groupData: result.data.group,
           isLoading: false,

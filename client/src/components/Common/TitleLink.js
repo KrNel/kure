@@ -1,6 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ *  Create the title link, with options to cut off the length.
+ */
 const TitleLink = ({title, category, author, permlink, cutoff = 0, multiCut = 0}) => {
   if (cutoff && !multiCut) {
     title = (title.length > cutoff)
@@ -19,9 +22,7 @@ const TitleLink = ({title, category, author, permlink, cutoff = 0, multiCut = 0}
     <Link
       to={'/'+category+'/@'+author+'/'+permlink}
     >
-      {(title.length > 70)
-        ? title.substr(0,70) + " ..."
-        : title}
+      {title}
     </Link>
   )
 

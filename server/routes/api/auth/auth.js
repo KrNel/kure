@@ -71,9 +71,12 @@ const validateToken = (accessToken) => {
  */
 const setTokenCookie = (res, expiresAt, accessToken) => {
   return new Promise((resolve) => {
+    //res.header('Access-Control-Allow-Origin', yourExactHostname);
+    //res.header('Access-Control-Allow-Credentials', true);
+    //res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.cookie(config.scCookie, accessToken, {
       secure: true,
-      httpOnly: true,
+      //httpOnly: true,
       maxAge: expiresAt
     });
     resolve(true);
