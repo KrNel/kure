@@ -146,7 +146,7 @@ export const upvoteStart = (author, permlink) => ({
     permlink,
     post: {
       id: 0,
-      active_votes: []
+      active_votes: [],
     },
   }
 });

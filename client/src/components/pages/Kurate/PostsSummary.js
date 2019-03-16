@@ -29,9 +29,11 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
 					return false;
 				}
 
-        if (upvotePayload.post.id && p.id === upvotePayload.post.id)
-          p = upvotePayload.post;
-console.log('p.id:',p.id)
+        //if (upvotePayload.post.id && p.id === upvotePayload.post.id)
+        const vp = upvotePayload.votedPosts.find(vp => vp.id === p.id);
+        if (vp)
+          p = vp;
+
         const extract = extractContent(p);
         const post = {...p, ...extract};
 
@@ -102,6 +104,7 @@ console.log('p.id:',p.id)
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     ratio={ratio}
+                    pid={post.id}
                   />
                 </div>
               </div>

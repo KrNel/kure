@@ -74,12 +74,15 @@ class PostDetails extends Component {
     const {
       showModal,
       user,
-      post,
       isFetching,
       handleUpvote,
       upvotePayload,
     } = this.props;
 
+    let {post} = this.props;
+    if (upvotePayload.post.id > 0) {
+      post = upvotePayload.post
+    }
     const title = post.title;
     const author = post.author;
     const authorReputation = RepLog10(post.author_reputation);
@@ -191,6 +194,7 @@ class PostDetails extends Component {
                         handleUpvote={handleUpvote}
                         upvotePayload={upvotePayload}
                         ratio={ratio}
+                        pid={post.id}
                       />
                     </div>
                   </div>

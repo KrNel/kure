@@ -36,6 +36,7 @@ export const steemContent = (
     upvotePayload: {
       author: '',
       permlink: '',
+      votedPosts: [],
       post: {
         id: 0,
         active_votes: []
@@ -103,6 +104,7 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: true,
+          votedPosts: [...state.upvotePayload.votedPosts],
           ...action.payload,
         }
       });
@@ -111,6 +113,7 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: false,
+          votedPosts: [...state.upvotePayload.votedPosts, action.payload.post],
           ...action.payload,
         }
       });

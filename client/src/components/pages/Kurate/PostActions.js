@@ -36,7 +36,7 @@ class PostActions extends Component {
   /**
    *  Initial voting requests to process.
    */
-  vote = (e, user) => {
+  vote = (e, user, pid) => {
     e.preventDefault();
 
     //Don't upvote if not logged in
@@ -45,7 +45,7 @@ class PostActions extends Component {
     }
 
     //Don't upvote if already upvoted
-    const upvote = document.querySelector("#upvote");
+    const upvote = document.querySelector(`#pid-${pid}`);
     if (upvote.classList.contains("votedOn")) {
       this.setState({unvote: true});
       return null;
@@ -68,7 +68,7 @@ class PostActions extends Component {
     e.preventDefault();
     const {handleUpvote} = this.props;
     this.setState({ showSlider: false });
-    handleUpvote(author, permlink, 1);
+    handleUpvote(author, permlink, weight);
   }
 
   /**
@@ -93,7 +93,7 @@ class PostActions extends Component {
   render() {
     const {
       props: {
-        activeVotes, commentCount, author, category, payoutValue, permlink, title, showModal, user, handleUpvote, upvotePayload, ratio
+        activeVotes, commentCount, author, category, payoutValue, permlink, title, showModal, user, handleUpvote, upvotePayload, ratio, pid
       },
       state: {
         unvote,
@@ -105,11 +105,14 @@ class PostActions extends Component {
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
     const votedVoters = upvotePayload.post.active_votes;
+    const isVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(vp => vp.id === pid) : false;
+
+    const isThisPost = votedAuthor === author && votedPermlink === permlink;
 
     let upvoteClasses = '';
-    if (upvotePayload.isUpvoting && votedAuthor === author && votedPermlink === permlink) {
+    if (upvotePayload.isUpvoting && isThisPost) {
       upvoteClasses = 'loading';
-    }else if (votedVoters.length && votedVoters.some(v => v.voter === user) && votedAuthor === author && votedPermlink === permlink) {
+    }else if (isVoted) {
       upvoteClasses = 'votedOn';
     }else if (activeVotes.some(v => v.voter === user)) {
       upvoteClasses = 'votedOn';
@@ -117,7 +120,7 @@ class PostActions extends Component {
 
     let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
-    if (votedVoters.length && votedAuthor === author && votedPermlink === permlink) {
+    if (votedVoters.length && isThisPost) {
       votesCount = getUpvotes(votedVoters).length;
       voters = votedVoters;
     }
@@ -202,8 +205,8 @@ class PostActions extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user)} title={`${votesCount} upvotes on Steem`}>
-                  <Icon id='upvote' name='chevron up circle' size='large' className={upvoteClasses} />
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
+                  <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}
               open={unvote}
