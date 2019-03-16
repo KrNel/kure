@@ -36,7 +36,10 @@ export const steemContent = (
     upvotePayload: {
       author: '',
       permlink: '',
-      voters: []
+      post: {
+        id: 0,
+        active_votes: []
+      }
     }
   },
   action) => {

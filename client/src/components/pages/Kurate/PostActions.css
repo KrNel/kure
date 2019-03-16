@@ -83,6 +83,7 @@
 
 .item.payout {
   color: var(--charcoal-grey);
+  font-weight: bold;
 }
 
 .item.upvote .chevron.up.circle:hover {

@@ -31,7 +31,7 @@ class PostActions extends Component {
     showSlider: false,
     sliderWeight: 10000
   }
-  createRef = createRef();
+
 
   /**
    *  Initial voting requests to process.
@@ -68,7 +68,7 @@ class PostActions extends Component {
     e.preventDefault();
     const {handleUpvote} = this.props;
     this.setState({ showSlider: false });
-    handleUpvote(author, permlink, weight);
+    handleUpvote(author, permlink, 1);
   }
 
   /**
@@ -102,10 +102,14 @@ class PostActions extends Component {
       }
     } = this;
 
+    const votedAuthor = upvotePayload.author;
+    const votedPermlink = upvotePayload.permlink;
+    const votedVoters = upvotePayload.post.active_votes;
+
     let upvoteClasses = '';
-    if (upvotePayload.isUpvoting && upvotePayload.author === author && upvotePayload.permlink === permlink) {
+    if (upvotePayload.isUpvoting && votedAuthor === author && votedPermlink === permlink) {
       upvoteClasses = 'loading';
-    }else if (upvotePayload.voters.length && upvotePayload.voters.some(v => v.voter === user) && upvotePayload.author === author && upvotePayload.permlink === permlink) {
+    }else if (votedVoters.length && votedVoters.some(v => v.voter === user) && votedAuthor === author && votedPermlink === permlink) {
       upvoteClasses = 'votedOn';
     }else if (activeVotes.some(v => v.voter === user)) {
       upvoteClasses = 'votedOn';
@@ -113,16 +117,16 @@ class PostActions extends Component {
 
     let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
-    if (upvotePayload.voters.length && upvotePayload.author === author && upvotePayload.permlink === permlink) {
-      votesCount = getUpvotes(upvotePayload.voters).length;
-      voters = upvotePayload.voters;
+    if (votedVoters.length && votedAuthor === author && votedPermlink === permlink) {
+      votesCount = getUpvotes(votedVoters).length;
+      voters = votedVoters;
     }
 
     voters = sortVotes(voters, 'rshares').reverse();
 
     let votersPopup = '';
     if (votesCount) {
-      votersPopup = voters.slice(0, 9).map(vote => (
+      votersPopup = voters.slice(0, 14).map(vote => (
         <div key={vote.voter}>
           {<UserLink user={vote.voter} />}
 

@@ -28,6 +28,10 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
 					nextPost = false;
 					return false;
 				}
+
+        if (upvotePayload.post.id && p.id === upvotePayload.post.id)
+          p = upvotePayload.post;
+console.log('p.id:',p.id)
         const extract = extractContent(p);
         const post = {...p, ...extract};
 

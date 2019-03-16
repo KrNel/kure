@@ -144,7 +144,10 @@ export const upvoteStart = (author, permlink) => ({
   payload: {
     author,
     permlink,
-    voters: [],
+    post: {
+      id: 0,
+      active_votes: []
+    },
   }
 });
 
@@ -155,12 +158,12 @@ export const upvoteStart = (author, permlink) => ({
  *  @param {string} permlink Permlink of post
  *  @return {object} The action data
  */
-export const upvoteSuccess = (author, permlink, voters) => ({
+export const upvoteSuccess = (author, permlink, post) => ({
   type: UPVOTE_SUCCESS,
   payload: {
     author,
     permlink,
-    voters,
+    post,
   }
 });
 
@@ -313,9 +316,10 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {
-      client.database.call('get_active_votes', [author, permlink])
-        .then(voters => {
-          dispatch(upvoteSuccess(author, permlink, voters));
+      client.database.call('get_content', [author, permlink])
+        .then(post => {
+console.log('post:',post)
+          dispatch(upvoteSuccess(author, permlink, post));
         })
     }).catch((err) => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});

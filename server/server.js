@@ -36,6 +36,59 @@ else {
   app.use(morgan("combined")); //log to console on development
 }
 
+//Log server settings
+/*let transportInfo = new transports.DailyRotateFile({
+  name:"infofile",
+  filename: './server/logs/all/log-%DATE%.log',
+  handleExceptions: true,
+  datePattern: 'YYYY-MM-DD',
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  prettyPrint: true,
+});*/
+
+//Filter error messages from log
+/*let transportError = new transports.DailyRotateFile({
+  name:"errorfile",
+  filename: './server/logs/errors/errors-%DATE%.log',
+  handleExceptions: true,
+  datePattern: 'YYYY-MM-DD',
+  level: 'error',
+  prettyPrint: true,
+  silent: process.env.NODE_ENV !== 'production',
+});
+
+let logger = createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: combine(
+    timestamp(),
+    json(),
+    prettyPrint(),
+  ),
+  transports: [
+    transportError,
+  ],
+  exitOnError: false,
+});
+
+
+const myFormat = printf(info => {
+    if(info instanceof Error) {
+        return `${info.timestamp} [${info.label}] ${info.level}: ${info.message} ${info.stack}`;
+    }
+    return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new transports.Console({
+    format: format.combine(
+      format.colorize(),
+      format.splat(),
+      timestamp(),
+      myFormat,
+    )
+  }));
+}*/
+
 const enumerateErrorFormat = format(info => {
   if (info.message instanceof Error) {
     info.message = Object.assign({
