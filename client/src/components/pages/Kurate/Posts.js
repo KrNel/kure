@@ -167,7 +167,7 @@ class Posts extends Component {
         upvotePayload,
       }
     } = this;
-console.log('p:',posts)
+
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 

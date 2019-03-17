@@ -32,7 +32,6 @@ class PostActions extends Component {
     sliderWeight: 10000
   }
 
-
   /**
    *  Initial voting requests to process.
    */
@@ -218,7 +217,7 @@ class PostActions extends Component {
               {'Unvoting in the works.'}
             </Popup>
             <Popup
-              trigger={<strong>{votesCount}</strong>}
+              trigger={<span>{votesCount}</span>}
               horizontalOffset={15}
               flowing
               hoverable

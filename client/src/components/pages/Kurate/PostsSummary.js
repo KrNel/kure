@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -29,7 +30,6 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
 					return false;
 				}
 
-        //if (upvotePayload.post.id && p.id === upvotePayload.post.id)
         const vp = upvotePayload.votedPosts.find(vp => vp.id === p.id);
         if (vp)
           p = vp;
@@ -73,7 +73,11 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
                 (thumb)
                   ? (
                     <div className="thumbnail">
-                      <Thumbnail thumb={thumb} />
+                      <Link
+                        to={'/'+category+'/@'+author+'/'+permlink}
+                      >
+                        <Thumbnail thumb={thumb} />
+                      </Link>
                     </div>
                     )
                   : ''
