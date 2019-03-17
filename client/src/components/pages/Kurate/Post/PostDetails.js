@@ -10,6 +10,7 @@ import { getFromMetadata, extractImageTags } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
 import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
+import Tags from '../Tags';
 
 import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
@@ -160,6 +161,9 @@ class PostDetails extends Component {
                       json_metadata={post.json_metadata}
                     />
                     <br />
+                    <div className='left'>
+                      <Tags tags={tags} />
+                    </div>
                     <div className='alt-site right'>
                       {`View on `}
                       <a
