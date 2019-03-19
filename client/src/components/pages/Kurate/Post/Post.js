@@ -53,7 +53,8 @@ class Post extends Component {
       isFetching,
       getContent,
       handleUpvote,
-      upvotePayload
+      upvotePayload,
+      getComments,
     } = this.props;
 
     let addErrorPost = '';
@@ -83,6 +84,7 @@ class Post extends Component {
                 post={post}
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
+                getComments={getComments}
               />
             )
           }
@@ -136,6 +138,9 @@ const mapDispatchToProps = (dispatch) => (
   {
     getContent: (author, permlink) => (
       dispatch(contentActions.getDetailsContent(author, permlink))
+    ),
+    getComments: (author, permlink) => (
+      dispatch(contentActions.getPostComments(author, permlink))
     ),
     showModal: (e, type, data) => (
       dispatch(contentActions.showModal(e, type, data))

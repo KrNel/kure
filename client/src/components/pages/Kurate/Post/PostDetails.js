@@ -11,6 +11,7 @@ import { getProxyImageURL } from '../helpers/image';
 import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
 import Tags from '../Tags';
+import Comments from './Comments'
 
 import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
@@ -33,6 +34,15 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+
+
+  }
+
+  componentDidMount() {
+console.log(this.props.post.children)
+    if (this.props.post.children > 0) {
+      this.props.getComments(this.props.post.author, this.props.post.permlink);
+    }
   }
 
   //Needed to `dangerouslySetInnerHTML`
@@ -78,6 +88,7 @@ class PostDetails extends Component {
       isFetching,
       handleUpvote,
       upvotePayload,
+      getComments,
     } = this.props;
 
     let {post} = this.props;
@@ -140,68 +151,76 @@ class PostDetails extends Component {
               {
                 isFetching ? <Loading />
                 : (
-                  <div className='PostContent'>
+                  <React.Fragment>
+                    <div className='PostContent'>
+                      <h1>
+                        {title}
 
-                    <h1>
-                      {title}
-
-                    </h1>
-                    <AuthorCatgoryTime
-                      author={author}
-                      authorReputation={authorReputation}
-                      category={category}
-                      createdFromNow={createdFromNow}
-                    />
-                    <hr />
-                    {this.renderDtubeEmbedPlayer(post)}
-                    <PostBody
-                      full
-                      rewriteLinks={false}
-                      body={body}
-                      json_metadata={post.json_metadata}
-                    />
-                    <br />
-                    <div className='left'>
-                      <Tags tags={tags} />
-                    </div>
-                    <div className='alt-site right'>
-                      {`View on `}
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href={`https://steemit.com${post.url}`}
-                      >
-                        {'Steemit'}
-                      </a>
-                      {' | '}
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href={`https://busy.org/@${author}/${permlink}`}
-                      >
-                        {'Busy'}
-                      </a>
-                    </div>
-                    <div className='clear' />
-                    <hr />
-                    <div className='post-actions'>
-                      <PostActions
-                        activeVotes={activeVotes}
-                        commentCount={commentCount}
+                      </h1>
+                      <AuthorCatgoryTime
                         author={author}
+                        authorReputation={authorReputation}
                         category={category}
-                        payoutValue={payoutValue}
-                        permlink={permlink}
-                        title={title}
-                        showModal={showModal}
-                        user={user}
-                        handleUpvote={handleUpvote}
-                        upvotePayload={upvotePayload}
-                        ratio={ratio}
-                        pid={post.id}
+                        createdFromNow={createdFromNow}
+                      />
+                      <hr />
+                      {this.renderDtubeEmbedPlayer(post)}
+                      <PostBody
+                        full
+                        rewriteLinks={false}
+                        body={body}
+                        json_metadata={post.json_metadata}
+                      />
+                      <br />
+                      <div className='footer'>
+                        <div className='left'>
+                          <Tags tags={tags} />
+                        </div>
+                        <div className='alt-site right'>
+                          {`View on `}
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={`https://steemit.com${post.url}`}
+                          >
+                            {'Steemit'}
+                          </a>
+                          {' | '}
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={`https://busy.org/@${author}/${permlink}`}
+                          >
+                            {'Busy'}
+                          </a>
+                        </div>
+                        <div className='clear' />
+                        <div className='post-actions'>
+                          <PostActions
+                            activeVotes={activeVotes}
+                            commentCount={commentCount}
+                            author={author}
+                            category={category}
+                            payoutValue={payoutValue}
+                            permlink={permlink}
+                            title={title}
+                            showModal={showModal}
+                            user={user}
+                            handleUpvote={handleUpvote}
+                            upvotePayload={upvotePayload}
+                            ratio={ratio}
+                            pid={post.id}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <hr />
+                    <div className='comments'>
+                      <Comments
+                        comments={post.replies}
                       />
                     </div>
-                  </div>
+                  </React.Fragment>
                 )
               }
             </Grid.Column>

@@ -191,7 +191,7 @@ class PostActions extends Component {
     }
 
     return (
-      <div className='footer'>
+      <React.Fragment>
         <ul className="meta">
 
           <li className="item payout">{payoutValue}</li>
@@ -256,7 +256,7 @@ class PostActions extends Component {
             )
           }
         </div>
-      </div>
+      </React.Fragment>
     )
   }
 }

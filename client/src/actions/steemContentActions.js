@@ -21,6 +21,8 @@ export const MODAL_SHOW = 'MODAL_SHOW';
 export const MODAL_CLOSE = 'MODAL_CLOSE';
 export const UPVOTE_START = 'UPVOTE_START';
 export const UPVOTE_SUCCESS = 'UPVOTE_SUCCESS';
+export const GET_COMMENTS_START = 'GET_COMMENTS_START';
+export const GET_COMMENTS_SUCCESS = 'GET_COMMENTS_SUCCESS';
 
 /**
  *  Action creator for starting retrieval of post summary data.
@@ -62,6 +64,26 @@ export const detailsStart = () => ({
 export const detailsSuccess = (post) => ({
   type: GET_DETAILS_SUCCESS,
   post,
+});
+
+/**
+ *  Action creator for starting retrieval of comments data.
+ *
+ *  @return {object} The action data
+ */
+export const commentsStart = () => ({
+  type: GET_COMMENTS_START,
+});
+
+/**
+ *  Action creator for successful retrieval of comments data.
+ *
+ *  @param {object} comments Post to display
+ *  @return {object} The action data
+ */
+export const commentsSuccess = (comments) => ({
+  type: GET_COMMENTS_SUCCESS,
+  comments,
 });
 
 /**
@@ -214,12 +236,62 @@ export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch,
 export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
   return client.database.call('get_content', [author, permlink])
+    .then(post => {
+      /*getPostComments(author, permlink)
+        .then(comments => {
+          post = {...post, replies: comments};
+          const {user} = getState().auth;
+          if (user)
+            dispatch(getGroupsFetch(user));
+
+          dispatch(detailsSuccess(post));
+        })*/
+        const {user} = getState().auth;
+        if (user)
+          dispatch(getGroupsFetch(user));
+
+        dispatch(detailsSuccess(post));
+    })
+
+}
+
+export const getPostComments = (author, permlink) => (dispatch, getState) => {
+  dispatch(commentsStart());
+
+  return getPostComments2(author, permlink)
+    .then(comments => {
+      dispatch(commentsSuccess(comments))
+    });
+}
+
+const getPostComments2 = (author, permlink) => {
+  return client.database.call('get_content_replies', [author, permlink])
+    .then(replies => Promise.all(replies.map(r => {
+        if (r.children > 0) {
+          return getPostComments2(r.author, r.permlink)
+            .then(children => {
+              r.replies = children;
+              return r;
+            })
+        }else {
+          return r;
+        }
+      }))
+    );
+}
+
+/**
+ *  Fetch the comments for a user from Steem.
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @returns {function} Dispatches returned action object
+ */
+export const getUserComments = (author, permlink) => (dispatch, getState) => {
+  dispatch(detailsStart());
+  //return client.database.call('get_content_replies', [author, permlink])
+  return client.database.getDiscussions('comments', {tag: 'krnel'})
     .then(result => {
-
-      const {user} = getState().auth;
-      if (user)
-        dispatch(getGroupsFetch(user));
-
       dispatch(detailsSuccess(result));
   })
 }
@@ -304,21 +376,19 @@ const addPostFetch = () => (dispatch, getState) => {
  */
 export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
   dispatch(upvoteStart(author, permlink));
-
   const {
     auth: {
       user
     },
   } = getState();
 
-  const accessToken = Cookies.get(SC_COOKIE)
+  const accessToken = Cookies.get(SC_COOKIE);
   SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {
       client.database.call('get_content', [author, permlink])
         .then(post => {
-console.log('post:',post)
           dispatch(upvoteSuccess(author, permlink, post));
         })
     }).catch((err) => {

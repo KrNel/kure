@@ -1,0 +1,17 @@
+.comments {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.comments > ul {
+  padding: 0;
+}
+
+.comments ul {
+  list-style: none;
+}
+
+.comments ul > li {
+  /*list-style-position: inside;*/
+  margin-top: 1rem;
+}

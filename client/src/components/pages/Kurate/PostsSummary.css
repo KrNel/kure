@@ -29,8 +29,12 @@
 }
 
 .summary-content a {
-  /*color: inherit;*/
+  color: var(--dark-blue);
 }
+.summary-content a:hover {
+  color: var(--medium-blue);
+}
+
 .summary-content h4 {
   font-size: 1.2em;
   padding: 0;

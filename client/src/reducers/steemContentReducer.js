@@ -11,6 +11,8 @@ import {
   MODAL_CLOSE,
   UPVOTE_START,
   UPVOTE_SUCCESS,
+  GET_COMMENTS_START,
+  GET_COMMENTS_SUCCESS,
 } from '../actions/steemContentActions';
 
 /**
@@ -47,6 +49,7 @@ export const steemContent = (
   switch (action.type) {
     case GET_SUMMARY_START:
     case GET_DETAILS_START:
+    case GET_COMMENTS_START:
       return ({
         ...state,
         isFetching: true,
@@ -63,6 +66,15 @@ export const steemContent = (
         ...state,
         isFetching: false,
         post: action.post,
+      });
+    case GET_COMMENTS_SUCCESS:
+      return ({
+        ...state,
+        isFetching: false,
+        post: {
+          ...state.post,
+          replies: action.comments,
+        }
       });
     case GET_GROUPS_SUCCESS:
       return ({

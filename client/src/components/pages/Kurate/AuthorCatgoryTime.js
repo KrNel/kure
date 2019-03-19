@@ -2,6 +2,7 @@ import React from 'react';
 import Avatar from './Avatar';
 import Author from './Author';
 import Category from './Category';
+import TimeAgo from './TimeAgo';
 import './AuthorCatgoryTime.css';
 
 /**
@@ -14,7 +15,7 @@ import './AuthorCatgoryTime.css';
  *  @param {number} payoutValue Post payout value
  *  @param {string} createdFromNow Time since post was created
  */
-const AuthorCatgoryTime = ({author, authorReputation, category, createdFromNow}) => (
+const AuthorCatgoryTime = ({author, authorReputation, category, created}) => (
   <ul className="info">
     <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
     <li className="item author" data-author={author}>
@@ -27,7 +28,7 @@ const AuthorCatgoryTime = ({author, authorReputation, category, createdFromNow})
       <Category category={category} />
     </li>
     <li className="item timeago">
-      {`\u00A0\u2022\u00A0${createdFromNow}`}
+      {`\u00A0\u2022\u00A0`}<TimeAgo date={created} />
     </li>
   </ul>
 )

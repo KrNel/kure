@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+
 import { Link } from 'react-router-dom';
 
 import './PostsSummary.css';
@@ -47,7 +47,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
         const thumb = post.image_link;
         const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
         //const created = new Date(post.created).toDateString();
-        const createdFromNow = moment.utc(post.created).fromNow();
+        const created = post.created;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
@@ -58,14 +58,13 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
-
         return (
           <div key={p.id} className='post'>
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
               category={category}
-              createdFromNow={createdFromNow}
+              created={created}
             />
 
             <div className="block">

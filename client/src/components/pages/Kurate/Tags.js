@@ -8,7 +8,7 @@ const Tags = ({tags}) => (
   <ul className='tags'>
     {
       tags.map(tag => (
-        <li>
+        <li key={tag}>
           <Label>
             <Category category={tag} />
           </Label>
