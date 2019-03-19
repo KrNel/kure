@@ -1,24 +1,7 @@
-import moment from 'moment';
-
-moment.updateLocale('en', { relativeTime: {
-  future: 'in %s',
-  past: '%s ago',
-  s:  'secs',
-  ss: '%ss',
-  m:  'a min',
-  mm: '%dm',
-  h:  '1h',
-  hh: '%dh',
-  d:  'a day',
-  dd: '%dd',
-  M:  'month',
-  MM: '%dM',
-  y:  'year',
-  yy: '%dY'
-}});
+import {short} from '../../utils/timeFromNow';
 
 const DateFromNow = ({ date }) => (
-  moment.utc(date).fromNow()
+  short(date)
 )
 
 export default DateFromNow;

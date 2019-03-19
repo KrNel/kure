@@ -1,7 +1,7 @@
-import moment from 'moment';
+import {long} from '../../../utils/timeFromNow';
 
 const TimeAgo = ({date}) => (
-  moment.utc(date).fromNow()
+  long(date)
 )
 
 export default TimeAgo;
