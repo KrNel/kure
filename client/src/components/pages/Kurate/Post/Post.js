@@ -8,6 +8,7 @@ import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
 import * as contentActions from '../../../../actions/steemContentActions'
 import hasLength from '../../helpers/helpers';
+import Loading from '../../../Loading/Loading';
 
 /**
  *  Container to render post details from Steem.
@@ -74,7 +75,7 @@ class Post extends Component {
           />
           {
             (hasLength(post))
-            && (
+            ? (
               <PostDetails
                 match={match}
                 showModal={showModal}
@@ -87,6 +88,7 @@ class Post extends Component {
                 getComments={getComments}
               />
             )
+            : <Loading />
           }
         </React.Fragment>
       </ErrorBoundary>

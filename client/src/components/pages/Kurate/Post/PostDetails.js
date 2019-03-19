@@ -102,7 +102,7 @@ console.log(this.props.post.children)
     const category = post.category;
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
     const created = new Date(post.created).toDateString();
-    const createdFromNow = moment.utc(post.created).fromNow();
+    //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
 
     const totalPayout =
@@ -161,7 +161,7 @@ console.log(this.props.post.children)
                         author={author}
                         authorReputation={authorReputation}
                         category={category}
-                        createdFromNow={createdFromNow}
+                        created={created}
                       />
                       <hr />
                       {this.renderDtubeEmbedPlayer(post)}
