@@ -11,7 +11,12 @@
   list-style: none;
 }
 
-.comments ul > li {
+.comments .commentBody ul {
+  list-style: circle;
+}
+
+.comments ul > li, .comments ol > li {
   /*list-style-position: inside;*/
   margin-top: 1rem;
+  /*line-height: 1.1rem;*/
 }

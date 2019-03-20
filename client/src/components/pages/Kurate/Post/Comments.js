@@ -4,7 +4,7 @@ import Comment from './Comment';
 import './Comments.css';
 
 const iterateComments = comments => {
-  const sorted = commentsSorted(comments);
+  const sorted = sortComments(comments, 'date');
 
   return sorted.map(comment => {
     if (comment.replies.length > 0) {
@@ -36,7 +36,7 @@ const sortComments = (comments, sortBy) => {
 };
 
 //const commentsSorted = sortComments(comments, 'date').reverse();
-const commentsSorted = comments => sortComments(comments, 'date');
+//const commentsSorted = comments => sortComments(comments, 'date');
 
 const Comments = ({comments}) => {
 

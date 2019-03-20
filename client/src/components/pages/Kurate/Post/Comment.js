@@ -1,9 +1,11 @@
 import React from 'react';
 
+import Body from './PostBody';
 import Avatar from '../Avatar';
 import Author from '../Author';
 import TimeAgo from '../TimeAgo';
 import './Comment.css';
+
 
 const Comment = ({comment}) => {
 
@@ -20,7 +22,12 @@ const Comment = ({comment}) => {
             <TimeAgo date={comment.created} />
           </div>
           <div className='commentBody'>
-            {comment.body}
+            <Body
+              full
+              rewriteLinks={false}
+              body={comment.body}
+              json_metadata={comment.json_metadata}
+            />
           </div>
         </li>
       </ul>

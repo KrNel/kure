@@ -4,6 +4,10 @@
   text-align: center;
 }
 
+body {
+  font-size: 1rem;
+}
+
 a {
   color: var(--light-blue)
 }

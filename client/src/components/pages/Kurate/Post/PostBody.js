@@ -17,7 +17,7 @@ import { imageRegex, dtubeImageRegex, rewriteRegex } from '../helpers/regexHelpe
 import htmlReady from '../helpers/steemitHtmlReady';
 import improve from '../helpers/improve';
 import PostFeedEmbed from '../PostFeedEmbed';
-//import './Body.less';
+import './PostBody.css';
 
 /**
  *  Markdown rendering object

@@ -258,17 +258,17 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
 export const getPostComments = (author, permlink) => (dispatch, getState) => {
   dispatch(commentsStart());
 
-  return getPostComments2(author, permlink)
+  return postCommentsRecursive(author, permlink)
     .then(comments => {
       dispatch(commentsSuccess(comments))
     });
 }
 
-const getPostComments2 = (author, permlink) => {
+const postCommentsRecursive = (author, permlink) => {
   return client.database.call('get_content_replies', [author, permlink])
     .then(replies => Promise.all(replies.map(r => {
         if (r.children > 0) {
-          return getPostComments2(r.author, r.permlink)
+          return postCommentsRecursive(r.author, r.permlink)
             .then(children => {
               r.replies = children;
               return r;
