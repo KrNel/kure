@@ -12,7 +12,7 @@
 }
 
 .comments .commentBody ul {
-  list-style: circle;
+  list-style: disc outside none;
 }
 
 .comments ul > li, .comments ol > li {

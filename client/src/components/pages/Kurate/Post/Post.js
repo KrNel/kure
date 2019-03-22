@@ -56,6 +56,9 @@ class Post extends Component {
       handleUpvote,
       upvotePayload,
       getComments,
+      sendComment,
+      isCommenting,
+      commentedId,
     } = this.props;
 
     let addErrorPost = '';
@@ -86,6 +89,9 @@ class Post extends Component {
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
                 getComments={getComments}
+                sendComment={sendComment}
+                isCommenting={isCommenting}
+                commentedId={commentedId}
               />
             )
             : <Loading />
@@ -118,6 +124,8 @@ class Post extends Component {
        addPostData,
        post,
        upvotePayload,
+       isCommenting,
+       commentedId,
      }
    } = state;
 
@@ -133,6 +141,8 @@ class Post extends Component {
      addPostData,
      post,
      upvotePayload,
+     isCommenting,
+     commentedId,
    }
  }
 
@@ -158,6 +168,9 @@ const mapDispatchToProps = (dispatch) => (
     ),
     handleUpvote: (voter, author, permlink, weight) => (
       dispatch(contentActions.upvotePost(voter, author, permlink, weight))
+    ),
+    sendComment: (parentPost, body) => (
+      dispatch(contentActions.sendComment(parentPost, body))
     ),
   }
 );

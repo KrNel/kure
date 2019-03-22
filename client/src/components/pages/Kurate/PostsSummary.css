@@ -28,12 +28,12 @@
   width: 100%;
 }
 
-.summary-content a {
+/*.summary-content a {
   color: var(--dark-blue);
 }
 .summary-content a:hover {
   color: var(--medium-blue);
-}
+}*/
 
 .summary-content h4 {
   font-size: 1.2em;

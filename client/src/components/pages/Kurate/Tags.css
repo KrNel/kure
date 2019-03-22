@@ -10,7 +10,7 @@ ul.tags {
 
 ul.tags > li {
   list-style-position: inside;
-  margin-right: 1rem;
+  margin-right: 0.5rem;
 }
 
 ul.tags > li .ui.label > a {

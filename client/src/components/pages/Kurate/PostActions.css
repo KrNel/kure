@@ -73,3 +73,8 @@
 .chevron.up.circle.votedOn {
   color: var(--light-blue);
 }
+
+.item.reply {
+  margin-left:2rem;
+  border-left: none;
+}

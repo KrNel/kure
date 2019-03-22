@@ -9,6 +9,9 @@ body {
 }
 
 a {
+  color: var(--medium-blue)
+}
+a:hover {
   color: var(--light-blue)
 }
 

@@ -13,6 +13,8 @@ import {
   UPVOTE_SUCCESS,
   GET_COMMENTS_START,
   GET_COMMENTS_SUCCESS,
+  SEND_COMMENT_START,
+  SEND_COMMENT_SUCCESS,
 } from '../actions/steemContentActions';
 
 /**
@@ -43,9 +45,15 @@ export const steemContent = (
         id: 0,
         active_votes: []
       }
-    }
+    },
+    isCommenting: false,
+    commentedId: 0,
+    /*commentedPayload: {
+
+    }*/
   },
   action) => {
+
   switch (action.type) {
     case GET_SUMMARY_START:
     case GET_DETAILS_START:
@@ -127,6 +135,28 @@ export const steemContent = (
           isUpvoting: false,
           votedPosts: [...state.upvotePayload.votedPosts, action.payload.post],
           ...action.payload,
+        }
+      });
+    case SEND_COMMENT_START:
+      return ({
+        ...state,
+        isCommenting: true,
+        commentedId: 0,
+        /*commentedPayload: {
+          id: action.payload
+        }*/
+      });
+    case SEND_COMMENT_SUCCESS:
+      return ({
+        ...state,
+        isCommenting: false,
+        commentedId: action.parentId,
+        post: {
+          ...state.post,
+          replies: [
+            ...state.post.replies,
+            action.comment,
+          ],
         }
       });
     default:

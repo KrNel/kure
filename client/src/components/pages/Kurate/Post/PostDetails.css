@@ -7,15 +7,34 @@
   margin-bottom: 2em;
 }
 
+.PostContent h1 {
+  font-size: 200%;
+}
+
+.PostContent > .Body {
+  font-family: var(--font-body);
+  font-size: 1.35rem;
+}
+
 .PostContent .info {
   font-family: var(--font-content);
   font-size: 1.1rem;
+}
+
+.PostContent .footer {
+  margin-left: -3rem;
+  margin-right: -3rem;
 }
 
 .PostContent .footer .meta {
   font-family: var(--font-content);
   font-size: 1.1rem;
 }
+
+.PostContent .post-actions {
+  margin-bottom: 2em;
+}
+
 
 .PostContent .alt-site {
   font-size: 1.0rem;

@@ -1,4 +1,4 @@
-import React, {createRef, Component} from 'react';
+import React, {Component} from 'react';
 import './PostActions.css';
 import { Icon, Popup } from "semantic-ui-react";
 
@@ -6,7 +6,6 @@ import Slider from 'react-rangeslider'
 import './VoteSlider.css';
 import DollarDisplay from '../../common/DollarDisplay';
 import UserLink from '../../common/UserLink';
-
 
 const getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
 const getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
@@ -244,6 +243,7 @@ class PostActions extends Component {
               <Icon name='flag outline' size='large' />
             </a>
           </li>
+
         </ul>
 
         <div className='right'>

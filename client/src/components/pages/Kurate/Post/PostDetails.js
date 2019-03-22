@@ -11,6 +11,7 @@ import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
 import Tags from '../Tags';
 import Comments from './Comments'
+import ReplyForm from './ReplyForm';
 
 import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
@@ -33,12 +34,9 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
-
-
   }
 
   componentDidMount() {
-console.log(this.props.post.children)
     if (this.props.post.children > 0) {
       this.props.getComments(this.props.post.author, this.props.post.permlink);
     }
@@ -88,12 +86,16 @@ console.log(this.props.post.children)
       handleUpvote,
       upvotePayload,
       getComments,
+      sendComment,
+      isCommenting,
+      commentedId,
     } = this.props;
 
     let {post} = this.props;
     if (upvotePayload.post.id > 0) {
       post = upvotePayload.post
     }
+
     const title = post.title;
     const author = post.author;
     const authorReputation = RepLog10(post.author_reputation);
@@ -128,6 +130,14 @@ console.log(this.props.post.children)
     //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
+    const comments = post.replies;
+    const pid = post.id;
+
+    //let comments = null;
+    /*if (post.children > 0) {
+      getComments(post.author, post.permlink);
+    }*/
+
     return (
       <React.Fragment>
         <Helmet>
@@ -146,7 +156,7 @@ console.log(this.props.post.children)
         </Helmet>
         <Grid verticalAlign='middle' columns={1} centered>
           <Grid.Row>
-            <Grid.Column width={12}>
+            <Grid.Column width={11}>
               {
                 isFetching ? <Loading />
                 : (
@@ -208,16 +218,27 @@ console.log(this.props.post.children)
                             handleUpvote={handleUpvote}
                             upvotePayload={upvotePayload}
                             ratio={ratio}
-                            pid={post.id}
+                            pid={pid}
+                          />
+                        </div>
+                        <hr />
+                        <ReplyForm
+                          sendComment={sendComment}
+                          isCommenting={isCommenting}
+                          parentPost={post}
+                          commentedId={commentedId}
+                        />
+
+                        <div className='comments'>
+
+                          <Comments
+                            comments={comments}
+                            sendComment={sendComment}
+                            isCommenting={isCommenting}
+                            commentedId={commentedId}
                           />
                         </div>
                       </div>
-                    </div>
-                    <hr />
-                    <div className='comments'>
-                      <Comments
-                        comments={post.replies}
-                      />
                     </div>
                   </React.Fragment>
                 )

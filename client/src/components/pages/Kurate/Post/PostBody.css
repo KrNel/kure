@@ -47,6 +47,7 @@
   /*line-height: 1em;*/
   background-color: #f7f7f9;
   color: var(--medium-grey);
+  line-height: 1.6rem;
 }
 
 .Body pre > code {
@@ -57,13 +58,18 @@
   font-weight: 600;
 }
 
+.Body ul {
+  list-style: disc outside none;
+}
+
 .Body ol, .Body ul {
   /*margin-left: 0.5rem;*/
   margin-bottom: 1rem;
 }
 
 .Body ul > li, .Body ol > li {
-  line-height: 1.5rem;
+  line-height: 1.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .Body table td {
