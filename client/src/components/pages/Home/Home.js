@@ -54,7 +54,10 @@ class Home extends Component {
       csrf,
       isAuth
     } = this.props;
-
+console.log('isAuth:',isAuth)
+console.log('user:',user)
+console.log('csrf:',csrf)
+    user = user === '' && 'x';
     if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
       dispatch(fetchPosts(selected, user));
     else if (csrf && !isAuth)
