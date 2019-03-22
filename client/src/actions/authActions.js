@@ -1,4 +1,8 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+import SteemConnect from '../utils/auth/scAPI';
+import {SC_COOKIE} from '../settings';
 
 export const REQUEST_RETURNING = 'REQUEST_RETURNING';
 export const RECEIVE_RETURNING = 'RECEIVE_RETURNING';
@@ -80,13 +84,37 @@ export const receiveLogin = (res) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchReturning = () => dispatch => {
+const fetchReturning = () => async dispatch => {
   dispatch(requestReturning());
 
   return axios.get('/api/auth/returning', {
   }).then(res => {
+    const accessToken = Cookies.get(SC_COOKIE);
+    validateToken(accessToken)
+      .then(valid => {
+        if (valid) {        
+          dispatch(receiveReturning(res));
+        }
+      })
+  });
+
+
+
+  /*return axios.get('/api/auth/returning', {
+  }).then(res => {
       dispatch(receiveReturning(res));
-    });
+    });*/
+}
+
+const validateToken = (accessToken) => {
+  //TODO:what happens if stemconnect is offline? test it
+  return new Promise((resolve, reject) => {
+    SteemConnect.setAccessToken(accessToken);
+    SteemConnect.me((err, result) => {
+      (!err) ? resolve(true) : reject(false);
+    })
+    resolve(true);
+  });
 }
 
 /**

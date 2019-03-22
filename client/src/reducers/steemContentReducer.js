@@ -11,6 +11,10 @@ import {
   MODAL_CLOSE,
   UPVOTE_START,
   UPVOTE_SUCCESS,
+  GET_COMMENTS_START,
+  GET_COMMENTS_SUCCESS,
+  SEND_COMMENT_START,
+  SEND_COMMENT_SUCCESS,
 } from '../actions/steemContentActions';
 
 /**
@@ -36,13 +40,24 @@ export const steemContent = (
     upvotePayload: {
       author: '',
       permlink: '',
-      voters: []
-    }
+      votedPosts: [],
+      post: {
+        id: 0,
+        active_votes: []
+      }
+    },
+    isCommenting: false,
+    commentedId: 0,
+    /*commentedPayload: {
+
+    }*/
   },
   action) => {
+
   switch (action.type) {
     case GET_SUMMARY_START:
     case GET_DETAILS_START:
+    case GET_COMMENTS_START:
       return ({
         ...state,
         isFetching: true,
@@ -59,6 +74,15 @@ export const steemContent = (
         ...state,
         isFetching: false,
         post: action.post,
+      });
+    case GET_COMMENTS_SUCCESS:
+      return ({
+        ...state,
+        isFetching: false,
+        post: {
+          ...state.post,
+          replies: action.comments,
+        }
       });
     case GET_GROUPS_SUCCESS:
       return ({
@@ -100,6 +124,7 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: true,
+          votedPosts: [...state.upvotePayload.votedPosts],
           ...action.payload,
         }
       });
@@ -108,7 +133,30 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: false,
+          votedPosts: [...state.upvotePayload.votedPosts, action.payload.post],
           ...action.payload,
+        }
+      });
+    case SEND_COMMENT_START:
+      return ({
+        ...state,
+        isCommenting: true,
+        commentedId: 0,
+        /*commentedPayload: {
+          id: action.payload
+        }*/
+      });
+    case SEND_COMMENT_SUCCESS:
+      return ({
+        ...state,
+        isCommenting: false,
+        commentedId: action.parentId,
+        post: {
+          ...state.post,
+          replies: [
+            ...state.post.replies,
+            action.comment,
+          ],
         }
       });
     default:

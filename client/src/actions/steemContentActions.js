@@ -1,11 +1,11 @@
 //import axios from 'axios';
-import axios from 'axios';
 import { Client } from 'dsteem';
 import Cookies from 'js-cookie';
 
-import { getUserGroups, addPost, logger, upvote } from '../utils/fetchFunctions';
+import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
 import {SC_COOKIE} from '../settings';
+import { createPostMetadata, createCommentPermlink } from '../components/pages/Kurate/helpers/postHelpers';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -21,6 +21,12 @@ export const MODAL_SHOW = 'MODAL_SHOW';
 export const MODAL_CLOSE = 'MODAL_CLOSE';
 export const UPVOTE_START = 'UPVOTE_START';
 export const UPVOTE_SUCCESS = 'UPVOTE_SUCCESS';
+export const GET_COMMENTS_START = 'GET_COMMENTS_START';
+export const GET_COMMENTS_SUCCESS = 'GET_COMMENTS_SUCCESS';
+export const SEND_COMMENT_START = 'SEND_COMMENT_START';
+export const SEND_COMMENT_SUCCESS = 'SEND_COMMENT_SUCCESS';
+export const GET_COMMENT_START = 'GET_COMMENT_START';
+export const GET_COMMENT_SUCCESS = 'GET_COMMENT_START';
 
 /**
  *  Action creator for starting retrieval of post summary data.
@@ -62,6 +68,26 @@ export const detailsStart = () => ({
 export const detailsSuccess = (post) => ({
   type: GET_DETAILS_SUCCESS,
   post,
+});
+
+/**
+ *  Action creator for starting retrieval of comments data.
+ *
+ *  @return {object} The action data
+ */
+export const commentsStart = () => ({
+  type: GET_COMMENTS_START,
+});
+
+/**
+ *  Action creator for successful retrieval of comments data.
+ *
+ *  @param {object} comments Post to display
+ *  @return {object} The action data
+ */
+export const commentsSuccess = (comments) => ({
+  type: GET_COMMENTS_SUCCESS,
+  comments,
 });
 
 /**
@@ -144,7 +170,10 @@ export const upvoteStart = (author, permlink) => ({
   payload: {
     author,
     permlink,
-    voters: [],
+    post: {
+      id: 0,
+      active_votes: [],
+    },
   }
 });
 
@@ -155,13 +184,35 @@ export const upvoteStart = (author, permlink) => ({
  *  @param {string} permlink Permlink of post
  *  @return {object} The action data
  */
-export const upvoteSuccess = (author, permlink, voters) => ({
+export const upvoteSuccess = (author, permlink, post) => ({
   type: UPVOTE_SUCCESS,
   payload: {
     author,
     permlink,
-    voters,
+    post,
   }
+});
+
+/**
+ *  Action creator for starting to send a comment.
+ *
+ *  @return {object} The action data
+ */
+export const sendCommentStart = () => ({
+  type: SEND_COMMENT_START,
+});
+
+/**
+ *  Action creator for successfully sending a comment.
+ *
+ *  @param {string} comment Comment added to post
+ *  @param {string} parentId Id of parent post being commented on
+ *  @return {object} The action data
+ */
+export const sendCommentSuccess = (comment, parentId) => ({
+  type: SEND_COMMENT_SUCCESS,
+  comment,
+  parentId,
 });
 
 /**
@@ -211,12 +262,83 @@ export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch,
 export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
   return client.database.call('get_content', [author, permlink])
-    .then(result => {
-
+    .then(post => {
       const {user} = getState().auth;
       if (user)
         dispatch(getGroupsFetch(user));
 
+      dispatch(detailsSuccess(post));
+    })
+
+}
+
+/**
+ *  Fetch the post's comment from Steem.
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @returns {function} Dispatches returned action object
+ */
+export const getPostComments = (author, permlink) => (dispatch, getState) => {
+  dispatch(commentsStart());
+
+  return postCommentsRecursive(author, permlink)
+    .then(comments => {
+      dispatch(commentsSuccess(comments))
+    });
+}
+
+/**
+ *  Recursively get the post's comments.
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @returns {function} Dispatches returned action object
+ */
+const postCommentsRecursive = (author, permlink) => {
+  return client.database.call('get_content_replies', [author, permlink])
+    .then(replies => Promise.all(replies.map(r => {
+        if (r.children > 0) {
+          return postCommentsRecursive(r.author, r.permlink)
+            .then(children => {
+              r.replies = children;
+              return r;
+            })
+        }else {
+          return r;
+        }
+      }))
+    );
+}
+
+/**
+ *  Get a single comment.
+ *
+ *  @param {string} author Author of comment
+ *  @param {string} permlink Permlink of comment
+ *  @returns {function} Dispatches returned action object
+ */
+export const getComment = (author, permlink) => {
+  return new Promise((resolve, reject) => {
+    client.database.call('get_content', [author, permlink])
+    .then(comment => {
+      resolve(comment);
+    });
+  });
+}
+
+/**
+ *  Fetch the comments for a user from Steem.
+ *
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
+ *  @returns {function} Dispatches returned action object
+ */
+export const getUserComments = (author, permlink) => (dispatch, getState) => {
+  dispatch(detailsStart());
+  //return client.database.call('get_content_replies', [author, permlink])
+  return client.database.getDiscussions('comments', {tag: 'krnel'})
+    .then(result => {
       dispatch(detailsSuccess(result));
   })
 }
@@ -301,26 +423,61 @@ const addPostFetch = () => (dispatch, getState) => {
  */
 export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
   dispatch(upvoteStart(author, permlink));
-
   const {
     auth: {
       user
     },
   } = getState();
 
-  const accessToken = Cookies.get(SC_COOKIE)
+  const accessToken = Cookies.get(SC_COOKIE);
   SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {
-      client.database.call('get_active_votes', [author, permlink])
-        .then(voters => {
-          dispatch(upvoteSuccess(author, permlink, voters));
+      client.database.call('get_content', [author, permlink])
+        .then(post => {
+          dispatch(upvoteSuccess(author, permlink, post));
         })
     }).catch((err) => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
+}
 
+/**
+ *  Uses SteemConnect to send a comment to the Steem blockchain.
+ *
+ *  @param {string} parentPost Parent being commented on
+ *  @param {string} body Comment body
+ *  @returns {function} Dispatches returned action object
+ */
+export const sendComment = (parentPost, body) => (dispatch, getState) => {
+  dispatch(sendCommentStart());
+  const {
+    auth: {
+      user
+    },
+  } = getState();
+
+  const { category, id, permlink: parentPermlink, author: parentAuthor } = parentPost;
+
+  const author = user;
+  const permlink = createCommentPermlink(parentAuthor, parentPermlink)
+
+  const jsonMetadata = createPostMetadata(
+    body,
+    [category],
+  );
+
+  return SteemConnect
+    .comment(parentAuthor, parentPermlink, author, permlink, '', body, jsonMetadata)
+    .then(res => {
+      if (res.result.block_num) {
+        getComment(author, permlink)
+          .then(comment => {
+            dispatch(sendCommentSuccess(comment, id));
+          })
+      }
+    });
 }
 
 export default getSummaryContent;

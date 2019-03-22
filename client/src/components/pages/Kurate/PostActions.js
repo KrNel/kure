@@ -1,4 +1,4 @@
-import React, {createRef, Component} from 'react';
+import React, {Component} from 'react';
 import './PostActions.css';
 import { Icon, Popup } from "semantic-ui-react";
 
@@ -6,7 +6,6 @@ import Slider from 'react-rangeslider'
 import './VoteSlider.css';
 import DollarDisplay from '../../common/DollarDisplay';
 import UserLink from '../../common/UserLink';
-
 
 const getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
 const getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
@@ -31,12 +30,11 @@ class PostActions extends Component {
     showSlider: false,
     sliderWeight: 10000
   }
-  createRef = createRef();
 
   /**
    *  Initial voting requests to process.
    */
-  vote = (e, user) => {
+  vote = (e, user, pid) => {
     e.preventDefault();
 
     //Don't upvote if not logged in
@@ -45,7 +43,7 @@ class PostActions extends Component {
     }
 
     //Don't upvote if already upvoted
-    const upvote = document.querySelector("#upvote");
+    const upvote = document.querySelector(`#pid-${pid}`);
     if (upvote.classList.contains("votedOn")) {
       this.setState({unvote: true});
       return null;
@@ -93,7 +91,7 @@ class PostActions extends Component {
   render() {
     const {
       props: {
-        activeVotes, commentCount, author, category, payoutValue, permlink, title, showModal, user, handleUpvote, upvotePayload, ratio
+        activeVotes, commentCount, author, category, payoutValue, permlink, title, showModal, user, handleUpvote, upvotePayload, ratio, pid
       },
       state: {
         unvote,
@@ -102,10 +100,17 @@ class PostActions extends Component {
       }
     } = this;
 
+    const votedAuthor = upvotePayload.author;
+    const votedPermlink = upvotePayload.permlink;
+    const votedVoters = upvotePayload.post.active_votes;
+    const isVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(vp => vp.id === pid) : false;
+
+    const isThisPost = votedAuthor === author && votedPermlink === permlink;
+
     let upvoteClasses = '';
-    if (upvotePayload.isUpvoting && upvotePayload.author === author && upvotePayload.permlink === permlink) {
+    if (upvotePayload.isUpvoting && isThisPost) {
       upvoteClasses = 'loading';
-    }else if (upvotePayload.voters.length && upvotePayload.voters.some(v => v.voter === user) && upvotePayload.author === author && upvotePayload.permlink === permlink) {
+    }else if (isVoted) {
       upvoteClasses = 'votedOn';
     }else if (activeVotes.some(v => v.voter === user)) {
       upvoteClasses = 'votedOn';
@@ -113,16 +118,16 @@ class PostActions extends Component {
 
     let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
-    if (upvotePayload.voters.length && upvotePayload.author === author && upvotePayload.permlink === permlink) {
-      votesCount = getUpvotes(upvotePayload.voters).length;
-      voters = upvotePayload.voters;
+    if (votedVoters.length && isThisPost) {
+      votesCount = getUpvotes(votedVoters).length;
+      voters = votedVoters;
     }
 
     voters = sortVotes(voters, 'rshares').reverse();
 
     let votersPopup = '';
     if (votesCount) {
-      votersPopup = voters.slice(0, 9).map(vote => (
+      votersPopup = voters.slice(0, 14).map(vote => (
         <div key={vote.voter}>
           {<UserLink user={vote.voter} />}
 
@@ -185,7 +190,7 @@ class PostActions extends Component {
     }
 
     return (
-      <div className='footer'>
+      <React.Fragment>
         <ul className="meta">
 
           <li className="item payout">{payoutValue}</li>
@@ -198,8 +203,8 @@ class PostActions extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user)} title={`${votesCount} upvotes on Steem`}>
-                  <Icon id='upvote' name='chevron up circle' size='large' className={upvoteClasses} />
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
+                  <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}
               open={unvote}
@@ -211,7 +216,7 @@ class PostActions extends Component {
               {'Unvoting in the works.'}
             </Popup>
             <Popup
-              trigger={<strong>{votesCount}</strong>}
+              trigger={<span>{votesCount}</span>}
               horizontalOffset={15}
               flowing
               hoverable
@@ -238,6 +243,7 @@ class PostActions extends Component {
               <Icon name='flag outline' size='large' />
             </a>
           </li>
+
         </ul>
 
         <div className='right'>
@@ -250,7 +256,7 @@ class PostActions extends Component {
             )
           }
         </div>
-      </div>
+      </React.Fragment>
     )
   }
 }

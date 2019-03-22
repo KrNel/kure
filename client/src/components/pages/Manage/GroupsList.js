@@ -51,8 +51,7 @@ const GroupsList = (props) => {
                   <Segment key={key+2} className='groupList'>
                     {
                       (selectedGroup === g.name)
-                        ? <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
-                        : ''
+                      && <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
                     }
                     <div key={key+3}>
                       <h3 className='left'>

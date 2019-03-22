@@ -8,6 +8,7 @@ import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
 import * as contentActions from '../../../../actions/steemContentActions'
 import hasLength from '../../helpers/helpers';
+import Loading from '../../../Loading/Loading';
 
 /**
  *  Container to render post details from Steem.
@@ -53,7 +54,11 @@ class Post extends Component {
       isFetching,
       getContent,
       handleUpvote,
-      upvotePayload
+      upvotePayload,
+      getComments,
+      sendComment,
+      isCommenting,
+      commentedId,
     } = this.props;
 
     let addErrorPost = '';
@@ -73,7 +78,7 @@ class Post extends Component {
           />
           {
             (hasLength(post))
-            && (
+            ? (
               <PostDetails
                 match={match}
                 showModal={showModal}
@@ -83,8 +88,13 @@ class Post extends Component {
                 post={post}
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
+                getComments={getComments}
+                sendComment={sendComment}
+                isCommenting={isCommenting}
+                commentedId={commentedId}
               />
             )
+            : <Loading />
           }
         </React.Fragment>
       </ErrorBoundary>
@@ -114,6 +124,8 @@ class Post extends Component {
        addPostData,
        post,
        upvotePayload,
+       isCommenting,
+       commentedId,
      }
    } = state;
 
@@ -129,6 +141,8 @@ class Post extends Component {
      addPostData,
      post,
      upvotePayload,
+     isCommenting,
+     commentedId,
    }
  }
 
@@ -136,6 +150,9 @@ const mapDispatchToProps = (dispatch) => (
   {
     getContent: (author, permlink) => (
       dispatch(contentActions.getDetailsContent(author, permlink))
+    ),
+    getComments: (author, permlink) => (
+      dispatch(contentActions.getPostComments(author, permlink))
     ),
     showModal: (e, type, data) => (
       dispatch(contentActions.showModal(e, type, data))
@@ -151,6 +168,9 @@ const mapDispatchToProps = (dispatch) => (
     ),
     handleUpvote: (voter, author, permlink, weight) => (
       dispatch(contentActions.upvotePost(voter, author, permlink, weight))
+    ),
+    sendComment: (parentPost, body) => (
+      dispatch(contentActions.sendComment(parentPost, body))
     ),
   }
 );

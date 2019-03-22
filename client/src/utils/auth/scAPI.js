@@ -8,7 +8,7 @@ const api = sc2.Initialize({
   app: scConfig.sc.app,
   //callbackURL: scConfig.sc.callbackURLDev,
   callbackURL: process.env.NODE_ENV === 'development' ? scConfig.sc.callbackURLDev : scConfig.sc.callbackURLProd,
-  accessToken: scConfig.sc.accessToken,
+  //accessToken: scConfig.sc.accessToken,
   scope: scConfig.sc.scope,
 });
 

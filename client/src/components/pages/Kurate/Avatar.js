@@ -6,7 +6,7 @@ import './Avatar.css';
  *
  *  @param {string} author Author of post
  */
-const Avatar = ({author, height, width}) => {
+const Avatar = ({author, height = '30px', width = '30px'}) => {
   const bgURL = `https://steemitimages.com/u/${author}/avatar`;
   return (
     <div
@@ -14,8 +14,8 @@ const Avatar = ({author, height, width}) => {
       role="img"
       style={{
         backgroundImage: 'url('+bgURL+')',
-        height,
-        width
+        height: height,
+        width: width,
       }}
     />
   )

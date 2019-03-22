@@ -292,8 +292,8 @@ const mapDispatchToProps = (dispatch) => (
     handleGroupSelect: (value) => (
       dispatch(contentActions.handleGroupSelect(value))
     ),
-    handleUpvote: (voter, author, permlink, weight) => (
-      dispatch(contentActions.upvotePost(voter, author, permlink, weight))
+    handleUpvote: (author, permlink, weight) => (
+      dispatch(contentActions.upvotePost(author, permlink, weight))
     ),
   }
 );

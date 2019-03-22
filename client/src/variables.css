@@ -12,6 +12,8 @@
     --action-grey: rgba(202, 202, 202, 0.8);
     /*--fade-grey: #e6e6e6;*/
     --font-content: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body: Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif";
+    /*font-family: 'Source Serif Pro', serif;*/
     /*
     Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"
     */

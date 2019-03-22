@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
-import moment from 'moment';
 import _ from 'lodash';
 import Helmet from 'react-helmet';
 
@@ -10,6 +9,9 @@ import { getFromMetadata, extractImageTags } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
 import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
+import Tags from '../Tags';
+import Comments from './Comments'
+import ReplyForm from './ReplyForm';
 
 import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
@@ -32,6 +34,12 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+  }
+
+  componentDidMount() {
+    if (this.props.post.children > 0) {
+      this.props.getComments(this.props.post.author, this.props.post.permlink);
+    }
   }
 
   //Needed to `dangerouslySetInnerHTML`
@@ -74,11 +82,19 @@ class PostDetails extends Component {
     const {
       showModal,
       user,
-      post,
       isFetching,
       handleUpvote,
       upvotePayload,
+      getComments,
+      sendComment,
+      isCommenting,
+      commentedId,
     } = this.props;
+
+    let {post} = this.props;
+    if (upvotePayload.post.id > 0) {
+      post = upvotePayload.post
+    }
 
     const title = post.title;
     const author = post.author;
@@ -87,7 +103,7 @@ class PostDetails extends Component {
     const category = post.category;
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
     const created = new Date(post.created).toDateString();
-    const createdFromNow = moment.utc(post.created).fromNow();
+    //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
 
     const totalPayout =
@@ -114,6 +130,14 @@ class PostDetails extends Component {
     //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
+    const comments = post.replies;
+    const pid = post.id;
+
+    //let comments = null;
+    /*if (post.children > 0) {
+      getComments(post.author, post.permlink);
+    }*/
+
     return (
       <React.Fragment>
         <Helmet>
@@ -132,68 +156,91 @@ class PostDetails extends Component {
         </Helmet>
         <Grid verticalAlign='middle' columns={1} centered>
           <Grid.Row>
-            <Grid.Column width={12}>
+            <Grid.Column width={11}>
               {
                 isFetching ? <Loading />
                 : (
-                  <div className='PostContent'>
+                  <React.Fragment>
+                    <div className='PostContent'>
+                      <h1>
+                        {title}
 
-                    <h1>
-                      {title}
-
-                    </h1>
-                    <AuthorCatgoryTime
-                      author={author}
-                      authorReputation={authorReputation}
-                      category={category}
-                      createdFromNow={createdFromNow}
-                    />
-                    <hr />
-                    {this.renderDtubeEmbedPlayer(post)}
-                    <PostBody
-                      full
-                      rewriteLinks={false}
-                      body={body}
-                      json_metadata={post.json_metadata}
-                    />
-                    <br />
-                    <div className='alt-site right'>
-                      {`View on `}
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href={`https://steemit.com${post.url}`}
-                      >
-                        {'Steemit'}
-                      </a>
-                      {' | '}
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href={`https://busy.org/@${author}/${permlink}`}
-                      >
-                        {'Busy'}
-                      </a>
-                    </div>
-                    <div className='clear' />
-                    <hr />
-                    <div className='post-actions'>
-                      <PostActions
-                        activeVotes={activeVotes}
-                        commentCount={commentCount}
+                      </h1>
+                      <AuthorCatgoryTime
                         author={author}
+                        authorReputation={authorReputation}
                         category={category}
-                        payoutValue={payoutValue}
-                        permlink={permlink}
-                        title={title}
-                        showModal={showModal}
-                        user={user}
-                        handleUpvote={handleUpvote}
-                        upvotePayload={upvotePayload}
-                        ratio={ratio}
+                        created={created}
                       />
+                      <hr />
+                      {this.renderDtubeEmbedPlayer(post)}
+                      <PostBody
+                        full
+                        rewriteLinks={false}
+                        body={body}
+                        json_metadata={post.json_metadata}
+                      />
+                      <br />
+                      <div className='footer'>
+                        <div className='left'>
+                          <Tags tags={tags} />
+                        </div>
+                        <div className='alt-site right'>
+                          {`View on `}
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={`https://steemit.com${post.url}`}
+                          >
+                            {'Steemit'}
+                          </a>
+                          {' | '}
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={`https://busy.org/@${author}/${permlink}`}
+                          >
+                            {'Busy'}
+                          </a>
+                        </div>
+                        <div className='clear' />
+                        <div className='post-actions'>
+                          <PostActions
+                            activeVotes={activeVotes}
+                            commentCount={commentCount}
+                            author={author}
+                            category={category}
+                            payoutValue={payoutValue}
+                            permlink={permlink}
+                            title={title}
+                            showModal={showModal}
+                            user={user}
+                            handleUpvote={handleUpvote}
+                            upvotePayload={upvotePayload}
+                            ratio={ratio}
+                            pid={pid}
+                          />
+                        </div>
+                        <hr />
+                        <ReplyForm
+                          sendComment={sendComment}
+                          isCommenting={isCommenting}
+                          parentPost={post}
+                          commentedId={commentedId}
+                        />
+
+                        <div className='comments'>
+
+                          <Comments
+                            comments={comments}
+                            sendComment={sendComment}
+                            isCommenting={isCommenting}
+                            commentedId={commentedId}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </React.Fragment>
                 )
               }
             </Grid.Column>
