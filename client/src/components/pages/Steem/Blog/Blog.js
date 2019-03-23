@@ -4,6 +4,7 @@ import Posts from '../Posts'
 
 const Blog = (props) => (
   <Posts
+    page='blog'
     match={props.match}
   />
 )

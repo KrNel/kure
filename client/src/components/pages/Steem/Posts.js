@@ -10,8 +10,7 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import FilterPosts from './FilterPosts';
 import * as contentActions from '../../../actions/steemContentActions';
-//import VoteSlider from './VoteSlider';
-import 'react-rangeslider/lib/index.css';
+import {hasLength} from '../helpers/helpers';
 
 /**
  *  Kurate gets the Steem blockchain content and dusplays a list of post
@@ -42,7 +41,6 @@ class Posts extends Component {
 
     this.selectedFilter = 'created';
     this.tag = '';
-    this.isPageLoading = false;
   }
 
   componentDidMount() {
@@ -61,7 +59,7 @@ class Posts extends Component {
   componentDidUpdate(prevProps) {
     const {match} = this.props;
     if (match.url !== prevProps.match.url) {
-      this.isPageLoading = true;
+      //this.isPageLoading = true;
       if (match.params.tag)
         this.tag = match.params.tag;
       else
@@ -85,6 +83,7 @@ class Posts extends Component {
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
+        this.isInfScrollMore = true;
         this.getPosts('more');
       }
     }
@@ -98,7 +97,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {getContent, posts, match} = this.props;
+    const {getContent, posts, match, page} = this.props;
 
     let startAuthor = undefined;
     let startPermlink = undefined;
@@ -134,7 +133,7 @@ class Posts extends Component {
       start_permlink: startPermlink
     };
 
-    getContent(filter, query, nextPost)
+    getContent(filter, query, nextPost, page)
   }
 
   /**
@@ -154,6 +153,7 @@ class Posts extends Component {
         csrf,
         posts,
         isFetchingSummary,
+        prevPage,
         match,
         groups,
         modalOpenAddPost,
@@ -165,7 +165,8 @@ class Posts extends Component {
         handleGroupSelect,
         handleUpvote,
         upvotePayload,
-      }
+        page,
+      },
     } = this;
 
     let addErrorPost = '';
@@ -208,8 +209,8 @@ class Posts extends Component {
             <div>
               <div id="postList">
                 {
-                  !this.isPageLoading
-                  && (
+                  page === prevPage
+                  ? (
                     <PostsSummary
                       posts={posts}
                       showModal={showModal}
@@ -220,12 +221,15 @@ class Posts extends Component {
                       isFetchingSummary={isFetchingSummary}
                     />
                   )
+                  : (
+                    <Loading />
+                  )
                 }
 
               </div>
             </div>
             {
-              isFetchingSummary && <Loading />
+              isFetchingSummary && page === prevPage && <Loading />
             }
           </React.Fragment>
         </ErrorBoundary>
@@ -248,6 +252,7 @@ const mapStateToProps = state => {
     steemContent: {
       posts,
       isFetchingSummary,
+      prevPage,
       noMore,
       groups,
       postExists,
@@ -264,6 +269,7 @@ const mapStateToProps = state => {
     csrf,
     posts,
     isFetchingSummary,
+    prevPage,
     noMore,
     groups,
     postExists,
@@ -277,8 +283,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => (
   {
-    getContent: (selectedFilter, query, nextPost) => (
-      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost))
+    getContent: (selectedFilter, query, nextPost, page) => (
+      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost, page))
     ),
     showModal: (e, type, data) => (
       dispatch(contentActions.showModal(e, type, data))

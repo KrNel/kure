@@ -6,10 +6,10 @@ import Home from '../components/pages/Home/Home';
 import Groups from '../components/pages/Groups/Groups';
 import GroupDetails from '../components/pages/Groups/GroupDetails';
 //import Posts from '../components/pages/Posts/Posts';
-import Post from '../components/pages/Kurate/Post/Post';
-import Feed from '../components/pages/Kurate/Feed/Feed';
-import Blog from '../components/pages/Kurate/Blog/Blog';
-import Kurate from '../components/pages/Kurate/Kurate';
+import Post from '../components/pages/Steem/Post/Post';
+import Feed from '../components/pages/Steem/Feed/Feed';
+import Blog from '../components/pages/Steem/Blog/Blog';
+import Kurate from '../components/pages/Steem/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
@@ -26,7 +26,7 @@ const Routes = (props) => (
   <App>
     <Switch>
       <Route exact path='/' component={Home} />
-      <Route exact path='/kurate' component={Kurate} />
+      <Route exact path='/steem' component={Kurate} />
       <Route exact path='/groups' component={Groups} />
       {/*<Route exact path='/kurated' component={Posts} />*/}
       <PrivateRoute exact path='/manage' component={Manage} />

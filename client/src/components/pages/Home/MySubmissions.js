@@ -37,7 +37,7 @@ const MySubmissions = ({ isAuth, mySubs }) => (
             ))
             : (
               <li>
-                <Link to='/kurate'>Kurate</Link>
+                <Link to='/steem'>Steem</Link>
                 {' some posts.'}
               </li>
             )

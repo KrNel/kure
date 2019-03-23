@@ -7,7 +7,7 @@ import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
 import * as contentActions from '../../../../actions/steemContentActions'
-import hasLength from '../../helpers/helpers';
+import {hasLength} from '../../helpers/helpers';
 import Loading from '../../../Loading/Loading';
 
 /**

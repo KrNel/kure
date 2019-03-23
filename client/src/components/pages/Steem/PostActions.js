@@ -3,6 +3,7 @@ import './PostActions.css';
 import { Icon, Popup } from "semantic-ui-react";
 
 import Slider from 'react-rangeslider'
+import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';
 import DollarDisplay from '../../common/DollarDisplay';
 import UserLink from '../../common/UserLink';

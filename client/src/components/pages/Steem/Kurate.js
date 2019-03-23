@@ -11,6 +11,7 @@ import Posts from './Posts'
  */
 const Kurate = ({match}) => (
   <Posts
+    page='kurate'
     match={match}
   />
 )

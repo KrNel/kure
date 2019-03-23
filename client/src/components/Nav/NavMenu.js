@@ -19,7 +19,7 @@ import './NavMenu.css';
 
 const items = [
   {name : "/", label : "Home"},
-  {name : "/kurate", label : "Steem"},
+  {name : "/steem", label : "Steem"},
   {name : "/groups", label : "Communities"},
   //{name : "/kurated", label : "Kurated"},
 ];

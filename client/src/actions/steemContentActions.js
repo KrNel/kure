@@ -1,11 +1,8 @@
-//import axios from 'axios';
 import { Client } from 'dsteem';
-import Cookies from 'js-cookie';
 
 import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
-import {SC_COOKIE} from '../settings';
-import { createPostMetadata, createCommentPermlink } from '../components/pages/Kurate/helpers/postHelpers';
+import { createPostMetadata, createCommentPermlink } from '../components/pages/Steem/helpers/postHelpers';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -41,13 +38,13 @@ export const summaryStart = () => ({
  *  Action creator for successful retrieval of post summary data.
  *
  *  @param {array} posts Posts to display
- *  @param {boolean} noMore If there are more posts to fetch
  *  @return {object} The action data
  */
-export const summarySuccess = (posts, noMore) => ({
+export const summarySuccess = (posts, noMore, prevPage) => ({
   type: GET_SUMMARY_SUCCESS,
   posts,
   noMore,
+  prevPage,
 });
 
 /**
@@ -223,7 +220,7 @@ export const sendCommentSuccess = (comment, parentId) => ({
  *  @param {boolean} nextPost If there are preceeding posts
  *  @returns {function} Dispatches returned action object
  */
-export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch, getState) => {
+export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dispatch, getState) => {
   dispatch(summaryStart());
 
   return client.database.getDiscussions(selectedFilter, query)
@@ -246,7 +243,7 @@ export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch,
       if (user)
         dispatch(getGroupsFetch(user));
 
-      dispatch(summarySuccess(newPosts, noMore));
+      dispatch(summarySuccess(newPosts, noMore, page));
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });

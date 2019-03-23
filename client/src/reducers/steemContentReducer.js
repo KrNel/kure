@@ -29,6 +29,7 @@ export const steemContent = (
     isFetchingSummary: false,
     isFetchingDetails: false,
     isFetchingComments: false,
+    prevPage: '',
     posts: [],
     noMore: false,
     groups: [{key: 0, text: 'No Groups', value: '0'}],
@@ -60,7 +61,6 @@ export const steemContent = (
     case GET_SUMMARY_START:
       return ({
         ...state,
-        posts: [],
         isFetchingSummary: true,
       });
     case GET_DETAILS_START:
@@ -79,6 +79,7 @@ export const steemContent = (
         isFetchingSummary: false,
         posts: action.posts,
         noMore: action.noMore,
+        prevPage: action.prevPage,
       });
     case GET_DETAILS_SUCCESS:
       return ({
