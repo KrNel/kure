@@ -429,8 +429,8 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
     },
   } = getState();
 
-  const accessToken = Cookies.get(SC_COOKIE);
-  SteemConnect.setAccessToken(accessToken);
+  //const accessToken = Cookies.get(SC_COOKIE);
+  //SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {

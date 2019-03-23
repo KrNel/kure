@@ -20,20 +20,19 @@ const sortComments = (comments, sortBy) => {
 /**
  *  Comments container.
  */
-const Comments = (props) => {
-  const {
-    comments,
-    sendComment,
-    isCommenting,
-    commentedId,
-    isAuth
-  } = props;
+const Comments = ({
+  comments,
+  sendComment,
+  isCommenting,
+  commentedId,
+  isAuth
+}) => {
 
-  const sorted = sortComments(comments, 'new');
   let displayComments = '';
+
   if (comments) {
-    //displayComments = iterateComments(comments);
-    //rootComments(comments, sendComment);
+    const sorted = sortComments(comments, 'new');
+
     displayComments = sorted.map(comment => (
       <li key={comment.id}>
         <Comment

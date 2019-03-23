@@ -27,7 +27,8 @@ const AuthorCatgoryTime = ({author, authorReputation, category, created}) => (
       <Category category={category} />
     </li>
     <li className="item timeago">
-      {`\u00A0\u2022\u00A0`}<TimeAgo date={created} />
+      {`\u00A0\u2022\u00A0`}
+      <TimeAgo date={created} />
     </li>
   </ul>
 )

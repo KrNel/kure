@@ -74,7 +74,11 @@ class Comment extends Component {
                   json_metadata={comment.json_metadata}
                 />
               </div>
-              
+              <div className='commentFooter'>
+                {/*<div>Vote</div>*/}
+                <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                {showReplyForm && replyForm}
+              </div>
             </li>
             <div className='clear' />
           </ul>

@@ -24,7 +24,7 @@ class Posts extends Component {
     user: PropTypes.string,
     csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
-    isFetching: PropTypes.bool,
+    isFetchingSummary: PropTypes.bool,
     noMore: PropTypes.bool,
 
   };
@@ -32,7 +32,7 @@ class Posts extends Component {
   static defaultProps = {
     user: '',
     csrf: '',
-    isFetching: false,
+    isFetchingSummary: false,
     noMore: false,
     match: {}
   };
@@ -79,8 +79,8 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = (e) => {
-    const {isFetching, noMore} = this.props;
-    if (!isFetching && !noMore) {
+    const {isFetchingSummary, noMore} = this.props;
+    if (!isFetchingSummary && !noMore) {
       var lastLi = document.querySelector("#postList > div.post:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
@@ -153,7 +153,7 @@ class Posts extends Component {
         user,
         csrf,
         posts,
-        isFetching,
+        isFetchingSummary,
         match,
         groups,
         modalOpenAddPost,
@@ -217,7 +217,7 @@ class Posts extends Component {
                       csrf={csrf}
                       handleUpvote={handleUpvote}
                       upvotePayload={upvotePayload}
-                      isFetching={isFetching}
+                      isFetchingSummary={isFetchingSummary}
                     />
                   )
                 }
@@ -225,7 +225,7 @@ class Posts extends Component {
               </div>
             </div>
             {
-              isFetching && <Loading />
+              isFetchingSummary && <Loading />
             }
           </React.Fragment>
         </ErrorBoundary>
@@ -247,7 +247,7 @@ const mapStateToProps = state => {
     },
     steemContent: {
       posts,
-      isFetching,
+      isFetchingSummary,
       noMore,
       groups,
       postExists,
@@ -263,7 +263,7 @@ const mapStateToProps = state => {
     user,
     csrf,
     posts,
-    isFetching,
+    isFetchingSummary,
     noMore,
     groups,
     postExists,

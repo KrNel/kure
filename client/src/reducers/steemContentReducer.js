@@ -26,7 +26,9 @@ import {
  */
 export const steemContent = (
   state = {
-    isFetching: false,
+    isFetchingSummary: false,
+    isFetchingDetails: false,
+    isFetchingComments: false,
     posts: [],
     noMore: false,
     groups: [{key: 0, text: 'No Groups', value: '0'}],
@@ -56,29 +58,38 @@ export const steemContent = (
 
   switch (action.type) {
     case GET_SUMMARY_START:
+      return ({
+        ...state,
+        posts: [],
+        isFetchingSummary: true,
+      });
     case GET_DETAILS_START:
+      return ({
+        ...state,
+        isFetchingDetails: true,
+      });
     case GET_COMMENTS_START:
       return ({
         ...state,
-        isFetching: true,
+        isFetchingComments: true,
       });
     case GET_SUMMARY_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingSummary: false,
         posts: action.posts,
         noMore: action.noMore,
       });
     case GET_DETAILS_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingDetails: false,
         post: action.post,
       });
     case GET_COMMENTS_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingComments: false,
         post: {
           ...state.post,
           replies: action.comments,

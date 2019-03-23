@@ -52,7 +52,8 @@ class Post extends Component {
       onModalCloseAddPost,
       handleGroupSelect,
       post,
-      isFetching,
+      isFetchingDetails,
+      isFetchingComments,
       getContent,
       handleUpvote,
       upvotePayload,
@@ -78,7 +79,7 @@ class Post extends Component {
             addPostLoading={addPostLoading}
           />
           {
-            (hasLength(post))
+            !isFetchingDetails && hasLength(post)
             ? (
               <PostDetails
                 match={match}
@@ -118,7 +119,8 @@ class Post extends Component {
        isAuth,
      },
      steemContent: {
-       isFetching,
+       isFetchingDetails,
+       isFetchingComments,
        groups,
        postExists,
        addPostLoading,
@@ -136,7 +138,8 @@ class Post extends Component {
      user,
      csrf,
      isAuth,
-     isFetching,
+     isFetchingDetails,
+     isFetchingComments,
      groups,
      postExists,
      addPostLoading,

@@ -17,9 +17,9 @@ import TitleLink from '../../common/TitleLink';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload, isFetching}) => {
+const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload, isFetchingSummary}) => {
 
-  if (!posts.length && !isFetching) {
+  if (!posts.length && !isFetchingSummary) {
     return "No Posts";
   }else {
     return (
