@@ -186,7 +186,7 @@ class Posts extends Component {
         <ErrorBoundary>
           <React.Fragment>
             {
-              !match.path.includes('/@:author')
+              page !== 'blog' && page !== 'feed'
               && (
                 <FilterPosts
                   handleSubmitFilter={this.handleSubmitFilter}
@@ -194,13 +194,13 @@ class Posts extends Component {
               )
             }
             {
-              match.path === '/@:author/feed'
+              page === 'feed'
               && (
                 <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Feed`}</Header></Label>
               )
             }
             {
-              match.path === '/@:author'
+              page === 'blog'
               && (
                 <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Blog`}</Header></Label>
               )

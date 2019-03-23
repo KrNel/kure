@@ -102,7 +102,7 @@ class PostDetails extends Component {
     const permlink = post.permlink;
     const category = post.category;
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
-    const created = new Date(post.created).toDateString();
+    const created = post.created;
     //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
 
@@ -152,7 +152,7 @@ class PostDetails extends Component {
           <meta property="og:description" content={desc} />
           <meta property="og:site_name" content="Kure" />
           <meta property="article:tag" content={category} />
-          <meta property="article:published_time" content={created} />
+          <meta property="article:published_time" content={new Date(created).toDateString()} />
         </Helmet>
         <Grid verticalAlign='middle' columns={1} centered>
           <Grid.Row>
