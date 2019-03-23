@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import DateFromNow from '../../common/DateFromNow';
+import {short} from '../../../utils/timeFromNow';
 import TitleLink from '../../common/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
@@ -30,7 +30,7 @@ const MySubmissions = ({ isAuth, mySubs }) => (
                   />
                 </div>
                 <div className='right meta'>
-                  <DateFromNow date={p.created} />
+                  {short(p.created)}
                 </div>
                 <div className='clear' />
               </li>

@@ -3,7 +3,7 @@ import { Header, Table, Label } from "semantic-ui-react";
 
 import GroupLink from '../../common/GroupLink';
 import UserLink from '../../common/UserLink';
-import DateFromNow from '../../common/DateFromNow';
+import {short} from '../../../utils/timeFromNow';
 
 /**
  *  Show the newly created groups as a table list.
@@ -34,7 +34,7 @@ const GroupsCreated = ({ groupsCreated}) => {
                   </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.posts}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.users}</Table.Cell>
-                  <Table.Cell collapsing textAlign='center'><DateFromNow date={g.created} /></Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{short(g.created)}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'><UserLink user={g.owner} /></Table.Cell>
                 </Table.Row>
               ))

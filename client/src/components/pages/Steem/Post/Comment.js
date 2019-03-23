@@ -4,7 +4,8 @@ import ReplyForm from './ReplyForm';
 import Body from './PostBody';
 import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
-import TimeAgo from '../TimeAgo';
+import PostLink from '../../../common/PostLink';
+import {long} from '../../../../utils/timeFromNow';
 import './Comment.css';
 
 /**
@@ -53,18 +54,27 @@ class Comment extends Component {
 
     let replyClass = depth + 1 > 5 ? 'repliesNoIndent' : 'replies';
 
+    const author = comment.author;
+    const permlink = comment.permlink;
+    const created = comment.created;
+    const anchorLink = `#@${author}/${permlink}`;
+
     return (
       <React.Fragment>
         <div id={`comment-${comment.id}`} className={`comment depth-${depth}`}>
           <ul className='commentList'>
             <li className='commentAvatar'>
-              <Avatar author={comment.author} height='40px' width='40px' />
+              <Avatar author={author} height='40px' width='40px' />
             </li>
             <li className='commentContent'>
               <div className='commentHead'>
-                <AuthorReputation author={comment.author} reputation={comment.author_reputation} />
+                <AuthorReputation author={author} reputation={comment.author_reputation} />
                 {`\u00A0\u2022\u00A0`}
-                <TimeAgo date={comment.created} />
+                <PostLink
+                  link={anchorLink}
+                  title={created}
+                  text={long(created)}
+                />
               </div>
               <div className='commentBody'>
                 <Body

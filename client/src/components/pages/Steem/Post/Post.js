@@ -53,7 +53,6 @@ class Post extends Component {
       handleGroupSelect,
       post,
       isFetchingDetails,
-      isFetchingComments,
       getContent,
       handleUpvote,
       upvotePayload,
@@ -95,6 +94,7 @@ class Post extends Component {
                 sendComment={sendComment}
                 isCommenting={isCommenting}
                 commentedId={commentedId}
+                isFetching={isFetchingDetails}
               />
             )
             : <Loading />
@@ -120,7 +120,6 @@ class Post extends Component {
      },
      steemContent: {
        isFetchingDetails,
-       isFetchingComments,
        groups,
        postExists,
        addPostLoading,
@@ -139,7 +138,6 @@ class Post extends Component {
      csrf,
      isAuth,
      isFetchingDetails,
-     isFetchingComments,
      groups,
      postExists,
      addPostLoading,

@@ -171,6 +171,7 @@ class PostDetails extends Component {
                         authorReputation={authorReputation}
                         category={category}
                         created={created}
+                        permlink={permlink}
                       />
                       <hr />
                       {this.renderDtubeEmbedPlayer(post)}
