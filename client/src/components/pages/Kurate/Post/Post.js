@@ -41,6 +41,7 @@ class Post extends Component {
     const {
       user,
       csrf,
+      isAuth,
       match,
       groups,
       modalOpenAddPost,
@@ -84,6 +85,7 @@ class Post extends Component {
                 showModal={showModal}
                 user={user}
                 csrf={csrf}
+                isAuth={isAuth}
                 getContent={getContent}
                 post={post}
                 handleUpvote={handleUpvote}
@@ -112,7 +114,8 @@ class Post extends Component {
    const {
      auth: {
        user,
-       csrf
+       csrf,
+       isAuth,
      },
      steemContent: {
        isFetching,
@@ -132,6 +135,7 @@ class Post extends Component {
    return {
      user,
      csrf,
+     isAuth,
      isFetching,
      groups,
      postExists,

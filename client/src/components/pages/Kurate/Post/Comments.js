@@ -20,7 +20,14 @@ const sortComments = (comments, sortBy) => {
 /**
  *  Comments container.
  */
-const Comments = ({comments, sendComment, isCommenting, commentedId}) => {
+const Comments = (props) => {
+  const {
+    comments,
+    sendComment,
+    isCommenting,
+    commentedId,
+    isAuth
+  } = props;
 
   const sorted = sortComments(comments, 'new');
   let displayComments = '';
@@ -35,6 +42,7 @@ const Comments = ({comments, sendComment, isCommenting, commentedId}) => {
           sendComment={sendComment}
           isCommenting={isCommenting}
           commentedId={commentedId}
+          isAuth={isAuth}
         />
       </li>
     ))

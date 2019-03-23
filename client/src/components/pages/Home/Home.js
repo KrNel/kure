@@ -54,14 +54,14 @@ class Home extends Component {
       csrf,
       isAuth
     } = this.props;
-console.log('isAuth:',isAuth)
-console.log('user:',user)
-console.log('csrf:',csrf)
-    user = user === '' && 'x';
-    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
+
+    if (user === '')
+      user = 'x';
+    if ((!isAuth && user === 'x') || isAuth) {//fetch data when not logged in, or logged in, on first page view
       dispatch(fetchPosts(selected, user));
-    else if (csrf && !isAuth)
+    }else if (csrf && !isAuth) {
       dispatch(fetchPosts(selected, 'x'));//fetch data when logged out right after page refresh
+    }
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount

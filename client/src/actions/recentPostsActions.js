@@ -52,7 +52,7 @@ export const receivePosts = (section, data) => ({
   groups: data.groups,
   myComms: data.myComms,
   mySubs: data.mySubs,
-  receivedAt: Date.now()
+  receivedAt: Date.now(),
 });
 
 /**

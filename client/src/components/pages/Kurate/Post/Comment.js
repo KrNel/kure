@@ -3,12 +3,12 @@ import React, {Component} from 'react';
 import ReplyForm from './ReplyForm';
 import Body from './PostBody';
 import Avatar from '../Avatar';
-import Author from '../Author';
+import AuthorReputation from '../AuthorReputation';
 import TimeAgo from '../TimeAgo';
 import './Comment.css';
 
 /**
- *  Comment component to display the autho, avatar, time and content.
+ *  Comment component to display the author, avatar, time and content.
  */
 class Comment extends Component {
   state = {
@@ -33,13 +33,14 @@ class Comment extends Component {
         sendComment,
         isCommenting,
         commentedId,
+        isAuth,
       }
     } = this;
 
     const depth = comment.depth;
 
     const replyForm =
-      showReplyForm
+      showReplyForm && isAuth
       ? (
         <ReplyForm
           sendComment={sendComment}
@@ -61,7 +62,7 @@ class Comment extends Component {
             </li>
             <li className='commentContent'>
               <div className='commentHead'>
-                <Author author={comment.author} />
+                <AuthorReputation author={comment.author} reputation={comment.author_reputation} />
                 {`\u00A0\u2022\u00A0`}
                 <TimeAgo date={comment.created} />
               </div>
@@ -92,6 +93,7 @@ class Comment extends Component {
                     sendComment={sendComment}
                     isCommenting={isCommenting}
                     commentedId={commentedId}
+                    isAuth={isAuth}
                   />
                 </li>
               ))

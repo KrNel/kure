@@ -13,7 +13,6 @@ import Tags from '../Tags';
 import Comments from './Comments'
 import ReplyForm from './ReplyForm';
 
-import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
@@ -82,6 +81,7 @@ class PostDetails extends Component {
     const {
       showModal,
       user,
+      isAuth,
       isFetching,
       handleUpvote,
       upvotePayload,
@@ -98,7 +98,7 @@ class PostDetails extends Component {
 
     const title = post.title;
     const author = post.author;
-    const authorReputation = RepLog10(post.author_reputation);
+    const authorReputation = post.author_reputation;
     const permlink = post.permlink;
     const category = post.category;
     const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
@@ -222,12 +222,18 @@ class PostDetails extends Component {
                           />
                         </div>
                         <hr />
-                        <ReplyForm
-                          sendComment={sendComment}
-                          isCommenting={isCommenting}
-                          parentPost={post}
-                          commentedId={commentedId}
-                        />
+                        {
+                          isAuth &&
+                          (
+                            <ReplyForm
+                              sendComment={sendComment}
+                              isCommenting={isCommenting}
+                              parentPost={post}
+                              commentedId={commentedId}
+                            />
+                          )
+                        }
+
 
                         <div className='comments'>
 
@@ -236,6 +242,7 @@ class PostDetails extends Component {
                             sendComment={sendComment}
                             isCommenting={isCommenting}
                             commentedId={commentedId}
+                            isAuth={isAuth}
                           />
                         </div>
                       </div>
