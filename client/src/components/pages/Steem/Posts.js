@@ -2,6 +2,7 @@ import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Header, Label} from 'semantic-ui-react';
+import { withRouter } from 'react-router-dom'
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
@@ -25,7 +26,6 @@ class Posts extends Component {
     match: PropTypes.shape(PropTypes.object.isRequired),
     isFetchingSummary: PropTypes.bool,
     noMore: PropTypes.bool,
-
   };
 
   static defaultProps = {
@@ -304,4 +304,4 @@ const mapDispatchToProps = (dispatch) => (
   }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Posts);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Posts));

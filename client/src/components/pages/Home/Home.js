@@ -89,7 +89,7 @@ class Home extends Component {
               <Grid>
                 <Grid.Row className="reducePad">
                   <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Recently Added</Header></Label>
+                    <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
                   </Grid.Column>
                 </Grid.Row>
 
