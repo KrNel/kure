@@ -193,10 +193,12 @@ export const upvoteSuccess = (author, permlink, post) => ({
 /**
  *  Action creator for starting to send a comment.
  *
+ *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const sendCommentStart = () => ({
+export const sendCommentStart = parentId => ({
   type: SEND_COMMENT_START,
+  parentId,
 });
 
 /**
@@ -448,7 +450,7 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
  *  @returns {function} Dispatches returned action object
  */
 export const sendComment = (parentPost, body) => (dispatch, getState) => {
-  dispatch(sendCommentStart());
+  dispatch(sendCommentStart(parentPost.id));
   const {
     auth: {
       user

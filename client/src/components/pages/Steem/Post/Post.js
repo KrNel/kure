@@ -60,6 +60,7 @@ class Post extends Component {
       sendComment,
       isCommenting,
       commentedId,
+      commentPayload,
     } = this.props;
 
     let addErrorPost = '';
@@ -95,6 +96,7 @@ class Post extends Component {
                 isCommenting={isCommenting}
                 commentedId={commentedId}
                 isFetching={isFetchingDetails}
+                commentPayload={commentPayload}
               />
             )
             : <Loading />
@@ -130,6 +132,7 @@ class Post extends Component {
        upvotePayload,
        isCommenting,
        commentedId,
+       commentPayload,
      }
    } = state;
 
@@ -148,6 +151,7 @@ class Post extends Component {
      upvotePayload,
      isCommenting,
      commentedId,
+     commentPayload,
    }
  }
 

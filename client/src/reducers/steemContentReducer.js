@@ -51,9 +51,7 @@ export const steemContent = (
     },
     isCommenting: false,
     commentedId: 0,
-    /*commentedPayload: {
-
-    }*/
+    commentPayload: {},
   },
   action) => {
 
@@ -145,7 +143,10 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: false,
-          votedPosts: [...state.upvotePayload.votedPosts, action.payload.post],
+          votedPosts: [
+            ...state.upvotePayload.votedPosts,
+            action.payload.post
+          ],
           ...action.payload,
         }
       });
@@ -153,7 +154,7 @@ export const steemContent = (
       return ({
         ...state,
         isCommenting: true,
-        commentedId: 0,
+        commentedId: action.parentId,
         /*commentedPayload: {
           id: action.payload
         }*/
@@ -163,13 +164,19 @@ export const steemContent = (
         ...state,
         isCommenting: false,
         commentedId: action.parentId,
-        post: {
+        commentPayload: {
+          ...state.commentPayload,
+          [action.parentId]: [
+            action.comment
+          ],
+        },
+        /*post: {
           ...state.post,
           replies: [
             ...state.post.replies,
             action.comment,
           ],
-        }
+        }*/
       });
     default:
       return state

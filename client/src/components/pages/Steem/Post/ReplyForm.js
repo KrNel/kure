@@ -14,7 +14,8 @@ class ReplyForm extends Component {
    *  If a comment has been posted, clear the form by clearing the replyData state.
    */
   static getDerivedStateFromProps(props, state) {
-    if (props.parentPost.id === props.commentedId) {
+    if (props.parentPost.id === props.commentedId && !props.isCommenting) {
+      props.toggleReplyForm();
       return {
         replyData: '',
       };
@@ -68,6 +69,8 @@ class ReplyForm extends Component {
       },
       props: {
         isCommenting,
+        commentedId,
+        parentPost,
       }
     } = this;
 
@@ -75,7 +78,7 @@ class ReplyForm extends Component {
       <div className='replyForm'>
         <Form>
           {
-            isCommenting
+            isCommenting && commentedId == parentPost.id
             && <Dimmer inverted active={isCommenting}><Loader /></Dimmer>
           }
           <TextArea

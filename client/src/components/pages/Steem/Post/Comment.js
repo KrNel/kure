@@ -6,6 +6,7 @@ import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
 import PostLink from '../../../common/PostLink';
 import {long} from '../../../../utils/timeFromNow';
+import {hasLength} from '../../helpers/helpers';
 import './Comment.css';
 
 /**
@@ -16,11 +17,19 @@ class Comment extends Component {
     showReplyForm: false,
   }
 
+  /**
+   *  When the 'Reply' link is clicked for a comment, this runs to change the
+   * state of the 'showReplyForm' var to toogle showing/hiding the reply form.
+   */
   onShowReplyForm = (e) => {
     e.preventDefault();
+    this.toggleReplyForm();
+  };
+
+  toggleReplyForm = () => {
     const { showReplyForm } = this.state;
     this.setState({ showReplyForm: !showReplyForm, showEdit: false });
-  };
+  }
 
   render() {
     const {
@@ -35,6 +44,7 @@ class Comment extends Component {
         isCommenting,
         commentedId,
         isAuth,
+        commentPayload,
       }
     } = this;
 
@@ -48,6 +58,7 @@ class Comment extends Component {
           isCommenting={isCommenting}
           parentPost={comment}
           commentedId={commentedId}
+          toggleReplyForm={this.toggleReplyForm}
         />
       )
       : null;
@@ -108,11 +119,34 @@ class Comment extends Component {
                     isCommenting={isCommenting}
                     commentedId={commentedId}
                     isAuth={isAuth}
+                    commentPayload={commentPayload}
                   />
                 </li>
               ))
             }
           </ul>
+          )
+        }
+        {
+          hasLength(commentPayload) && commentPayload[comment.id]
+          && (
+            <ul className={replyClass}>
+              {
+                sortComments(commentPayload[comment.id], 'new').map(reply => (
+                  <li className='commentReply' key={reply.id}>
+                    <Comment
+                      comment={reply}
+                      sortComments={sortComments}
+                      sendComment={sendComment}
+                      isCommenting={isCommenting}
+                      commentedId={commentedId}
+                      isAuth={isAuth}
+                      commentPayload={commentPayload}
+                    />
+                  </li>
+                ))
+              }
+            </ul>
           )
         }
       </React.Fragment>

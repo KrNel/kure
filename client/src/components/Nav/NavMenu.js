@@ -136,7 +136,7 @@ const NavMobile = ({
       onClick={onPusherClick}
     >
       <Menu color="blue" secondary size="huge" className="navMenu">
-        <Menu.Item className="nopad">
+        <Menu.Item fitted>
           <Image src={logo} alt="logo" />
         </Menu.Item>
         <Menu.Item header onClick={onToggle}>
@@ -161,7 +161,7 @@ const NavMobile = ({
  */
 const NavDesktop = ({ items, loginURL }) => (
   <Menu color="blue" secondary size="huge" className="navMenu">
-    <Menu.Item className="nopad">
+    <Menu.Item fitted to='/' as={NavLink}>
       <Image src={logo} alt="logo" />
     </Menu.Item>
     {

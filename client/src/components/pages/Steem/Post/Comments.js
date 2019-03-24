@@ -1,10 +1,15 @@
 import React from 'react';
 
+import {hasLength} from '../../helpers/helpers';
 import Comment from './Comment';
 import './Comments.css';
 
 /**
- *  Sort the comments.
+ *  Sort the comments array by either date/new, payout amount, or upvotes, and
+ *  in ascending or descending order.
+ *
+ *  @param {array} comments Comments to sort
+ *  @param {string} sortBy Type of sorting to apply
  */
 const sortComments = (comments, sortBy) => {
   let sorted = '';
@@ -18,40 +23,64 @@ const sortComments = (comments, sortBy) => {
 };
 
 /**
- *  Comments container.
+ *  Comments container to process the first root level of comments of a post.
+ *  Additionally, any new comments in `commentPayload` at the root level of
+ *  the posts are also sent to render as a comment separately from the
+ *  fetches comments.
  */
 const Comments = ({
   comments,
   sendComment,
   isCommenting,
   commentedId,
-  isAuth
+  isAuth,
+  commentPayload,
+  pid,
 }) => {
 
-  let displayComments = '';
+console.log('comments',comments)
+console.log('commentPayload',commentPayload)
+console.log('commentPayload[pid]',commentPayload[pid])
 
-  if (comments) {
-    const sorted = sortComments(comments, 'new');
-
-    displayComments = sorted.map(comment => (
-      <li key={comment.id}>
-        <Comment
-          comment={comment}
-          sortComments={sortComments}
-          sendComment={sendComment}
-          isCommenting={isCommenting}
-          commentedId={commentedId}
-          isAuth={isAuth}
-        />
-      </li>
-    ))
-  }
+//console.log('Object.keys(commentPayload)',Object.keys(commentPayload))
+//console.log('Object.getOwnPropertyNames(commentPayload)',Object.getOwnPropertyNames(commentPayload))
+//console.log('commentPayload.hasOwnProperty(pid)',commentPayload.hasOwnProperty(pid))
+//console.log('Object.keys(commentPayload).includes(pid)',Object.keys(commentPayload).includes(pid))
+//Object.keys(commentPayload).map(c => c == pid)
 
   return (
     <React.Fragment>
       <ul>
         {
-          displayComments
+          sortComments(comments, 'new').map(comment => (
+            <li key={comment.id}>
+              <Comment
+                comment={comment}
+                sortComments={sortComments}
+                sendComment={sendComment}
+                isCommenting={isCommenting}
+                commentedId={commentedId}
+                isAuth={isAuth}
+                commentPayload={commentPayload}
+              />
+            </li>
+          ))
+        }
+        {
+          hasLength(commentPayload) && commentPayload[pid] &&
+          sortComments(commentPayload[pid], 'new').map(comment => (
+            <li key={comment.id}>
+              <Comment
+                comment={comment}
+                sortComments={sortComments}
+                sendComment={sendComment}
+                isCommenting={isCommenting}
+                commentedId={commentedId}
+                isAuth={isAuth}
+                commentPayload={commentPayload}
+              />
+            </li>
+          ))
         }
       </ul>
     </React.Fragment>

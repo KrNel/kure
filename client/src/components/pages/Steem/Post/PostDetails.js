@@ -89,6 +89,7 @@ class PostDetails extends Component {
       sendComment,
       isCommenting,
       commentedId,
+      commentPayload,
     } = this.props;
 
     let {post} = this.props;
@@ -244,6 +245,8 @@ class PostDetails extends Component {
                             isCommenting={isCommenting}
                             commentedId={commentedId}
                             isAuth={isAuth}
+                            commentPayload={commentPayload}
+                            pid={pid}
                           />
                         </div>
                       </div>
