@@ -83,8 +83,6 @@ const addUserToGroup = async (db, next, user, newUser, group, access = 3) => {
     }
 
     return new Promise((resolve, reject) => {
-
-
       db.collection('kgroups_access').insertOne(userAccess, (err, res) => {
         if(err) {
           reject('Error addUserToGroup DB: ', err);

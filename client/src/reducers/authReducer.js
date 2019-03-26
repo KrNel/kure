@@ -1,6 +1,7 @@
 import {
   REQUEST_RETURNING,
   RECEIVE_RETURNING,
+  CANCEL_RETURNING,
   REQUEST_LOGOUT,
   RECEIVE_LOGOUT,
   REQUEST_LOGIN,
@@ -37,6 +38,11 @@ export const auth = (
         user: action.user,
         csrf: action.csrf || '',
         lastUpdated: action.authedAt
+      });
+    case CANCEL_RETURNING:
+      return ({
+        ...state,
+        isAuthorizing: false,
       });
     case REQUEST_LOGIN: {
       return ({

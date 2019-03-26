@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import _ from 'lodash';
-import Helmet from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import PostBody, { getHtml } from './PostBody';
 import { getFromMetadata, extractImageTags } from '../helpers/parser';
@@ -13,7 +13,6 @@ import Tags from '../Tags';
 import Comments from './Comments'
 import ReplyForm from './ReplyForm';
 
-import RepLog10 from '../../../../utils/reputationCalc';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
@@ -23,11 +22,27 @@ import './PostDetails.css'
  *  Renders the post details view for Steem content.
  */
 class PostDetails extends Component {
+
   static propTypes = {
-    match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
     showModal: PropTypes.func.isRequired,
     user: PropTypes.string.isRequired,
+    post: PropTypes.shape(PropTypes.object.isRequired),
+    isFetching: PropTypes.bool.isRequired,
+    handleUpvote: PropTypes.func.isRequired,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    sendComment: PropTypes.func.isRequired,
+    isCommenting: PropTypes.bool.isRequired,
+    commentedId: PropTypes.number,
+    commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    getComments: PropTypes.func.isRequired,
   };
+
+  static defaultProps = {
+    post: {},
+    upvotePayload: {},
+    commentPayload: {},
+    commentedId: 0,
+  }
 
   constructor(props) {
     super(props);
@@ -36,9 +51,22 @@ class PostDetails extends Component {
     this.imagesAlts = [];
   }
 
+  /**
+   *  Extract the author and permlink from the route address and call the
+   *  redux function to get the comments for the post.
+   */
   componentDidMount() {
-    if (this.props.post.children > 0) {
-      this.props.getComments(this.props.post.author, this.props.post.permlink);
+    const {
+      post: {
+        children,
+        author,
+        permlink
+      },
+      getComments
+    } = this.props;
+
+    if (children > 0) {
+      getComments(author, permlink);
     }
   }
 
@@ -82,27 +110,27 @@ class PostDetails extends Component {
     const {
       showModal,
       user,
+      isAuth,
       isFetching,
       handleUpvote,
       upvotePayload,
-      getComments,
       sendComment,
       isCommenting,
       commentedId,
+      commentPayload,
     } = this.props;
 
     let {post} = this.props;
-    if (upvotePayload.post.id > 0) {
+    if (upvotePayload.post.id > 0 && post.id === upvotePayload.post.id) {
       post = upvotePayload.post
     }
 
     const title = post.title;
     const author = post.author;
-    const authorReputation = RepLog10(post.author_reputation);
+    const authorReputation = post.author_reputation;
     const permlink = post.permlink;
     const category = post.category;
-    const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
-    const created = new Date(post.created).toDateString();
+    const created = post.created;
     //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
 
@@ -133,12 +161,8 @@ class PostDetails extends Component {
     const comments = post.replies;
     const pid = post.id;
 
-    //let comments = null;
-    /*if (post.children > 0) {
-      getComments(post.author, post.permlink);
-    }*/
-
     return (
+      <HelmetProvider>
       <React.Fragment>
         <Helmet>
           <title>{title}</title>
@@ -152,7 +176,7 @@ class PostDetails extends Component {
           <meta property="og:description" content={desc} />
           <meta property="og:site_name" content="Kure" />
           <meta property="article:tag" content={category} />
-          <meta property="article:published_time" content={created} />
+          <meta property="article:published_time" content={new Date(created).toDateString()} />
         </Helmet>
         <Grid verticalAlign='middle' columns={1} centered>
           <Grid.Row>
@@ -171,6 +195,7 @@ class PostDetails extends Component {
                         authorReputation={authorReputation}
                         category={category}
                         created={created}
+                        permlink={permlink}
                       />
                       <hr />
                       {this.renderDtubeEmbedPlayer(post)}
@@ -210,7 +235,7 @@ class PostDetails extends Component {
                             commentCount={commentCount}
                             author={author}
                             category={category}
-                            payoutValue={payoutValue}
+                            payoutValue={totalPayout}
                             permlink={permlink}
                             title={title}
                             showModal={showModal}
@@ -222,20 +247,30 @@ class PostDetails extends Component {
                           />
                         </div>
                         <hr />
-                        <ReplyForm
-                          sendComment={sendComment}
-                          isCommenting={isCommenting}
-                          parentPost={post}
-                          commentedId={commentedId}
-                        />
+                        {
+                          isAuth &&
+                          (
+                            <ReplyForm
+                              sendComment={sendComment}
+                              isCommenting={isCommenting}
+                              parentPost={post}
+                              commentedId={commentedId}
+                            />
+                          )
+                        }
 
-                        <div className='comments'>
-
+                        <div className='comments' id='comments'>
                           <Comments
                             comments={comments}
                             sendComment={sendComment}
                             isCommenting={isCommenting}
                             commentedId={commentedId}
+                            isAuth={isAuth}
+                            commentPayload={commentPayload}
+                            pid={pid}
+                            handleUpvote={handleUpvote}
+                            user={user}
+                            upvotePayload={upvotePayload}
                           />
                         </div>
                       </div>
@@ -247,6 +282,7 @@ class PostDetails extends Component {
           </Grid.Row>
         </Grid>
       </React.Fragment>
+      </HelmetProvider>
     )
   }
 }

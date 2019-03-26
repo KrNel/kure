@@ -55,6 +55,41 @@ ul.commentList > li {
   font-size: 1rem;
 }
 
+.commentFooter .meta {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  float: left;
+  padding-bottom:1rem;
+}
+
+.commentFooter .item {
+  line-height: 1;
+  margin: 5px 10px 0 0;
+  list-style-position: inside;
+  border-left: 1px solid var(--main-border);
+  padding-left: 10px;
+}
+
+.commentFooter .item:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+
+.commentFooter .item a {
+  color: var(--charcoal-grey);
+}
+
+.commentFooter .large.icon {
+  color: var(--action-grey);
+  font-size: 1.2em;
+}
+.commentFooter .large.icon:hover {
+  color: var(--light-blue);
+}
+
 .replyForm {
   font-size: 1.1rem;
 }

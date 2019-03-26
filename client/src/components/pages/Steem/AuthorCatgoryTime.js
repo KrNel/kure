@@ -1,8 +1,10 @@
 import React from 'react';
+
 import Avatar from './Avatar';
-import Author from './Author';
+import AuthorReputation from './AuthorReputation';
 import Category from './Category';
-import TimeAgo from './TimeAgo';
+import PostLink from '../../common/PostLink';
+import {long} from '../../../utils/timeFromNow';
 import './AuthorCatgoryTime.css';
 
 /**
@@ -15,20 +17,26 @@ import './AuthorCatgoryTime.css';
  *  @param {number} payoutValue Post payout value
  *  @param {string} createdFromNow Time since post was created
  */
-const AuthorCatgoryTime = ({author, authorReputation, category, created}) => (
+const AuthorCatgoryTime = ({author, authorReputation, category, created, permlink}) => (
   <ul className="info">
     <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
     <li className="item author" data-author={author}>
       {'\u00A0'}
-      <Author author={author} />
-      {`\u00A0(${authorReputation})`}
+      <AuthorReputation author={author} reputation={authorReputation} />
     </li>
     <li className="item tag">
       {'\u00A0in\u00A0'}
       <Category category={category} />
     </li>
     <li className="item timeago">
-      {`\u00A0\u2022\u00A0`}<TimeAgo date={created} />
+      {`\u00A0\u2022\u00A0`}
+      <PostLink
+        author={author}
+        category={category}
+        permlink={permlink}
+        title={created}
+        text={long(created)}
+      />
     </li>
   </ul>
 )

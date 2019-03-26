@@ -1,11 +1,8 @@
-//import axios from 'axios';
 import { Client } from 'dsteem';
-import Cookies from 'js-cookie';
 
 import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
-import {SC_COOKIE} from '../settings';
-import { createPostMetadata, createCommentPermlink } from '../components/pages/Kurate/helpers/postHelpers';
+import { createPostMetadata, createCommentPermlink } from '../components/pages/Steem/helpers/postHelpers';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -41,13 +38,13 @@ export const summaryStart = () => ({
  *  Action creator for successful retrieval of post summary data.
  *
  *  @param {array} posts Posts to display
- *  @param {boolean} noMore If there are more posts to fetch
  *  @return {object} The action data
  */
-export const summarySuccess = (posts, noMore) => ({
+export const summarySuccess = (posts, noMore, prevPage) => ({
   type: GET_SUMMARY_SUCCESS,
   posts,
   noMore,
+  prevPage,
 });
 
 /**
@@ -196,10 +193,12 @@ export const upvoteSuccess = (author, permlink, post) => ({
 /**
  *  Action creator for starting to send a comment.
  *
+ *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const sendCommentStart = () => ({
+export const sendCommentStart = parentId => ({
   type: SEND_COMMENT_START,
+  parentId,
 });
 
 /**
@@ -223,7 +222,7 @@ export const sendCommentSuccess = (comment, parentId) => ({
  *  @param {boolean} nextPost If there are preceeding posts
  *  @returns {function} Dispatches returned action object
  */
-export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch, getState) => {
+export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dispatch, getState) => {
   dispatch(summaryStart());
 
   return client.database.getDiscussions(selectedFilter, query)
@@ -246,7 +245,7 @@ export const getSummaryContent = (selectedFilter, query, nextPost) => (dispatch,
       if (user)
         dispatch(getGroupsFetch(user));
 
-      dispatch(summarySuccess(newPosts, noMore));
+      dispatch(summarySuccess(newPosts, noMore, page));
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
@@ -269,11 +268,11 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
 
       dispatch(detailsSuccess(post));
     })
-
 }
 
 /**
- *  Fetch the post's comment from Steem.
+ *  Fetch the post's comment from Steem. Send start and success dispatches
+ *  after the recursive comment fetch is done.
  *
  *  @param {string} author Author of post
  *  @param {string} permlink Permlink of post
@@ -289,7 +288,10 @@ export const getPostComments = (author, permlink) => (dispatch, getState) => {
 }
 
 /**
- *  Recursively get the post's comments.
+ *  Recursively get the post's comments, looping through until no more
+ *  children replies are found. As each comment is found, get the active votes
+ *  and add it to the comment object. Otherwise, there 'active_votes' fetch
+ *  from content replies is empty.
  *
  *  @param {string} author Author of post
  *  @param {string} permlink Permlink of post
@@ -298,17 +300,22 @@ export const getPostComments = (author, permlink) => (dispatch, getState) => {
 const postCommentsRecursive = (author, permlink) => {
   return client.database.call('get_content_replies', [author, permlink])
     .then(replies => Promise.all(replies.map(r => {
-        if (r.children > 0) {
-          return postCommentsRecursive(r.author, r.permlink)
-            .then(children => {
-              r.replies = children;
-              return r;
-            })
-        }else {
+      client.database
+        .call('get_active_votes', [r.author, r.permlink])
+        .then(av => {
+          r.active_votes = av;
           return r;
-        }
-      }))
-    );
+        });
+      if (r.children > 0) {
+        return postCommentsRecursive(r.author, r.permlink)
+          .then(children => {
+            r.replies = children;
+            return r;
+          })
+      }else {
+        return r;
+      }
+    })))
 }
 
 /**
@@ -429,9 +436,6 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
     },
   } = getState();
 
-  const accessToken = Cookies.get(SC_COOKIE);
-  SteemConnect.setAccessToken(accessToken);
-
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {
       client.database.call('get_content', [author, permlink])
@@ -451,7 +455,7 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
  *  @returns {function} Dispatches returned action object
  */
 export const sendComment = (parentPost, body) => (dispatch, getState) => {
-  dispatch(sendCommentStart());
+  dispatch(sendCommentStart(parentPost.id));
   const {
     auth: {
       user

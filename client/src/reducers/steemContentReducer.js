@@ -26,7 +26,10 @@ import {
  */
 export const steemContent = (
   state = {
-    isFetching: false,
+    isFetchingSummary: false,
+    isFetchingDetails: false,
+    isFetchingComments: false,
+    prevPage: '',
     posts: [],
     noMore: false,
     groups: [{key: 0, text: 'No Groups', value: '0'}],
@@ -48,37 +51,44 @@ export const steemContent = (
     },
     isCommenting: false,
     commentedId: 0,
-    /*commentedPayload: {
-
-    }*/
+    commentPayload: {},
   },
   action) => {
 
   switch (action.type) {
     case GET_SUMMARY_START:
+      return ({
+        ...state,
+        isFetchingSummary: true,
+      });
     case GET_DETAILS_START:
+      return ({
+        ...state,
+        isFetchingDetails: true,
+      });
     case GET_COMMENTS_START:
       return ({
         ...state,
-        isFetching: true,
+        isFetchingComments: true,
       });
     case GET_SUMMARY_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingSummary: false,
         posts: action.posts,
         noMore: action.noMore,
+        prevPage: action.prevPage,
       });
     case GET_DETAILS_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingDetails: false,
         post: action.post,
       });
     case GET_COMMENTS_SUCCESS:
       return ({
         ...state,
-        isFetching: false,
+        isFetchingComments: false,
         post: {
           ...state.post,
           replies: action.comments,
@@ -133,7 +143,10 @@ export const steemContent = (
         ...state,
         upvotePayload: {
           isUpvoting: false,
-          votedPosts: [...state.upvotePayload.votedPosts, action.payload.post],
+          votedPosts: [
+            ...state.upvotePayload.votedPosts,
+            action.payload.post
+          ],
           ...action.payload,
         }
       });
@@ -141,7 +154,7 @@ export const steemContent = (
       return ({
         ...state,
         isCommenting: true,
-        commentedId: 0,
+        commentedId: action.parentId,
         /*commentedPayload: {
           id: action.payload
         }*/
@@ -151,13 +164,19 @@ export const steemContent = (
         ...state,
         isCommenting: false,
         commentedId: action.parentId,
-        post: {
+        commentPayload: {
+          ...state.commentPayload,
+          [action.parentId]: [
+            action.comment
+          ],
+        },
+        /*post: {
           ...state.post,
           replies: [
             ...state.post.replies,
             action.comment,
           ],
-        }
+        }*/
       });
     default:
       return state

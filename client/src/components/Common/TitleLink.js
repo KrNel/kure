@@ -1,10 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 /**
- *  Create the title link, with options to cut off the length.
+ *  Create the title link, with options to cut off the length. Supplying the
+ *  initial 'cutoff' along with the 'multiCut' value allows twi seprate cuts,
+ *  based on Latin and non-Latin chracters which take up varying amounts
+ *  of space.
  */
-const TitleLink = ({title, category, author, permlink, cutoff = 0, multiCut = 0}) => {
+const TitleLink = (props) => {
+  const {
+    category,
+    author,
+    permlink,
+    cutoff,
+    multiCut,
+  } = props;
+  
+  let {
+    title,
+  } = props;
+
   if (cutoff && !multiCut) {
     title = (title.length > cutoff)
       ? title.substr(0,cutoff) + " ..."
@@ -25,9 +41,24 @@ const TitleLink = ({title, category, author, permlink, cutoff = 0, multiCut = 0}
       {title}
     </Link>
   )
-
 }
 
+TitleLink.propTypes = {
+  title: PropTypes.string,
+  category: PropTypes.string,
+  author: PropTypes.string,
+  permlink: PropTypes.string,
+  cutoff: PropTypes.number,
+  multiCut: PropTypes.number,
+};
 
+TitleLink.defaultProps = {
+  title: '',
+  category: '',
+  author: '',
+  permlink: '',
+  cutoff: 0,
+  multiCut: 0,
+};
 
 export default TitleLink;

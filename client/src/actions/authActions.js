@@ -6,6 +6,7 @@ import {SC_COOKIE} from '../settings';
 
 export const REQUEST_RETURNING = 'REQUEST_RETURNING';
 export const RECEIVE_RETURNING = 'RECEIVE_RETURNING';
+export const CANCEL_RETURNING = 'CANCEL_RETURNING';
 export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
 export const RECEIVE_LOGOUT = 'RECEIVE_LOGOUT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
@@ -33,6 +34,10 @@ export const receiveReturning = (res) => ({
   user: res.data.user,
   csrf: res.headers['x-csrf-token'],
   authedAt: Date.now()
+})
+
+export const cancelReturning = () => ({
+  type: CANCEL_RETURNING,
 })
 
 /**
@@ -90,20 +95,17 @@ const fetchReturning = () => async dispatch => {
   return axios.get('/api/auth/returning', {
   }).then(res => {
     const accessToken = Cookies.get(SC_COOKIE);
-    validateToken(accessToken)
-      .then(valid => {
-        if (valid) {        
-          dispatch(receiveReturning(res));
-        }
-      })
+    if (accessToken) {
+      validateToken(accessToken)
+        .then(valid => {
+          if (valid) {
+            dispatch(receiveReturning(res));
+          }
+        })
+    }else {
+      dispatch(cancelReturning());
+    }
   });
-
-
-
-  /*return axios.get('/api/auth/returning', {
-  }).then(res => {
-      dispatch(receiveReturning(res));
-    });*/
 }
 
 const validateToken = (accessToken) => {

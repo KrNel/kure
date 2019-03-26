@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, Dropdown, Divider } from "semantic-ui-react";
+import { Menu, Dropdown } from "semantic-ui-react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import Avatar from '../pages/Kurate/Avatar';
+import Avatar from '../pages/Steem/Avatar';
 
 const trigger = (user) => (
   <Avatar author={user} height='30px' width='30px' />

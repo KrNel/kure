@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import marked from 'marked';
 import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
 
@@ -6,6 +7,20 @@ import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
  *  Comment reply form for posts.
  */
 class ReplyForm extends Component {
+
+  static propTypes = {
+    parentPost: PropTypes.shape(PropTypes.object.isRequired),
+    sendComment: PropTypes.func.isRequired,
+    isCommenting: PropTypes.bool.isRequired,
+    commentedId: PropTypes.number,
+
+  };
+
+  static defaultProps = {
+    parentPost: {},
+    commentedId: 0,
+  }
+
   state = {
     replyData: '',
   }
@@ -14,7 +29,8 @@ class ReplyForm extends Component {
    *  If a comment has been posted, clear the form by clearing the replyData state.
    */
   static getDerivedStateFromProps(props, state) {
-    if (props.parentPost.id === props.commentedId) {
+    if (props.parentPost.id === props.commentedId && !props.isCommenting) {
+      props.toggleReplyForm();
       return {
         replyData: '',
       };
@@ -68,6 +84,8 @@ class ReplyForm extends Component {
       },
       props: {
         isCommenting,
+        commentedId,
+        parentPost,
       }
     } = this;
 
@@ -75,7 +93,7 @@ class ReplyForm extends Component {
       <div className='replyForm'>
         <Form>
           {
-            isCommenting
+            isCommenting && commentedId === parentPost.id
             && <Dimmer inverted active={isCommenting}><Loader /></Dimmer>
           }
           <TextArea

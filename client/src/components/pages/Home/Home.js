@@ -55,10 +55,13 @@ class Home extends Component {
       isAuth
     } = this.props;
 
-    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
+    if (user === '')
+      user = 'x';
+    if ((!isAuth && user === 'x') || isAuth) {//fetch data when not logged in, or logged in, on first page view
       dispatch(fetchPosts(selected, user));
-    else if (csrf && !isAuth)
+    }else if (csrf && !isAuth) {
       dispatch(fetchPosts(selected, 'x'));//fetch data when logged out right after page refresh
+    }
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount
@@ -86,7 +89,7 @@ class Home extends Component {
               <Grid>
                 <Grid.Row className="reducePad">
                   <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Recently Added</Header></Label>
+                    <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
                   </Grid.Column>
                 </Grid.Row>
 

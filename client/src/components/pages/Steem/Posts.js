@@ -2,6 +2,7 @@ import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Header, Label} from 'semantic-ui-react';
+import { withRouter } from 'react-router-dom'
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
@@ -10,8 +11,6 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import FilterPosts from './FilterPosts';
 import * as contentActions from '../../../actions/steemContentActions';
-//import VoteSlider from './VoteSlider';
-import 'react-rangeslider/lib/index.css';
 
 /**
  *  Kurate gets the Steem blockchain content and dusplays a list of post
@@ -24,15 +23,14 @@ class Posts extends Component {
     user: PropTypes.string,
     csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
-    isFetching: PropTypes.bool,
+    isFetchingSummary: PropTypes.bool,
     noMore: PropTypes.bool,
-
   };
 
   static defaultProps = {
     user: '',
     csrf: '',
-    isFetching: false,
+    isFetchingSummary: false,
     noMore: false,
     match: {}
   };
@@ -42,7 +40,6 @@ class Posts extends Component {
 
     this.selectedFilter = 'created';
     this.tag = '';
-    this.isPageLoading = false;
   }
 
   componentDidMount() {
@@ -61,7 +58,7 @@ class Posts extends Component {
   componentDidUpdate(prevProps) {
     const {match} = this.props;
     if (match.url !== prevProps.match.url) {
-      this.isPageLoading = true;
+      //this.isPageLoading = true;
       if (match.params.tag)
         this.tag = match.params.tag;
       else
@@ -79,12 +76,13 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = (e) => {
-    const {isFetching, noMore} = this.props;
-    if (!isFetching && !noMore) {
+    const {isFetchingSummary, noMore} = this.props;
+    if (!isFetchingSummary && !noMore) {
       var lastLi = document.querySelector("#postList > div.post:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
+        this.isInfScrollMore = true;
         this.getPosts('more');
       }
     }
@@ -98,7 +96,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {getContent, posts, match} = this.props;
+    const {getContent, posts, match, page} = this.props;
 
     let startAuthor = undefined;
     let startPermlink = undefined;
@@ -134,7 +132,7 @@ class Posts extends Component {
       start_permlink: startPermlink
     };
 
-    getContent(filter, query, nextPost)
+    getContent(filter, query, nextPost, page)
   }
 
   /**
@@ -153,7 +151,8 @@ class Posts extends Component {
         user,
         csrf,
         posts,
-        isFetching,
+        isFetchingSummary,
+        prevPage,
         match,
         groups,
         modalOpenAddPost,
@@ -165,7 +164,8 @@ class Posts extends Component {
         handleGroupSelect,
         handleUpvote,
         upvotePayload,
-      }
+        page,
+      },
     } = this;
 
     let addErrorPost = '';
@@ -185,7 +185,7 @@ class Posts extends Component {
         <ErrorBoundary>
           <React.Fragment>
             {
-              !match.path.includes('/@:author')
+              page !== 'blog' && page !== 'feed'
               && (
                 <FilterPosts
                   handleSubmitFilter={this.handleSubmitFilter}
@@ -193,13 +193,13 @@ class Posts extends Component {
               )
             }
             {
-              match.path === '/@:author/feed'
+              page === 'feed'
               && (
                 <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Feed`}</Header></Label>
               )
             }
             {
-              match.path === '/@:author'
+              page === 'blog'
               && (
                 <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Blog`}</Header></Label>
               )
@@ -208,8 +208,8 @@ class Posts extends Component {
             <div>
               <div id="postList">
                 {
-                  !this.isPageLoading
-                  && (
+                  page === prevPage
+                  ? (
                     <PostsSummary
                       posts={posts}
                       showModal={showModal}
@@ -217,15 +217,18 @@ class Posts extends Component {
                       csrf={csrf}
                       handleUpvote={handleUpvote}
                       upvotePayload={upvotePayload}
-                      isFetching={isFetching}
+                      isFetchingSummary={isFetchingSummary}
                     />
+                  )
+                  : (
+                    <Loading />
                   )
                 }
 
               </div>
             </div>
             {
-              isFetching && <Loading />
+              isFetchingSummary && page === prevPage && <Loading />
             }
           </React.Fragment>
         </ErrorBoundary>
@@ -247,7 +250,8 @@ const mapStateToProps = state => {
     },
     steemContent: {
       posts,
-      isFetching,
+      isFetchingSummary,
+      prevPage,
       noMore,
       groups,
       postExists,
@@ -263,7 +267,8 @@ const mapStateToProps = state => {
     user,
     csrf,
     posts,
-    isFetching,
+    isFetchingSummary,
+    prevPage,
     noMore,
     groups,
     postExists,
@@ -277,8 +282,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => (
   {
-    getContent: (selectedFilter, query, nextPost) => (
-      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost))
+    getContent: (selectedFilter, query, nextPost, page) => (
+      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost, page))
     ),
     showModal: (e, type, data) => (
       dispatch(contentActions.showModal(e, type, data))
@@ -298,4 +303,4 @@ const mapDispatchToProps = (dispatch) => (
   }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Posts);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Posts));

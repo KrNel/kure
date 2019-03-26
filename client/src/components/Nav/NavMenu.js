@@ -19,7 +19,7 @@ import './NavMenu.css';
 
 const items = [
   {name : "/", label : "Home"},
-  {name : "/kurate", label : "Steem"},
+  {name : "/steem", label : "Steem"},
   {name : "/groups", label : "Communities"},
   //{name : "/kurated", label : "Kurated"},
 ];
@@ -35,9 +35,14 @@ const items = [
  */
 class NavMenu extends Component {
 
-  /*static propTypes = {
+  static propTypes = {
     loginURL: PropTypes.string.isRequired,
-  };*/
+    children: PropTypes.shape(PropTypes.object.isRequired),
+  };
+
+  static defaultProps = {
+    children: {},
+  }
 
   state = {
     visible: false
@@ -89,6 +94,14 @@ const NavBarChildren = ({ children }) => (
   <Container>{children}</Container>
 );
 
+NavBarChildren.propTypes = {
+  children: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+NavBarChildren.defaultProps = {
+  children: {},
+}
+
 /**
  *  Mobile NavMenu, displaying the mobile icon for a sidebar to open up.
  *
@@ -136,7 +149,7 @@ const NavMobile = ({
       onClick={onPusherClick}
     >
       <Menu color="blue" secondary size="huge" className="navMenu">
-        <Menu.Item className="nopad">
+        <Menu.Item fitted>
           <Image src={logo} alt="logo" />
         </Menu.Item>
         <Menu.Item header onClick={onToggle}>
@@ -151,6 +164,20 @@ const NavMobile = ({
   </Sidebar.Pushable>
 );
 
+NavMobile.propTypes = {
+  loginURL: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object.isRequired),
+  onPusherClick: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  visible: PropTypes.bool.isRequired,
+  children: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+NavMobile.defaultProps = {
+  items: [],
+  children: {},
+}
+
 /**
  *  Desktop NavMenu
  *
@@ -161,7 +188,7 @@ const NavMobile = ({
  */
 const NavDesktop = ({ items, loginURL }) => (
   <Menu color="blue" secondary size="huge" className="navMenu">
-    <Menu.Item className="nopad">
+    <Menu.Item fitted to='/' as={NavLink}>
       <Image src={logo} alt="logo" />
     </Menu.Item>
     {
@@ -182,5 +209,14 @@ const NavDesktop = ({ items, loginURL }) => (
     </Menu.Menu>
   </Menu>
 );
+
+NavDesktop.propTypes = {
+  loginURL: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+NavDesktop.defaultProps = {
+  items: [],
+}
 
 export default NavMenu;

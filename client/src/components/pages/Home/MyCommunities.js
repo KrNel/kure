@@ -3,7 +3,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import GroupLink from '../../common/GroupLink';
-import DateFromNow from '../../common/DateFromNow';
+import {short} from '../../../utils/timeFromNow';
 
 const MyCommunities = ({ isAuth, myComms }) => (
   <Segment.Group className='box'>
@@ -23,7 +23,7 @@ const MyCommunities = ({ isAuth, myComms }) => (
                   <GroupLink display={c.display} name={c.group} />
                 </div>
                 <div className='right meta'>
-                  <DateFromNow date={c.updated} />
+                  {short(c.updated)}
                 </div>
                 <div className='clear' />
               </li>
