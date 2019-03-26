@@ -35,9 +35,14 @@ const items = [
  */
 class NavMenu extends Component {
 
-  /*static propTypes = {
+  static propTypes = {
     loginURL: PropTypes.string.isRequired,
-  };*/
+    children: PropTypes.shape(PropTypes.object.isRequired),
+  };
+
+  static defaultProps = {
+    children: {},
+  }
 
   state = {
     visible: false
@@ -88,6 +93,14 @@ class NavMenu extends Component {
 const NavBarChildren = ({ children }) => (
   <Container>{children}</Container>
 );
+
+NavBarChildren.propTypes = {
+  children: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+NavBarChildren.defaultProps = {
+  children: {},
+}
 
 /**
  *  Mobile NavMenu, displaying the mobile icon for a sidebar to open up.
@@ -151,6 +164,20 @@ const NavMobile = ({
   </Sidebar.Pushable>
 );
 
+NavMobile.propTypes = {
+  loginURL: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object.isRequired),
+  onPusherClick: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  visible: PropTypes.bool.isRequired,
+  children: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+NavMobile.defaultProps = {
+  items: [],
+  children: {},
+}
+
 /**
  *  Desktop NavMenu
  *
@@ -182,5 +209,14 @@ const NavDesktop = ({ items, loginURL }) => (
     </Menu.Menu>
   </Menu>
 );
+
+NavDesktop.propTypes = {
+  loginURL: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+NavDesktop.defaultProps = {
+  items: [],
+}
 
 export default NavMenu;

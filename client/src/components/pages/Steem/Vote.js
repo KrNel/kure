@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Icon, Popup } from "semantic-ui-react";
-import Slider from 'react-rangeslider'
+import Slider from 'react-rangeslider';
+import PropTypes from 'prop-types';
 
 import DollarDisplay from '../../common/DollarDisplay';
 import UserLink from '../../common/UserLink';
@@ -9,7 +10,36 @@ import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';
 import './PostActions.css';
 
+/**
+ *  Component to show the payout amount, vote button and vote count.
+ *
+ *  The vote button opens up a vote slider component to allow choosing a
+ *  percentage of voting power to apply, from 1-100%. The second vote from the
+ *  slider then sends the post and user data to the redux store function
+ *  to apply the vote to the Steem blockchain. Data is returned from the
+ *  redux store in 'upvotePayload' to calcualte new values to show.
+ */
 class Vote extends Component {
+
+  static propTypes = {
+    user: PropTypes.string.isRequired,
+    activeVotes: PropTypes.arrayOf(PropTypes.object),
+    author: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    payoutValue: PropTypes.number.isRequired,
+    permlink: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    handleUpvote: PropTypes.func.isRequired,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    ratio: PropTypes.number.isRequired,
+    pid: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    activeVotes: [],
+    upvotePayload: {},
+  }
+
   state = {
     unvote: false,
     showSlider: false,

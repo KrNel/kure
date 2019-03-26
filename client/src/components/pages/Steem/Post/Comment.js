@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 import ReplyForm from './ReplyForm';
 import Body from './PostBody';
@@ -17,6 +18,27 @@ import './Comment.css';
  *  back into the component until there are no more.
  */
 class Comment extends Component {
+
+  static propTypes = {
+    user: PropTypes.string.isRequired,
+    isAuth: PropTypes.bool.isRequired,
+    comment: PropTypes.shape(PropTypes.object.isRequired),
+    handleUpvote: PropTypes.func.isRequired,
+    sortComments: PropTypes.func.isRequired,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    sendComment: PropTypes.func.isRequired,
+    isCommenting: PropTypes.bool.isRequired,
+    commentedId: PropTypes.number,
+    commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+  };
+
+  static defaultProps = {
+    upvotePayload: {},
+    commentPayload: {},
+    commentedId: 0,
+    comment: {},
+  }
+
   state = {
     showReplyForm: false,
   }
@@ -42,7 +64,6 @@ class Comment extends Component {
     const {
       state: {
         showReplyForm,
-        replyData,
       },
       props: {
         sortComments,
@@ -143,8 +164,8 @@ class Comment extends Component {
                     <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
                   </li>
                 </ul>
-                {showReplyForm && replyForm}
               </div>
+              {showReplyForm && replyForm}
             </li>
             <div className='clear' />
           </ul>

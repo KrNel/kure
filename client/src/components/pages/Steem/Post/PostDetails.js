@@ -22,11 +22,27 @@ import './PostDetails.css'
  *  Renders the post details view for Steem content.
  */
 class PostDetails extends Component {
+
   static propTypes = {
-    match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
     showModal: PropTypes.func.isRequired,
     user: PropTypes.string.isRequired,
+    post: PropTypes.shape(PropTypes.object.isRequired),
+    isFetching: PropTypes.bool.isRequired,
+    handleUpvote: PropTypes.func.isRequired,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    sendComment: PropTypes.func.isRequired,
+    isCommenting: PropTypes.bool.isRequired,
+    commentedId: PropTypes.number,
+    commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    getComments: PropTypes.func.isRequired,
   };
+
+  static defaultProps = {
+    post: {},
+    upvotePayload: {},
+    commentPayload: {},
+    commentedId: 0,
+  }
 
   constructor(props) {
     super(props);
@@ -35,6 +51,10 @@ class PostDetails extends Component {
     this.imagesAlts = [];
   }
 
+  /**
+   *  Extract the author and permlink from the route address and call the
+   *  redux function to get the comments for the post.
+   */
   componentDidMount() {
     const {
       post: {
@@ -239,7 +259,7 @@ class PostDetails extends Component {
                           )
                         }
 
-                        <div className='comments'>
+                        <div className='comments' id='comments'>
                           <Comments
                             comments={comments}
                             sendComment={sendComment}

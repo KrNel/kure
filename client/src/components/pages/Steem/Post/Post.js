@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-//import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import PostDetails from './PostDetails';
@@ -11,9 +11,46 @@ import {hasLength} from '../../../../utils/helpers';
 import Loading from '../../../Loading/Loading';
 
 /**
- *  Container to render post details from Steem.
+ *  Container to render post details from Steem. Receives props from
+ *  redux store and send them to PostDetails for rendering, or to a
+ *  modal component for selecting a community to add a post to.
  */
 class Post extends Component {
+
+  static propTypes = {
+    showModal: PropTypes.func.isRequired,
+    user: PropTypes.string.isRequired,
+    csrf: PropTypes.string,
+    post: PropTypes.shape(PropTypes.object.isRequired),
+    handleUpvote: PropTypes.func.isRequired,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    sendComment: PropTypes.func.isRequired,
+    isCommenting: PropTypes.bool.isRequired,
+    commentedId: PropTypes.number,
+    commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    getContent: PropTypes.func.isRequired,
+    getComments: PropTypes.func.isRequired,
+    match: PropTypes.shape(PropTypes.object.isRequired),
+    isAuth: PropTypes.bool.isRequired,
+    groups: PropTypes.arrayOf(PropTypes.object.isRequired),
+    modalOpenAddPost: PropTypes.bool.isRequired,
+    postExists: PropTypes.bool.isRequired,
+    addPostLoading: PropTypes.bool.isRequired,
+    handleModalClickAddPost: PropTypes.func.isRequired,
+    onModalCloseAddPost: PropTypes.func.isRequired,
+    handleGroupSelect: PropTypes.func.isRequired,
+    isFetchingDetails: PropTypes.bool.isRequired,
+  };
+
+  static defaultProps = {
+    post: {},
+    groups: [],
+    upvotePayload: {},
+    commentPayload: {},
+    commentedId: 0,
+    match: {},
+    csrf: '',
+  }
 
   constructor(props) {
     super(props);
@@ -21,8 +58,10 @@ class Post extends Component {
     this.existPost = "Post already in group.";
   }
 
-
-
+  /**
+   *  Extract the author and permlink from the route address and call the
+   *  redux function to get the content of the post.
+   */
   componentDidMount() {
     const {
       getContent,

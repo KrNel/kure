@@ -20,10 +20,6 @@ import './PostActions.css';
  */
 class PostActions extends Component {
 
-  comment = (e) => {
-    e.preventDefault();
-  }
-
   resteem = (e) => {
     e.preventDefault();
   }
@@ -69,8 +65,8 @@ class PostActions extends Component {
             pid={pid}
           />
 
-          <li className="item disabled">
-            <a href="/comment" onClick={(e) => this.comment(e)} title={`${commentCount} comments`}>
+          <li className="item">
+            <a href={`/${category}/@${author}/${permlink}#comments`}>
               <Icon name='comment outline' size='large' />
               <strong>{commentCount}</strong>
             </a>

@@ -1,13 +1,25 @@
 import React from 'react';
 import { Icon, Table, Dimmer, Loader } from "semantic-ui-react";
-//import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';
 import TitleLink from './TitleLink';
 import UserLink from './UserLink';
 
-const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
+/**
+ *  Displays the post data that belong to a commmunity group. Access rank/role
+ *  is also displayed as a string based on the access number. The access
+ *  determines if the Delete option appears to allow deleting a post.
+ */
+const GroupPosts = (props) => {
+  const {
+    posts,
+    showModal,
+    deletingPost,
+    access
+  } = props;
+
   return (
     <Table>
       <Table.Header>
@@ -57,14 +69,11 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
                     //(user === p.added_by)
                     //?
                     access < roles.kGroupsRolesRev['Member']
-                    &&
-                      (
-                        <a href={'/post/delete/'+p.st_author+'/'+p.st_permlink} onClick={e => showModal(e, {author: p.st_author, post: p.st_permlink})}>
-                          <Icon name='delete' color='blue' />
-                        </a>
-                      )
-
-                    //:''
+                    && (
+                      <a href={'/post/delete/'+p.st_author+'/'+p.st_permlink} onClick={e => showModal(e, {author: p.st_author, post: p.st_permlink})}>
+                        <Icon name='delete' color='blue' />
+                      </a>
+                    )
                   }
                 </Table.Cell>
               )
@@ -76,5 +85,21 @@ const GroupPosts = ({posts, showModal, deletingPost, user, access}) => {
     </Table>
   )
 }
+
+GroupPosts.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.object),
+  showModal: PropTypes.func,
+  deletingPost: PropTypes.string,
+  user: PropTypes.string,
+  access: PropTypes.number,
+};
+
+GroupPosts.defaultProps = {
+  posts: [],
+  deletingPost: '',
+  user: '',
+  showModal: () => {},
+  access: 99,
+};
 
 export default GroupPosts;

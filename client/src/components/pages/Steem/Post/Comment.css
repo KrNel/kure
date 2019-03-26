@@ -62,6 +62,7 @@ ul.commentList > li {
   padding: 0;
   font-size: 1rem;
   float: left;
+  padding-bottom:1rem;
 }
 
 .commentFooter .item {

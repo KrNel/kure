@@ -1,11 +1,16 @@
 import React from 'react';
 import { Header, Icon, Table, Dimmer, Loader } from "semantic-ui-react";
-//import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';
 import UserLink from './UserLink';
 
+/**
+ *  Displays the users' data that belong to a commmunity group. Access rank/role
+ *  is also displayed as a string based on the access number. The access
+ *  determines if the Delete option appears to allow deleting a user.
+ */
 const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
   <React.Fragment>
     <Header>
@@ -25,7 +30,6 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
       </Table.Header>
       <Table.Body>
         {
-
           users.map((u, i) => {
             const role = roles.kGroupsRoles[u.access];
             return (
@@ -69,5 +73,20 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
   </React.Fragment>
 )
 
+GroupUsers.propTypes = {
+  users: PropTypes.arrayOf(PropTypes.object),
+  showModal: PropTypes.func,
+  deletingUser: PropTypes.string,
+  user: PropTypes.string,
+  access: PropTypes.number,
+};
+
+GroupUsers.defaultProps = {
+  users: [],
+  deletingUser: '',
+  user: '',
+  showModal: () => {},
+  access: 99,
+};
 
 export default GroupUsers;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {hasLength} from '../../../../utils/helpers';
 import Comment from './Comment';
@@ -88,6 +89,26 @@ const Comments = (props) => {
       </ul>
     </React.Fragment>
   )
+}
+
+Comments.propTypes = {
+  user: PropTypes.string.isRequired,
+  isAuth: PropTypes.bool.isRequired,
+  comments: PropTypes.arrayOf(PropTypes.object.isRequired),
+  handleUpvote: PropTypes.func.isRequired,
+  upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+  sendComment: PropTypes.func.isRequired,
+  isCommenting: PropTypes.bool.isRequired,
+  commentedId: PropTypes.number,
+  commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+  pid: PropTypes.number.isRequired,
+};
+
+Comments.defaultProps = {
+  upvotePayload: {},
+  commentPayload: {},
+  commentedId: 0,
+  comments: [],
 }
 
 export default Comments;
