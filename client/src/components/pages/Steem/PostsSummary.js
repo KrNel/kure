@@ -16,7 +16,21 @@ import PostLink from '../../common/PostLink';
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
  *  @param {function} showModal Parent function to show the add post modal
  */
-const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upvotePayload, isFetchingSummary, isFetchingScroll}) => {
+const PostsSummary = (props) => {
+
+  const {
+    posts,
+    showModal,
+    user,
+    handleUpvote,
+    upvotePayload,
+    isFetchingSummary,
+    isFetchingScroll
+  } = props;
+
+  let {
+    nextPost,
+  } = props;
 
   if (!posts.length && !isFetchingSummary && !isFetchingScroll) {
     return "No Posts";
@@ -39,19 +53,15 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
         const title = post.title;
         const author = post.author;
         const authorReputation = RepLog10(post.author_reputation);
-        //const url = post.url;
         const desc = post.desc;
         const permlink = post.permlink;
         const category = post.category;
         const thumb = post.image_link;
-        const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
-        //const created = new Date(post.created).toDateString();
         const created = post.created;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
-        const totalPayout =
-          parseFloat(post.pending_payout_value) +
+        const totalPayout = parseFloat(post.pending_payout_value) +
           parseFloat(post.total_payout_value) +
           parseFloat(post.curator_payout_value);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
@@ -100,7 +110,7 @@ const PostsSummary = ({posts, nextPost, showModal, user, csrf, handleUpvote, upv
                     commentCount={commentCount}
                     author={author}
                     category={category}
-                    payoutValue={payoutValue}
+                    payoutValue={totalPayout}
                     permlink={permlink}
                     title={title}
                     showModal={showModal}

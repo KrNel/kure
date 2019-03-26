@@ -200,7 +200,11 @@ class Vote extends Component {
 
     return (
       <React.Fragment>
-        <li className="item payout">{payoutValue}</li>
+        <li className="item payout">
+          <DollarDisplay
+            value={payoutValue}
+          />
+        </li>
 
         <li className="item upvote">
           <div className='vslider'>

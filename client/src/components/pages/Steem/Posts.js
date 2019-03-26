@@ -11,7 +11,6 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import FilterPosts from './FilterPosts';
 import * as contentActions from '../../../actions/steemContentActions';
-import {hasLength} from '../helpers/helpers';
 
 /**
  *  Kurate gets the Steem blockchain content and dusplays a list of post

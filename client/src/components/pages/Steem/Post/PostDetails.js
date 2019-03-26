@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import _ from 'lodash';
-import Helmet from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import PostBody, { getHtml } from './PostBody';
 import { getFromMetadata, extractImageTags } from '../helpers/parser';
@@ -36,8 +36,17 @@ class PostDetails extends Component {
   }
 
   componentDidMount() {
-    if (this.props.post.children > 0) {
-      this.props.getComments(this.props.post.author, this.props.post.permlink);
+    const {
+      post: {
+        children,
+        author,
+        permlink
+      },
+      getComments
+    } = this.props;
+
+    if (children > 0) {
+      getComments(author, permlink);
     }
   }
 
@@ -85,7 +94,6 @@ class PostDetails extends Component {
       isFetching,
       handleUpvote,
       upvotePayload,
-      getComments,
       sendComment,
       isCommenting,
       commentedId,
@@ -93,7 +101,7 @@ class PostDetails extends Component {
     } = this.props;
 
     let {post} = this.props;
-    if (upvotePayload.post.id > 0) {
+    if (upvotePayload.post.id > 0 && post.id === upvotePayload.post.id) {
       post = upvotePayload.post
     }
 
@@ -102,7 +110,6 @@ class PostDetails extends Component {
     const authorReputation = post.author_reputation;
     const permlink = post.permlink;
     const category = post.category;
-    const payoutValue = post.pending_payout_value/* + post.total_payout_value*/;
     const created = post.created;
     //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
@@ -134,12 +141,8 @@ class PostDetails extends Component {
     const comments = post.replies;
     const pid = post.id;
 
-    //let comments = null;
-    /*if (post.children > 0) {
-      getComments(post.author, post.permlink);
-    }*/
-
     return (
+      <HelmetProvider>
       <React.Fragment>
         <Helmet>
           <title>{title}</title>
@@ -212,7 +215,7 @@ class PostDetails extends Component {
                             commentCount={commentCount}
                             author={author}
                             category={category}
-                            payoutValue={payoutValue}
+                            payoutValue={totalPayout}
                             permlink={permlink}
                             title={title}
                             showModal={showModal}
@@ -236,9 +239,7 @@ class PostDetails extends Component {
                           )
                         }
 
-
                         <div className='comments'>
-
                           <Comments
                             comments={comments}
                             sendComment={sendComment}
@@ -247,6 +248,9 @@ class PostDetails extends Component {
                             isAuth={isAuth}
                             commentPayload={commentPayload}
                             pid={pid}
+                            handleUpvote={handleUpvote}
+                            user={user}
+                            upvotePayload={upvotePayload}
                           />
                         </div>
                       </div>
@@ -258,6 +262,7 @@ class PostDetails extends Component {
           </Grid.Row>
         </Grid>
       </React.Fragment>
+      </HelmetProvider>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {hasLength} from '../../helpers/helpers';
+import {hasLength} from '../../../../utils/helpers';
 import Comment from './Comment';
 import './Comments.css';
 
@@ -27,26 +27,23 @@ const sortComments = (comments, sortBy) => {
  *  Additionally, any new comments in `commentPayload` at the root level of
  *  the posts are also sent to render as a comment separately from the
  *  fetches comments.
+ *
+ *  @param {array} comments Comments to sort
  */
-const Comments = ({
-  comments,
-  sendComment,
-  isCommenting,
-  commentedId,
-  isAuth,
-  commentPayload,
-  pid,
-}) => {
+const Comments = (props) => {
 
-console.log('comments',comments)
-console.log('commentPayload',commentPayload)
-console.log('commentPayload[pid]',commentPayload[pid])
-
-//console.log('Object.keys(commentPayload)',Object.keys(commentPayload))
-//console.log('Object.getOwnPropertyNames(commentPayload)',Object.getOwnPropertyNames(commentPayload))
-//console.log('commentPayload.hasOwnProperty(pid)',commentPayload.hasOwnProperty(pid))
-//console.log('Object.keys(commentPayload).includes(pid)',Object.keys(commentPayload).includes(pid))
-//Object.keys(commentPayload).map(c => c == pid)
+  const {
+    comments,
+    sendComment,
+    isCommenting,
+    commentedId,
+    isAuth,
+    commentPayload,
+    pid,
+    user,
+    handleUpvote,
+    upvotePayload,
+  } = props;
 
   return (
     <React.Fragment>
@@ -62,6 +59,9 @@ console.log('commentPayload[pid]',commentPayload[pid])
                 commentedId={commentedId}
                 isAuth={isAuth}
                 commentPayload={commentPayload}
+                handleUpvote={handleUpvote}
+                upvotePayload={upvotePayload}
+                user={user}
               />
             </li>
           ))
@@ -78,6 +78,9 @@ console.log('commentPayload[pid]',commentPayload[pid])
                 commentedId={commentedId}
                 isAuth={isAuth}
                 commentPayload={commentPayload}
+                handleUpvote={handleUpvote}
+                upvotePayload={upvotePayload}
+                user={user}
               />
             </li>
           ))

@@ -19,8 +19,6 @@ const app = express();
 
 dotenv.config();
 
-//app.set('env', config.env);
-//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set('port', (config.app.server.port || 3001));
 
@@ -35,59 +33,6 @@ if (process.env.NODE_ENV === "production") {
 else {
   app.use(morgan("combined")); //log to console on development
 }
-
-//Log server settings
-/*let transportInfo = new transports.DailyRotateFile({
-  name:"infofile",
-  filename: './server/logs/all/log-%DATE%.log',
-  handleExceptions: true,
-  datePattern: 'YYYY-MM-DD',
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  prettyPrint: true,
-});*/
-
-//Filter error messages from log
-/*let transportError = new transports.DailyRotateFile({
-  name:"errorfile",
-  filename: './server/logs/errors/errors-%DATE%.log',
-  handleExceptions: true,
-  datePattern: 'YYYY-MM-DD',
-  level: 'error',
-  prettyPrint: true,
-  silent: process.env.NODE_ENV !== 'production',
-});
-
-let logger = createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: combine(
-    timestamp(),
-    json(),
-    prettyPrint(),
-  ),
-  transports: [
-    transportError,
-  ],
-  exitOnError: false,
-});
-
-
-const myFormat = printf(info => {
-    if(info instanceof Error) {
-        return `${info.timestamp} [${info.label}] ${info.level}: ${info.message} ${info.stack}`;
-    }
-    return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
-});
-
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new transports.Console({
-    format: format.combine(
-      format.colorize(),
-      format.splat(),
-      timestamp(),
-      myFormat,
-    )
-  }));
-}*/
 
 const enumerateErrorFormat = format(info => {
   if (info.message instanceof Error) {
@@ -118,24 +63,6 @@ const logger = createLogger({
   ]
 });
 
-/*// Error as message
-console.log('Run FIRST test...');
-logger.log({ level: 'error', message: new Error('FIRST test error') });
-
-// Error as info (one argument)
-console.log('\nRun SECOND test...');
-const err = new Error('SECOND test error');
-err.level = 'info';
-logger.info(err);
-
-// Error as info (two arguments);
-console.log('\nRun THIRD test...');
-logger.log('info', new Error('THIRD test error'));*/
-
-
-//app.locals.logger = logger;
-//logger.error(new Error('whatever'));
-
 //Set headers on responses
 //TODO: set headers on nginx sever when setup
 app.use(helmet());
@@ -156,10 +83,6 @@ MongoClient.connect(mongoURL, { useNewUrlParser: true }).then(connection => {
 	console.error('MongoDB Connection Error: ', err);
 });
 
-/*app.get('/hey', (req, res) => {
-  res.send('HEY!')
-})
-*/
 // logger api
 app.post('/api/logger', (req, res) => {
   logger.log(req.body);
@@ -168,18 +91,9 @@ app.post('/api/logger', (req, res) => {
 
 //Routes for React fetchs
 app.use('/api', api);
-/*
-app.get('/api/greeting', (req, res) => {
-  const name = req.query.name || 'World';
-  res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
-});
 
-
-*/
 app.use((err, req, res) => {
   logger.log({level: 'error', message: err});
-  //res.json({ error: 'Something failed!' })
 })
 
 export default app;

@@ -6,11 +6,15 @@ import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
 import PostLink from '../../../common/PostLink';
 import {long} from '../../../../utils/timeFromNow';
-import {hasLength} from '../../helpers/helpers';
+import {hasLength} from '../../../../utils/helpers';
+import Vote from '../Vote';
 import './Comment.css';
 
 /**
  *  Comment component to display the author, avatar, time and content.
+ *  Will take each comment/reply and format that data, providing upvote
+ *  and reply functionality for each. Child comments are recursively loaded
+ *  back into the component until there are no more.
  */
 class Comment extends Component {
   state = {
@@ -26,6 +30,9 @@ class Comment extends Component {
     this.toggleReplyForm();
   };
 
+  /**
+   *  Toggle the display of the comment reply form.
+   */
   toggleReplyForm = () => {
     const { showReplyForm } = this.state;
     this.setState({ showReplyForm: !showReplyForm, showEdit: false });
@@ -38,15 +45,27 @@ class Comment extends Component {
         replyData,
       },
       props: {
-        comment,
         sortComments,
         sendComment,
         isCommenting,
         commentedId,
         isAuth,
         commentPayload,
+        handleUpvote,
+        user,
+        upvotePayload,
       }
     } = this;
+
+    let {
+      props: {
+        comment
+      }
+    } = this;
+
+    const vp = upvotePayload.votedPosts.find(vp => vp.id === comment.id);
+    if (vp)
+      comment = vp;
 
     const depth = comment.depth;
 
@@ -65,14 +84,24 @@ class Comment extends Component {
 
     let replyClass = depth + 1 > 5 ? 'repliesNoIndent' : 'replies';
 
+    const id = comment.id;
+    const title = comment.title;
     const author = comment.author;
     const permlink = comment.permlink;
+    const category = comment.category;
     const created = comment.created;
     const anchorLink = `#@${author}/${permlink}`;
+    const activeVotes = comment.active_votes;
+    const totalPayout =
+      parseFloat(comment.pending_payout_value) +
+      parseFloat(comment.total_payout_value) +
+      parseFloat(comment.curator_payout_value);
+    const totalRShares = comment.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
+    const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
     return (
       <React.Fragment>
-        <div id={`comment-${comment.id}`} className={`comment depth-${depth}`}>
+        <div id={`comment-${id}`} className={`comment depth-${depth}`}>
           <ul className='commentList'>
             <li className='commentAvatar'>
               <Avatar author={author} height='40px' width='40px' />
@@ -96,8 +125,24 @@ class Comment extends Component {
                 />
               </div>
               <div className='commentFooter'>
-                {/*<div>Vote</div>*/}
-                <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                <ul className="meta">
+                  <Vote
+                    activeVotes={activeVotes}
+                    author={author}
+                    category={category}
+                    payoutValue={totalPayout}
+                    permlink={permlink}
+                    title={title}
+                    user={user}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                    ratio={ratio}
+                    pid={id}
+                  />
+                  <li className='item'>
+                    <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                  </li>
+                </ul>
                 {showReplyForm && replyForm}
               </div>
             </li>
@@ -120,6 +165,9 @@ class Comment extends Component {
                     commentedId={commentedId}
                     isAuth={isAuth}
                     commentPayload={commentPayload}
+                    user={user}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
                   />
                 </li>
               ))
@@ -128,11 +176,11 @@ class Comment extends Component {
           )
         }
         {
-          hasLength(commentPayload) && commentPayload[comment.id]
+          hasLength(commentPayload) && commentPayload[id]
           && (
             <ul className={replyClass}>
               {
-                sortComments(commentPayload[comment.id], 'new').map(reply => (
+                sortComments(commentPayload[id], 'new').map(reply => (
                   <li className='commentReply' key={reply.id}>
                     <Comment
                       comment={reply}
@@ -142,6 +190,9 @@ class Comment extends Component {
                       commentedId={commentedId}
                       isAuth={isAuth}
                       commentPayload={commentPayload}
+                      user={user}
+                      handleUpvote={handleUpvote}
+                      upvotePayload={upvotePayload}
                     />
                   </li>
                 ))

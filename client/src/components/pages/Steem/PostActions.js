@@ -5,8 +5,6 @@ import Vote from './Vote';
 
 import './PostActions.css';
 
-
-
 /**
  *  Displays the data and actions for the posts.
  *  This includes likes, votes, comments, dislikes, flags and adding a post to

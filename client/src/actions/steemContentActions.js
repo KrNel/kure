@@ -268,11 +268,11 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
 
       dispatch(detailsSuccess(post));
     })
-
 }
 
 /**
- *  Fetch the post's comment from Steem.
+ *  Fetch the post's comment from Steem. Send start and success dispatches
+ *  after the recursive comment fetch is done.
  *
  *  @param {string} author Author of post
  *  @param {string} permlink Permlink of post
@@ -288,7 +288,10 @@ export const getPostComments = (author, permlink) => (dispatch, getState) => {
 }
 
 /**
- *  Recursively get the post's comments.
+ *  Recursively get the post's comments, looping through until no more
+ *  children replies are found. As each comment is found, get the active votes
+ *  and add it to the comment object. Otherwise, there 'active_votes' fetch
+ *  from content replies is empty.
  *
  *  @param {string} author Author of post
  *  @param {string} permlink Permlink of post
@@ -297,17 +300,22 @@ export const getPostComments = (author, permlink) => (dispatch, getState) => {
 const postCommentsRecursive = (author, permlink) => {
   return client.database.call('get_content_replies', [author, permlink])
     .then(replies => Promise.all(replies.map(r => {
-        if (r.children > 0) {
-          return postCommentsRecursive(r.author, r.permlink)
-            .then(children => {
-              r.replies = children;
-              return r;
-            })
-        }else {
+      client.database
+        .call('get_active_votes', [r.author, r.permlink])
+        .then(av => {
+          r.active_votes = av;
           return r;
-        }
-      }))
-    );
+        });
+      if (r.children > 0) {
+        return postCommentsRecursive(r.author, r.permlink)
+          .then(children => {
+            r.replies = children;
+            return r;
+          })
+      }else {
+        return r;
+      }
+    })))
 }
 
 /**
@@ -427,9 +435,6 @@ export const upvotePost = (author, permlink, weight) => (dispatch, getState) => 
       user
     },
   } = getState();
-
-  //const accessToken = Cookies.get(SC_COOKIE);
-  //SteemConnect.setAccessToken(accessToken);
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {

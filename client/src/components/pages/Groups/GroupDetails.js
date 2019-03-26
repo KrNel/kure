@@ -9,7 +9,7 @@ import GroupUsers from '../../common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
-import {hasLength} from '../helpers/helpers';
+import {hasLength} from '../../../utils/helpers';
 
 /**
  *
