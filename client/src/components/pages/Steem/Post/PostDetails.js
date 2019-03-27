@@ -51,25 +51,6 @@ class PostDetails extends Component {
     this.imagesAlts = [];
   }
 
-  /**
-   *  Extract the author and permlink from the route address and call the
-   *  redux function to get the comments for the post.
-   */
-  componentDidMount() {
-    const {
-      post: {
-        children,
-        author,
-        permlink
-      },
-      getComments
-    } = this.props;
-
-    if (children > 0) {
-      getComments(author, permlink);
-    }
-  }
-
   //Needed to `dangerouslySetInnerHTML`
   createMarkup = (html) => {
     return {__html: html};
@@ -131,7 +112,6 @@ class PostDetails extends Component {
     const permlink = post.permlink;
     const category = post.category;
     const created = post.created;
-    //const createdFromNow = moment.utc(post.created).fromNow();
     const activeVotes = post.active_votes;
 
     const totalPayout =
@@ -155,7 +135,6 @@ class PostDetails extends Component {
     const parsedBody = getHtml(body, {}, 'text');
     this.images = extractImageTags(parsedBody);
 
-    //const tags = _.union(getFromMetadata(post.json_metadata, 'tags'), [post.category]);
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
     const comments = post.replies;

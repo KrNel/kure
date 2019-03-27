@@ -267,6 +267,9 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
         dispatch(getGroupsFetch(user));
 
       dispatch(detailsSuccess(post));
+      if (post.children > 0) {
+        dispatch(getPostComments(post.author, post.permlink));
+      }
     })
 }
 

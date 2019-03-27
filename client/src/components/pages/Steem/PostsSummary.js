@@ -52,7 +52,7 @@ const PostsSummary = (props) => {
 
         const title = post.title;
         const author = post.author;
-        const authorReputation = RepLog10(post.author_reputation);
+        const authorReputation = post.author_reputation;
         const desc = post.desc;
         const permlink = post.permlink;
         const category = post.category;

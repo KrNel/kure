@@ -160,9 +160,13 @@ class Comment extends Component {
                     ratio={ratio}
                     pid={id}
                   />
-                  <li className='item'>
-                    <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
-                  </li>
+                  {
+                    isAuth && (
+                      <li className='item'>
+                        <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                      </li>
+                    )
+                  }
                 </ul>
               </div>
               {showReplyForm && replyForm}

@@ -57,7 +57,7 @@ export const calculatePayout = post => {
     payoutDetails.authorPayouts = total_author_payout;
     payoutDetails.curatorPayouts = total_curator_payout;
   }
-console.log('payoutDetails',payoutDetails)
+
   return payoutDetails;
 };
 

@@ -18,6 +18,8 @@ import './Home.css';
  *
  *  Shows the recent activity on the site.
  *  Recently added posts from all community groups are shown.
+ *  Non-logged in users need to force a 'x' as a user in order for data to be
+ *  retrieved from the database. Without that, the data comes back empty.
  *
  *  @param {object} props Component props
  *  @param {string} props.selected Selected activity to display
