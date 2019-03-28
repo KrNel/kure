@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import { Grid, Segment, Image } from "semantic-ui-react";
+import { Grid, Image } from "semantic-ui-react";
 
 import {long} from '../../../utils/timeFromNow';
 import GroupLink from '../../common/GroupLink';
@@ -22,11 +22,13 @@ const RecentPostsBoxes = ({posts, isAuth}) => {
     return posts.map((p, i) => (
       <Grid.Column key={i} width={8}>
         <div className='recentBox'>
-          {
-            p.st_image
-              ? <Image src={p.st_image} alt="image" />
-              : <Image src={defaultImage} alt="image" />
-          }
+          <div className='cropImage'>
+            {
+              p.st_image
+                ? <Image src={p.st_image} alt="image" />
+                : <Image src={defaultImage} alt="image" />
+            }
+          </div>
           <div className='overlayImage'>
             <div className='recentTitle'>
               <TitleLink

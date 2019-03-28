@@ -106,10 +106,8 @@ class Comment extends Component {
     let replyClass = depth + 1 > 5 ? 'repliesNoIndent' : 'replies';
 
     const id = comment.id;
-    const title = comment.title;
     const author = comment.author;
     const permlink = comment.permlink;
-    const category = comment.category;
     const created = comment.created;
     const anchorLink = `#@${author}/${permlink}`;
     const activeVotes = comment.active_votes;

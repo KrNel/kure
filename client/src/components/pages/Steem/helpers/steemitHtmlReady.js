@@ -1,5 +1,5 @@
 /**
- *  Lifted from busy.org source: 
+ *  Lifted from busy.org source:
  *  https://github.com/busyorg/busy/blob/develop/src/client/vendor/steemitHtmlReady.js
  *
  *  This function is extracted from steemit.com source code and does the same
@@ -99,7 +99,7 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
     return { html: doc ? XMLSerializer.serializeToString(doc) : '', ...state };
   } catch (error) {
     // Not Used, parseFromString might throw an error in the future
-    console.error(error.toString());
+    console.error(error.toString());//eslint-disable-line
     return { html };
   }
 }
@@ -137,6 +137,8 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
+  const { mutate, resolveIframe } = state;
+
   const url = child.getAttribute('src');
   let domString;
   const embed = embedjs.get(url || '', { width: '100%', height: 400 });
@@ -147,7 +149,6 @@ function iframe(state, child) {
     if (!resolveIframe) domString = `~~~ embed:${embed.id} ${embed.provider_name} ${embed.url} ~~~`;
   }
 
-  const { mutate, resolveIframe } = state;
   if (!mutate) return;
 
   const tag = child.parentNode.tagName
@@ -238,8 +239,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
   // usertag (mention)
   // Cribbed from https://github.com/twitter/twitter-text/blob/v1.14.7/js/twitter-text.js#L90
   // https://github.com/steemit/condenser/blob/7c588536d2568a554391ea1edaa656c636c5a890/src/shared/HtmlReady.js#L272-L290
-  content = content.replace(
-    /(^|[^a-zA-Z0-9_!#$%&*@＠\/]|(^|[^a-zA-Z0-9_+~.-\/#]))[@＠]([a-z][-\.a-z\d]+[a-z\d])/gi,
+  content = content.replace(/(^|[^a-zA-Z0-9_!#$%&*@＠\/]|(^|[^a-zA-Z0-9_+~.-\/#]))[@＠]([a-z][-\.a-z\d]+[a-z\d])/gi,//eslint-disable-line
     (match, preceeding1, preceeding2, user) => {
       const userLower = user.toLowerCase();
       const valid = validateAccountName(userLower) == null;
@@ -295,19 +295,4 @@ function isEmbedable(child, links, images, resolveIframe) {
     console.log(error);
     return false;
   }
-}
-
-/** @return {id, url} or <b>null</b> */
-function youTubeId(data) {
-  if (!data) return null;
-
-  const m1 = data.match(linksRe.youTube);
-  const url = m1 ? m1[0] : null;
-  if (!url) return null;
-
-  const m2 = url.match(linksRe.youTubeId);
-  const id = m2 && m2.length >= 2 ? m2[1] : null;
-  if (!id) return null;
-
-  return { id, url };
 }

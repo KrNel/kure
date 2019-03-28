@@ -358,7 +358,7 @@ export const getUserComments = (author, permlink) => (dispatch, getState) => {
 const getGroupsFetch = () => async (dispatch, getState) => {
   //on first page load authenticate before proceeding
   const { user } = getState().auth;
-  const cont = await user === '' ? handleReturning() : '';
+  const cont = await user === '' ? handleReturning() : '';//eslint-disable-line
 
   const { groups } = getState().steemContent;
   if (groups[0].text !== "No Groups") return;
@@ -406,7 +406,7 @@ const addPostFetch = () => (dispatch, getState) => {
   } = getState();
 
   addPost({group: selectedGroup, user, ...addPostData}, csrf)
-  .then(res => { 
+  .then(res => {
     if (!res.data.invalidCSRF) {
       if (res.data.exists) {
         const postExists = true;
