@@ -5,6 +5,7 @@ import { Grid, Image } from "semantic-ui-react";
 import {long} from '../../../utils/timeFromNow';
 import GroupLink from '../../common/GroupLink';
 import TitleLink from '../../common/TitleLink';
+import UserLink from '../../common/UserLink';
 import defaultImage from '../../../images/steemkure-600.png';
 import './RecentPostsBoxes.css'
 /**
@@ -40,7 +41,7 @@ const RecentPostsBoxes = ({posts, isAuth}) => {
             </div>
             <div className='left'>
               {'by '}
-              {p.st_author}
+              <UserLink user={p.st_author} />
             </div>
             <div className='right'>
               <div><GroupLink display={p.display} name={p.group} /></div>

@@ -43,6 +43,7 @@
 
 .overlayImage .recentTitle {
   font-size: 1.5rem;
+  line-height: 1.5rem;
   /*max-width:60% !important;*/
 }
 
