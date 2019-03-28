@@ -100,7 +100,7 @@ const PostsSummary = (props) => {
                     permlink={permlink}
                   />
                 </h4>
-                <p>
+                <p className='description'>
                   {desc}
                 </p>
                 <div className='post-actions'>
