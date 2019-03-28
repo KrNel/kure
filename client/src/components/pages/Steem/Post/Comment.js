@@ -150,10 +150,8 @@ class Comment extends Component {
                   <Vote
                     activeVotes={activeVotes}
                     author={author}
-                    category={category}
                     payoutValue={totalPayout}
                     permlink={permlink}
-                    title={title}
                     user={user}
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}

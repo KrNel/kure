@@ -9,7 +9,7 @@ body {
 }
 
 a {
-  color: var(--medium-blue)
+  color: var(--dark-blue)
 }
 a:hover {
   color: var(--light-blue)

@@ -3,6 +3,7 @@ import { Client } from 'dsteem';
 import { getUserGroups, addPost, logger } from '../utils/fetchFunctions';
 import SteemConnect from '../utils/auth/scAPI';
 import { createPostMetadata, createCommentPermlink } from '../components/pages/Steem/helpers/postHelpers';
+import {handleReturning} from './authActions';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -241,9 +242,7 @@ export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dis
         newPosts = getState().posts;
       }
 
-      const {user} = getState().auth;
-      if (user)
-        dispatch(getGroupsFetch(user));
+      dispatch(getGroupsFetch());
 
       dispatch(summarySuccess(newPosts, noMore, page));
     }).catch(err => {
@@ -262,9 +261,7 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
   return client.database.call('get_content', [author, permlink])
     .then(post => {
-      const {user} = getState().auth;
-      if (user)
-        dispatch(getGroupsFetch(user));
+      dispatch(getGroupsFetch());
 
       dispatch(detailsSuccess(post));
       if (post.children > 0) {
@@ -346,7 +343,6 @@ export const getComment = (author, permlink) => {
  */
 export const getUserComments = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
-  //return client.database.call('get_content_replies', [author, permlink])
   return client.database.getDiscussions('comments', {tag: 'krnel'})
     .then(result => {
       dispatch(detailsSuccess(result));
@@ -359,8 +355,12 @@ export const getUserComments = (author, permlink) => (dispatch, getState) => {
  *  @param {string} user User to get groups for
  *  @returns {function} Dispatches returned action object
  */
-const getGroupsFetch = (user) => (dispatch, getState) => {
-  const {groups} = getState().steemContent;
+const getGroupsFetch = () => async (dispatch, getState) => {
+  //on first page load authenticate before proceeding
+  const { user } = getState().auth;
+  const cont = await user === '' ? handleReturning() : '';
+
+  const { groups } = getState().steemContent;
   if (groups[0].text !== "No Groups") return;
 
   return getUserGroups(user, 'all')
@@ -383,7 +383,6 @@ const getGroupsFetch = (user) => (dispatch, getState) => {
  */
 export const handleModalClickAddPost = (e) => dispatch => {
   const confirm = e.target.dataset.confirm;
-  //const {addPost, onModalCloseAddPost} = this.props;
   if (confirm === 'true')
     dispatch(addPostFetch());
   else
@@ -407,7 +406,7 @@ const addPostFetch = () => (dispatch, getState) => {
   } = getState();
 
   addPost({group: selectedGroup, user, ...addPostData}, csrf)
-  .then(res => {
+  .then(res => { 
     if (!res.data.invalidCSRF) {
       if (res.data.exists) {
         const postExists = true;
@@ -415,7 +414,6 @@ const addPostFetch = () => (dispatch, getState) => {
       }else if (res.data.post) {
         dispatch(onModalCloseAddPost());
       }
-
     }
   }).catch((err) => {
     logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});

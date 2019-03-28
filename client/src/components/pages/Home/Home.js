@@ -8,7 +8,8 @@ import GroupLink from '../../common/GroupLink';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
-import RecentPosts from './RecentPosts'
+//import RecentPostsTable from './RecentPostsTable';
+import RecentPostsBoxes from './RecentPostsBoxes';
 import TitleLink from '../../common/TitleLink';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
@@ -81,7 +82,8 @@ class Home extends Component {
     const recentPostsComp =
         (isFetching)
           ? <Loading />
-        : <RecentPosts posts={posts} isAuth={isAuth} />;
+          //: <RecentPostsTable posts={posts} isAuth={isAuth} />;
+          : <RecentPostsBoxes posts={posts} isAuth={isAuth} />;
 
     return (
       <ErrorBoundary>
@@ -95,11 +97,17 @@ class Home extends Component {
                   </Grid.Column>
                 </Grid.Row>
 
-                <Grid.Row columns={1}>
+                {/*<Grid.Row columns={1}>
                   <Grid.Column>
                     {recentPostsComp}
                   </Grid.Column>
-                </Grid.Row>
+                </Grid.Row>*/}
+                {
+                  posts.length && (
+                    recentPostsComp
+                  )
+                }
+
 
                 <Grid.Row className="reducePad">
                   <Grid.Column>

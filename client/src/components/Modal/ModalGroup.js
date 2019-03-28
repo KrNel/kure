@@ -83,7 +83,6 @@ ModalGroup.propTypes = {
   modalOpen: PropTypes.bool.isRequired,
   onModalClose: PropTypes.func.isRequired,
   handleModalClick: PropTypes.func.isRequired,
-  //modalData: PropTypes.shape(PropTypes.object.isRequired).isRequired,
 };
 
 export default ModalGroup

@@ -43,7 +43,8 @@ class PostActions extends Component {
         handleUpvote,
         upvotePayload,
         ratio,
-        pid
+        pid,
+        image,
       },
     } = this;
 
@@ -54,10 +55,8 @@ class PostActions extends Component {
           <Vote
             activeVotes={activeVotes}
             author={author}
-            category={category}
             payoutValue={payoutValue}
             permlink={permlink}
-            title={title}
             user={user}
             handleUpvote={handleUpvote}
             upvotePayload={upvotePayload}
@@ -90,7 +89,7 @@ class PostActions extends Component {
           {
             user
             && (
-              <a href="/group/add" onClick={(e) => showModal(e, 'addPost', {author, category, permlink, title})} title="Add to a community">
+              <a href="/group/add" onClick={(e) => showModal(e, 'addPost', {author, category, permlink, title, image})} title="Add to a community">
                 <Icon name='plus circle' size='large' />
               </a>
             )

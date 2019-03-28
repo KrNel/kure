@@ -5,7 +5,6 @@ import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
-import RepLog10 from '../../../utils/reputationCalc';
 import TitleLink from '../../common/TitleLink';
 import PostLink from '../../common/PostLink';
 
@@ -119,6 +118,7 @@ const PostsSummary = (props) => {
                     upvotePayload={upvotePayload}
                     ratio={ratio}
                     pid={post.id}
+                    image={thumb}
                   />
                 </div>
               </div>

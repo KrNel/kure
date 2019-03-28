@@ -142,125 +142,126 @@ class PostDetails extends Component {
 
     return (
       <HelmetProvider>
-      <React.Fragment>
-        <Helmet>
-          <title>{title}</title>
-          <link rel="canonical" href={canonicalUrl} />
-          <link rel="amphtml" href={ampUrl} />
-          <meta property="description" content={desc} />
-          <meta property="og:title" content={metaTitle} />
-          <meta property="og:type" content="article" />
-          <meta property="og:url" content={url} />
-          <meta property="og:image" content={image} />
-          <meta property="og:description" content={desc} />
-          <meta property="og:site_name" content="Kure" />
-          <meta property="article:tag" content={category} />
-          <meta property="article:published_time" content={new Date(created).toDateString()} />
-        </Helmet>
-        <Grid verticalAlign='middle' columns={1} centered>
-          <Grid.Row>
-            <Grid.Column width={11}>
-              {
-                isFetching ? <Loading />
-                : (
-                  <React.Fragment>
-                    <div className='PostContent'>
-                      <h1>
-                        {title}
+        <React.Fragment>
+          <Helmet>
+            <title>{title}</title>
+            <link rel="canonical" href={canonicalUrl} />
+            <link rel="amphtml" href={ampUrl} />
+            <meta property="description" content={desc} />
+            <meta property="og:title" content={metaTitle} />
+            <meta property="og:type" content="article" />
+            <meta property="og:url" content={url} />
+            <meta property="og:image" content={image} />
+            <meta property="og:description" content={desc} />
+            <meta property="og:site_name" content="Kure" />
+            <meta property="article:tag" content={category} />
+            <meta property="article:published_time" content={new Date(created).toDateString()} />
+          </Helmet>
+          <Grid verticalAlign='middle' columns={1} centered>
+            <Grid.Row>
+              <Grid.Column width={11}>
+                {
+                  isFetching ? <Loading />
+                  : (
+                    <React.Fragment>
+                      <div className='PostContent'>
+                        <h1>
+                          {title}
 
-                      </h1>
-                      <AuthorCatgoryTime
-                        author={author}
-                        authorReputation={authorReputation}
-                        category={category}
-                        created={created}
-                        permlink={permlink}
-                      />
-                      <hr />
-                      {this.renderDtubeEmbedPlayer(post)}
-                      <PostBody
-                        full
-                        rewriteLinks={false}
-                        body={body}
-                        json_metadata={post.json_metadata}
-                      />
-                      <br />
-                      <div className='footer'>
-                        <div className='left'>
-                          <Tags tags={tags} />
-                        </div>
-                        <div className='alt-site right'>
-                          {`View on `}
-                          <a
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            href={`https://steemit.com${post.url}`}
-                          >
-                            {'Steemit'}
-                          </a>
-                          {' | '}
-                          <a
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            href={`https://busy.org/@${author}/${permlink}`}
-                          >
-                            {'Busy'}
-                          </a>
-                        </div>
-                        <div className='clear' />
-                        <div className='post-actions'>
-                          <PostActions
-                            activeVotes={activeVotes}
-                            commentCount={commentCount}
-                            author={author}
-                            category={category}
-                            payoutValue={totalPayout}
-                            permlink={permlink}
-                            title={title}
-                            showModal={showModal}
-                            user={user}
-                            handleUpvote={handleUpvote}
-                            upvotePayload={upvotePayload}
-                            ratio={ratio}
-                            pid={pid}
-                          />
-                        </div>
+                        </h1>
+                        <AuthorCatgoryTime
+                          author={author}
+                          authorReputation={authorReputation}
+                          category={category}
+                          created={created}
+                          permlink={permlink}
+                        />
                         <hr />
-                        {
-                          isAuth &&
-                          (
-                            <ReplyForm
+                        {this.renderDtubeEmbedPlayer(post)}
+                        <PostBody
+                          full
+                          rewriteLinks={false}
+                          body={body}
+                          json_metadata={post.json_metadata}
+                        />
+                        <br />
+                        <div className='footer'>
+                          <div className='left'>
+                            <Tags tags={tags} />
+                          </div>
+                          <div className='alt-site right'>
+                            {`View on `}
+                            <a
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              href={`https://steemit.com${post.url}`}
+                            >
+                              {'Steemit'}
+                            </a>
+                            {' | '}
+                            <a
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              href={`https://busy.org/@${author}/${permlink}`}
+                            >
+                              {'Busy'}
+                            </a>
+                          </div>
+                          <div className='clear' />
+                          <div className='post-actions'>
+                            <PostActions
+                              activeVotes={activeVotes}
+                              commentCount={commentCount}
+                              author={author}
+                              category={category}
+                              payoutValue={totalPayout}
+                              permlink={permlink}
+                              title={title}
+                              showModal={showModal}
+                              user={user}
+                              handleUpvote={handleUpvote}
+                              upvotePayload={upvotePayload}
+                              ratio={ratio}
+                              pid={pid}
+                              image={this.images[0].src}
+                            />
+                          </div>
+                          <hr />
+                          {
+                            isAuth &&
+                            (
+                              <ReplyForm
+                                sendComment={sendComment}
+                                isCommenting={isCommenting}
+                                parentPost={post}
+                                commentedId={commentedId}
+                              />
+                            )
+                          }
+
+                          <div className='comments' id='comments'>
+                            <Comments
+                              comments={comments}
                               sendComment={sendComment}
                               isCommenting={isCommenting}
-                              parentPost={post}
                               commentedId={commentedId}
+                              isAuth={isAuth}
+                              commentPayload={commentPayload}
+                              pid={pid}
+                              handleUpvote={handleUpvote}
+                              user={user}
+                              upvotePayload={upvotePayload}
                             />
-                          )
-                        }
-
-                        <div className='comments' id='comments'>
-                          <Comments
-                            comments={comments}
-                            sendComment={sendComment}
-                            isCommenting={isCommenting}
-                            commentedId={commentedId}
-                            isAuth={isAuth}
-                            commentPayload={commentPayload}
-                            pid={pid}
-                            handleUpvote={handleUpvote}
-                            user={user}
-                            upvotePayload={upvotePayload}
-                          />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </React.Fragment>
-                )
-              }
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </React.Fragment>
+                    </React.Fragment>
+                  )
+                }
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </React.Fragment>
       </HelmetProvider>
     )
   }

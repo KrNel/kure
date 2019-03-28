@@ -15,7 +15,11 @@ const NotAuthorized = ({ location }) => (
 );
 
 NotAuthorized.propTypes = {
-  location: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  location: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+NotAuthorized.defaultProps = {
+  location: {},
 };
 
 export default NotAuthorized;

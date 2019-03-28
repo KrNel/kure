@@ -259,7 +259,6 @@ const mapStateToProps = state => {
       addPostLoading,
       modalOpenAddPost,
       selectedGroup,
-      addPostData,
       upvotePayload,
     }
   } = state;
@@ -276,7 +275,6 @@ const mapStateToProps = state => {
     addPostLoading,
     modalOpenAddPost,
     selectedGroup,
-    addPostData,
     upvotePayload,
   }
 }

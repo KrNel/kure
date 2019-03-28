@@ -18,8 +18,8 @@ router.post('/add', async (req, res, next) => {
 
   //TODO?:do i need to verfiy access? no one can spoof a POST, right?
   const db = req.app.locals.db;
-  const { user, group, author, category, permlink, title } = req.body;
-
+  const { user, group, author, category, permlink, title, image } = req.body;
+console.log('image',image)
   const csrfValid = await csrfValidateRequest(req, res, user);
 
   //Respond to frontend with failed CSRF validation, else continue
@@ -31,7 +31,7 @@ router.post('/add', async (req, res, next) => {
        res.json({exists: true});
     }else {
       //Insert new post into DB
-      const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title);
+      const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title, image);
       res.json({post: postAdd});
     }
   }
@@ -74,7 +74,7 @@ const postExists = async (db, next, author, permlink, group) => {
  *  @param {string} title Title of Steem post
  *  @returns {object} Send inserted object back to frontend for use
  */
-const addPost = (db, next, user, group, category, author, permlink, title) => {
+const addPost = (db, next, user, group, category, author, permlink, title, image) => {
   try {
     const created = new Date();
 
@@ -88,6 +88,7 @@ const addPost = (db, next, user, group, category, author, permlink, title) => {
       st_author: author,
       st_category: category,
       st_title: title,
+      st_image: image,
       rating: 0
     }
 

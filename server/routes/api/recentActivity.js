@@ -61,6 +61,7 @@ const getRecentPosts = async (db, next, limit = 50) => {
       { $unwind: '$kgroup' },
       { $project: {
           display: '$kgroup.display',
+          created: 1,
           group: 1,
           likes: 1,
           views: 1,
@@ -69,6 +70,7 @@ const getRecentPosts = async (db, next, limit = 50) => {
           st_author: 1,
           st_category: 1,
           st_title: 1,
+          st_image: 1,
       } },
       { $sort: {_id: -1} },
       { $limit : limit }
