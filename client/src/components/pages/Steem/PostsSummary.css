@@ -19,11 +19,9 @@
 }
 
 .summary-content .description {
-  box-sizing:border-box;
-  width:100%;
-  overflow:hidden;
+  overflow: hidden;
   white-space: nowrap;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
 
 .summary-content h4 {

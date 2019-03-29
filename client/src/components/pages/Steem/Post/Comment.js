@@ -165,11 +165,11 @@ class Comment extends Component {
                   }
                 </ul>
               </div>
-              {showReplyForm && replyForm}
             </li>
             <div className='clear' />
           </ul>
           <div className='clear' />
+          {showReplyForm && replyForm}
         </div>
         {
           comment.children > 0
