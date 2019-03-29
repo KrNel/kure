@@ -107,16 +107,15 @@ class Home extends Component {
                 <Grid.Row className="reducePad">
                   <Grid.Column>
                     <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
-
-                      <ToggleView
-                        toggleView={this.toggleView}
-                        showGrid={showGrid}
-                      />
+                    <ToggleView
+                      toggleView={this.toggleView}
+                      showGrid={showGrid}
+                    />
                   </Grid.Column>
                 </Grid.Row>
 
                 {
-                  posts.length && (
+                  !!posts.length && (
                     recentPostsComp
                   )
                 }
