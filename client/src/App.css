@@ -15,17 +15,6 @@ a:hover {
   color: var(--light-blue)
 }
 
-.box ul.custom-list {
-  overflow:hidden;
-  width: 100%;
-}
-
-.ellipsis {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 hr {
   display: block;
   height: 1px;
@@ -55,6 +44,17 @@ ul.custom-list {
 .disabled {
   pointer-events:none;
   opacity:0.6;
+}
+
+.box ul.custom-list {
+  overflow:hidden;
+  width: 100%;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /*#wrapper {

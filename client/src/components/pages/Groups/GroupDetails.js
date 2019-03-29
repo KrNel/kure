@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {Grid, Label, Header, Segment, Icon} from "semantic-ui-react";
+import { Grid, Label, Header, Segment } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
@@ -11,6 +11,7 @@ import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetc
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import {hasLength} from '../../../utils/helpers';
+import ToggleView from '../../common/ToggleView';
 
 /**
  *
@@ -183,16 +184,10 @@ class GroupDetails extends Component {
                   <Header as='h2'>{groupData.display}</Header>
                 </Label>
 
-                <span className='view'>
-                  {'View: '}
-                  <a href="/view" onClick={(e) => this.toggleView(e)}>
-                    {
-                      showGrid
-                      ? <Icon size='large' name='list' />
-                      : <Icon size='large' name='grid layout' />
-                    }
-                  </a>
-                </span>
+                <ToggleView
+                  toggleView={this.toggleView}
+                  showGrid={showGrid}
+                />
               </div>
 
               <div className='right'>
@@ -210,16 +205,8 @@ class GroupDetails extends Component {
                 groupData.kposts.length
                 ? (
                   showGrid
-                  ? (
-                    <GroupPostsGrid
-                      posts={groupData.kposts}
-                    />
-                  )
-                  : (
-                    <GroupPostsList
-                      posts={groupData.kposts}
-                    />
-                  )
+                  ? <GroupPostsGrid posts={groupData.kposts} />
+                  : <GroupPostsList posts={groupData.kposts} />
                 ) : (
                   <Segment>
                     {'No posts.'}

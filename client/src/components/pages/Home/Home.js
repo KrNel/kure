@@ -5,10 +5,11 @@ import { connect } from 'react-redux';
 
 import Loading from '../../Loading/Loading';
 import GroupLink from '../../common/GroupLink';
+import ToggleView from '../../common/ToggleView';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
-//import RecentPostsTable from './RecentPostsTable';
+import RecentPostsList from './RecentPostsList';
 import RecentPostsGrid from './RecentPostsGrid';
 import TitleLink from '../../common/TitleLink';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
@@ -48,6 +49,10 @@ class Home extends Component {
     user: 'x'
   };
 
+  state = {
+    showGrid: true,
+  }
+
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
     let {
@@ -74,15 +79,24 @@ class Home extends Component {
       dispatch(fetchPosts(selected, user));
   }
 
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
 
   render() {
-    //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
     const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
-    //const isEmpty = posts.length === 0;
+
+    const { showGrid } = this.state;
+
     const recentPostsComp =
         (isFetching)
           ? <Loading />
-          : <RecentPostsGrid posts={posts} isAuth={isAuth} />;
+          : showGrid
+            ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
+            : <RecentPostsList posts={posts} isAuth={isAuth} />
 
     return (
       <ErrorBoundary>
@@ -93,6 +107,11 @@ class Home extends Component {
                 <Grid.Row className="reducePad">
                   <Grid.Column>
                     <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
+
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
                   </Grid.Column>
                 </Grid.Row>
 
