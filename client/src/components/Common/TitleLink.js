@@ -15,8 +15,9 @@ const TitleLink = (props) => {
     permlink,
     cutoff,
     multiCut,
+    className,
   } = props;
-  
+
   let {
     title,
   } = props;
@@ -37,6 +38,7 @@ const TitleLink = (props) => {
   return (
     <Link
       to={'/'+category+'/@'+author+'/'+permlink}
+      className={className}
     >
       {title}
     </Link>
@@ -50,6 +52,7 @@ TitleLink.propTypes = {
   permlink: PropTypes.string,
   cutoff: PropTypes.number,
   multiCut: PropTypes.number,
+  className: PropTypes.string,
 };
 
 TitleLink.defaultProps = {
@@ -59,6 +62,7 @@ TitleLink.defaultProps = {
   permlink: '',
   cutoff: 0,
   multiCut: 0,
+  className: '',
 };
 
 export default TitleLink;

@@ -43,20 +43,6 @@ class Groups extends Component {
   }
 
   /**
-   *  When Comommunities page is the first page, props aren't set yet, check
-   *  props for user set and then fetch data. `go` is a flad to run only once
-   *  on update check (else infinite loop)
-   *
-   *  @param {object} prevProps Previous props
-   */
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (this.state.go) {
-      this.getGroups(user, '2');
-    }
-  }*/
-
-  /**
    *  Get the various community data to display on the page.
    *
    *  @param {string} user User logged in
@@ -90,6 +76,7 @@ class Groups extends Component {
           <ErrorBoundary>
             <GroupSummary
               groups={groups}
+              match={this.props.match}
             />
           </ErrorBoundary>
         )

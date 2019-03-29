@@ -3,7 +3,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import GroupLink from '../../common/GroupLink';
-import {short} from '../../../utils/timeFromNow';
+import {short} from '../../../utils/dateFormatting';
 
 const MyCommunities = ({ isAuth, myComms }) => (
   <Segment.Group className='box'>

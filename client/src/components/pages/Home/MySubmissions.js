@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import {short} from '../../../utils/timeFromNow';
+import {short} from '../../../utils/dateFormatting';
 import TitleLink from '../../common/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (

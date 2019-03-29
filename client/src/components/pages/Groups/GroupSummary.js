@@ -11,13 +11,14 @@ import GroupsCreated from './GroupsCreated';
  *
  *  @param {array} groups Data for groups
  */
-const GroupSummary = ({groups}) => {
+const GroupSummary = ({groups, match}) => {
   if (groups.groupsActivity.length) {
     return (
       <Grid columns={1} stackable>
         <Grid.Column>
           <GroupsCreated
-            groupsCreated={groups.groupsCreated}
+            groups={groups.groupsCreated}
+            match={match}
           />
           <GroupsRecent
             groupsActivity={groups.groupsActivity}

@@ -21,7 +21,7 @@ const items = [
   {name : "/", label : "Home"},
   {name : "/steem", label : "Steem"},
   {name : "/groups", label : "Communities"},
-  //{name : "/kurated", label : "Kurated"},
+  {name : "/kurated", label : "Kurated"},
 ];
 
 /**

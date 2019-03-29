@@ -52,8 +52,6 @@ class ManageGroups extends Component {
       selectedGroup: '',
       modalOpen: false,
       modalData: {},
-      /*searchResults: [],
-      searchValue: ''*/
     }
 
     this.existText = "Group name taken. Try another.";
@@ -358,8 +356,6 @@ class ManageGroups extends Component {
       selectedGroup,
       modalOpen,
       modalData,
-      /*searchResults,
-      searchValue*/
     } = this.state;
 
     const {
@@ -367,6 +363,7 @@ class ManageGroups extends Component {
       csrf,
       type,
       headerText,
+      match,
     } = this.props;
 
     //If there were errors during validation, show them in an ErrroLabel.
@@ -430,6 +427,7 @@ class ManageGroups extends Component {
           selectedGroup={selectedGroup}
           showModal={this.showModal}
           type={type}
+          match={match}
         />
 
         {

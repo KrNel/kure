@@ -62,7 +62,7 @@ export function extractContent(post) {
   } = post;
 
   const {image_link, jsonMetadata} = extractImage(json_metadata, body, author, permlink)
-  
+
   let desc;
   let desc_complete = false;
 
@@ -86,7 +86,7 @@ export function extractContent(post) {
 
   if (desc.length > 140) {
     desc = desc
-      .substring(0, 120)
+      .substring(0, 140)
       .trim()
       .replace(/[,!\?]?\s+[^\s]+$/, '…'); // eslint-disable-line no-useless-escape
   }

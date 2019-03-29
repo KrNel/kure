@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react";
-import moment from 'moment';
 
 import Loading from '../../Loading/Loading';
 import GroupLink from '../../common/GroupLink';
+import { long, standard } from '../../../utils/dateFormatting';
 
 /**
  *  Display the community groups for a user to manage or delete.
@@ -33,6 +33,7 @@ const GroupsList = (props) => {
     selectedGroup,
     showModal,
     type,
+    match,
   } = props;
 
   if (areGroupsLoading) {
@@ -45,7 +46,7 @@ const GroupsList = (props) => {
             {
             groups.map((g, i) => {
               const key = g._id || i;
-              const date = moment(g.created).format("ddd MMM DD, YYYY - HH:MM");
+              const date = standard(g.created);
               return (
                 <Grid.Column key={key+1} width={4}>
                   <Segment key={key+2} className='groupList'>
@@ -57,35 +58,35 @@ const GroupsList = (props) => {
                       <h3 className='left'>
                         <GroupLink display={g.display} name={g.name} />
                       </h3>
-                      <div className='right'>
-                        <a
-                          href={'edit/'+g.name}
-                          onClick={e => handleManageGroup(e, g.name)}
-                          title="Manage group"
-                        >
-                          <Icon name='edit' color='blue' />
-                        </a>
-                        {
-                          type === 'owned' &&
-                          (
-                            <a
-                              href={'/group/delete/'+g.name}
-                              onClick={e => showModal(e, {group: g.name})}
-                              title="Delete group"
-                            >
-                              <Icon name='delete' color='blue' />
-                            </a>
-                          )
-                        }
-                      </div>
+                      {
+                        match.path === '/manage' && (
+                        <div className='right'>
+                          <a
+                            href={'edit/'+g.name}
+                            onClick={e => handleManageGroup(e, g.name)}
+                            title="Manage group"
+                          >
+                            <Icon name='edit' color='blue' />
+                          </a>
+                          {
+                            type === 'owned' &&
+                            (
+                              <a
+                                href={'/group/delete/'+g.name}
+                                onClick={e => showModal(e, {group: g.name})}
+                                title="Delete group"
+                              >
+                                <Icon name='delete' color='blue' />
+                              </a>
+                            )
+                          }
+                        </div>
+                        )
+                      }
                       <div className='clear' />
 
                       <Divider className='header' />
 
-                      <div title={date} className='meta'>
-                        <Icon name='calendar alternate outline' color='blue' />
-                        {`${moment.utc(g.created).fromNow()}`}
-                      </div>
                       <div className='meta'>
                         <Icon name='newspaper outline' color='blue' />
                         {g.posts}
@@ -100,6 +101,15 @@ const GroupsList = (props) => {
                         <Icon name='street view' color='blue' />
                         {g.joinRequests}
                         {g.joinRequests === 0 || g.joinRequests > 1 ? ' join requests' : ' join request'}
+                      </div>
+                      <br />
+                      <div title={date} className='meta'>
+                        <Icon name='sync alternate' color='blue' />
+                        {`Updated ${long(g.updated)}`}
+                      </div>
+                      <div title={date} className='meta'>
+                        <Icon name='calendar alternate outline' color='blue' />
+                        {`Created ${long(g.created)}`}
                       </div>
                     </div>
                   </Segment>
@@ -128,14 +138,25 @@ const GroupsList = (props) => {
 }
 
 GroupsList.propTypes = {
-  groups: PropTypes.arrayOf(PropTypes.object).isRequired,
-  areGroupsLoading: PropTypes.bool.isRequired,
-  handleManageGroup: PropTypes.func.isRequired,
-  noOwned: PropTypes.bool.isRequired,
-  isGroupLoading: PropTypes.bool.isRequired,
-  selectedGroup: PropTypes.string.isRequired,
-  showModal: PropTypes.func.isRequired,
-  type: PropTypes.string.isRequired,
+  groups: PropTypes.arrayOf(PropTypes.object.isRequired),
+  areGroupsLoading: PropTypes.bool,
+  handleManageGroup: PropTypes.func,
+  noOwned: PropTypes.bool,
+  isGroupLoading: PropTypes.bool,
+  selectedGroup: PropTypes.string,
+  showModal: PropTypes.func,
+  type: PropTypes.string,
+};
+
+GroupsList.defaultProps = {
+  groups: [],
+  areGroupsLoading: false,
+  handleManageGroup: () => {},
+  noOwned: false,
+  isGroupLoading: false,
+  selectedGroup: '',
+  showModal: () => {},
+  type: '',
 };
 
 export default GroupsList;

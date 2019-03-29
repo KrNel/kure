@@ -6,7 +6,7 @@ import Body from './PostBody';
 import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
 import PostLink from '../../../common/PostLink';
-import {long} from '../../../../utils/timeFromNow';
+import {long} from '../../../../utils/dateFormatting';
 import {hasLength} from '../../../../utils/helpers';
 import Vote from '../Vote';
 import './Comment.css';
@@ -59,6 +59,10 @@ class Comment extends Component {
     const { showReplyForm } = this.state;
     this.setState({ showReplyForm: !showReplyForm, showEdit: false });
   }
+
+  onShowEditForm = (e) => {
+    e.preventDefault();
+  };
 
   render() {
     const {
@@ -163,13 +167,20 @@ class Comment extends Component {
                       </li>
                     )
                   }
+                  {
+                    isAuth && user === author && (
+                      <li className='item'>
+                        <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
+                      </li>
+                    )
+                  }
                 </ul>
               </div>
-              {showReplyForm && replyForm}
             </li>
             <div className='clear' />
           </ul>
           <div className='clear' />
+          {showReplyForm && replyForm}
         </div>
         {
           comment.children > 0

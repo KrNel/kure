@@ -82,7 +82,6 @@ class Home extends Component {
     const recentPostsComp =
         (isFetching)
           ? <Loading />
-          //: <RecentPostsTable posts={posts} isAuth={isAuth} />;
           : <RecentPostsBoxes posts={posts} isAuth={isAuth} />;
 
     return (
@@ -97,17 +96,11 @@ class Home extends Component {
                   </Grid.Column>
                 </Grid.Row>
 
-                {/*<Grid.Row columns={1}>
-                  <Grid.Column>
-                    {recentPostsComp}
-                  </Grid.Column>
-                </Grid.Row>*/}
                 {
                   posts.length && (
                     recentPostsComp
                   )
                 }
-
 
                 <Grid.Row className="reducePad">
                   <Grid.Column>
@@ -131,14 +124,13 @@ class Home extends Component {
                               {
                                 g.kposts.length
                                 ? g.kposts.map(p => (
-                                  <li key={p._id}>
+                                  <li key={p._id} className='ellipsis'>
                                     {`\u2022\u00A0`}
                                     <TitleLink
                                       title={p.st_title}
                                       category={p.st_category}
                                       author={p.st_author}
                                       permlink={p.st_permlink}
-                                      cutoff={40}
                                     />
                                   </li>
                                 )) : 'No posts.'
@@ -160,9 +152,6 @@ class Home extends Component {
                 }
               </Grid>
             </Grid.Column>
-
-            {/*<Grid.Row><Header as="h1">Popular Groups:</Header></Grid.Row>*/}
-            {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
 
             <Grid.Column width={4} className="sidebar">
               <MyCommunities myComms={myComms} isAuth={isAuth} />

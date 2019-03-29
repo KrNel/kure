@@ -1,27 +1,13 @@
 @import '../../../variables.css';
 
-.main .column {
-  /*min-width: 200px;*/
-
-}
-/*
-.home .ui.grid .main .header {
-  margin-left: 15px;
-}
-*/
 .main .recActivity .segment {
-  /*min-height: 250px;*/
   max-width: 300px;
 }
 
 .sidebar .column {
   min-width: 200px;
 }
-/*
-.home .ui.grid .sidebar .segment {
-  min-height: 200px;
-}
-*/
+
 .ui.grid > .row.reducePad {
   padding-bottom: 0;
 }
@@ -34,15 +20,10 @@
   min-width: 165px
 }
 
-/*.home .ui.segment:first-child {
-  padding-top: 10px;
-}*/
-
 .home .recPost {
   padding: 5px 10px;
 }
 .home .recPost:not(:first-child) {
-  /*border-top: 1px solid var(--main-border);*/
   border-top: 1px solid #ddd;
 }
 
@@ -50,19 +31,3 @@
   margin: 0;
   padding: 0;
 }
-
-/*.home ul.custom-list {
-  padding: 0;
-  list-style-type: none;
-  margin-bottom: 0;
-  margin-left: 0;
-}*/
-
-/*.ui.segment hr {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-top: 1px solid var(--main-border);
-  margin: 1em 0;
-  padding: 0;
-}*/

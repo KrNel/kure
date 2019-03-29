@@ -1,23 +1,12 @@
 @import '../../../variables.css';
 
-.content {
-
-}
-
 .block {
   display: flex;
   margin-top: 0.3em;
 }
 
-/* no longer used if keeping compontent */
 .thumbnail {
-  /*max-width: 250px;*/
-  max-width: 130px;
   padding-right:10px;
-}
-
-/* no longer used if keeping compontent */
-.thumbnail {
   display: block;
   height: auto;
   max-width: 100%;
@@ -26,14 +15,14 @@
 .summary-content {
   margin-left: 10px;
   width: 100%;
+  overflow: hidden;
 }
 
-/*.summary-content a {
-  color: var(--dark-blue);
+.summary-content .description {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-.summary-content a:hover {
-  color: var(--medium-blue);
-}*/
 
 .summary-content h4 {
   font-size: 1.2em;

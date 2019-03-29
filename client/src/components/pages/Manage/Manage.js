@@ -19,7 +19,7 @@ import './Manage.css';
  *  @param {string} props.csrf CSRF token to prevent CSRF attacks
  *  @returns {Component} Loads various components to manage community groups
  */
-const Manage = ({user, csrf}) => (
+const Manage = (props) => (
   <ErrorBoundary>
     <div className="manage">
       <Grid columns={1} stackable>
@@ -28,17 +28,19 @@ const Manage = ({user, csrf}) => (
           <Grid>
 
             <ManageGroups
-              user={user}
-              csrf={csrf}
+              user={props.user}
+              csrf={props.csrf}
               type='owned'
               headerText='Communities You Own'
+              match={props.match}
             />
 
             <ManageGroups
-              user={user}
-              csrf={csrf}
+              user={props.user}
+              csrf={props.csrf}
               type='joined'
               headerText='Communities You Joined'
+              match={props.match}
             />
 
           </Grid>

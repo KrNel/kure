@@ -1,8 +1,12 @@
 .comment {
-  /*padding: 0.5rem;*/
   display: block;
 }
-.comment > ul {
+
+.comment:first-child {
+  margin-top:0px;
+}
+
+.comment > ul.commentList {
   float: left;
   display: flex;
   list-style: none;
@@ -11,11 +15,11 @@
   /*font-size: 1.1rem;*/
 }
 
-.comment > ul > li {
+.comment > ul.commentList > li {
   list-style-position: inside;
 }
 
-.comment > ol > li, .comment > ol > li {
+.comment > ol > li {
   line-height: 1.1rem;
 }
 
@@ -62,7 +66,6 @@ ul.commentList > li {
   padding: 0;
   font-size: 1rem;
   float: left;
-  padding-bottom:1rem;
 }
 
 .commentFooter .item {

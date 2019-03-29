@@ -90,58 +90,62 @@ class ReplyForm extends Component {
     } = this;
 
     return (
-      <div className='replyForm'>
-        <Form>
-          {
-            isCommenting && commentedId === parentPost.id
-            && <Dimmer inverted active={isCommenting}><Loader /></Dimmer>
-          }
-          <TextArea
-            placeholder='Share your thoughts'
-            onChange={this.handleChange}
-            name='replyData'
-            value={replyData}
-            disabled={isCommenting}
-          />
-          <div>
-            <Button
-              size="large"
-              color="blue"
-              content='Post'
-              disabled={replyData === '' || isCommenting}
-              onClick={this.handleSendComment}
-            />
-            <Button
-              size="large"
-              color="grey"
-              content='Clear'
-              disabled={replyData === '' || isCommenting}
-              onClick={this.handleClearReply}
-            />
-          </div>
-
-        </Form>
-        {
-          replyData !== ''
-          && (
-            <div className='replyPreviewHeader'>
-              <span className='left'>Preview</span>
-              <span className='right'>
-                <a
-                  href='https://guides.github.com/features/mastering-markdown/'
-                >
-                  {'Markdown Help'}
-                </a>
-              </span>
-              <div className='clear' />
-              <div
-                className='replyPreview'
-                dangerouslySetInnerHTML={this.rawMarkup()}
+      <ul className='repliesNoIndent'>
+        <li>
+          <div className='replyForm'>
+            <Form>
+              {
+                isCommenting && commentedId === parentPost.id
+                && <Dimmer inverted active={isCommenting}><Loader /></Dimmer>
+              }
+              <TextArea
+                placeholder='Share your thoughts'
+                onChange={this.handleChange}
+                name='replyData'
+                value={replyData}
+                disabled={isCommenting}
               />
-            </div>
-          )
-        }
-      </div>
+              <div>
+                <Button
+                  size="large"
+                  color="blue"
+                  content='Post'
+                  disabled={replyData === '' || isCommenting}
+                  onClick={this.handleSendComment}
+                />
+                <Button
+                  size="large"
+                  color="grey"
+                  content='Clear'
+                  disabled={replyData === '' || isCommenting}
+                  onClick={this.handleClearReply}
+                />
+              </div>
+
+            </Form>
+            {
+              replyData !== ''
+              && (
+                <div className='replyPreviewHeader'>
+                  <span className='left'>Preview</span>
+                  <span className='right'>
+                    <a
+                      href='https://guides.github.com/features/mastering-markdown/'
+                    >
+                      {'Markdown Help'}
+                    </a>
+                  </span>
+                  <div className='clear' />
+                  <div
+                    className='replyPreview'
+                    dangerouslySetInnerHTML={this.rawMarkup()}
+                  />
+                </div>
+              )
+            }
+          </div>
+        </li>
+      </ul>
     )
   }
 }
