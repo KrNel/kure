@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Segment, Label } from "semantic-ui-react";
+import { Grid, Header, Label, Tab } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
+import CommunityActivity from './CommunityActivity';
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../common/GroupLink';
 import ToggleView from '../../common/ToggleView';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
 import RecentPostsList from './RecentPostsList';
 import RecentPostsGrid from './RecentPostsGrid';
-import TitleLink from '../../common/TitleLink';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
 
@@ -51,6 +50,7 @@ class Home extends Component {
 
   state = {
     showGrid: true,
+    tabSelected: 'recent',
   }
 
   //this fetches when page loaded after site loads from elsewhere (user defined)
@@ -85,18 +85,40 @@ class Home extends Component {
     this.setState({ showGrid: !showGrid });
   }
 
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
 
   render() {
     const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
 
-    const { showGrid } = this.state;
+    const { showGrid, tabSelected } = this.state;
 
     const recentPostsComp =
-        (isFetching)
-          ? <Loading />
-          : showGrid
-            ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
-            : <RecentPostsList posts={posts} isAuth={isAuth} />
+      isFetching
+      ? <Loading />
+      : showGrid
+        ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
+        : <RecentPostsList posts={posts} isAuth={isAuth} />
+
+      /*const panes = [
+      { menuItem: <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>, render: () => <Tab.Pane attached={false}><Grid></Grid></Tab.Pane> },
+      { menuItem: <Label size='big' color='blue'><Header as="h3">Community Activity</Header></Label>, render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
+      { menuItem: 'Tab 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
+    ]*/
+    let selectedTab = null;
+    if (tabSelected === 'recent') {
+      selectedTab = recentPostsComp;
+    }else if (tabSelected === 'activity') {
+      selectedTab = <CommunityActivity groups={groups} />;
+    }
+
+    let tabs = [
+      {name: 'Recent Kurations', view: 'recent'},
+      {name: 'Community Activity', view: 'activity'}
+    ];
+
 
     return (
       <ErrorBoundary>
@@ -106,7 +128,22 @@ class Home extends Component {
               <Grid>
                 <Grid.Row className="reducePad">
                   <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
+                    {
+                      tabs.map((t,i) => {
+                        let color = 'gray';
+
+                        if (tabSelected === t.view)
+                          color += ' blue';
+
+                        return (
+                          <a key={t.view} href={`/${t.view}`} className='tabSelect' onClick={(e) => this.tabView(e, t.view)}>
+                            <Label size='big' color={color}>
+                              <Header as="h3">{t.name}</Header>
+                            </Label>
+                          </a>
+                        )
+                      })
+                    }
                     <ToggleView
                       toggleView={this.toggleView}
                       showGrid={showGrid}
@@ -114,60 +151,8 @@ class Home extends Component {
                   </Grid.Column>
                 </Grid.Row>
 
-                {
-                  !!posts.length && (
-                    recentPostsComp
-                  )
-                }
+                {selectedTab}
 
-                <Grid.Row className="reducePad">
-                  <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Community Activity</Header></Label>
-                  </Grid.Column>
-                </Grid.Row>
-
-                {
-                  groups.length
-                  ?
-                    groups.map(g => (
-                      <Grid.Column key={g.name} width={8}>
-                        <Segment.Group className='box'>
-                          <Segment>
-                            <Label attached='top' className='head'>
-                              <Header as='h3'>
-                                <GroupLink display={g.display} name={g.name} />
-                              </Header>
-                            </Label>
-                            <ul className='custom-list'>
-                              {
-                                g.kposts.length
-                                ? g.kposts.map(p => (
-                                  <li key={p._id} className='ellipsis'>
-                                    {`\u2022\u00A0`}
-                                    <TitleLink
-                                      title={p.st_title}
-                                      category={p.st_category}
-                                      author={p.st_author}
-                                      permlink={p.st_permlink}
-                                    />
-                                  </li>
-                                )) : 'No posts.'
-                              }
-                            </ul>
-                          </Segment>
-                        </Segment.Group>
-                      </Grid.Column>
-                    ))
-                  : (
-                    <Grid.Row columns={1}>
-                      <Grid.Column>
-                        <Segment>
-                          {'No communities.'}
-                        </Segment>
-                      </Grid.Column>
-                    </Grid.Row>
-                  )
-                }
               </Grid>
             </Grid.Column>
 

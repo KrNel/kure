@@ -57,6 +57,18 @@ ul.custom-list {
   text-overflow: ellipsis;
 }
 
+.tabSelect {
+  margin-right: 1rem;
+}
+
+.tabSelect div.ui.blue.label {
+  background-color: var(--soft-grey);
+}
+
+.activeTab div.ui.blue.label {
+  background-color: var(--medium-blue);
+}
+
 /*#wrapper {
   width:922px;
   margin: 0 auto;
@@ -168,11 +180,11 @@ ul.custom-list {
     /*border-radius: 3px !important;*/
 }
 
-.ui.segment, .ui.segments {
+/*.ui.segment, .ui.segments {
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
   box-shadow: none !important;
-}
+}*/
 
 .ui.card {
   -webkit-box-shadow: none !important;
@@ -186,6 +198,7 @@ ul.custom-list {
   box-shadow: 0px 1px 2px 0 var(--main-border) !important;
   border: 1px solid var(--main-border) !important;
 }
+
 .ui.segments {
   -webkit-box-shadow: none var(--main-border) !important;
   box-shadow: none var(--main-border) !important;
