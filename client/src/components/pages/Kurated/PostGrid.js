@@ -7,7 +7,7 @@ import GroupLink from '../../common/GroupLink';
 import TitleLink from '../../common/TitleLink';
 import UserLink from '../../common/UserLink';
 import defaultImage from '../../../images/steemkure-600.png';
-import './PostBox.css'
+import './PostGrid.css'
 /**
  *  Component to display the post data sent.
  *  If posts exist, display them. If not, display message.
@@ -16,7 +16,7 @@ import './PostBox.css'
  *  @param {object} props.post The post data to display
  *  @returns {element} Displays the post, or message if no posts are in the app
  */
-const PostBox = ({post}) => {
+const PostGrid = ({post}) => {
   if (post) {
     return (
       <Grid.Column width={8}>
@@ -52,8 +52,8 @@ const PostBox = ({post}) => {
   }
 }
 
-PostBox.propTypes = {
+PostGrid.propTypes = {
   post: PropTypes.shape(PropTypes.object.isRequired),
 };
 
-export default PostBox;
+export default PostGrid;

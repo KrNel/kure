@@ -2,7 +2,7 @@ import React from 'react';
 import {Grid, Segment} from "semantic-ui-react";
 
 import GroupsRecent from './GroupsRecent';
-import GroupsCreated from './GroupsCreated';
+import GroupsCreatedGrid from './GroupsCreatedGrid';
 
 /**
  *  All community display components are located here.
@@ -16,7 +16,7 @@ const GroupSummary = ({groups, match}) => {
     return (
       <Grid columns={1} stackable>
         <Grid.Column>
-          <GroupsCreated
+          <GroupsCreatedGrid
             groups={groups.groupsCreated}
             match={match}
           />

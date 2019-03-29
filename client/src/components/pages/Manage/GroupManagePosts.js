@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Segment } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
-import GroupPosts from '../../common/GroupPosts'
+import GroupPostsList from '../../common/GroupPostsList'
 
 /**
  *  Table of posts for the selected group.
@@ -29,7 +29,7 @@ const GroupManagePosts = ({posts, showModal, deletingPost, user, access}) => {
   }else {
     return (
       <Grid.Column>
-        <GroupPosts
+        <GroupPostsList
           posts={posts}
           showModal={showModal}
           deletingPost={deletingPost}

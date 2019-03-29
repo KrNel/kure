@@ -4,7 +4,8 @@ import {Grid, Label, Header, Segment} from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPosts from '../../common/GroupPosts'
+import GroupPostsList from '../../common/GroupPostsList'
+import GroupPostsGrid from '../../common/GroupPostsGrid'
 import GroupUsers from '../../common/GroupUsers'
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
@@ -38,6 +39,7 @@ class GroupDetails extends Component {
       isLoading: true,
       groupRequested: '',
       notExists: false,
+      showGrid: true,
     };
   }
 
@@ -150,6 +152,11 @@ class GroupDetails extends Component {
     });
   }
 
+  toggleVIew = () => {
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
   render() {
     const {
       state: {
@@ -157,6 +164,7 @@ class GroupDetails extends Component {
         isLoading,
         groupRequested,
         notExists,
+        showGrid,
       },
       props: {
         isAuth
@@ -172,22 +180,31 @@ class GroupDetails extends Component {
               <Label size='large' color='blue'>
                 <Header as='h2'>{groupData.display}</Header>
               </Label>
+
               <div className='right'>
                 { isAuth && (
-                  <Segment>
+                  <Label size='large'>
                     {'Membership: '}
                     {
                       joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
                     }
-                  </Segment>
+                  </Label>
                 )}
               </div>
               {
                 groupData.kposts.length
                 ? (
-                  <GroupPosts
-                    posts={groupData.kposts}
-                  />
+                  showGrid
+                  ? (
+                    <GroupPostsGrid
+                      posts={groupData.kposts}
+                    />
+                  )
+                  : (
+                    <GroupPostsList
+                      posts={groupData.kposts}
+                    />
+                  )
                 ) : (
                   <Segment>
                     {'No posts.'}
@@ -201,7 +218,11 @@ class GroupDetails extends Component {
           </Grid>
         </ErrorBoundary>
       )
-      : <Segment>That group doesn&apos;t exist.</Segment>
+      : (
+        <Segment>
+          {`That group doesn't exist.`}
+        </Segment>
+      )
     )
   }
 }

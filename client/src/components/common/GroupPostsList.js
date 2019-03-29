@@ -12,7 +12,7 @@ import UserLink from './UserLink';
  *  is also displayed as a string based on the access number. The access
  *  determines if the Delete option appears to allow deleting a post.
  */
-const GroupPosts = (props) => {
+const GroupPostsList = (props) => {
   const {
     posts,
     showModal,
@@ -86,7 +86,7 @@ const GroupPosts = (props) => {
   )
 }
 
-GroupPosts.propTypes = {
+GroupPostsList.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   showModal: PropTypes.func,
   deletingPost: PropTypes.string,
@@ -94,7 +94,7 @@ GroupPosts.propTypes = {
   access: PropTypes.number,
 };
 
-GroupPosts.defaultProps = {
+GroupPostsList.defaultProps = {
   posts: [],
   deletingPost: '',
   user: '',
@@ -102,4 +102,4 @@ GroupPosts.defaultProps = {
   access: 99,
 };
 
-export default GroupPosts;
+export default GroupPostsList;

@@ -9,7 +9,7 @@ import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
 //import RecentPostsTable from './RecentPostsTable';
-import RecentPostsBoxes from './RecentPostsBoxes';
+import RecentPostsGrid from './RecentPostsGrid';
 import TitleLink from '../../common/TitleLink';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
@@ -82,7 +82,7 @@ class Home extends Component {
     const recentPostsComp =
         (isFetching)
           ? <Loading />
-          : <RecentPostsBoxes posts={posts} isAuth={isAuth} />;
+          : <RecentPostsGrid posts={posts} isAuth={isAuth} />;
 
     return (
       <ErrorBoundary>
@@ -159,7 +159,7 @@ class Home extends Component {
             </Grid.Column>
           </Grid>
         </div>
-    </ErrorBoundary>
+      </ErrorBoundary>
     )
   }
 }

@@ -1,9 +1,6 @@
 import React from 'react';
-import { Header, Table, Label } from "semantic-ui-react";
+import { Header, Label } from "semantic-ui-react";
 
-import GroupLink from '../../common/GroupLink';
-import UserLink from '../../common/UserLink';
-import { short } from '../../../utils/dateFormatting';
 import GroupsList from '../Manage/GroupsList';
 
 /**
@@ -11,7 +8,7 @@ import GroupsList from '../Manage/GroupsList';
  *
  *  @param {array} groups Data for newly created groups
  */
-const GroupsCreated = ({ groups, match }) => {
+const GroupsCreatedGrid = ({ groups, match }) => {
   if (groups.length) {
     return (
       <div className='newlyCreated'>
@@ -25,4 +22,4 @@ const GroupsCreated = ({ groups, match }) => {
   }
 }
 
-export default GroupsCreated;
+export default GroupsCreatedGrid;
