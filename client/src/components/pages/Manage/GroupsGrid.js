@@ -22,7 +22,7 @@ import { long, standard } from '../../../utils/dateFormatting';
  *  @param {function} props.showModal Sets the modal to be shown or hidden
  *  @returns {Component} A list of group components is rendered
  */
-const GroupsList = (props) => {
+const GroupsGrid = (props) => {
 
   const {
     groups,
@@ -121,7 +121,7 @@ const GroupsList = (props) => {
         </Grid.Column>
       </Grid.Row>
     )
-  }else {
+  }else if (noOwned) {
     const message = (type === 'owned')
       ? ("You don't own any community groups. You can create up to 4 community groups.")
       : ("You don't belong to any other communities.")
@@ -134,10 +134,20 @@ const GroupsList = (props) => {
         </Segment>
       </Grid.Column>
     )
+  }else {
+    return (
+      <Grid.Column width={8}>
+        <Segment>
+          <p>
+            {'No community groups exist.'}
+          </p>
+        </Segment>
+      </Grid.Column>
+    )
   }
 }
 
-GroupsList.propTypes = {
+GroupsGrid.propTypes = {
   groups: PropTypes.arrayOf(PropTypes.object.isRequired),
   areGroupsLoading: PropTypes.bool,
   handleManageGroup: PropTypes.func,
@@ -148,7 +158,7 @@ GroupsList.propTypes = {
   type: PropTypes.string,
 };
 
-GroupsList.defaultProps = {
+GroupsGrid.defaultProps = {
   groups: [],
   areGroupsLoading: false,
   handleManageGroup: () => {},
@@ -159,4 +169,4 @@ GroupsList.defaultProps = {
   type: '',
 };
 
-export default GroupsList;
+export default GroupsGrid;

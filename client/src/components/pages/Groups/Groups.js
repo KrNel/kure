@@ -28,6 +28,7 @@ class Groups extends Component {
   state = {
     areGroupsLoading: true,
     groups: {},
+    showGrid: true,
   }
 
   /**
@@ -60,12 +61,19 @@ class Groups extends Component {
     });
   }
 
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
   render() {
 
     const {
       state: {
         areGroupsLoading,
         groups,
+        showGrid,
       }
     } = this;
 
@@ -77,6 +85,8 @@ class Groups extends Component {
             <GroupSummary
               groups={groups}
               match={this.props.match}
+              toggleView={this.toggleView}
+              showGrid={showGrid}
             />
           </ErrorBoundary>
         )

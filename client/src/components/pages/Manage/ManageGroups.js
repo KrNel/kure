@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Header, Form, Icon, Label } from "semantic-ui-react";
 
-import GroupsList from './GroupsList';
+import GroupsGrid from './GroupsGrid';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
@@ -418,7 +418,7 @@ class ManageGroups extends Component {
           modalData={modalData}
         />
 
-        <GroupsList
+        <GroupsGrid
           groups={groups}
           areGroupsLoading={areGroupsLoading}
           handleManageGroup={this.handleManageGroup}

@@ -14,7 +14,6 @@ const GroupsCreated = ({ groups}) => {
   if (groups.length) {
     return (
       <React.Fragment>
-        <Label size='large' color='blue'><Header>Newly Created</Header></Label>
         <Table striped>
           <Table.Header>
             <Table.Row>
