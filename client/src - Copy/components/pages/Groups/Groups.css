@@ -1,0 +1,19 @@
+#GroupPageRecent .ui.label.head {
+  line-height: 1.3rem
+}
+
+#GroupPageRecent .ui.label.head .right {
+  font-size: 1rem
+}
+
+.ui.label.adjMarginBot {
+  margin-bottom: 1em;
+}
+
+.newlyCreated {
+  margin-bottom: 2rem;
+}
+
+.newlyCreated .ui.label {
+  margin-bottom: 1rem;
+}

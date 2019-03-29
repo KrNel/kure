@@ -1,0 +1,39 @@
+.postBox {
+  position: relative;
+  width: 100%;
+}
+
+.cropImage {
+  max-height: 250px;
+  overflow: hidden;
+}
+
+.overlayImage {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.5);
+  color: #f1f1f1;
+  opacity:1;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  text-overflow: hidden;
+  white-space: wrap;
+  overflow: hidden;
+  min-height: 0%;
+}
+
+.overlayImage .recentTitle {
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.overlayImage a {
+  color: #f1f1f1;
+}
+
+.overlayImage a:hover {
+  color: #d1d1d1;
+}

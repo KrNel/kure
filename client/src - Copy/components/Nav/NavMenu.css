@@ -1,0 +1,78 @@
+@import '../../variables.css';
+
+.ui.menu {
+  border-radius: 0px !important;
+  /*min-height: 65px;*/
+}
+.ui.menu .item,
+.navMenu .ui.item.dropdown .menu.transition.visible {
+  border-radius: 0px !important;
+}
+
+.ui.menu.menu {
+  padding-right:20px;
+}
+
+.ui.menu .header.item {
+  margin:1px;
+}
+
+.ui.navMenu.menu .right .menu.transition {
+  font-size: 1.1rem;
+}
+
+.ui.navMenu.menu {
+  /*height: 80px !important;*/
+  border-bottom: 1px solid var(--light-blue);
+  /*max-height:88px;*/
+}
+
+.ui.grid.navMenu > .column:not(.row) {
+  padding-top: 5px;
+  padding-bottom: 0px;
+  /*height: 90px !important;*/
+}
+
+.ui.secondary.menu .item.nopad {
+  padding-top: 10;
+  padding-bottom: 5px;
+}
+
+/*.ui.secondary.menu a.item {
+  border: 1px solid #fff;
+}
+
+.ui.secondary.menu a.item.active, .ui.secondary.menu a.item:hover {
+  border: 1px solid var(--main-color) !important;
+}*/
+
+.ui.blue.menu a.header.item.active,
+.ui.vertical.sidebar.menu a.header.item.active {
+  background-color: var(--light-blue);
+  border-color: var(--light-blue);
+  color:#fff !important;
+  font-weight: bold;
+}
+
+.ui.blue.menu a.header.item:hover,
+.ui.vertical.sidebar.menu a.header.item:hover,
+.navMenu .ui.item.dropdown .menu.transition.visible a.item:hover {
+  background-color: var(--light-blue) !important;
+  border-color: var(--light-blue) !important;
+  color:#fff !important;
+}
+
+.navMenu .ui.item.dropdown:hover {
+  background-color: var(--light-blue) !important;
+  border-color: var(--light-blue) !important;
+  color:#fff !important;
+  padding: 7.1px 15.786px;
+}
+
+.navMenu .ui.item.dropdown .menu.transition.visible {
+  margin:0;
+  border-color: var(--light-blue) !important;
+}
+.ui.secondary.menu .item.dropdown {
+  padding: 7.1px 15.786px;
+}
