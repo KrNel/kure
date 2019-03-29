@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {Grid, Label, Header, Segment} from "semantic-ui-react";
+import {Grid, Label, Header, Segment, Icon} from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPostsList from '../../common/GroupPostsList'
-import GroupPostsGrid from '../../common/GroupPostsGrid'
-import GroupUsers from '../../common/GroupUsers'
+import GroupPostsList from '../../common/GroupPostsList';
+import GroupPostsGrid from '../../common/GroupPostsGrid';
+import GroupUsers from '../../common/GroupUsers';
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
@@ -152,7 +152,8 @@ class GroupDetails extends Component {
     });
   }
 
-  toggleVIew = () => {
+  toggleView = (e) => {
+    e.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }
@@ -177,9 +178,22 @@ class GroupDetails extends Component {
         <ErrorBoundary>
           <Grid columns={1} stackable>
             <Grid.Column>
-              <Label size='large' color='blue'>
-                <Header as='h2'>{groupData.display}</Header>
-              </Label>
+              <div className='left'>
+                <Label size='large' color='blue'>
+                  <Header as='h2'>{groupData.display}</Header>
+                </Label>
+
+                <span className='view'>
+                  {'View: '}
+                  <a href="/view" onClick={(e) => this.toggleView(e)}>
+                    {
+                      showGrid
+                      ? <Icon size='large' name='list' />
+                      : <Icon size='large' name='grid layout' />
+                    }
+                  </a>
+                </span>
+              </div>
 
               <div className='right'>
                 { isAuth && (
@@ -191,6 +205,7 @@ class GroupDetails extends Component {
                   </Label>
                 )}
               </div>
+              <div className='clear' />
               {
                 groupData.kposts.length
                 ? (
