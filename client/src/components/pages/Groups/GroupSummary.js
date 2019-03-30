@@ -13,8 +13,16 @@ import ToggleView from '../../common/ToggleView';
  *
  *  @param {array} groups Data for groups
  */
-const GroupSummary = ({ groups, match, showGrid, toggleView, tabSelected,tabView }) => {
-
+const GroupSummary = (props) => {
+  const {
+    groups,
+    match,
+    showGrid,
+    toggleView,
+    tabSelected,
+    tabView
+  } = props;
+  
   const newlyCreated =
     showGrid
     ? (

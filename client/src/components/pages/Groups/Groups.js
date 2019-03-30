@@ -85,8 +85,6 @@ class Groups extends Component {
       }
     } = this;
 
-
-
     return (
       areGroupsLoading
         ? <Loading />

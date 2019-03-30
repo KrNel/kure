@@ -36,11 +36,12 @@ class GroupDetails extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      groupData: {},
+      groupData: {kposts: [], kusers: []},
       isLoading: true,
       groupRequested: '',
       notExists: false,
       showGrid: true,
+      tabSelected: 'posts',
     };
   }
 
@@ -159,6 +160,11 @@ class GroupDetails extends Component {
     this.setState({ showGrid: !showGrid });
   }
 
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
+
   render() {
     const {
       state: {
@@ -167,23 +173,73 @@ class GroupDetails extends Component {
         groupRequested,
         notExists,
         showGrid,
+        tabSelected,
       },
       props: {
         isAuth
       }
     } = this;
 
+    const posts =
+      groupData.kposts.length
+      ? showGrid
+        ? <GroupPostsGrid posts={groupData.kposts} />
+        : <GroupPostsList posts={groupData.kposts} />
+      : (
+        <Segment>
+          {'No posts.'}
+        </Segment>
+      );
+
+
+    let selectedTab = null;
+    if (tabSelected === 'posts') {
+      selectedTab = posts;
+    }else if (tabSelected === 'users') {
+      selectedTab = (
+        <GroupUsers
+          users={groupData.kusers}
+        />
+      );
+    }
+
+    let tabs = [
+      {name: 'Posts', view: 'posts'},
+      {name: 'Members', view: 'users'}
+    ];
+
+    const tabViews = tabs.map((t,i) => {
+      let classes = 'tabSelect';
+
+      if (tabSelected === t.view)
+        classes += ' activeTab'
+
+      return (
+        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+          <Label size='big' color='gray'>
+            <Header as="h3">{t.name}</Header>
+          </Label>
+        </a>
+      )
+    })
+
     return (
       isLoading ? <Loading /> : !notExists
       ? (
         <ErrorBoundary>
           <Grid columns={1} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <Label size='large' color='blue'>
+                  <Header as='h2'>
+                    {groupData.display}
+                  </Header>
+                </Label>
+              </Grid.Column>
+            </Grid.Row>
             <Grid.Column>
               <div className='left'>
-
-                <Label size='large' color='blue'>
-                  <Header as='h2'>{groupData.display}</Header>
-                </Label>
+                {tabViews}
                 { isAuth && (
                   <Label size='large'>
                     {'Membership: '}
@@ -192,29 +248,13 @@ class GroupDetails extends Component {
                     }
                   </Label>
                 )}
-
               </div>
-
               <ToggleView
                 toggleView={this.toggleView}
                 showGrid={showGrid}
               />
               <div className='clear' />
-              {
-                groupData.kposts.length
-                ? (
-                  showGrid
-                  ? <GroupPostsGrid posts={groupData.kposts} />
-                  : <GroupPostsList posts={groupData.kposts} />
-                ) : (
-                  <Segment>
-                    {'No posts.'}
-                  </Segment>
-                )
-              }
-              <GroupUsers
-                users={groupData.kusers}
-              />
+              {selectedTab}
             </Grid.Column>
           </Grid>
         </ErrorBoundary>
