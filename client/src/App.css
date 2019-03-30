@@ -61,14 +61,6 @@ ul.custom-list {
   margin-right: 1rem;
 }
 
-.tabSelect div.ui.blue.label {
-  background-color: var(--soft-grey);
-}
-
-.activeTab div.ui.blue.label {
-  background-color: var(--medium-blue);
-}
-
 /*#wrapper {
   width:922px;
   margin: 0 auto;

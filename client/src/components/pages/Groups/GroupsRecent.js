@@ -15,7 +15,6 @@ const GroupsRecent = ({ groupsActivity }) => {
   if (groupsActivity.length) {
     return (
       <React.Fragment>
-        <Label size='large' color='blue' className='adjMarginBot'><Header>Recently Active</Header></Label>
         <Grid columns={1} stackable id='GroupPageRecent'>
           {
             groupsActivity.map((g,i) => (
@@ -34,14 +33,13 @@ const GroupsRecent = ({ groupsActivity }) => {
                       {
                         g.kposts.length
                         ? g.kposts.map(p => (
-                          <li key={p._id}>
+                          <li key={p._id} className='ellipsis'>
                             {`\u2022\u00A0`}
                             <TitleLink
                               title={p.st_title}
                               category={p.st_category}
                               author={p.st_author}
                               permlink={p.st_permlink}
-                              cutoff={40}
                             />
                           </li>
                         )) : 'No posts.'

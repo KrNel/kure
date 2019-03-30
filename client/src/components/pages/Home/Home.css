@@ -31,3 +31,11 @@
   margin: 0;
   padding: 0;
 }
+
+.activeTab .ui.big.label {
+  background-color: var(--light-blue) !important;
+
+}
+.activeTab .ui.big.label .header {
+  color: #fff !important;
+}

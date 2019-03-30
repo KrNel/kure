@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Label, Tab } from "semantic-ui-react";
+import { Grid, Header, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import CommunityActivity from './CommunityActivity';
@@ -50,7 +50,7 @@ class Home extends Component {
 
   state = {
     showGrid: true,
-    tabSelected: 'recent',
+    tabSelected: 'new',
   }
 
   //this fetches when page loaded after site loads from elsewhere (user defined)
@@ -102,23 +102,32 @@ class Home extends Component {
         ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
         : <RecentPostsList posts={posts} isAuth={isAuth} />
 
-      /*const panes = [
-      { menuItem: <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>, render: () => <Tab.Pane attached={false}><Grid></Grid></Tab.Pane> },
-      { menuItem: <Label size='big' color='blue'><Header as="h3">Community Activity</Header></Label>, render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
-      { menuItem: 'Tab 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
-    ]*/
     let selectedTab = null;
-    if (tabSelected === 'recent') {
+    if (tabSelected === 'new') {
       selectedTab = recentPostsComp;
     }else if (tabSelected === 'activity') {
       selectedTab = <CommunityActivity groups={groups} />;
     }
 
     let tabs = [
-      {name: 'Recent Kurations', view: 'recent'},
+      {name: 'Recent Kurations', view: 'new'},
       {name: 'Community Activity', view: 'activity'}
     ];
 
+    const tabViews = tabs.map((t,i) => {
+      let classes = 'tabSelect';
+
+      if (tabSelected === t.view)
+        classes += ' activeTab'
+
+      return (
+        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+          <Label size='big' color='gray'>
+            <Header as="h3">{t.name}</Header>
+          </Label>
+        </a>
+      )
+    })
 
     return (
       <ErrorBoundary>
@@ -126,33 +135,16 @@ class Home extends Component {
           <Grid columns={1} stackable>
             <Grid.Column width={12} className="main">
               <Grid>
-                <Grid.Row className="reducePad">
+                <Grid.Row>
                   <Grid.Column>
-                    {
-                      tabs.map((t,i) => {
-                        let color = 'gray';
-
-                        if (tabSelected === t.view)
-                          color += ' blue';
-
-                        return (
-                          <a key={t.view} href={`/${t.view}`} className='tabSelect' onClick={(e) => this.tabView(e, t.view)}>
-                            <Label size='big' color={color}>
-                              <Header as="h3">{t.name}</Header>
-                            </Label>
-                          </a>
-                        )
-                      })
-                    }
+                    {tabViews}
                     <ToggleView
                       toggleView={this.toggleView}
                       showGrid={showGrid}
                     />
                   </Grid.Column>
                 </Grid.Row>
-
                 {selectedTab}
-
               </Grid>
             </Grid.Column>
 

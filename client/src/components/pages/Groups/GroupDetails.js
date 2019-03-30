@@ -180,17 +180,10 @@ class GroupDetails extends Component {
           <Grid columns={1} stackable>
             <Grid.Column>
               <div className='left'>
+
                 <Label size='large' color='blue'>
                   <Header as='h2'>{groupData.display}</Header>
                 </Label>
-
-                <ToggleView
-                  toggleView={this.toggleView}
-                  showGrid={showGrid}
-                />
-              </div>
-
-              <div className='right'>
                 { isAuth && (
                   <Label size='large'>
                     {'Membership: '}
@@ -199,7 +192,13 @@ class GroupDetails extends Component {
                     }
                   </Label>
                 )}
+
               </div>
+
+              <ToggleView
+                toggleView={this.toggleView}
+                showGrid={showGrid}
+              />
               <div className='clear' />
               {
                 groupData.kposts.length

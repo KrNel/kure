@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Header, Label } from "semantic-ui-react";
 
 import Loading from '../../Loading/Loading';
 import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
@@ -29,6 +30,7 @@ class Groups extends Component {
     areGroupsLoading: true,
     groups: {},
     showGrid: true,
+    tabSelected: 'new',
   }
 
   /**
@@ -67,6 +69,11 @@ class Groups extends Component {
     this.setState({ showGrid: !showGrid });
   }
 
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
+
   render() {
 
     const {
@@ -74,8 +81,11 @@ class Groups extends Component {
         areGroupsLoading,
         groups,
         showGrid,
+        tabSelected,
       }
     } = this;
+
+
 
     return (
       areGroupsLoading
@@ -87,6 +97,8 @@ class Groups extends Component {
               match={this.props.match}
               toggleView={this.toggleView}
               showGrid={showGrid}
+              tabSelected={tabSelected}
+              tabView={this.tabView}
             />
           </ErrorBoundary>
         )

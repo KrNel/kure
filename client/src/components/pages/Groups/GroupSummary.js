@@ -13,37 +13,74 @@ import ToggleView from '../../common/ToggleView';
  *
  *  @param {array} groups Data for groups
  */
-const GroupSummary = ({groups, match, showGrid, toggleView}) => {
+const GroupSummary = ({ groups, match, showGrid, toggleView, tabSelected,tabView }) => {
+
+  const newlyCreated =
+    showGrid
+    ? (
+      <GroupsCreatedGrid
+        groups={groups.groupsCreated}
+        match={match}
+      />
+    )
+    : (
+      <GroupsCreatedList
+        groups={groups.groupsCreated}
+        match={match}
+      />
+    );
+
+  let selectedTab = null;
+  if (tabSelected === 'new') {
+    selectedTab = newlyCreated;
+  }else if (tabSelected === 'activity') {
+    selectedTab = (
+      <GroupsRecent
+        groupsActivity={groups.groupsActivity}
+      />
+
+    );
+  }
+
+  let tabs = [
+    {name: 'Recently Created', view: 'new'},
+    {name: 'Recently Active', view: 'activity'}
+  ];
+
+  const tabViews = tabs.map((t,i) => {
+    let classes = 'tabSelect';
+
+    if (tabSelected === t.view)
+      classes += ' activeTab'
+
+    return (
+      <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => tabView(e, t.view)}>
+        <Label size='big' color='gray'>
+          <Header as="h3">{t.name}</Header>
+        </Label>
+      </a>
+    )
+  })
+
   if (groups.groupsActivity.length) {
     return (
       <Grid columns={1} stackable>
         <Grid.Column>
           <div className='newlyCreated'>
-            <Label size='large' color='blue'><Header>Newly Created</Header></Label>
-            <ToggleView
-              toggleView={toggleView}
-              showGrid={showGrid}
-            />
-            {
-              showGrid
-              ? (
-                <GroupsCreatedGrid
-                  groups={groups.groupsCreated}
-                  match={match}
+            <Grid.Row>
+              <Grid.Column>
+                {tabViews}
+                <ToggleView
+                  toggleView={toggleView}
+                  showGrid={showGrid}
                 />
-              )
-              : (
-                <GroupsCreatedList
-                  groups={groups.groupsCreated}
-                  match={match}
-                />
-              )
-            }
+                <div className='clear' />
+              </Grid.Column>
+            </Grid.Row>
+            {selectedTab}
           </div>
 
-          <GroupsRecent
-            groupsActivity={groups.groupsActivity}
-          />
+
         </Grid.Column>
       </Grid>
     )

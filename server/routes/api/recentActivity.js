@@ -19,8 +19,8 @@ router.get('/:user/:limit', (req, res, next) => {
   const myCommsLimit = limit;
   const mySubsLimit = limit;
   const recentPostLimit = 50;
-  const groupLimit = 10;
-  const postLimit = 5;
+  const groupLimit = 20;
+  const postLimit = 10;
 
   const recentPosts = getRecentPosts(db, next, recentPostLimit);
   const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);

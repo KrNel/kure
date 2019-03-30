@@ -6,12 +6,6 @@ import TitleLink from '../../common/TitleLink';
 
 const CommunityActivity = ({groups}) => (
   <React.Fragment>
-    <Grid.Row className="reducePad">
-      <Grid.Column>
-
-      </Grid.Column>
-    </Grid.Row>
-
     {
       groups.length
       ?
