@@ -193,15 +193,28 @@ const NavDesktop = ({ items, loginURL }) => (
     </Menu.Item>
     {
       items.map(item => (
-        <Menu.Item
-          exact
-          as={NavLink}
-          to={item.name}
-          key={item.name}
-          header
-        >
-          {item.label}
-        </Menu.Item>
+        item.label === 'Home'
+        ? (
+          <Menu.Item
+            exact
+            as={NavLink}
+            to={item.name}
+            key={item.name}
+            header
+          >
+            {item.label}
+          </Menu.Item>
+        )
+        : (
+          <Menu.Item
+            as={NavLink}
+            to={item.name}
+            key={item.name}
+            header
+          >
+            {item.label}
+          </Menu.Item>
+        )
       ))
     }
     <Menu.Menu position="right">

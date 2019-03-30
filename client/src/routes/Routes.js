@@ -39,7 +39,7 @@ const Routes = (props) => (
       <Route path='/@:author/feed' component={Feed} />
       <Route path='/@:author' component={Blog} />
       <Route path='/success' component={AuthSC} />
-      <Route exact path='/group/:group/' component={GroupDetails} />
+      <Route exact path='/groups/group/:group/' component={GroupDetails} />
       <Route exact path='/write' component={Write} />
       <Route component={NoMatch} />
     </Switch>
