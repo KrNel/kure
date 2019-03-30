@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import {short} from '../../../utils/dateFormatting';
+import { short, standard } from '../../../utils/dateFormatting';
 import TitleLink from '../../common/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
@@ -19,17 +19,15 @@ const MySubmissions = ({ isAuth, mySubs }) => (
             ?
             mySubs.map(p => (
               <li key={p._id}>
-                <div className='left'>
+                <div className='leftSidebarList ellipsis'>
                   <TitleLink
                     title={p.st_title}
                     category={p.st_category}
                     author={p.st_author}
                     permlink={p.st_permlink}
-                    cutoff={14}
-                    multiCut={8}
                   />
                 </div>
-                <div className='right meta'>
+                <div className='rightSidebarList meta' title={standard(p.created)}>
                   {short(p.created)}
                 </div>
                 <div className='clear' />

@@ -22,7 +22,7 @@ const GroupSummary = (props) => {
     tabSelected,
     tabView
   } = props;
-  
+
   const newlyCreated =
     showGrid
     ? (

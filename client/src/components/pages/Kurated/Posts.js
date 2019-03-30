@@ -1,5 +1,8 @@
 import React, {Component}  from 'react';
 
+/**
+ *  TODO: Display the kurated posts
+ */
 class Posts extends Component {
   state = {};
 

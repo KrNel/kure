@@ -4,6 +4,11 @@ import { Grid, Header, Segment, Label } from "semantic-ui-react";
 import GroupLink from '../../common/GroupLink';
 import TitleLink from '../../common/TitleLink';
 
+/**
+ *  Shows the most recently active communities that have had curated posts
+ *  added to the group. Each community group shows the most recently added
+ *  posts.
+ */
 const CommunityActivity = ({groups}) => (
   <React.Fragment>
     {

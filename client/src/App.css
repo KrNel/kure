@@ -41,12 +41,22 @@ ul.custom-list {
   clear:both;
 }
 
+.leftSidebarList {
+  float: left;
+  max-width: 60%;
+}
+
+.rightSidebarList {
+  float: right;
+  max-width: 40%;
+}
+
 .disabled {
   pointer-events:none;
   opacity:0.6;
 }
 
-.box ul.custom-list {
+.box .custom-list {
   overflow:hidden;
   width: 100%;
 }
@@ -59,6 +69,18 @@ ul.custom-list {
 
 .tabSelect {
   margin-right: 1rem;
+}
+
+.tabViews > .tabSelect > .label {
+  border: 1px solid var(--light-blue) !important;
+}
+
+.activeTab .ui.big.label {
+  background-color: var(--light-blue) !important;
+}
+
+.activeTab .ui.big.label .header {
+  color: #fff !important;
 }
 
 /*#wrapper {

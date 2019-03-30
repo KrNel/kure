@@ -3,6 +3,10 @@ import { Icon } from "semantic-ui-react";
 
 import './ToggleView.css';
 
+/**
+ *  Shows the grid and list icons when the opposite view is selected.
+ *  Calls toggle function when clicked to change selection.
+ */
 const ToggleView = ({toggleView, showGrid}) => (
   <div className='right'>
     <span className='viewToggle'>

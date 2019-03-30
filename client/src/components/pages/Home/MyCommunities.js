@@ -3,7 +3,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import GroupLink from '../../common/GroupLink';
-import {short} from '../../../utils/dateFormatting';
+import { short, standard } from '../../../utils/dateFormatting';
 
 const MyCommunities = ({ isAuth, myComms }) => (
   <Segment.Group className='box'>
@@ -19,10 +19,10 @@ const MyCommunities = ({ isAuth, myComms }) => (
             ?
             myComms.map(c => (
               <li key={c._id}>
-                <div className='left'>
+                <div className='leftSidebarList'>
                   <GroupLink display={c.display} name={c.group} />
                 </div>
-                <div className='right meta'>
+                <div className='rightSidebarList meta' title={standard(c.created)}>
                   {short(c.updated)}
                 </div>
                 <div className='clear' />

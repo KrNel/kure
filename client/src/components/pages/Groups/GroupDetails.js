@@ -14,8 +14,11 @@ import {hasLength} from '../../../utils/helpers';
 import ToggleView from '../../common/ToggleView';
 
 /**
+ *  Shows the individual community page details.
  *
- *
+ *  Data is fetched from the DB then processed to be added to specific views.
+ *  The Posts and Members are toggled for view selection, and the Posts can
+ *  further be toggled to show as a grid or list.
  */
 class GroupDetails extends Component {
 
@@ -44,7 +47,6 @@ class GroupDetails extends Component {
       tabSelected: 'posts',
     };
   }
-
 
   /**
    *  Fetch post detail from Steem blockchain on component mount.
@@ -154,12 +156,18 @@ class GroupDetails extends Component {
     });
   }
 
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
   toggleView = (e) => {
     e.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }
 
+  /**
+   *  Update state with the selected page section to view.
+   */
   tabView = (e, selected) => {
     e.preventDefault();
     this.setState({ tabSelected: selected });
