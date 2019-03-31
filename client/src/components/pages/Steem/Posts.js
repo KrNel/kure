@@ -13,9 +13,10 @@ import FilterPosts from './FilterPosts';
 import * as contentActions from '../../../actions/steemContentActions';
 
 /**
- *  Kurate gets the Steem blockchain content and dusplays a list of post
+ *  Gets the Steem blockchain content and displays a list of post
  *  summaries for browsing. Content can be added to a community group
- *  to which the user belongs.
+ *  to which the user belongs. The pages for Steem, Blog and Feed and go here
+ *  to fetch and render the view.
  */
 class Posts extends Component {
 
@@ -258,7 +259,6 @@ const mapStateToProps = state => {
       addPostLoading,
       modalOpenAddPost,
       selectedGroup,
-      addPostData,
       upvotePayload,
     }
   } = state;
@@ -275,7 +275,6 @@ const mapStateToProps = state => {
     addPostLoading,
     modalOpenAddPost,
     selectedGroup,
-    addPostData,
     upvotePayload,
   }
 }

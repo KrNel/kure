@@ -3,18 +3,17 @@ import { Header, Table, Label } from "semantic-ui-react";
 
 import GroupLink from '../../common/GroupLink';
 import UserLink from '../../common/UserLink';
-import {short} from '../../../utils/timeFromNow';
+import { short } from '../../../utils/dateFormatting';
 
 /**
  *  Show the newly created groups as a table list.
  *
- *  @param {array} groupsCreated Data for newly created groups
+ *  @param {array} groups Data for newly created groups
  */
-const GroupsCreated = ({ groupsCreated}) => {
-  if (groupsCreated.length) {
+const GroupsCreated = ({ groups}) => {
+  if (groups.length) {
     return (
       <React.Fragment>
-        <Label size='large' color='blue'><Header>Newly Created</Header></Label>
         <Table striped>
           <Table.Header>
             <Table.Row>
@@ -27,7 +26,7 @@ const GroupsCreated = ({ groupsCreated}) => {
           </Table.Header>
           <Table.Body>
             {
-              groupsCreated.map((g, i) => (
+              groups.map((g, i) => (
                 <Table.Row key={g._id}>
                   <Table.Cell>
                     <GroupLink display={g.display} name={g.name} />

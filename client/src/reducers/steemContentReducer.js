@@ -155,9 +155,6 @@ export const steemContent = (
         ...state,
         isCommenting: true,
         commentedId: action.parentId,
-        /*commentedPayload: {
-          id: action.payload
-        }*/
       });
     case SEND_COMMENT_SUCCESS:
       return ({
@@ -170,13 +167,6 @@ export const steemContent = (
             action.comment
           ],
         },
-        /*post: {
-          ...state.post,
-          replies: [
-            ...state.post.replies,
-            action.comment,
-          ],
-        }*/
       });
     default:
       return state

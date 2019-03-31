@@ -1,4 +1,5 @@
 import { Client } from 'dsteem';
+import { extractImage } from '../components/pages/Steem/helpers/extractContent';
 
 //Regex for URL validation
 const urlRegex = /:\/\/(:?[\d\w\.]+)?(?:\/[\d\w_-]+)?\/@([\.\d\w_-]+)?\/([\d\w_-]+)?$/;// eslint-disable-line
@@ -68,6 +69,7 @@ export const postValidation = async (newPost) => {
     category: steemRes.category,
     permlink: steemRes.permlink,
     title: steemRes.title,
+    image: steemRes.image_link,
   }};
 }
 
@@ -84,14 +86,18 @@ export const getFromSteem = async (url) => {
 
   const res = client.database.call('get_content', [author, permlink]).then(result => {
     if (result) {
-      const {author, category, permlink, title} = result;
+      const {author, category, permlink, title, body, json_metadata} = result;
+      const {image_link} = extractImage(json_metadata, body, author, permlink);
+
       return {
         exists: true,
         author,
         category,
         permlink,
         title,
-      } ;
+        image_link,
+      }
+      
     } else return {exists: false};
   });
   return await res;

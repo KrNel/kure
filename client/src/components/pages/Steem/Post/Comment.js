@@ -6,7 +6,7 @@ import Body from './PostBody';
 import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
 import PostLink from '../../../common/PostLink';
-import {long} from '../../../../utils/timeFromNow';
+import {long} from '../../../../utils/dateFormatting';
 import {hasLength} from '../../../../utils/helpers';
 import Vote from '../Vote';
 import './Comment.css';
@@ -60,6 +60,10 @@ class Comment extends Component {
     this.setState({ showReplyForm: !showReplyForm, showEdit: false });
   }
 
+  onShowEditForm = (e) => {
+    e.preventDefault();
+  };
+
   render() {
     const {
       state: {
@@ -106,10 +110,8 @@ class Comment extends Component {
     let replyClass = depth + 1 > 5 ? 'repliesNoIndent' : 'replies';
 
     const id = comment.id;
-    const title = comment.title;
     const author = comment.author;
     const permlink = comment.permlink;
-    const category = comment.category;
     const created = comment.created;
     const anchorLink = `#@${author}/${permlink}`;
     const activeVotes = comment.active_votes;
@@ -150,26 +152,35 @@ class Comment extends Component {
                   <Vote
                     activeVotes={activeVotes}
                     author={author}
-                    category={category}
                     payoutValue={totalPayout}
                     permlink={permlink}
-                    title={title}
                     user={user}
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     ratio={ratio}
                     pid={id}
                   />
-                  <li className='item'>
-                    <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
-                  </li>
+                  {
+                    isAuth && (
+                      <li className='item'>
+                        <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                      </li>
+                    )
+                  }
+                  {
+                    isAuth && user === author && (
+                      <li className='item'>
+                        <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
+                      </li>
+                    )
+                  }
                 </ul>
               </div>
-              {showReplyForm && replyForm}
             </li>
             <div className='clear' />
           </ul>
           <div className='clear' />
+          {showReplyForm && replyForm}
         </div>
         {
           comment.children > 0

@@ -94,6 +94,10 @@
   max-height: 75vw;
 }
 
+.Body hr {
+  clear: both;
+}
+
 div.pull-right {
   float: right;
   padding-left: 1rem;

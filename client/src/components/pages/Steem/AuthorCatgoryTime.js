@@ -4,7 +4,7 @@ import Avatar from './Avatar';
 import AuthorReputation from './AuthorReputation';
 import Category from './Category';
 import PostLink from '../../common/PostLink';
-import {long} from '../../../utils/timeFromNow';
+import { long, standard } from '../../../utils/dateFormatting';
 import './AuthorCatgoryTime.css';
 
 /**
@@ -34,7 +34,7 @@ const AuthorCatgoryTime = ({author, authorReputation, category, created, permlin
         author={author}
         category={category}
         permlink={permlink}
-        title={created}
+        title={standard(created)}
         text={long(created)}
       />
     </li>

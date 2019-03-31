@@ -1,5 +1,3 @@
-
-
 #GroupPageRecent .ui.label.head {
   line-height: 1.3rem
 }
@@ -10,4 +8,12 @@
 
 .ui.label.adjMarginBot {
   margin-bottom: 1em;
+}
+
+.newlyCreated {
+  margin-bottom: 2rem;
+}
+
+.newlyCreated .ui.label {
+  margin-bottom: 1rem;
 }

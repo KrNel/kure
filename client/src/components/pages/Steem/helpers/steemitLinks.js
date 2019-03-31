@@ -12,7 +12,7 @@ const urlChars = `(?:${urlChar}*${urlCharEnd})?`;
 
 const urlSet = ({ domain = domainPath, path } = {}) =>
   // urlChars is everything but html or markdown stop chars
-  `https?:\/\/${domain}(?::\\d{2,5})?(?:[/\\?#]${urlChars}${path ? path : ''})${path ? '' : '?'}`;
+  `https?:\/\/${domain}(?::\\d{2,5})?(?:[/\\?#]${urlChars}${path ? path : ''})${path ? '' : '?'}`;//eslint-disable-line
 
 /**
     Unless your using a 'g' (glob) flag you can store and re-use your regular expression.  Use the cache below.  If your using a glob (for example: replace all), the regex object becomes stateful and continues where it left off when called with the same string so naturally the regexp object can't be cached for long.
@@ -37,7 +37,7 @@ export default {
   image: image(),
   imageFile: imageFile(),
   youTube: youTube(),
-  youTubeId: /(?:(?:youtube.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube.com\/embed\/))([A-Za-z0-9\_\-]+)/i,
+  youTubeId: /(?:(?:youtube.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube.com\/embed\/))([A-Za-z0-9\_\-]+)/i,//eslint-disable-line
   vimeoId: /(?:vimeo.com\/|player.vimeo.com\/video\/)([0-9]+)/,
   // simpleLink: new RegExp(`<a href="(.*)">(.*)<\/a>`, 'ig'),
   ipfsPrefix: /(https?:\/\/.*)?\/ipfs/i,

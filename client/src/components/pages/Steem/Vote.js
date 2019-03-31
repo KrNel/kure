@@ -25,10 +25,8 @@ class Vote extends Component {
     user: PropTypes.string.isRequired,
     activeVotes: PropTypes.arrayOf(PropTypes.object),
     author: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
     payoutValue: PropTypes.number.isRequired,
     permlink: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
     handleUpvote: PropTypes.func.isRequired,
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
     ratio: PropTypes.number.isRequired,
@@ -120,12 +118,9 @@ class Vote extends Component {
       props: {
         activeVotes,
         author,
-        category,
         payoutValue,
         permlink,
-        title,
         user,
-        handleUpvote,
         upvotePayload,
         ratio,
         pid

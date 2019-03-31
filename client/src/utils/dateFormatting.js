@@ -23,6 +23,11 @@ export const long = date => {
   return moment.utc(date).fromNow();
 }
 
+export const standard = date => {
+  moment.updateLocale("en", { relativeTime: CONFIG_ORIG });
+  return moment.utc(date).local().format("YYYY/MM/DD HH:mm:ss");
+}
+
 export const short = date => {
   moment.updateLocale("en", { relativeTime: CONFIG_NEW });
   return moment.utc(date).fromNow();

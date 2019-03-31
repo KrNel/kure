@@ -21,7 +21,7 @@ const items = [
   {name : "/", label : "Home"},
   {name : "/steem", label : "Steem"},
   {name : "/groups", label : "Communities"},
-  //{name : "/kurated", label : "Kurated"},
+  {name : "/kurated", label : "Kurated"},
 ];
 
 /**
@@ -131,19 +131,7 @@ const NavMobile = ({
       visible={visible}
       width='thin'
     >
-      {
-        items.map(item => (
-          <Menu.Item
-            exact
-            as={NavLink}
-            to={item.name}
-            key={item.name}
-            header
-          >
-            {item.label}
-          </Menu.Item>
-        ))
-      }
+      <MenuItems items={items} />
     </Sidebar>
     <Sidebar.Pusher
       onClick={onPusherClick}
@@ -191,19 +179,7 @@ const NavDesktop = ({ items, loginURL }) => (
     <Menu.Item fitted to='/' as={NavLink}>
       <Image src={logo} alt="logo" />
     </Menu.Item>
-    {
-      items.map(item => (
-        <Menu.Item
-          exact
-          as={NavLink}
-          to={item.name}
-          key={item.name}
-          header
-        >
-          {item.label}
-        </Menu.Item>
-      ))
-    }
+    <MenuItems items={items} />
     <Menu.Menu position="right">
       <LoginControl loginURL={loginURL} />
     </Menu.Menu>
@@ -216,6 +192,48 @@ NavDesktop.propTypes = {
 };
 
 NavDesktop.defaultProps = {
+  items: [],
+}
+
+/**
+ *  Take the items and loop through them to return the menu items.
+ * 
+ *  @param {object} props Component props
+ *  @param {array} props.items Menu items to render
+ *  @returns {Component} Displays the menu items
+ */
+const MenuItems = ({items}) => {
+  return items.map(item => (
+    item.label === 'Home'
+    ? (
+      <Menu.Item
+        exact
+        as={NavLink}
+        to={item.name}
+        key={item.name}
+        header
+      >
+        {item.label}
+      </Menu.Item>
+    )
+    : (
+      <Menu.Item
+        as={NavLink}
+        to={item.name}
+        key={item.name}
+        header
+      >
+        {item.label}
+      </Menu.Item>
+    )
+  ))
+}
+
+MenuItems.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+MenuItems.defaultProps = {
   items: [],
 }
 

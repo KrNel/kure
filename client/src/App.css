@@ -9,7 +9,7 @@ body {
 }
 
 a {
-  color: var(--medium-blue)
+  color: var(--dark-blue)
 }
 a:hover {
   color: var(--light-blue)
@@ -41,9 +41,46 @@ ul.custom-list {
   clear:both;
 }
 
+.leftSidebarList {
+  float: left;
+  max-width: 60%;
+}
+
+.rightSidebarList {
+  float: right;
+  max-width: 40%;
+}
+
 .disabled {
   pointer-events:none;
   opacity:0.6;
+}
+
+.box .custom-list {
+  overflow:hidden;
+  width: 100%;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabSelect {
+  margin-right: 1rem;
+}
+
+.tabViews > .tabSelect > .label {
+  border: 1px solid var(--light-blue) !important;
+}
+
+.activeTab .ui.big.label {
+  background-color: var(--light-blue) !important;
+}
+
+.activeTab .ui.big.label .header {
+  color: #fff !important;
 }
 
 /*#wrapper {
@@ -157,11 +194,11 @@ ul.custom-list {
     /*border-radius: 3px !important;*/
 }
 
-.ui.segment, .ui.segments {
+/*.ui.segment, .ui.segments {
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
   box-shadow: none !important;
-}
+}*/
 
 .ui.card {
   -webkit-box-shadow: none !important;
@@ -175,6 +212,7 @@ ul.custom-list {
   box-shadow: 0px 1px 2px 0 var(--main-border) !important;
   border: 1px solid var(--main-border) !important;
 }
+
 .ui.segments {
   -webkit-box-shadow: none var(--main-border) !important;
   box-shadow: none var(--main-border) !important;

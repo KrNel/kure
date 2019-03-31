@@ -5,7 +5,7 @@ import App from '../App';
 import Home from '../components/pages/Home/Home';
 import Groups from '../components/pages/Groups/Groups';
 import GroupDetails from '../components/pages/Groups/GroupDetails';
-//import Posts from '../components/pages/Posts/Posts';
+import Posts from '../components/pages/Kurated/Posts';
 import Post from '../components/pages/Steem/Post/Post';
 import Feed from '../components/pages/Steem/Feed/Feed';
 import Blog from '../components/pages/Steem/Blog/Blog';
@@ -28,7 +28,7 @@ const Routes = (props) => (
       <Route exact path='/' component={Home} />
       <Route exact path='/steem' component={Kurate} />
       <Route exact path='/groups' component={Groups} />
-      {/*<Route exact path='/kurated' component={Posts} />*/}
+      <Route exact path='/kurated' component={Posts} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
       <Route path='/created/:tag?' component={Kurate} />
@@ -39,7 +39,7 @@ const Routes = (props) => (
       <Route path='/@:author/feed' component={Feed} />
       <Route path='/@:author' component={Blog} />
       <Route path='/success' component={AuthSC} />
-      <Route exact path='/group/:group/' component={GroupDetails} />
+      <Route exact path='/groups/group/:group/' component={GroupDetails} />
       <Route exact path='/write' component={Write} />
       <Route component={NoMatch} />
     </Switch>

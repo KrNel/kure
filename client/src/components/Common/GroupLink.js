@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
  */
 const GroupsName = ({ name, display }) => (
   <Link
-    to={`/group/${name}`}
+    to={`/groups/group/${name}`}
   >
     {display}
   </Link>

@@ -1,19 +1,24 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {Grid, Label, Header, Segment} from "semantic-ui-react";
+import { Grid, Label, Header, Segment } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPosts from '../../common/GroupPosts'
-import GroupUsers from '../../common/GroupUsers'
+import GroupPostsList from '../../common/GroupPostsList';
+import GroupPostsGrid from '../../common/GroupPostsGrid';
+import GroupUsers from '../../common/GroupUsers';
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import {hasLength} from '../../../utils/helpers';
+import ToggleView from '../../common/ToggleView';
 
 /**
+ *  Shows the individual community page details.
  *
- *
+ *  Data is fetched from the DB then processed to be added to specific views.
+ *  The Posts and Members are toggled for view selection, and the Posts can
+ *  further be toggled to show as a grid or list.
  */
 class GroupDetails extends Component {
 
@@ -34,13 +39,14 @@ class GroupDetails extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      groupData: {},
+      groupData: {kposts: [], kusers: []},
       isLoading: true,
       groupRequested: '',
       notExists: false,
+      showGrid: true,
+      tabSelected: 'posts',
     };
   }
-
 
   /**
    *  Fetch post detail from Steem blockchain on component mount.
@@ -150,6 +156,23 @@ class GroupDetails extends Component {
     });
   }
 
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
+  /**
+   *  Update state with the selected page section to view.
+   */
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
+
   render() {
     const {
       state: {
@@ -157,51 +180,98 @@ class GroupDetails extends Component {
         isLoading,
         groupRequested,
         notExists,
+        showGrid,
+        tabSelected,
       },
       props: {
         isAuth
       }
     } = this;
 
+    const posts =
+      groupData.kposts.length
+      ? showGrid
+        ? <GroupPostsGrid posts={groupData.kposts} />
+        : <GroupPostsList posts={groupData.kposts} />
+      : (
+        <Segment>
+          {'No posts.'}
+        </Segment>
+      );
+
+
+    let selectedTab = null;
+    if (tabSelected === 'posts') {
+      selectedTab = posts;
+    }else if (tabSelected === 'users') {
+      selectedTab = (
+        <GroupUsers
+          users={groupData.kusers}
+        />
+      );
+    }
+
+    let tabs = [
+      {name: 'Posts', view: 'posts'},
+      {name: 'Members', view: 'users'}
+    ];
+
+    const tabViews = tabs.map((t,i) => {
+      let classes = 'tabSelect';
+
+      if (tabSelected === t.view)
+        classes += ' activeTab'
+
+      return (
+        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+          <Label size='big' color='gray'>
+            <Header as="h3">{t.name}</Header>
+          </Label>
+        </a>
+      )
+    })
+
     return (
       isLoading ? <Loading /> : !notExists
       ? (
         <ErrorBoundary>
           <Grid columns={1} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <Label size='large' color='blue'>
+                  <Header as='h2'>
+                    {groupData.display}
+                  </Header>
+                </Label>
+              </Grid.Column>
+            </Grid.Row>
             <Grid.Column>
-              <Label size='large' color='blue'>
-                <Header as='h2'>{groupData.display}</Header>
-              </Label>
-              <div className='right'>
+              <div className='left'>
+                {tabViews}
                 { isAuth && (
-                  <Segment>
+                  <Label size='large'>
                     {'Membership: '}
                     {
                       joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
                     }
-                  </Segment>
+                  </Label>
                 )}
               </div>
-              {
-                groupData.kposts.length
-                ? (
-                  <GroupPosts
-                    posts={groupData.kposts}
-                  />
-                ) : (
-                  <Segment>
-                    {'No posts.'}
-                  </Segment>
-                )
-              }
-              <GroupUsers
-                users={groupData.kusers}
+              <ToggleView
+                toggleView={this.toggleView}
+                showGrid={showGrid}
               />
+              <div className='clear' />
+              {selectedTab}
             </Grid.Column>
           </Grid>
         </ErrorBoundary>
       )
-      : <Segment>That group doesn&apos;t exist.</Segment>
+      : (
+        <Segment>
+          {`That group doesn't exist.`}
+        </Segment>
+      )
     )
   }
 }

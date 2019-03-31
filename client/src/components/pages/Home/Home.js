@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Segment, Label } from "semantic-ui-react";
+import { Grid, Header, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
+import CommunityActivity from './CommunityActivity';
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../common/GroupLink';
+import ToggleView from '../../common/ToggleView';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
-import RecentPosts from './RecentPosts'
-import TitleLink from '../../common/TitleLink';
+import RecentPostsList from './RecentPostsList';
+import RecentPostsGrid from './RecentPostsGrid';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
 
@@ -18,6 +19,8 @@ import './Home.css';
  *
  *  Shows the recent activity on the site.
  *  Recently added posts from all community groups are shown.
+ *  Non-logged in users need to force a 'x' as a user in order for data to be
+ *  retrieved from the database. Without that, the data comes back empty.
  *
  *  @param {object} props Component props
  *  @param {string} props.selected Selected activity to display
@@ -45,6 +48,11 @@ class Home extends Component {
     user: 'x'
   };
 
+  state = {
+    showGrid: true,
+    tabSelected: 'new',
+  }
+
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
     let {
@@ -71,15 +79,61 @@ class Home extends Component {
       dispatch(fetchPosts(selected, user));
   }
 
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
+  /**
+   *  Update state with the selected page section to view.
+   */
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
 
   render() {
-    //const { selected, posts, isFetching, lastUpdated, isAuth } = this.props;
     const { posts, groups, isFetching, isAuth, myComms, mySubs } = this.props;
-    //const isEmpty = posts.length === 0;
+
+    const { showGrid, tabSelected } = this.state;
+
     const recentPostsComp =
-        (isFetching)
-          ? <Loading />
-        : <RecentPosts posts={posts} isAuth={isAuth} />;
+      isFetching
+      ? <Loading />
+      : showGrid
+        ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
+        : <RecentPostsList posts={posts} isAuth={isAuth} />
+
+    let selectedTab = null;
+    if (tabSelected === 'new') {
+      selectedTab = recentPostsComp;
+    }else if (tabSelected === 'activity') {
+      selectedTab = <CommunityActivity groups={groups} />;
+    }
+
+    let tabs = [
+      {name: 'Recent Kurations', view: 'new'},
+      {name: 'Community Activity', view: 'activity'}
+    ];
+
+    const tabViews = tabs.map((t,i) => {
+      let classes = 'tabSelect';
+
+      if (tabSelected === t.view)
+        classes += ' activeTab'
+
+      return (
+        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+          <Label size='big'>
+            <Header as="h3">{t.name}</Header>
+          </Label>
+        </a>
+      )
+    })
 
     return (
       <ErrorBoundary>
@@ -87,72 +141,18 @@ class Home extends Component {
           <Grid columns={1} stackable>
             <Grid.Column width={12} className="main">
               <Grid>
-                <Grid.Row className="reducePad">
+                <Grid.Row>
                   <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Recent Kurations</Header></Label>
+                    {tabViews}
+                    <ToggleView
+                      toggleView={this.toggleView}
+                      showGrid={showGrid}
+                    />
                   </Grid.Column>
                 </Grid.Row>
-
-                <Grid.Row columns={1}>
-                  <Grid.Column>
-                    {recentPostsComp}
-                  </Grid.Column>
-                </Grid.Row>
-
-                <Grid.Row className="reducePad">
-                  <Grid.Column>
-                    <Label size='big' color='blue'><Header as="h3">Community Activity</Header></Label>
-                  </Grid.Column>
-                </Grid.Row>
-
-                {
-                  groups.length
-                  ?
-                    groups.map(g => (
-                      <Grid.Column key={g.name} width={8}>
-                        <Segment.Group className='box'>
-                          <Segment>
-                            <Label attached='top' className='head'>
-                              <Header as='h3'>
-                                <GroupLink display={g.display} name={g.name} />
-                              </Header>
-                            </Label>
-                            <ul className='custom-list'>
-                              {
-                                g.kposts.length
-                                ? g.kposts.map(p => (
-                                  <li key={p._id}>
-                                    {`\u2022\u00A0`}
-                                    <TitleLink
-                                      title={p.st_title}
-                                      category={p.st_category}
-                                      author={p.st_author}
-                                      permlink={p.st_permlink}
-                                      cutoff={40}
-                                    />
-                                  </li>
-                                )) : 'No posts.'
-                              }
-                            </ul>
-                          </Segment>
-                        </Segment.Group>
-                      </Grid.Column>
-                    ))
-                  : (
-                    <Grid.Row columns={1}>
-                      <Grid.Column>
-                        <Segment>
-                          {'No communities.'}
-                        </Segment>
-                      </Grid.Column>
-                    </Grid.Row>
-                  )
-                }
+                {selectedTab}
               </Grid>
             </Grid.Column>
-
-            {/*<Grid.Row><Header as="h1">Popular Groups:</Header></Grid.Row>*/}
-            {/*<Grid.Row><Header as="h1">New Groups:</Header></Grid.Row>*/}
 
             <Grid.Column width={4} className="sidebar">
               <MyCommunities myComms={myComms} isAuth={isAuth} />
@@ -160,7 +160,7 @@ class Home extends Component {
             </Grid.Column>
           </Grid>
         </div>
-    </ErrorBoundary>
+      </ErrorBoundary>
     )
   }
 }

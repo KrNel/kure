@@ -5,7 +5,6 @@ import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
-import RepLog10 from '../../../utils/reputationCalc';
 import TitleLink from '../../common/TitleLink';
 import PostLink from '../../common/PostLink';
 
@@ -52,7 +51,7 @@ const PostsSummary = (props) => {
 
         const title = post.title;
         const author = post.author;
-        const authorReputation = RepLog10(post.author_reputation);
+        const authorReputation = post.author_reputation;
         const desc = post.desc;
         const permlink = post.permlink;
         const category = post.category;
@@ -101,7 +100,7 @@ const PostsSummary = (props) => {
                     permlink={permlink}
                   />
                 </h4>
-                <p>
+                <p className='description'>
                   {desc}
                 </p>
                 <div className='post-actions'>
@@ -119,6 +118,7 @@ const PostsSummary = (props) => {
                     upvotePayload={upvotePayload}
                     ratio={ratio}
                     pid={post.id}
+                    image={thumb}
                   />
                 </div>
               </div>

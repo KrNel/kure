@@ -61,42 +61,7 @@ export function extractContent(post) {
     depth,
   } = post;
 
-  //const body = get(content, 'body');
-  let jsonMetadata = {};
-  let image_link;
-  try {
-    //in case of metadata being double encoded
-    if (typeof json_metadata == 'string') {
-      jsonMetadata = JSON.parse(json_metadata);
-    }
-    // First, attempt to find an image url in the json metadata
-    if (jsonMetadata && jsonMetadata.image) {
-      image_link = getValidImage(jsonMetadata.image);
-    }
-  } catch (error) {
-      console.error('Invalid json metadata string', json_metadata, 'in post', author, permlink);
-  }
-
-  // If nothing found in json metadata, parse body and check images/links
-  if (!image_link) {
-    let rtags;
-    {
-      const isHtml = /^<html>([\S\s]*)<\/html>$/.test(body);
-      const htmlText = isHtml
-        ? body
-        : remarkable.render(
-            body.replace(
-              /<!--([\s\S]+?)(-->|$)/g,
-              '(html comment removed: $1)'
-            )
-          );
-
-      rtags = HtmlReady(htmlText, { mutate: false });
-    }
-
-    [image_link] = Array.from(rtags.images);
-  }
-
+  const {image_link, jsonMetadata} = extractImage(json_metadata, body, author, permlink)
 
   let desc;
   let desc_complete = false;
@@ -121,7 +86,7 @@ export function extractContent(post) {
 
   if (desc.length > 140) {
     desc = desc
-      .substring(0, 120)
+      .substring(0, 140)
       .trim()
       .replace(/[,!\?]?\s+[^\s]+$/, '…'); // eslint-disable-line no-useless-escape
   }
@@ -164,3 +129,43 @@ export const slugify = (string) => {
 };
 
 export const shortid = () => Math.random().toString(36).substr(2, 9);
+
+export const extractImage = (json_metadata, body, author, permlink) => {
+  //const body = get(content, 'body');
+  let jsonMetadata = {};
+  let image_link;
+  try {
+    //in case of metadata being double encoded
+    if (typeof json_metadata == 'string') {
+      jsonMetadata = JSON.parse(json_metadata);
+    }
+    // First, attempt to find an image url in the json metadata
+    if (jsonMetadata && jsonMetadata.image) {
+      image_link = getValidImage(jsonMetadata.image);
+    }
+  } catch (error) {
+      console.error('Invalid json metadata string', json_metadata, 'in post', author, permlink);
+  }
+
+  // If nothing found in json metadata, parse body and check images/links
+  if (!image_link) {
+    let rtags;
+    {
+      const isHtml = /^<html>([\S\s]*)<\/html>$/.test(body);
+      const htmlText = isHtml
+        ? body
+        : remarkable.render(
+            body.replace(
+              /<!--([\s\S]+?)(-->|$)/g,
+              '(html comment removed: $1)'
+            )
+          );
+
+      rtags = HtmlReady(htmlText, { mutate: false });
+    }
+
+    [image_link] = Array.from(rtags.images);
+  }
+
+  return {jsonMetadata, image_link}
+}

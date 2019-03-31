@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Header, Label } from "semantic-ui-react";
 
 import Loading from '../../Loading/Loading';
 import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
@@ -28,6 +29,8 @@ class Groups extends Component {
   state = {
     areGroupsLoading: true,
     groups: {},
+    showGrid: true,
+    tabSelected: 'new',
   }
 
   /**
@@ -41,20 +44,6 @@ class Groups extends Component {
 
     this.getGroups(user);
   }
-
-  /**
-   *  When Comommunities page is the first page, props aren't set yet, check
-   *  props for user set and then fetch data. `go` is a flad to run only once
-   *  on update check (else infinite loop)
-   *
-   *  @param {object} prevProps Previous props
-   */
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (this.state.go) {
-      this.getGroups(user, '2');
-    }
-  }*/
 
   /**
    *  Get the various community data to display on the page.
@@ -74,12 +63,31 @@ class Groups extends Component {
     });
   }
 
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
+  /**
+   *  Update state with the selected page section to view.
+   */
+  tabView = (e, selected) => {
+    e.preventDefault();
+    this.setState({ tabSelected: selected });
+  }
+
   render() {
 
     const {
       state: {
         areGroupsLoading,
         groups,
+        showGrid,
+        tabSelected,
       }
     } = this;
 
@@ -90,6 +98,11 @@ class Groups extends Component {
           <ErrorBoundary>
             <GroupSummary
               groups={groups}
+              match={this.props.match}
+              toggleView={this.toggleView}
+              showGrid={showGrid}
+              tabSelected={tabSelected}
+              tabView={this.tabView}
             />
           </ErrorBoundary>
         )

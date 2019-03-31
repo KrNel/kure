@@ -1,11 +1,18 @@
-import React  from 'react';
+import React, {Component}  from 'react';
 
-const Posts = () => {
-  return (
-    <div>
-      In development. Will show posts from communities for viewing.
-    </div>
-  );
+/**
+ *  TODO: Display the kurated posts
+ */
+class Posts extends Component {
+  state = {};
+
+  render() {
+    return (
+      <div>
+        In development. Will show posts from communities for viewing.
+      </div>
+    )
+  }
 }
 
 export default Posts;

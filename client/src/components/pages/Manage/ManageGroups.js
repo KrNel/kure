@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Header, Form, Icon, Label } from "semantic-ui-react";
 
-import GroupsList from './GroupsList';
+import GroupsGrid from './GroupsGrid';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
@@ -52,8 +52,6 @@ class ManageGroups extends Component {
       selectedGroup: '',
       modalOpen: false,
       modalData: {},
-      /*searchResults: [],
-      searchValue: ''*/
     }
 
     this.existText = "Group name taken. Try another.";
@@ -236,7 +234,6 @@ class ManageGroups extends Component {
     .then((res) => {
       if (res.data) {
         const {groups} = this.state;
-        //const oldGroups = groups;
         const newGroup = groups.filter(g => g.name !== group);
         this.setState({
           groups: newGroup,
@@ -358,8 +355,6 @@ class ManageGroups extends Component {
       selectedGroup,
       modalOpen,
       modalData,
-      /*searchResults,
-      searchValue*/
     } = this.state;
 
     const {
@@ -367,6 +362,7 @@ class ManageGroups extends Component {
       csrf,
       type,
       headerText,
+      match,
     } = this.props;
 
     //If there were errors during validation, show them in an ErrroLabel.
@@ -421,7 +417,7 @@ class ManageGroups extends Component {
           modalData={modalData}
         />
 
-        <GroupsList
+        <GroupsGrid
           groups={groups}
           areGroupsLoading={areGroupsLoading}
           handleManageGroup={this.handleManageGroup}
@@ -430,6 +426,7 @@ class ManageGroups extends Component {
           selectedGroup={selectedGroup}
           showModal={this.showModal}
           type={type}
+          match={match}
         />
 
         {
