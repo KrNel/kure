@@ -3,7 +3,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import { short, standard } from '../../../utils/dateFormatting';
-import TitleLink from '../../common/TitleLink';
+import TitleLink from '../Steem/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
   <Segment.Group className='box'>

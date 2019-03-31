@@ -13,7 +13,7 @@ import Kurate from '../components/pages/Steem/Kurate';
 import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
-import Write from '../components/Write/Write';
+import Write from '../components/pages/Steem/Post/Write/Write';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 

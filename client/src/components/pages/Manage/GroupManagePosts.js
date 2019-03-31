@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Segment } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
-import GroupPostsList from '../../common/GroupPostsList'
+import GroupPostsList from '../../kure/GroupPostsList'
 
 /**
  *  Table of posts for the selected group.

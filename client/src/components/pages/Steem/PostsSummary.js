@@ -5,8 +5,8 @@ import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
-import TitleLink from '../../common/TitleLink';
-import PostLink from '../../common/PostLink';
+import TitleLink from './TitleLink';
+import PostLink from './PostLink';
 
 /**
  *  Root container for post summaries.

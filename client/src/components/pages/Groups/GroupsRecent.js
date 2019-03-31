@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid, Header, Segment, Label } from "semantic-ui-react";
 
-import GroupLink from '../../common/GroupLink';
-import TitleLink from '../../common/TitleLink';
+import GroupLink from '../../kure/GroupLink';
+import TitleLink from '../Steem/TitleLink';
 
 /**
  *  Show the most recently active communities. Allow logged in users todo

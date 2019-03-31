@@ -4,14 +4,14 @@ import { Grid, Label, Header, Segment } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
-import GroupPostsList from '../../common/GroupPostsList';
-import GroupPostsGrid from '../../common/GroupPostsGrid';
-import GroupUsers from '../../common/GroupUsers';
+import GroupPostsList from '../../kure/GroupPostsList';
+import GroupPostsGrid from '../../kure/GroupPostsGrid';
+import GroupUsers from '../../kure/GroupUsers';
 import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import {hasLength} from '../../../utils/helpers';
-import ToggleView from '../../common/ToggleView';
+import ToggleView from '../../kure/ToggleView';
 
 /**
  *  Shows the individual community page details.

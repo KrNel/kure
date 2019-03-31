@@ -5,7 +5,7 @@ import ReplyForm from './ReplyForm';
 import Body from './PostBody';
 import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
-import PostLink from '../../../common/PostLink';
+import PostLink from '../PostLink';
 import {long} from '../../../../utils/dateFormatting';
 import {hasLength} from '../../../../utils/helpers';
 import Vote from '../Vote';

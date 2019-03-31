@@ -3,7 +3,7 @@ import React from 'react';
 import Avatar from './Avatar';
 import AuthorReputation from './AuthorReputation';
 import Category from './Category';
-import PostLink from '../../common/PostLink';
+import PostLink from './PostLink';
 import { long, standard } from '../../../utils/dateFormatting';
 import './AuthorCatgoryTime.css';
 

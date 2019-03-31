@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';
-import TitleLink from './TitleLink';
-import UserLink from './UserLink';
+import TitleLink from '../pages/Steem/TitleLink';
+import UserLink from '../pages/Steem/UserLink';
 
 /**
  *  Displays the post data that belong to a commmunity group. Access rank/role

@@ -3,8 +3,8 @@ import { Icon, Popup } from "semantic-ui-react";
 import Slider from 'react-rangeslider';
 import PropTypes from 'prop-types';
 
-import DollarDisplay from '../../common/DollarDisplay';
-import UserLink from '../../common/UserLink';
+import DollarDisplay from './DollarDisplay';
+import UserLink from './UserLink';
 
 import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';

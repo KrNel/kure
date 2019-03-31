@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import { Grid, Image } from "semantic-ui-react";
 
 import {long} from '../../../utils/dateFormatting';
-import GroupLink from '../../common/GroupLink';
-import TitleLink from '../../common/TitleLink';
-import UserLink from '../../common/UserLink';
+import GroupLink from '../../kure/GroupLink';
+import TitleLink from '../Steem/TitleLink';
+import UserLink from '../Steem/UserLink';
 import defaultImage from '../../../images/steemkure-600.png';
 import './PostGrid.css'
 /**

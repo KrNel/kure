@@ -1,6 +1,4 @@
 import sanitizeHtml from 'sanitize-html';
-import url from 'url';
-import { knownDomains } from './constants';
 
 /**
  *  Lifted from busy.org source:
