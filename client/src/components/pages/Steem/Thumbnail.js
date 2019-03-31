@@ -9,7 +9,6 @@ import './Thumbnail.css';
 const Thumbnail = ({thumb}) => {
   const height = '73px'
   const width = '130px';
-  //const bgURL = thumb;
 
   return (
     <div

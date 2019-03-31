@@ -46,7 +46,6 @@ const GroupPostsList = (props) => {
                 category={p.st_category}
                 author={p.st_author}
                 permlink={p.st_permlink}
-                cutoff={70}
               />
             </Table.Cell>
             <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>

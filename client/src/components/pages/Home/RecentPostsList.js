@@ -38,7 +38,6 @@ const RecentPostsTable = ({posts, isAuth}) => {
                       category={p.st_category}
                       author={p.st_author}
                       permlink={p.st_permlink}
-                      cutoff={67}
                     />
                   </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>
