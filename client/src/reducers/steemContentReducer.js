@@ -18,7 +18,7 @@ import {
 } from '../actions/steemContentActions';
 
 /**
- *  Reducer function for authentication data for logins or returning users.
+ *  Reducer function for Steem data.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched
@@ -154,10 +154,6 @@ export const steemContent = (
       return ({
         ...state,
         isCommenting: true,
-        commentedId: action.parentId,
-        /*commentedPayload: {
-          id: action.payload
-        }*/
       });
     case SEND_COMMENT_SUCCESS:
       return ({
@@ -170,13 +166,6 @@ export const steemContent = (
             action.comment
           ],
         },
-        /*post: {
-          ...state.post,
-          replies: [
-            ...state.post.replies,
-            action.comment,
-          ],
-        }*/
       });
     default:
       return state
