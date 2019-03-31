@@ -63,7 +63,7 @@ const GroupSummary = (props) => {
 
     return (
       <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => tabView(e, t.view)}>
-        <Label size='big' color='gray'>
+        <Label size='big'>
           <Header as="h3">{t.name}</Header>
         </Label>
       </a>
