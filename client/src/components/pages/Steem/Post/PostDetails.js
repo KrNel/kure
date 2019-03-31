@@ -26,15 +26,16 @@ class PostDetails extends Component {
   static propTypes = {
     showModal: PropTypes.func.isRequired,
     user: PropTypes.string.isRequired,
+    isAuth: PropTypes.bool,
     post: PropTypes.shape(PropTypes.object.isRequired),
     isFetching: PropTypes.bool.isRequired,
     handleUpvote: PropTypes.func.isRequired,
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    replies: PropTypes.arrayOf(PropTypes.object.isRequired),
     sendComment: PropTypes.func.isRequired,
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
-    getComments: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -42,6 +43,8 @@ class PostDetails extends Component {
     upvotePayload: {},
     commentPayload: {},
     commentedId: 0,
+    isAuth: false,
+    replies: [],
   }
 
   constructor(props) {
@@ -95,6 +98,7 @@ class PostDetails extends Component {
       isFetching,
       handleUpvote,
       upvotePayload,
+      replies,
       sendComment,
       isCommenting,
       commentedId,
@@ -137,7 +141,7 @@ class PostDetails extends Component {
 
     const tags = getFromMetadata(post.json_metadata, 'tags');
 
-    const comments = post.replies;
+    const comments = replies;
     const pid = post.id;
 
     return (

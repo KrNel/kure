@@ -176,22 +176,6 @@ export default ({
       href = href.trim();
       const attys = {};
 
-      const linkUrl = url.parse(href);
-      const linkWebsiteUrl = url.format({
-        protocol: linkUrl.protocol,
-        host: linkUrl.host,
-      });
-
-      const internalLink = href.indexOf('/') === 0 || appUrl === linkWebsiteUrl;
-
-      if (!internalLink) {
-        attys.target = '_blank';
-
-        if (secureLinks && knownDomains.indexOf(linkUrl.hostname) === -1) {
-          href = `/exit?url=${encodeURIComponent(href)}`;
-        }
-      }
-
       attys.href = href;
 
       return {

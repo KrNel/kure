@@ -6,7 +6,10 @@ import PostDetails from './PostDetails';
 import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
-import * as contentActions from '../../../../actions/steemContentActions'
+import { getDetailsContent } from '../../../../actions/detailsPostActions';
+import * as addPostActions from '../../../../actions/addPostActions';
+import { upvotePost } from '../../../../actions/upvoteActions';
+import { sendComment } from '../../../../actions/sendCommentActions';
 import {hasLength} from '../../../../utils/helpers';
 import Loading from '../../../Loading/Loading';
 
@@ -29,7 +32,7 @@ class Post extends Component {
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
     getContent: PropTypes.func.isRequired,
-    getComments: PropTypes.func.isRequired,
+    replies: PropTypes.arrayOf(PropTypes.object.isRequired),
     match: PropTypes.shape(PropTypes.object.isRequired),
     isAuth: PropTypes.bool.isRequired,
     groups: PropTypes.arrayOf(PropTypes.object.isRequired),
@@ -50,6 +53,7 @@ class Post extends Component {
     commentedId: 0,
     match: {},
     csrf: '',
+    replies: [],
   }
 
   constructor(props) {
@@ -95,7 +99,7 @@ class Post extends Component {
       getContent,
       handleUpvote,
       upvotePayload,
-      getComments,
+      replies,
       sendComment,
       isCommenting,
       commentedId,
@@ -130,7 +134,7 @@ class Post extends Component {
                 post={post}
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
-                getComments={getComments}
+                replies={replies}
                 sendComment={sendComment}
                 isCommenting={isCommenting}
                 commentedId={commentedId}
@@ -159,19 +163,31 @@ class Post extends Component {
        csrf,
        isAuth,
      },
-     steemContent: {
+     detailsPost: {
        isFetchingDetails,
+       post,
+     },
+     userGroups: {
        groups,
+     },
+     addPost: {
        postExists,
        addPostLoading,
        modalOpenAddPost,
        selectedGroup,
-       post,
+     },
+     comments: {
+       isFetchingComments,
+       replies,
+     },
+     upvote: {
        upvotePayload,
+     },
+     sendComment: {
        isCommenting,
        commentedId,
        commentPayload,
-     }
+     },
    } = state;
 
    return {
@@ -186,6 +202,8 @@ class Post extends Component {
      selectedGroup,
      post,
      upvotePayload,
+     isFetchingComments,
+     replies,
      isCommenting,
      commentedId,
      commentPayload,
@@ -195,28 +213,25 @@ class Post extends Component {
 const mapDispatchToProps = (dispatch) => (
   {
     getContent: (author, permlink) => (
-      dispatch(contentActions.getDetailsContent(author, permlink))
-    ),
-    getComments: (author, permlink) => (
-      dispatch(contentActions.getPostComments(author, permlink))
+      dispatch(getDetailsContent(author, permlink))
     ),
     showModal: (e, type, data) => (
-      dispatch(contentActions.showModal(e, type, data))
+      dispatch(addPostActions.showModal(e, type, data))
     ),
     handleModalClickAddPost: (e) => (
-      dispatch(contentActions.handleModalClickAddPost(e))
+      dispatch(addPostActions.handleModalClickAddPost(e))
     ),
     onModalCloseAddPost: () => (
-      dispatch(contentActions.onModalCloseAddPost())
+      dispatch(addPostActions.onModalCloseAddPost())
     ),
     handleGroupSelect: (value) => (
-      dispatch(contentActions.handleGroupSelect(value))
+      dispatch(addPostActions.handleGroupSelect(value))
     ),
     handleUpvote: (voter, author, permlink, weight) => (
-      dispatch(contentActions.upvotePost(voter, author, permlink, weight))
+      dispatch(upvotePost(voter, author, permlink, weight))
     ),
     sendComment: (parentPost, body) => (
-      dispatch(contentActions.sendComment(parentPost, body))
+      dispatch(sendComment(parentPost, body))
     ),
   }
 );
