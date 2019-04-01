@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, Dropdown } from "semantic-ui-react";
+import { Menu, Dropdown, Icon } from "semantic-ui-react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -36,6 +36,14 @@ const LoginControl = ({isAuth, user, loginURL}) => {
           header
         >
           {'Manage'}
+        </Menu.Item>
+        <Menu.Item
+          exact
+          as={NavLink}
+          to="/write"
+          header
+        >
+          <Icon name='compose' />
         </Menu.Item>
         <Dropdown trigger={avatar} item>
           <Dropdown.Menu>

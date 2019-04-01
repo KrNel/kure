@@ -81,7 +81,7 @@ class Posts extends Component {
   handleScroll = (e) => {
     const {isFetchingSummary, noMore} = this.props;
     if (!isFetchingSummary && !noMore) {
-      var lastLi = document.querySelector("#postList > div.post:last-child");
+      var lastLi = document.querySelector("#postList > div.postSummary:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
@@ -105,8 +105,8 @@ class Posts extends Component {
     let startPermlink = undefined;
 
     if (posts.length && action === 'more') {
-      startAuthor = document.querySelector('.post:last-child li.author').dataset.author;
-      startPermlink = document.querySelector('.post:last-child div.summary-content').dataset.permlink;
+      startAuthor = document.querySelector('.postSummary:last-child li.author').dataset.author;
+      startPermlink = document.querySelector('.postSummary:last-child div.summary-content').dataset.permlink;
     }
 
     let nextPost = false;

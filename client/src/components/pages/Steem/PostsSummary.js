@@ -67,7 +67,7 @@ const PostsSummary = (props) => {
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
         return (
-          <div key={p.id} className='post'>
+          <div key={p.id} className='postSummary'>
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -100,9 +100,16 @@ const PostsSummary = (props) => {
                     permlink={permlink}
                   />
                 </h4>
-                <p className='description'>
-                  {desc}
-                </p>
+                <div className='description'>
+                  <p className='ellipsis'>
+                    <PostLink
+                      author={author}
+                      category={category}
+                      permlink={permlink}
+                      text={desc}
+                    />
+                  </p>
+                </div>
                 <div className='post-actions'>
                   <PostActions
                     activeVotes={activeVotes}

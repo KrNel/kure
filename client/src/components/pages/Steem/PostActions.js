@@ -65,22 +65,28 @@ class PostActions extends Component {
           />
 
           <li className="item">
-            <a href={`/${category}/@${author}/${permlink}#comments`}>
-              <Icon name='comment outline' size='large' />
-              <strong>{commentCount}</strong>
-            </a>
+            <span>
+              <a href={`/${category}/@${author}/${permlink}#comments`}>
+                <Icon name='comment outline' size='large' />
+                {` ${commentCount}`}
+              </a>
+            </span>
           </li>
 
           <li className="item disabled">
-            <a href="/resteem" onClick={(e) => this.resteem(e)} title="Resteem">
-              <Icon name='retweet' size='large' />
-            </a>
+            <span>
+              <a href="/resteem" onClick={(e) => this.resteem(e)} title="Resteem">
+                <Icon name='retweet' size='large' />
+              </a>
+            </span>
           </li>
 
           <li className="item disabled">
-            <a href="/flag" onClick={(e) => this.flag(e)} title="Flag this post on Steem">
-              <Icon name='flag outline' size='large' />
-            </a>
+            <span>
+              <a href="/flag" onClick={(e) => this.flag(e)} title="Flag this post on Steem">
+                <Icon name='flag outline' size='large' />
+              </a>
+            </span>
           </li>
 
         </ul>

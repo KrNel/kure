@@ -3,8 +3,6 @@
 .vslider {
   position: relative;
   display: inline-block;
-  top: -41px;
-  left: -18px;
 }
 
 .vslider .vslider-show {
@@ -16,6 +14,9 @@
   padding: 2px;
   box-shadow: 1px 1px 5px 0px rgba(50, 50, 50, 0.75);
   background: #fff;
+  top: -41px;
+  left: -18px;
+  border-radius: 3px;
 }
 
 .vslider .showing.vslider-show {

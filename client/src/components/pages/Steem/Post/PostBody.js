@@ -56,7 +56,6 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
   parsedJsonMetadata.image = parsedJsonMetadata.image || [];
 
   let parsedBody = body.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
-
   parsedBody.replace(imageRegex, img => {
     if (_.filter(parsedJsonMetadata.image, i => i.indexOf(img) !== -1).length === 0) {
       parsedJsonMetadata.image.push(img);
@@ -65,11 +64,9 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
 
   parsedBody = improve(parsedBody);
   parsedBody = remarkable.render(parsedBody);
-
   const htmlReadyOptions = { mutate: true, resolveIframe: returnType === 'text' };
   parsedBody = htmlReady(parsedBody, htmlReadyOptions).html;
   parsedBody = parsedBody.replace(dtubeImageRegex, '');
-
   if (options.rewriteLinks) {
     parsedBody = parsedBody.replace(rewriteRegex, (match, p1) => `"${p1 || '/'}"`);
   }
@@ -117,7 +114,7 @@ const Body = props => {
   const options = {
     appUrl: "http://localhost:3000",
     rewriteLinks: false,
-    secureLinks: true,
+    secureLinks: false,
   };
 
   const htmlSections = getHtml(props.body, props.jsonMetadata, 'Object', options);

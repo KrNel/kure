@@ -10,11 +10,11 @@
 }
 
 .post-actions .item {
-  line-height: 1;
-  margin: 5px 10px 0 0;
+  line-height: 1rem;
+  margin: 0.2rem 0.8rem 0 0;
   list-style-position: inside;
   border-left: 1px solid var(--main-border);
-  padding-left: 10px;
+  padding-left: 0.7rem;
 }
 
 .post-actions .item:first-child {
@@ -24,6 +24,10 @@
 
 .post-actions .right {
   font-size: 1rem;
+}
+
+.post-actions .item span {
+  line-height: 0.8rem;
 }
 
 .post-actions .item a {
@@ -64,10 +68,6 @@
 
 .item.payout {
   color: var(--charcoal-grey);
-}
-
-.item.upvote .chevron.up.circle:hover {
-
 }
 
 .chevron.up.circle.votedOn {

@@ -139,7 +139,8 @@ class PostDetails extends Component {
     const parsedBody = getHtml(body, {}, 'text');
     this.images = extractImageTags(parsedBody);
 
-    const tags = getFromMetadata(post.json_metadata, 'tags');
+    let tags = getFromMetadata(post.json_metadata, 'tags');
+    if (tags === null) tags = [post.category];
 
     const comments = replies;
     const pid = post.id;
@@ -227,7 +228,7 @@ class PostDetails extends Component {
                               upvotePayload={upvotePayload}
                               ratio={ratio}
                               pid={pid}
-                              image={this.images[0].src}
+                              image={image}
                             />
                           </div>
                           <hr />

@@ -42,10 +42,10 @@
 
 .Body blockquote {
   overflow: auto;
-  padding: 10px 20px;
+  padding: 10px 0px;
   margin-bottom: 14px;
   /*line-height: 1em;*/
-  background-color: #f7f7f9;
+  /*background-color: #f7f7f9;*/
   color: var(--medium-grey);
   line-height: 1.6rem;
 }

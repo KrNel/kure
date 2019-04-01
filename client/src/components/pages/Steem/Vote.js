@@ -226,39 +226,43 @@ class Vote extends Component {
     return (
       <React.Fragment>
         <li className="item payout">
-          <DollarDisplay
-            value={payoutValue}
-          />
+          <span>
+            <DollarDisplay
+              value={payoutValue}
+            />
+          </span>
         </li>
 
         <li className="item upvote">
-          <div className='vslider'>
-            <div className={sliderClass}>
-              {voteSlider}
+          <span>
+            <div className='vslider'>
+              <div className={sliderClass}>
+                {voteSlider}
+              </div>
             </div>
-          </div>
-          <Popup
-            trigger={(
-              <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
-                <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
-              </a>
-            )}
-            open={unvote}
-            onClose={this.handleCloseUnvote}
-            position='top center'
-            flowing
-            hoverable
-          >
-            {'Unvoting in the works.'}
-          </Popup>
-          <Popup
-            trigger={<span>{votesCount}</span>}
-            horizontalOffset={15}
-            flowing
-            hoverable
-          >
-            {votersPopup}
-          </Popup>
+            <Popup
+              trigger={(
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
+                  <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
+                </a>
+              )}
+              open={unvote}
+              onClose={this.handleCloseUnvote}
+              position='top center'
+              flowing
+              hoverable
+            >
+              {'Unvoting in the works.'}
+            </Popup>
+            <Popup
+              trigger={<span>{` ${votesCount}`}</span>}
+              horizontalOffset={15}
+              flowing
+              hoverable
+            >
+              {votersPopup}
+            </Popup>
+          </span>
         </li>
       </React.Fragment>
     )
