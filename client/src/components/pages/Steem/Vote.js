@@ -64,6 +64,12 @@ class Vote extends Component {
       return null;
     }
 
+    let weight = this.getSavedVoteWeight(user);
+    if (weight === null) {
+      weight = 10000;
+    }
+
+
     //Don't upvote if already upvoted
     const upvote = document.querySelector(`#pid-${pid}`);
     if (upvote.classList.contains("votedOn")) {
@@ -71,7 +77,10 @@ class Vote extends Component {
       return null;
     }
 
-    this.setState({showSlider: true});
+    this.setState({
+      showSlider: true,
+      sliderWeight: parseInt(weight),
+    });
   }
 
   /**
@@ -95,7 +104,9 @@ class Vote extends Component {
   handleVote = (e, author, permlink, weight) => {
     e.preventDefault();
 
-    const { handleUpvote } = this.props;
+    const { handleUpvote, user } = this.props;
+
+    this.setSavedVoteWeight(weight, user);
 
     this.setState({ showSlider: false });
 
@@ -108,6 +119,20 @@ class Vote extends Component {
   handleCloseUnvote = () => {
     this.setState({unvote: false});
   }
+
+  closeVoteSlider = (e, user, sliderWeight) => {
+    e.preventDefault();
+    this.setSavedVoteWeight(sliderWeight, user);
+    this.setState({ showSlider: false });
+  }
+
+  setSavedVoteWeight = (weight, user) => {
+    localStorage.setItem('voteWeight-' + user, weight);
+  }
+
+  getSavedVoteWeight = (user) => (
+    localStorage.getItem('voteWeight-' + user)
+  )
 
   getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
   getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
@@ -211,8 +236,7 @@ class Vote extends Component {
                 href='/close'
                 className='close-weight'
                 onClick={e => {
-                  e.preventDefault();
-                  this.setState({ showSlider: false });
+                  this.closeVoteSlider(e, user, sliderWeight)
                 }}
               >
                 <Icon name='window close outline' size='big' color='red' />
