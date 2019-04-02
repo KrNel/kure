@@ -30,6 +30,7 @@ class Comment extends Component {
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    sortBy: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
@@ -79,6 +80,7 @@ class Comment extends Component {
         handleUpvote,
         user,
         upvotePayload,
+        sortBy,
       }
     } = this;
 
@@ -187,7 +189,7 @@ class Comment extends Component {
           && (
           <ul className={replyClass}>
             {
-              sortComments(comment.replies, 'new').map(reply => (
+              sortComments(comment.replies, sortBy).map(reply => (
                 <li className='commentReply' key={reply.id}>
                   <Comment
                     comment={reply}
@@ -200,6 +202,7 @@ class Comment extends Component {
                     user={user}
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
+                    sortBy={sortBy}
                   />
                 </li>
               ))

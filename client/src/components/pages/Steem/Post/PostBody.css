@@ -42,12 +42,14 @@
 
 .Body blockquote {
   overflow: auto;
-  padding: 10px 0px;
   margin-bottom: 14px;
   /*line-height: 1em;*/
-  /*background-color: #f7f7f9;*/
+  /*background-color: #fbfbfb;*/
   color: var(--medium-grey);
   line-height: 1.6rem;
+  margin-left: 1rem;
+  border-left: 1px solid var(--soft-grey);
+  padding-left: 0.8rem;
 }
 
 .Body pre > code {
@@ -69,7 +71,6 @@
 
 .Body ul > li, .Body ol > li {
   line-height: 1.8rem;
-  margin-bottom: 0.5rem;
 }
 
 .Body table td {

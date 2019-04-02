@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid } from "semantic-ui-react";
+import { Grid, Form, Select } from "semantic-ui-react";
 import _ from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
@@ -12,10 +12,10 @@ import PostFeedEmbed from '../PostFeedEmbed';
 import Tags from '../Tags';
 import Comments from './Comments'
 import ReplyForm from './ReplyForm';
-
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
+import { sumPayout } from '../../../../utils/helpers';
 import './PostDetails.css'
 
 /**
@@ -52,12 +52,28 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+
+    this.state = {
+      sortBy: 'new',
+    }
   }
 
   //Needed to `dangerouslySetInnerHTML`
   createMarkup = (html) => {
     return {__html: html};
   }
+
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the element triggering the event
+   */
+   handleSortChange = (e, {value}) => {
+     this.setState({
+       sortBy: value,
+      });
+   }
 
   /**
    *  Lifted from busy.org source code to play d.tube videos on-site.
@@ -105,6 +121,10 @@ class PostDetails extends Component {
       commentPayload,
     } = this.props;
 
+    const {
+      sortBy,
+    } = this.state;
+
     let {post} = this.props;
     if (upvotePayload.post.id > 0 && post.id === upvotePayload.post.id) {
       post = upvotePayload.post
@@ -118,10 +138,7 @@ class PostDetails extends Component {
     const created = post.created;
     const activeVotes = post.active_votes;
 
-    const totalPayout =
-      parseFloat(post.pending_payout_value) +
-      parseFloat(post.total_payout_value) +
-      parseFloat(post.curator_payout_value);
+    const totalPayout = sumPayout(post);
     const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
     const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
@@ -144,6 +161,19 @@ class PostDetails extends Component {
 
     const comments = replies;
     const pid = post.id;
+
+    const sortPicker = (
+      <Form>
+        <Form.Group>
+          <Form.Field
+            control={Select}
+            defaultValue={sortOptions[0].value}
+            options={sortOptions}
+            onChange={this.handleSortChange}
+          />
+        </Form.Group>
+      </Form>
+    );
 
     return (
       <HelmetProvider>
@@ -243,21 +273,27 @@ class PostDetails extends Component {
                               />
                             )
                           }
-
-                          <div className='comments' id='comments'>
-                            <Comments
-                              comments={comments}
-                              sendComment={sendComment}
-                              isCommenting={isCommenting}
-                              commentedId={commentedId}
-                              isAuth={isAuth}
-                              commentPayload={commentPayload}
-                              pid={pid}
-                              handleUpvote={handleUpvote}
-                              user={user}
-                              upvotePayload={upvotePayload}
-                            />
-                          </div>
+                          {
+                            comments && (
+                              <div className='comments' id='comments'>
+                                <div className='left'><h2>Comments</h2></div>
+                                <div className='right'>{  sortPicker }</div>
+                                <Comments
+                                  comments={comments}
+                                  sendComment={sendComment}
+                                  isCommenting={isCommenting}
+                                  commentedId={commentedId}
+                                  isAuth={isAuth}
+                                  commentPayload={commentPayload}
+                                  pid={pid}
+                                  handleUpvote={handleUpvote}
+                                  user={user}
+                                  upvotePayload={upvotePayload}
+                                  sortBy={sortBy}
+                                />
+                              </div>
+                            )
+                          }
                         </div>
                       </div>
                     </React.Fragment>
@@ -271,5 +307,13 @@ class PostDetails extends Component {
     )
   }
 }
+
+const sortOptions = [
+  {key: 0, value: 'new', text: 'New'},
+  {key: 1, value: 'old', text: 'Old'},
+  //{key: 2, value: 'votes', text: 'Votes'},
+  {key: 3, value: 'rep', text: 'Reputation'},
+  {key: 4, value: 'payout', text: 'Payout'}
+];
 
 export default PostDetails;

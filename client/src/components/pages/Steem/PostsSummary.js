@@ -7,6 +7,7 @@ import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
 import TitleLink from './TitleLink';
 import PostLink from './PostLink';
+import { sumPayout } from '../../../utils/helpers';
 
 /**
  *  Root container for post summaries.
@@ -60,9 +61,7 @@ const PostsSummary = (props) => {
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
-        const totalPayout = parseFloat(post.pending_payout_value) +
-          parseFloat(post.total_payout_value) +
-          parseFloat(post.curator_payout_value);
+        const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 

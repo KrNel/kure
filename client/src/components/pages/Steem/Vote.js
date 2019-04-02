@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import DollarDisplay from './DollarDisplay';
 import UserLink from './UserLink';
+import { getUpvotes, sortVotes } from '../../../utils/helpers';
 
 import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';
@@ -134,9 +135,7 @@ class Vote extends Component {
     localStorage.getItem('voteWeight-' + user)
   )
 
-  getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
-  getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
-  sortVotes = (votes, sortBy) => votes.sort((a, b) => a[sortBy] - b[sortBy]);
+
 
   render() {
     const {
@@ -173,14 +172,14 @@ class Vote extends Component {
       upvoteClasses = 'votedOn';
     }
 
-    let votesCount = this.getUpvotes(activeVotes).length;
+    let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
     if (votedVoters.length && isThisPost) {
-      votesCount = this.getUpvotes(votedVoters).length;
+      votesCount = getUpvotes(votedVoters).length;
       voters = votedVoters;
     }
 
-    voters = this.sortVotes(voters, 'rshares').reverse();
+    voters = sortVotes(voters, 'rshares').reverse();
 
     let votersPopup = '';
     if (votesCount) {
