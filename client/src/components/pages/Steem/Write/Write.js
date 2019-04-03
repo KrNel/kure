@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Form } from 'semantic-ui-react'
-import marked from 'marked';
 
+import PostBody from '../Post/PostBody';
 import './Write.css'
 
 class Write extends Component {
@@ -17,14 +17,6 @@ class Write extends Component {
     this.setState({
       [name]: value
     });
-  }
-
-  /**
-   *  Show markdown preview as comment gets typed.
-   */
-  rawMarkup = () => {
-    const { body } = this.state;
-    return { __html: marked(body, {sanitize: true}) };
   }
 
   handleSubmit = () => {
@@ -72,10 +64,14 @@ class Write extends Component {
             </a>
           </span>
           <div className='clear' />
-          <div
-            className='postPreview'
-            dangerouslySetInnerHTML={this.rawMarkup()}
-          />
+
+          <div className='postPreview'>
+            <PostBody
+              full
+              rewriteLinks={false}
+              body={body}
+            />
+          </div>
         </div>
       </div>
     )

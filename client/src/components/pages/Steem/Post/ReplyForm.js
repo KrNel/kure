@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import marked from 'marked';
 import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
+
+import PostBody, { getHtml } from './PostBody';
 
 /**
  *  Comment reply form for posts.
@@ -45,14 +46,6 @@ class ReplyForm extends Component {
     this.setState({
       [name]: value
     });
-  }
-
-  /**
-   *  Show markdown preview as comment gets typed.
-   */
-  rawMarkup = () => {
-    const { replyData } = this.state;
-    return { __html: marked(replyData, {sanitize: true}) };
   }
 
   /**
@@ -136,10 +129,13 @@ class ReplyForm extends Component {
                     </a>
                   </span>
                   <div className='clear' />
-                  <div
-                    className='replyPreview'
-                    dangerouslySetInnerHTML={this.rawMarkup()}
-                  />
+                  <div className='postPreview'>
+                    <PostBody
+                      full
+                      rewriteLinks={false}
+                      body={replyData}
+                    />
+                  </div>
                 </div>
               )
             }

@@ -100,6 +100,7 @@ ul.commentList > li {
 
 .replyForm {
   font-size: 1.1rem;
+  margin-top: 1rem;
 }
 
 .replyForm .ui.form textarea {

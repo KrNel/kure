@@ -9,10 +9,10 @@ body {
 }
 
 a {
-  color: var(--dark-blue)
+  color: var(--medium-blue)
 }
 a:hover {
-  color: var(--light-blue)
+  color: var(--bright-medium-blue)
 }
 
 hr {
