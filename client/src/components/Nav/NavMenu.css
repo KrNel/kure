@@ -71,6 +71,10 @@
   padding: 7.1px 15.786px;
 }
 
+.navMenu .ui.item.dropdown .menu.transition.visible .icon {
+  font-size: 1.2rem !important;
+}
+
 .navMenu .ui.item.dropdown .menu.transition.visible {
   margin:0;
   border-color: var(--light-blue) !important;

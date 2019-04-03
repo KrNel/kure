@@ -52,6 +52,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to={`/@${user}/feed`}
             >
+              <Icon name='newspaper outline' />
               {'Feed'}
             </Dropdown.Item>
 
@@ -60,6 +61,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to={`/@${user}`}
             >
+              <Icon name='address card outline' />
               {'Blog'}
             </Dropdown.Item>
 
@@ -68,6 +70,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to="/logout"
             >
+              <Icon name='shutdown' />
               {'Logout'}
             </Dropdown.Item>
           </Dropdown.Menu>
