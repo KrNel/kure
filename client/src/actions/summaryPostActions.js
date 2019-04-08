@@ -47,15 +47,17 @@ export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dis
       let noMore = false;
       let newPosts = null;
 
+      const state = getState();
+
       if (result) {
         if (nextPost) {
-          newPosts = [...getState().summaryPost.posts, ...result.slice(1)];
+          newPosts = [...state.summaryPost.posts, ...result.slice(1)];
         }else {
           newPosts = result;
         }
       }else {
         noMore = true;
-        newPosts = getState().summaryPost.posts;
+        newPosts = state.summaryPost.posts;
       }
 
       dispatch(getUserGroupsFetch());

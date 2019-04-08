@@ -89,7 +89,7 @@ class Posts extends Component {
         this.getPosts('more');
       }
     }
-  };
+  }
 
   /**
    *  When the page loads, this function will get the posts from Steem.

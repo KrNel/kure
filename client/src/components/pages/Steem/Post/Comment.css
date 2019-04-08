@@ -111,11 +111,13 @@ ul.commentList > li {
   margin-top: 0.5rem;
 }
 
-.replyPreviewHeader {
+.writingPreviewHeader {
   margin-top: 1rem;
 }
 
-.replyPreview {
+.writingPreview {
   border: 1px solid var(--soft-grey);
   padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }

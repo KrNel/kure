@@ -33,12 +33,14 @@ export const userGroupsSuccess = (groups) => ({
 export const getUserGroupsFetch = () => async (dispatch, getState) => {
   dispatch(userGroupsStart());
 
+  const state = getState();
+
   //on first page load authenticate before proceeding
-  let { user } = getState().auth;
+  let { user } = state.auth;
   const cont = await user === '' ? handleReturning() : '';//eslint-disable-line
 
-  const { groups } = getState().userGroups;
-  if (groups[0].text !== "No Groups") return;
+  const { groups } = state.userGroups;
+  if (!groups.length || groups[0].text !== "No Groups") return;
 
   return getUserGroups(user, 'all')
     .then(res => {

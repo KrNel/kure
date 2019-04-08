@@ -133,7 +133,7 @@ class Home extends Component {
           </Label>
         </a>
       )
-    })
+    });
 
     return (
       <ErrorBoundary>

@@ -30,7 +30,7 @@ class Comment extends Component {
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
-    sortBy: PropTypes.string.isRequired,
+    sortBy: PropTypes.string,
   };
 
   static defaultProps = {
@@ -38,6 +38,7 @@ class Comment extends Component {
     commentPayload: {},
     commentedId: 0,
     comment: {},
+    sortBy: () => {},
   }
 
   state = {

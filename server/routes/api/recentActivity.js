@@ -9,7 +9,7 @@ const router = new Router();
  *  Route: /api/recentposts
  *
  *  Gets the local DB object.
- *  Resteive the recently active posts from the DB.
+ *  Retrieve the recently active posts from the DB.
  */
 router.get('/:user/:limit', (req, res, next) => {
   const db = req.app.locals.db;
@@ -174,5 +174,24 @@ const getMySubmissions = (db, next, user, limit) => {
     })
   }).catch(next)
 }
+
+/**
+ *  GET route to get the recent post activity.
+ *  Route: /api/recentposts/posts
+ *
+ *  Gets the local DB object.
+ *  Retrieve the recently active posts from the DB.
+ */
+router.get('/posts', (req, res, next) => {
+  const db = req.app.locals.db;
+  const limit = 100;
+
+  //Get posts data from DB and return
+  getRecentPosts(db, next, limit)
+    .then(data => {
+      res.json({ posts: data })
+    })
+    .catch(next);
+})
 
 export default router;

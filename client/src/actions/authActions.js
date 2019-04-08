@@ -108,7 +108,7 @@ const fetchReturning = () => async dispatch => {
   });
 }
 
-const validateToken = (accessToken) => {
+export const validateToken = (accessToken) => {
   //TODO:what happens if stemconnect is offline? test it
   return new Promise((resolve, reject) => {
     SteemConnect.setAccessToken(accessToken);

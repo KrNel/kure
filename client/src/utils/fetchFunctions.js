@@ -51,6 +51,13 @@ export const getGroupDetails = (group, user) => {
 }
 
 /**
+ *  Get the community posts to show.
+ */
+export const getPosts = () => {
+  return getData(`/api/recentactivity/posts`);
+}
+
+/**
  *  Axios fecther for the GET calls.
  *
  *  @param {string} path Server path to get data

@@ -11,8 +11,8 @@
     --medium-grey: #57636e;
     --soft-grey: #cacaca;
     --action-grey: rgba(202, 202, 202, 0.8);
-    --font-content: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-body: "Roboto", "Open Sans", "PT Sans / PT Serif";
+    --font-content: "Roboto", "Lato", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body: "Roboto", "Lato", Georgia, "PT Sans / PT Serif";
     /*font-family: 'Source Serif Pro', serif;*/
     /*
     Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"
