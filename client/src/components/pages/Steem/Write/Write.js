@@ -4,6 +4,11 @@ import { Form } from 'semantic-ui-react'
 import PostBody from '../Post/PostBody';
 import './Write.css'
 
+/**
+ *  A form is shown for making priomary content posts to the Steem blockchain.
+ *  A title field, text area for the post, and tag field are used to generate
+ *  the posts for the Steem blockchain.
+ */
 class Write extends Component {
   state= {
     title: '',
@@ -19,6 +24,9 @@ class Write extends Component {
     });
   }
 
+  /**
+   *  Collect and process the form data for adding the post to the blockchain.
+   */
   handleSubmit = () => {
     const {title} = this.state;
   }

@@ -42,10 +42,12 @@ class Home extends Component {
     mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
+    csrf: PropTypes.string,
   };
 
   static defaultProps = {
-    user: 'x'
+    user: 'x',
+    csrf: '',
   };
 
   state = {

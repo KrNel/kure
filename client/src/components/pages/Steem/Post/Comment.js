@@ -62,6 +62,9 @@ class Comment extends Component {
     this.setState({ showReplyForm: !showReplyForm, showEdit: false });
   }
 
+  /**
+   *  TODO: Show the edit form and allow a post to be edited and saved.
+   */
   onShowEditForm = (e) => {
     e.preventDefault();
   };

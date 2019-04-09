@@ -11,6 +11,9 @@ const client = new Client('https://hive.anyx.io/');
 
 const appVersion = require('../../../../../package.json').version;
 
+/**
+ *  Get the images in a post's content.
+ */
 export const getContentImages = (content, parsed = false) => {
   const parsedBody = parsed ? content : getHtml(content, {}, 'text');
 
@@ -19,6 +22,10 @@ export const getContentImages = (content, parsed = false) => {
   );
 }
 
+/**
+ *  Code taken from busy.org open source github, and modified for my purposes.
+ *  https://github.com/busyorg/busy/blob/develop/src/client/helpers/postHelpers.js
+ */
 export const createPostMetadata = (body, tags, oldMetadata = {}) => {
   let metaData = {
     community: 'kure',
@@ -82,7 +89,6 @@ export const createCommentPermlink = (parentAuthor, parentPermlink) => {
  * Generate permlink
  * https://github.com/steemit/steemit.com/blob/ded8ecfcc9caf2d73b6ef12dbd0191bd9dbf990b/app/redux/TransactionSaga.js
  */
-
 export const createPermlink = (title, author, parent_author, parent_permlink) => {
   let permlink;
   if (title && title.trim() !== '') {
@@ -115,6 +121,9 @@ export const createPermlink = (title, author, parent_author, parent_permlink) =>
   return Promise.resolve(checkPermLinkLength(permlink));
 }
 
+/**
+ *  Check the structure of a permlink to see if it's valid.
+ */
 const checkPermLinkLength = (permlink) => {
   if (permlink.length > 255) {
     // STEEMIT_MAX_PERMLINK_LENGTH
@@ -125,6 +134,9 @@ const checkPermLinkLength = (permlink) => {
   return permlink;
 }
 
+/**
+ *  Generate a slug string for use in a permlink.
+ */
 const slug = (text) => {
   return getSlug(text.replace(/[<>]/g, ''), { truncate: 128 });
 }

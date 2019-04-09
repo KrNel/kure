@@ -10,8 +10,6 @@ import { comments } from './commentsReducer';
 import { upvote } from './upvoteReducer';
 import { sendComment } from './sendCommentReducer';
 
-
-
 /**
  *  Combine imported reducers for the application.
  */
