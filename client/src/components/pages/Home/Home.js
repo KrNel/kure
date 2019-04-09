@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import CommunityActivity from './CommunityActivity';
 import Loading from '../../Loading/Loading';
-import ToggleView from '../../common/ToggleView';
+import ToggleView from '../../kure/ToggleView';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
@@ -42,10 +42,12 @@ class Home extends Component {
     mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
+    csrf: PropTypes.string,
   };
 
   static defaultProps = {
-    user: 'x'
+    user: 'x',
+    csrf: '',
   };
 
   state = {
@@ -133,7 +135,7 @@ class Home extends Component {
           </Label>
         </a>
       )
-    })
+    });
 
     return (
       <ErrorBoundary>

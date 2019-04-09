@@ -3,8 +3,9 @@ import { Icon, Popup } from "semantic-ui-react";
 import Slider from 'react-rangeslider';
 import PropTypes from 'prop-types';
 
-import DollarDisplay from '../../common/DollarDisplay';
-import UserLink from '../../common/UserLink';
+import DollarDisplay from './DollarDisplay';
+import UserLink from './UserLink';
+import { getUpvotes, sortVotes } from '../../../utils/helpers';
 
 import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';
@@ -64,6 +65,12 @@ class Vote extends Component {
       return null;
     }
 
+    let weight = this.getSavedVoteWeight(user);
+    if (weight === null) {
+      weight = 10000;
+    }
+
+
     //Don't upvote if already upvoted
     const upvote = document.querySelector(`#pid-${pid}`);
     if (upvote.classList.contains("votedOn")) {
@@ -71,7 +78,10 @@ class Vote extends Component {
       return null;
     }
 
-    this.setState({showSlider: true});
+    this.setState({
+      showSlider: true,
+      sliderWeight: parseInt(weight),
+    });
   }
 
   /**
@@ -95,7 +105,9 @@ class Vote extends Component {
   handleVote = (e, author, permlink, weight) => {
     e.preventDefault();
 
-    const { handleUpvote } = this.props;
+    const { handleUpvote, user } = this.props;
+
+    this.setSavedVoteWeight(weight, user);
 
     this.setState({ showSlider: false });
 
@@ -109,9 +121,38 @@ class Vote extends Component {
     this.setState({unvote: false});
   }
 
-  getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
-  getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
-  sortVotes = (votes, sortBy) => votes.sort((a, b) => a[sortBy] - b[sortBy]);
+  /**
+   *  When the upvote slider is closed, the vote weight is saved in
+   *  localStorage for future use of that user.
+   *
+   *  @param {element} e Element triggering the event
+   *  @param {string} user Voting user
+   *  @param {number} weight Weight value received from slider
+   */
+  closeVoteSlider = (e, user, weight) => {
+    e.preventDefault();
+    this.setSavedVoteWeight(weight, user);
+    this.setState({ showSlider: false });
+  }
+
+  /**
+   *  Sets the vote weight into localStorage for the user's future use.
+   *
+   *  @param {string} user Voting user
+   *  @param {number} weight Weight value received from slider
+   */
+  setSavedVoteWeight = (weight, user) => {
+    localStorage.setItem('voteWeight-' + user, weight);
+  }
+
+  /**
+   *  Gets the vote weight from localStorage for thevote slider setting.
+   *
+   *  @param {string} user Voting user
+   */
+  getSavedVoteWeight = (user) => (
+    localStorage.getItem('voteWeight-' + user)
+  )
 
   render() {
     const {
@@ -148,14 +189,14 @@ class Vote extends Component {
       upvoteClasses = 'votedOn';
     }
 
-    let votesCount = this.getUpvotes(activeVotes).length;
+    let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
     if (votedVoters.length && isThisPost) {
-      votesCount = this.getUpvotes(votedVoters).length;
+      votesCount = getUpvotes(votedVoters).length;
       voters = votedVoters;
     }
 
-    voters = this.sortVotes(voters, 'rshares').reverse();
+    voters = sortVotes(voters, 'rshares').reverse();
 
     let votersPopup = '';
     if (votesCount) {
@@ -211,8 +252,7 @@ class Vote extends Component {
                 href='/close'
                 className='close-weight'
                 onClick={e => {
-                  e.preventDefault();
-                  this.setState({ showSlider: false });
+                  this.closeVoteSlider(e, user, sliderWeight)
                 }}
               >
                 <Icon name='window close outline' size='big' color='red' />
@@ -226,39 +266,43 @@ class Vote extends Component {
     return (
       <React.Fragment>
         <li className="item payout">
-          <DollarDisplay
-            value={payoutValue}
-          />
+          <span>
+            <DollarDisplay
+              value={payoutValue}
+            />
+          </span>
         </li>
 
         <li className="item upvote">
-          <div className='vslider'>
-            <div className={sliderClass}>
-              {voteSlider}
+          <span>
+            <div className='vslider'>
+              <div className={sliderClass}>
+                {voteSlider}
+              </div>
             </div>
-          </div>
-          <Popup
-            trigger={(
-              <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
-                <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
-              </a>
-            )}
-            open={unvote}
-            onClose={this.handleCloseUnvote}
-            position='top center'
-            flowing
-            hoverable
-          >
-            {'Unvoting in the works.'}
-          </Popup>
-          <Popup
-            trigger={<span>{votesCount}</span>}
-            horizontalOffset={15}
-            flowing
-            hoverable
-          >
-            {votersPopup}
-          </Popup>
+            <Popup
+              trigger={(
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
+                  <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
+                </a>
+              )}
+              open={unvote}
+              onClose={this.handleCloseUnvote}
+              position='top center'
+              flowing
+              hoverable
+            >
+              {'Unvoting in the works.'}
+            </Popup>
+            <Popup
+              trigger={<span>{` ${votesCount}`}</span>}
+              horizontalOffset={15}
+              flowing
+              hoverable
+            >
+              {votersPopup}
+            </Popup>
+          </span>
         </li>
       </React.Fragment>
     )

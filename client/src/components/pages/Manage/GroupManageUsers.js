@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 
 import GroupManagePending from './GroupManagePending';
-import GroupUsers from '../../common/GroupUsers'
+import GroupUsers from '../../kure/GroupUsers'
 import {roles} from '../../../settings';
 
 /**

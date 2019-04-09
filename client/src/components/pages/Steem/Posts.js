@@ -10,7 +10,9 @@ import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Loading from '../../Loading/Loading';
 import FilterPosts from './FilterPosts';
-import * as contentActions from '../../../actions/steemContentActions';
+import { getSummaryContent } from '../../../actions/summaryPostActions';
+import * as addPostActions from '../../../actions/addPostActions';
+import { upvotePost } from '../../../actions/upvoteActions';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -79,7 +81,7 @@ class Posts extends Component {
   handleScroll = (e) => {
     const {isFetchingSummary, noMore} = this.props;
     if (!isFetchingSummary && !noMore) {
-      var lastLi = document.querySelector("#postList > div.post:last-child");
+      var lastLi = document.querySelector("#postList > div.postSummary:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
@@ -87,7 +89,7 @@ class Posts extends Component {
         this.getPosts('more');
       }
     }
-  };
+  }
 
   /**
    *  When the page loads, this function will get the posts from Steem.
@@ -103,8 +105,8 @@ class Posts extends Component {
     let startPermlink = undefined;
 
     if (posts.length && action === 'more') {
-      startAuthor = document.querySelector('.post:last-child li.author').dataset.author;
-      startPermlink = document.querySelector('.post:last-child div.summary-content').dataset.permlink;
+      startAuthor = document.querySelector('.postSummary:last-child li.author').dataset.author;
+      startPermlink = document.querySelector('.postSummary:last-child div.summary-content').dataset.permlink;
     }
 
     let nextPost = false;
@@ -247,20 +249,27 @@ class Posts extends Component {
 const mapStateToProps = state => {
   const {
     auth: {
-      user, csrf
+      user,
+      csrf,
     },
-    steemContent: {
-      posts,
+    summaryPost: {
       isFetchingSummary,
       prevPage,
       noMore,
+      posts,
+    },
+    userGroups: {
       groups,
+    },
+    addPost: {
       postExists,
       addPostLoading,
       modalOpenAddPost,
       selectedGroup,
+    },
+    upvote: {
       upvotePayload,
-    }
+    },
   } = state;
 
   return {
@@ -282,22 +291,22 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => (
   {
     getContent: (selectedFilter, query, nextPost, page) => (
-      dispatch(contentActions.getSummaryContent(selectedFilter, query, nextPost, page))
+      dispatch(getSummaryContent(selectedFilter, query, nextPost, page))
     ),
     showModal: (e, type, data) => (
-      dispatch(contentActions.showModal(e, type, data))
+      dispatch(addPostActions.showModal(e, type, data))
     ),
     handleModalClickAddPost: (e) => (
-      dispatch(contentActions.handleModalClickAddPost(e))
+      dispatch(addPostActions.handleModalClickAddPost(e))
     ),
     onModalCloseAddPost: () => (
-      dispatch(contentActions.onModalCloseAddPost())
+      dispatch(addPostActions.onModalCloseAddPost())
     ),
     handleGroupSelect: (value) => (
-      dispatch(contentActions.handleGroupSelect(value))
+      dispatch(addPostActions.handleGroupSelect(value))
     ),
     handleUpvote: (author, permlink, weight) => (
-      dispatch(contentActions.upvotePost(author, permlink, weight))
+      dispatch(upvotePost(author, permlink, weight))
     ),
   }
 );

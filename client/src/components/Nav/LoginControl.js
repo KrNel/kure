@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, Dropdown } from "semantic-ui-react";
+import { Menu, Dropdown, Icon } from "semantic-ui-react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -37,6 +37,14 @@ const LoginControl = ({isAuth, user, loginURL}) => {
         >
           {'Manage'}
         </Menu.Item>
+        <Menu.Item
+          exact
+          as={NavLink}
+          to="/write"
+          header
+        >
+          <Icon name='compose' />
+        </Menu.Item>
         <Dropdown trigger={avatar} item>
           <Dropdown.Menu>
             <Dropdown.Item
@@ -44,6 +52,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to={`/@${user}/feed`}
             >
+              <Icon name='newspaper outline' />
               {'Feed'}
             </Dropdown.Item>
 
@@ -52,6 +61,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to={`/@${user}`}
             >
+              <Icon name='address card outline' />
               {'Blog'}
             </Dropdown.Item>
 
@@ -60,6 +70,7 @@ const LoginControl = ({isAuth, user, loginURL}) => {
               as={NavLink}
               to="/logout"
             >
+              <Icon name='shutdown' />
               {'Logout'}
             </Dropdown.Item>
           </Dropdown.Menu>

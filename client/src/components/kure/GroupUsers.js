@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {roles} from '../../settings';
-import UserLink from './UserLink';
+import UserLink from '../pages/Steem/UserLink';
 
 /**
  *  Displays the users' data that belong to a commmunity group. Access rank/role

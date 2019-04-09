@@ -16,6 +16,8 @@ const RecentPostsGrid = ({posts}) => {
     return posts.map((p, i) => (
       <PostGrid key={p._id} post={p} />
     ))
+  }else {
+    return 'No posts'
   }
 }
 

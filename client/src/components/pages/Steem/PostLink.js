@@ -14,6 +14,7 @@ const PostLink = (props) => {
     title,
     text,
     link,
+    className,
   } = props;
 
   if (!link) {
@@ -21,6 +22,7 @@ const PostLink = (props) => {
       <Link
         to={'/'+category+'/@'+author+'/'+permlink}
         title={title}
+        className={className}
       >
         {text}
       </Link>
@@ -30,6 +32,7 @@ const PostLink = (props) => {
       <Link
         to={link}
         title={title}
+        className={className}
       >
         {text}
       </Link>

@@ -4,7 +4,7 @@ import {Grid, Segment, Label, Header} from "semantic-ui-react";
 import GroupsRecent from './GroupsRecent';
 import GroupsCreatedGrid from './GroupsCreatedGrid';
 import GroupsCreatedList from './GroupsCreatedList';
-import ToggleView from '../../common/ToggleView';
+import ToggleView from '../../kure/ToggleView';
 
 /**
  *  All community display components are located here.

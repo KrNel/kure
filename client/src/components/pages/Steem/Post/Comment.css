@@ -6,6 +6,10 @@
   margin-top:0px;
 }
 
+.commentReply {
+  margin-top: 1.1rem;
+}
+
 .comment > ul.commentList {
   float: left;
   display: flex;
@@ -57,6 +61,7 @@ ul.commentList > li {
 
 .commentFooter {
   font-size: 1rem;
+  margin-top: 1rem;
 }
 
 .commentFooter .meta {
@@ -95,6 +100,7 @@ ul.commentList > li {
 
 .replyForm {
   font-size: 1.1rem;
+  margin-top: 1rem;
 }
 
 .replyForm .ui.form textarea {
@@ -105,11 +111,13 @@ ul.commentList > li {
   margin-top: 0.5rem;
 }
 
-.replyPreviewHeader {
+.writingPreviewHeader {
   margin-top: 1rem;
 }
 
-.replyPreview {
+.writingPreview {
   border: 1px solid var(--soft-grey);
   padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }

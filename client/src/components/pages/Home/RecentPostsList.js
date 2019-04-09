@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { Grid, Table, Segment } from "semantic-ui-react";
 
 import SteemConnect from '../../../utils/auth/scAPI';
-import GroupLink from '../../common/GroupLink';
-import TitleLink from '../../common/TitleLink';
+import GroupLink from '../../kure/GroupLink';
+import TitleLink from '../Steem/TitleLink';
 
 /**
  *  Component to display the post data sent.

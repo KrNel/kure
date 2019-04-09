@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react";
 
 import Loading from '../../Loading/Loading';
-import GroupLink from '../../common/GroupLink';
+import GroupLink from '../../kure/GroupLink';
 import { long, standard } from '../../../utils/dateFormatting';
 
 /**

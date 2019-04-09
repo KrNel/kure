@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Header, Label } from "semantic-ui-react";
 
 import Loading from '../../Loading/Loading';
 import { getGroupsPage, logger } from '../../../utils/fetchFunctions';

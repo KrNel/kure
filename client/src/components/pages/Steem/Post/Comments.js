@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {hasLength} from '../../../../utils/helpers';
+import { hasLength, getUpvotes, sumPayout } from '../../../../utils/helpers';
 import Comment from './Comment';
 import './Comments.css';
 
@@ -13,15 +13,43 @@ import './Comments.css';
  *  @param {string} sortBy Type of sorting to apply
  */
 const sortComments = (comments, sortBy) => {
-  let sorted = '';
+  switch (sortBy) {
+    case 'new': {
+      const order = 'created';
+      return comments.sort((a, b) => Date.parse(a[order]) - Date.parse(b[order])).reverse();
+    }
+    case 'old': {
+      const order = 'created';
+      return comments.sort((a, b) => Date.parse(a[order]) - Date.parse(b[order]));
+    }
+    case 'votes': {
+      return comments.sort((a, b) => getUpvotes(a.active_votes).size - getUpvotes(b.active_votes).size);
+    }
+    case 'rep': {
+      return comments.sort((a, b) => b.author_reputation - a.author_reputation);
+    }
+    case 'payout': {
+      return comments.sort((a, b) => {
+        if (a.net_rshares < 0) {
+          return 1;
+        } else if (b.net_rshares < 0) {
+          return -1;
+        }
 
-  if (sortBy === 'new') {
-    const order = 'created';
-    sorted = comments.sort((a, b) => Date.parse(a[order]) - Date.parse(b[order]))
+        const aPayout = sumPayout(a);
+        const bPayout = sumPayout(b);
+
+        if (aPayout !== bPayout) {
+          return bPayout - aPayout;
+        }
+
+        return b.net_rshares - a.net_rshares;
+      });
+    }
+    default:
+      return comments;
   }
-
-  return sorted;
-};
+}
 
 /**
  *  Comments container to process the first root level of comments of a post.
@@ -44,13 +72,14 @@ const Comments = (props) => {
     user,
     handleUpvote,
     upvotePayload,
+    sortBy,
   } = props;
 
   return (
     <React.Fragment>
       <ul>
         {
-          sortComments(comments, 'new').map(comment => (
+          sortComments(comments, sortBy).map(comment => (
             <li key={comment.id}>
               <Comment
                 comment={comment}
@@ -63,13 +92,14 @@ const Comments = (props) => {
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
                 user={user}
+                sortBy={sortBy}
               />
             </li>
           ))
         }
         {
           hasLength(commentPayload) && commentPayload[pid] &&
-          sortComments(commentPayload[pid], 'new').map(comment => (
+          sortComments(commentPayload[pid], sortBy).map(comment => (
             <li key={comment.id}>
               <Comment
                 comment={comment}
@@ -82,6 +112,7 @@ const Comments = (props) => {
                 handleUpvote={handleUpvote}
                 upvotePayload={upvotePayload}
                 user={user}
+                sortBy={sortBy}
               />
             </li>
           ))
@@ -102,6 +133,7 @@ Comments.propTypes = {
   commentedId: PropTypes.number,
   commentPayload: PropTypes.shape(PropTypes.object.isRequired),
   pid: PropTypes.number.isRequired,
+  sortBy: PropTypes.string.isRequired,
 };
 
 Comments.defaultProps = {

@@ -6,8 +6,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import classNames from 'classnames';
+import { isUndefined, filter } from 'lodash';
 import sanitizeHtml from 'sanitize-html';
 import Remarkable from 'remarkable';
 import embedjs from 'embedjs';
@@ -38,7 +37,7 @@ export const remarkable = new Remarkable({
 const getEmbed = link => {
   const embed = embedjs.get(link, { width: '100%', height: 400, autoplay: false });
 
-  if (_.isUndefined(embed)) {
+  if (isUndefined(embed)) {
     return {
       provider_name: '',
       thumbnail: '',
@@ -56,20 +55,17 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
   parsedJsonMetadata.image = parsedJsonMetadata.image || [];
 
   let parsedBody = body.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
-
   parsedBody.replace(imageRegex, img => {
-    if (_.filter(parsedJsonMetadata.image, i => i.indexOf(img) !== -1).length === 0) {
+    if (filter(parsedJsonMetadata.image, i => i.indexOf(img) !== -1).length === 0) {
       parsedJsonMetadata.image.push(img);
     }
   });
 
   parsedBody = improve(parsedBody);
   parsedBody = remarkable.render(parsedBody);
-
   const htmlReadyOptions = { mutate: true, resolveIframe: returnType === 'text' };
   parsedBody = htmlReady(parsedBody, htmlReadyOptions).html;
   parsedBody = parsedBody.replace(dtubeImageRegex, '');
-
   if (options.rewriteLinks) {
     parsedBody = parsedBody.replace(rewriteRegex, (match, p1) => `"${p1 || '/'}"`);
   }
@@ -117,11 +113,11 @@ const Body = props => {
   const options = {
     appUrl: "http://localhost:3000",
     rewriteLinks: false,
-    secureLinks: true,
+    secureLinks: false,
   };
 
   const htmlSections = getHtml(props.body, props.jsonMetadata, 'Object', options);
-  return <div className={classNames('Body', { 'Body--full': props.full })}>{htmlSections}</div>;
+  return <div className='Body'>{htmlSections}</div>;
 };
 
 Body.propTypes = {

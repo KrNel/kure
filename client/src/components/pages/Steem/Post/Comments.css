@@ -15,7 +15,7 @@
   list-style: disc outside none;
 }
 
-.comments ul > li, .comments ol > li {
+.comments > ul > li, .comments > ol > li {
   /*list-style-position: inside;*/
   margin-top: 1rem;
   /*line-height: 1.1rem;*/

@@ -1,18 +1,18 @@
 :root {
     --pale-blue: #7fc1ff;
     --light-blue: #4da2f2;
+    --bright-medium-blue: #0092ff;
     --medium-blue: #2185d0;
-    --main-border: rgba(77, 162, 242, 0.4);
-    /*--dark-blue: rgba(6, 87, 142, 1);*/
     --dark-blue: #06578e;
+    --main-border: rgba(77, 162, 242, 0.4);
 
-    --charcoal-grey: #363D44;
+    --soft-black: #202020;
+    --charcoal-grey: #363636;
     --medium-grey: #57636e;
     --soft-grey: #cacaca;
     --action-grey: rgba(202, 202, 202, 0.8);
-    /*--fade-grey: #e6e6e6;*/
-    --font-content: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-body: Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif";
+    --font-content: "Roboto", "Lato", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body: "Roboto", "Lato", Georgia, "PT Sans / PT Serif";
     /*font-family: 'Source Serif Pro', serif;*/
     /*
     Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"

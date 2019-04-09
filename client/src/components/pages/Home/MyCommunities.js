@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import GroupLink from '../../common/GroupLink';
+import GroupLink from '../../kure/GroupLink';
 import { short, standard } from '../../../utils/dateFormatting';
 
 const MyCommunities = ({ isAuth, myComms }) => (

@@ -4,8 +4,9 @@
   border-radius: 0px !important;
   /*min-height: 65px;*/
 }
+
 .navMenu.ui.menu .item,
-.navMenu.ui.item.dropdown .menu.transition.visible {
+.navMenu .ui.item.dropdown .menu.transition.visible {
   border-radius: 0px !important;
 }
 
@@ -53,25 +54,31 @@
   font-weight: bold;
 }
 
-.navMenu .ui.blue.menu a.header.item:hover,
+.navMenu.ui.blue.menu a.header.item:hover,
 .ui.vertical.sidebar.menu a.header.item:hover,
-.ui.item.dropdown .menu.transition.visible a.item:hover {
-  background-color: var(--light-blue) !important;
-  border-color: var(--light-blue) !important;
-  color:#fff !important;
-}
-
+.navMenu .ui.item.dropdown .menu.transition.visible a.item:hover,
 .navMenu .ui.item.dropdown:hover {
   background-color: var(--light-blue) !important;
   border-color: var(--light-blue) !important;
   color:#fff !important;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.navMenu .ui.item.dropdown:hover {
   padding: 7.1px 15.786px;
+}
+
+.navMenu .ui.item.dropdown .menu.transition.visible .icon {
+  font-size: 1.2rem !important;
 }
 
 .navMenu .ui.item.dropdown .menu.transition.visible {
   margin:0;
   border-color: var(--light-blue) !important;
 }
-.navMenu .ui.secondary.menu .item.dropdown {
+.navMenu.ui.secondary.menu .item.dropdown {
   padding: 7.1px 15.786px;
 }

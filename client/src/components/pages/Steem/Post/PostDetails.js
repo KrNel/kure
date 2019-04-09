@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid } from "semantic-ui-react";
+import { Grid, Form, Select } from "semantic-ui-react";
 import _ from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
@@ -12,10 +12,10 @@ import PostFeedEmbed from '../PostFeedEmbed';
 import Tags from '../Tags';
 import Comments from './Comments'
 import ReplyForm from './ReplyForm';
-
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
+import { sumPayout } from '../../../../utils/helpers';
 import './PostDetails.css'
 
 /**
@@ -26,15 +26,16 @@ class PostDetails extends Component {
   static propTypes = {
     showModal: PropTypes.func.isRequired,
     user: PropTypes.string.isRequired,
+    isAuth: PropTypes.bool,
     post: PropTypes.shape(PropTypes.object.isRequired),
     isFetching: PropTypes.bool.isRequired,
     handleUpvote: PropTypes.func.isRequired,
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    replies: PropTypes.arrayOf(PropTypes.object.isRequired),
     sendComment: PropTypes.func.isRequired,
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
-    getComments: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -42,6 +43,8 @@ class PostDetails extends Component {
     upvotePayload: {},
     commentPayload: {},
     commentedId: 0,
+    isAuth: false,
+    replies: [],
   }
 
   constructor(props) {
@@ -49,12 +52,28 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+
+    this.state = {
+      sortBy: 'new',
+    }
   }
 
   //Needed to `dangerouslySetInnerHTML`
   createMarkup = (html) => {
     return {__html: html};
   }
+
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the element triggering the event
+   */
+   handleSortChange = (e, {value}) => {
+     this.setState({
+       sortBy: value,
+      });
+   }
 
   /**
    *  Lifted from busy.org source code to play d.tube videos on-site.
@@ -95,11 +114,16 @@ class PostDetails extends Component {
       isFetching,
       handleUpvote,
       upvotePayload,
+      replies,
       sendComment,
       isCommenting,
       commentedId,
       commentPayload,
     } = this.props;
+
+    const {
+      sortBy,
+    } = this.state;
 
     let {post} = this.props;
     if (upvotePayload.post.id > 0 && post.id === upvotePayload.post.id) {
@@ -114,10 +138,7 @@ class PostDetails extends Component {
     const created = post.created;
     const activeVotes = post.active_votes;
 
-    const totalPayout =
-      parseFloat(post.pending_payout_value) +
-      parseFloat(post.total_payout_value) +
-      parseFloat(post.curator_payout_value);
+    const totalPayout = sumPayout(post);
     const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
     const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
@@ -135,10 +156,24 @@ class PostDetails extends Component {
     const parsedBody = getHtml(body, {}, 'text');
     this.images = extractImageTags(parsedBody);
 
-    const tags = getFromMetadata(post.json_metadata, 'tags');
+    let tags = getFromMetadata(post.json_metadata, 'tags');
+    if (tags === null) tags = [post.category];
 
-    const comments = post.replies;
+    const comments = replies;
     const pid = post.id;
+
+    const sortPicker = (
+      <Form>
+        <Form.Group>
+          <Form.Field
+            control={Select}
+            defaultValue={sortOptions[0].value}
+            options={sortOptions}
+            onChange={this.handleSortChange}
+          />
+        </Form.Group>
+      </Form>
+    );
 
     return (
       <HelmetProvider>
@@ -160,104 +195,114 @@ class PostDetails extends Component {
           <Grid verticalAlign='middle' columns={1} centered>
             <Grid.Row>
               <Grid.Column width={11}>
-                {
-                  isFetching ? <Loading />
-                  : (
-                    <React.Fragment>
-                      <div className='PostContent'>
-                        <h1>
-                          {title}
+                <React.Fragment>
+                  {
+                    isFetching ? <Loading />
+                    : (
+                      <React.Fragment>
+                        <div className='PostContent'>
+                          <h1>
+                            {title}
 
-                        </h1>
-                        <AuthorCatgoryTime
-                          author={author}
-                          authorReputation={authorReputation}
-                          category={category}
-                          created={created}
-                          permlink={permlink}
-                        />
-                        <hr />
-                        {this.renderDtubeEmbedPlayer(post)}
-                        <PostBody
-                          full
-                          rewriteLinks={false}
-                          body={body}
-                          json_metadata={post.json_metadata}
-                        />
-                        <br />
-                        <div className='footer'>
-                          <div className='left'>
-                            <Tags tags={tags} />
-                          </div>
-                          <div className='alt-site right'>
-                            {`View on `}
-                            <a
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              href={`https://steemit.com${post.url}`}
-                            >
-                              {'Steemit'}
-                            </a>
-                            {' | '}
-                            <a
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              href={`https://busy.org/@${author}/${permlink}`}
-                            >
-                              {'Busy'}
-                            </a>
-                          </div>
-                          <div className='clear' />
-                          <div className='post-actions'>
-                            <PostActions
-                              activeVotes={activeVotes}
-                              commentCount={commentCount}
-                              author={author}
-                              category={category}
-                              payoutValue={totalPayout}
-                              permlink={permlink}
-                              title={title}
-                              showModal={showModal}
-                              user={user}
-                              handleUpvote={handleUpvote}
-                              upvotePayload={upvotePayload}
-                              ratio={ratio}
-                              pid={pid}
-                              image={this.images[0].src}
-                            />
-                          </div>
+                          </h1>
+                          <AuthorCatgoryTime
+                            author={author}
+                            authorReputation={authorReputation}
+                            category={category}
+                            created={created}
+                            permlink={permlink}
+                          />
                           <hr />
-                          {
-                            isAuth &&
-                            (
-                              <ReplyForm
-                                sendComment={sendComment}
-                                isCommenting={isCommenting}
-                                parentPost={post}
-                                commentedId={commentedId}
+                          {this.renderDtubeEmbedPlayer(post)}
+                          <PostBody
+                            full
+                            rewriteLinks={false}
+                            body={body}
+                            json_metadata={post.json_metadata}
+                          />
+                          <br />
+                          <div className='footer'>
+                            <div className='left'>
+                              <Tags tags={tags} />
+                            </div>
+                            <div className='alt-site right'>
+                              {`View on `}
+                              <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={`https://steemit.com${post.url}`}
+                              >
+                                {'Steemit'}
+                              </a>
+                              {' | '}
+                              <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={`https://busy.org/@${author}/${permlink}`}
+                              >
+                                {'Busy'}
+                              </a>
+                            </div>
+                            <div className='clear' />
+                            <div className='post-actions'>
+                              <PostActions
+                                activeVotes={activeVotes}
+                                commentCount={commentCount}
+                                author={author}
+                                category={category}
+                                payoutValue={totalPayout}
+                                permlink={permlink}
+                                title={title}
+                                showModal={showModal}
+                                user={user}
+                                handleUpvote={handleUpvote}
+                                upvotePayload={upvotePayload}
+                                ratio={ratio}
+                                pid={pid}
+                                image={image}
                               />
-                            )
-                          }
-
-                          <div className='comments' id='comments'>
-                            <Comments
-                              comments={comments}
-                              sendComment={sendComment}
-                              isCommenting={isCommenting}
-                              commentedId={commentedId}
-                              isAuth={isAuth}
-                              commentPayload={commentPayload}
-                              pid={pid}
-                              handleUpvote={handleUpvote}
-                              user={user}
-                              upvotePayload={upvotePayload}
-                            />
+                            </div>
+                            <hr />
+                            {
+                              isAuth &&
+                              (
+                                <ReplyForm
+                                  sendComment={sendComment}
+                                  isCommenting={isCommenting}
+                                  parentPost={post}
+                                  commentedId={commentedId}
+                                />
+                              )
+                            }
                           </div>
                         </div>
-                      </div>
-                    </React.Fragment>
-                  )
-                }
+                      </React.Fragment>
+                    )
+                  }
+                  <div className='comments' id='comments'>
+                    {
+                      comments && (
+                        <React.Fragment>
+                          <div className='left'><h2>Comments</h2></div>
+                          <div className='right'>{  sortPicker }</div>
+                          <Comments
+                            comments={comments}
+                            sendComment={sendComment}
+                            isCommenting={isCommenting}
+                            commentedId={commentedId}
+                            isAuth={isAuth}
+                            commentPayload={commentPayload}
+                            pid={pid}
+                            handleUpvote={handleUpvote}
+                            user={user}
+                            upvotePayload={upvotePayload}
+                            sortBy={sortBy}
+                          />
+                        </React.Fragment>
+                      )
+                    }
+                  </div>
+                </React.Fragment>
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -266,5 +311,13 @@ class PostDetails extends Component {
     )
   }
 }
+
+const sortOptions = [
+  {key: 0, value: 'new', text: 'New'},
+  {key: 1, value: 'old', text: 'Old'},
+  //{key: 2, value: 'votes', text: 'Votes'},
+  {key: 3, value: 'rep', text: 'Reputation'},
+  {key: 4, value: 'payout', text: 'Payout'}
+];
 
 export default PostDetails;

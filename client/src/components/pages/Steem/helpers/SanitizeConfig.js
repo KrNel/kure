@@ -1,6 +1,4 @@
 import sanitizeHtml from 'sanitize-html';
-import url from 'url';
-import { knownDomains } from './constants';
 
 /**
  *  Lifted from busy.org source:
@@ -175,22 +173,6 @@ export default ({
       if (!href) href = '#';
       href = href.trim();
       const attys = {};
-
-      const linkUrl = url.parse(href);
-      const linkWebsiteUrl = url.format({
-        protocol: linkUrl.protocol,
-        host: linkUrl.host,
-      });
-
-      const internalLink = href.indexOf('/') === 0 || appUrl === linkWebsiteUrl;
-
-      if (!internalLink) {
-        attys.target = '_blank';
-
-        if (secureLinks && knownDomains.indexOf(linkUrl.hostname) === -1) {
-          href = `/exit?url=${encodeURIComponent(href)}`;
-        }
-      }
 
       attys.href = href;
 

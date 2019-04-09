@@ -197,7 +197,7 @@ NavDesktop.defaultProps = {
 
 /**
  *  Take the items and loop through them to return the menu items.
- * 
+ *
  *  @param {object} props Component props
  *  @param {array} props.items Menu items to render
  *  @returns {Component} Displays the menu items

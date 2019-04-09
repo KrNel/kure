@@ -2,12 +2,8 @@
 
 .manage .ui.segment.groupList {
   min-height: 200px !important;
-  max-height: 200px !important;
+  max-height: 300px !important;
 }
-
-/*.manage .ui.grid .row + .ui.divider {
-  margin: 0 1rem;
-}*/
 
 .manage .ui.segment.errored {
   -webkit-box-shadow: none #f00000 !important;
@@ -16,17 +12,9 @@
   color: orange;
 }
 
-/*.manage .ui.form input[type="text"] {
-  border-radius: 0px !important;
-}*/
-
 .manage .ui.card .content:first-child {
   padding-bottom: 0;
 }
-
-/*.manage .ui.selection.dropdown {
-  margin-top: 1rem;
-}*/
 
 .manage .ui.form .fields.user-access {
     margin-top: 1rem;

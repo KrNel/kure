@@ -1,8 +1,8 @@
 import React from 'react';
-import { Header, Table, Label } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 
-import GroupLink from '../../common/GroupLink';
-import UserLink from '../../common/UserLink';
+import GroupLink from '../../kure/GroupLink';
+import UserLink from '../Steem/UserLink';
 import { short } from '../../../utils/dateFormatting';
 
 /**

@@ -5,8 +5,9 @@ import AuthorCatgoryTime from './AuthorCatgoryTime';
 import Thumbnail from './Thumbnail';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
-import TitleLink from '../../common/TitleLink';
-import PostLink from '../../common/PostLink';
+import TitleLink from './TitleLink';
+import PostLink from './PostLink';
+import { sumPayout } from '../../../utils/helpers';
 
 /**
  *  Root container for post summaries.
@@ -60,14 +61,12 @@ const PostsSummary = (props) => {
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
-        const totalPayout = parseFloat(post.pending_payout_value) +
-          parseFloat(post.total_payout_value) +
-          parseFloat(post.curator_payout_value);
+        const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
         return (
-          <div key={p.id} className='post'>
+          <div key={p.id} className='postSummary'>
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -100,9 +99,16 @@ const PostsSummary = (props) => {
                     permlink={permlink}
                   />
                 </h4>
-                <p className='description'>
-                  {desc}
-                </p>
+                <div className='description'>
+                  <p className='ellipsis'>
+                    <PostLink
+                      author={author}
+                      category={category}
+                      permlink={permlink}
+                      text={desc}
+                    />
+                  </p>
+                </div>
                 <div className='post-actions'>
                   <PostActions
                     activeVotes={activeVotes}

@@ -1,5 +1,9 @@
 @import '../../../variables.css';
 
+.postSummary {
+  margin-bottom: 1rem;
+}
+
 .block {
   display: flex;
   margin-top: 0.3em;
@@ -7,30 +11,33 @@
 
 .thumbnail {
   padding-right:10px;
-  display: block;
   height: auto;
   max-width: 100%;
 }
 
 .summary-content {
-  margin-left: 10px;
+  margin-left: 0.2rem;
+  min-width: 0;
   width: 100%;
-  overflow: hidden;
 }
 
 .summary-content .description {
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.summary-content a {
+  color: var(--soft-black);
 }
 
 .summary-content h4 {
-  font-size: 1.2em;
+  font-size: 1.225rem;
+  line-height: 1.15rem;
   padding: 0;
-  margin: 0;
+  margin-bottom: 0.2rem;
 }
 
 .summary-content p {
-  font-size: 1.1em;
-  margin: 0.2em 0 0.5em 0;
+  font-size: 1.15rem;
+  margin: 0.2rem 0 0.5rem 0;
 }

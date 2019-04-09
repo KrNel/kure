@@ -9,10 +9,10 @@ body {
 }
 
 a {
-  color: var(--dark-blue)
+  color: var(--medium-blue)
 }
 a:hover {
-  color: var(--light-blue)
+  color: var(--bright-medium-blue)
 }
 
 hr {
@@ -83,11 +83,6 @@ ul.custom-list {
   color: #fff !important;
 }
 
-/*#wrapper {
-  width:922px;
-  margin: 0 auto;
-}*/
-
 /*Semantic UI modal position fix*/
 .visible.transition {
   display: unset !important;
@@ -97,8 +92,6 @@ ul.custom-list {
   display: flex !important;
   opacity: 1;
 }
-
-
 
 .ui.container.grid.wrapper {
   max-width: 1020px !important;
@@ -123,8 +116,6 @@ ul.custom-list {
 }
 
 .ui.segment.head {
-  /*margin: 0;*/
-  /*padding: 0;*/
   border-bottom: none !important;
 }
 
@@ -137,19 +128,6 @@ ul.custom-list {
 .ui.top.attached.label:first-child + :not(.attached) {
   margin-top: 2.5rem !important;
 }
-
-
-/*.ui.grid > .row.header-row > .column {
-  vertical-align: bottom;
-}*/
-
-/*.ui.grid > .row.sub-header-row {
-  padding-bottom: 0;
-}*/
-
-/*.ui.grid > .row.content {
-  padding-top: 0;
-}*/
 
 .ui.grid > .row.noPadBottom {
   padding-bottom: 0;
@@ -193,12 +171,6 @@ ul.custom-list {
 .ui.segment, .ui.segments, .ui.menu, .ui.card, .ui.form input[type="text"], .ui.button, .ui.label, .ui.table, .ui.dropdown {
     /*border-radius: 3px !important;*/
 }
-
-/*.ui.segment, .ui.segments {
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  box-shadow: none !important;
-}*/
 
 .ui.card {
   -webkit-box-shadow: none !important;
@@ -252,9 +224,3 @@ i.blue.icon {
 i.blue.icon:hover {
   color: var(--dark-blue) !important;
 }
-
-/*.ui.label.none {
-  background-color: #fff;
-  border-color: #fff;
-  color: var(--medium-blue)
-}*/

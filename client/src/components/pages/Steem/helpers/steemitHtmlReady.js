@@ -92,6 +92,7 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
   state.links = new Set();
   try {
     const doc = DOMParser.parseFromString(html, 'text/html');
+    
     traverse(doc, state);
     if (mutate) proxifyImages(doc);
     // console.log('state', state)
@@ -106,8 +107,6 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
 
 function traverse(node, state, depth = 0) {
   if (!node || !node.childNodes) return;
-
-  //Array(...node.childNodes).forEach(child => {
   Array.prototype.forEach.call(node.childNodes, child => {
     // console.log(depth, 'child.tag,data', child.tagName, child.data)
     const tag = child.tagName ? child.tagName.toLowerCase() : null;
@@ -138,7 +137,6 @@ function link(state, child) {
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
   const { mutate, resolveIframe } = state;
-
   const url = child.getAttribute('src');
   let domString;
   const embed = embedjs.get(url || '', { width: '100%', height: 400 });
@@ -181,7 +179,6 @@ function img(state, child) {
 function proxifyImages(doc) {
   if (!doc) return;
   Array.prototype.forEach.call(doc.getElementsByTagName('img'), node => {
-  //[...doc.getElementsByTagName('img')].forEach(node => {
     const url = node.getAttribute('src');
     if (!linksRe.local.test(url)) {
       node.setAttribute('src', getProxyImageURL(url));
@@ -190,7 +187,6 @@ function proxifyImages(doc) {
 }
 
 function linkifyNode(child, state) {
-
   try {
     const tag = child.parentNode.tagName
       ? child.parentNode.tagName.toLowerCase()
@@ -212,7 +208,6 @@ function linkifyNode(child, state) {
       state.images,
       state.links,
     );
-
     if (mutate && content !== data) {
       const newChild = DOMParser.parseFromString(`<span>${content}</span>`);
       child.parentNode.replaceChild(newChild, child);
@@ -224,7 +219,6 @@ function linkifyNode(child, state) {
 }
 
 function linkify(content, mutate, hashtags, usertags, images, links) {
-
   // hashtag
   content = content.replace(/(^|\s)(#[-a-z\d]+)/gi, tag => {
     if (/#[\d]+$/.test(tag)) return tag; // Don't allow numbers to be tags

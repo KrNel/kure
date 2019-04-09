@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import marked from 'marked';
 import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
+
+import Preview from './Preview';
 
 /**
  *  Comment reply form for posts.
@@ -22,17 +23,17 @@ class ReplyForm extends Component {
   }
 
   state = {
-    replyData: '',
+    body: '',
   }
 
   /**
-   *  If a comment has been posted, clear the form by clearing the replyData state.
+   *  If a comment has been posted, clear the form by clearing the body state.
    */
   static getDerivedStateFromProps(props, state) {
     if (props.parentPost.id === props.commentedId && !props.isCommenting) {
       props.toggleReplyForm();
       return {
-        replyData: '',
+        body: '',
       };
     }
     return null;
@@ -48,23 +49,15 @@ class ReplyForm extends Component {
   }
 
   /**
-   *  Show markdown preview as comment gets typed.
-   */
-  rawMarkup = () => {
-    const { replyData } = this.state;
-    return { __html: marked(replyData, {sanitize: true}) };
-  }
-
-  /**
    *  Send the comment to redux for adding to Steem blockchain.
    */
   handleSendComment = () => {
-    const {replyData} = this.state;
+    const { body } = this.state;
     const {sendComment} = this.props;
 
-    if (replyData) {
+    if (body) {
       const {parentPost} = this.props;
-      sendComment(parentPost, replyData);
+      sendComment(parentPost, body);
     }
   }
 
@@ -73,14 +66,14 @@ class ReplyForm extends Component {
    */
   handleClearReply = () => {
     this.setState({
-      replyData: ''
+      body: ''
     });
   }
 
   render() {
     const {
       state: {
-        replyData,
+        body,
       },
       props: {
         isCommenting,
@@ -101,8 +94,8 @@ class ReplyForm extends Component {
               <TextArea
                 placeholder='Share your thoughts'
                 onChange={this.handleChange}
-                name='replyData'
-                value={replyData}
+                name='body'
+                value={body}
                 disabled={isCommenting}
               />
               <div>
@@ -110,37 +103,23 @@ class ReplyForm extends Component {
                   size="large"
                   color="blue"
                   content='Post'
-                  disabled={replyData === '' || isCommenting}
+                  disabled={body === '' || isCommenting}
                   onClick={this.handleSendComment}
                 />
                 <Button
                   size="large"
                   color="grey"
                   content='Clear'
-                  disabled={replyData === '' || isCommenting}
+                  disabled={body === '' || isCommenting}
                   onClick={this.handleClearReply}
                 />
               </div>
 
             </Form>
             {
-              replyData !== ''
+              body !== ''
               && (
-                <div className='replyPreviewHeader'>
-                  <span className='left'>Preview</span>
-                  <span className='right'>
-                    <a
-                      href='https://guides.github.com/features/mastering-markdown/'
-                    >
-                      {'Markdown Help'}
-                    </a>
-                  </span>
-                  <div className='clear' />
-                  <div
-                    className='replyPreview'
-                    dangerouslySetInnerHTML={this.rawMarkup()}
-                  />
-                </div>
+                <Preview body={body} />
               )
             }
           </div>

@@ -109,7 +109,7 @@ router.get('/list/:user', async (req, res, next) => {
   const { user } = req.params;
 
   const listlimit = 50;
-  const groupLimit = 10;
+  const groupLimit = 20;
   const postLimit = 5;
 
   const groupsCreated = getGroups(db, next, groupLimit, postLimit, user, 'created');
