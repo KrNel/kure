@@ -98,12 +98,12 @@ class Write extends Component {
         clearPost,
       }
     } = this;
-console.log('newPost',newPost)
+
     if (newPost) {
       this.redirect = newPost;
       clearPost();
     }
-console.log('this.redirect',this.redirect)
+
     return (
       (this.redirect)
       ? <Redirect to={this.redirect} />
