@@ -121,21 +121,38 @@ class Vote extends Component {
     this.setState({unvote: false});
   }
 
-  closeVoteSlider = (e, user, sliderWeight) => {
+  /**
+   *  When the upvote slider is closed, the vote weight is saved in
+   *  localStorage for future use of that user.
+   *
+   *  @param {element} e Element triggering the event
+   *  @param {string} user Voting user
+   *  @param {number} weight Weight value received from slider
+   */
+  closeVoteSlider = (e, user, weight) => {
     e.preventDefault();
-    this.setSavedVoteWeight(sliderWeight, user);
+    this.setSavedVoteWeight(weight, user);
     this.setState({ showSlider: false });
   }
 
+  /**
+   *  Sets the vote weight into localStorage for the user's future use.
+   *
+   *  @param {string} user Voting user
+   *  @param {number} weight Weight value received from slider
+   */
   setSavedVoteWeight = (weight, user) => {
     localStorage.setItem('voteWeight-' + user, weight);
   }
 
+  /**
+   *  Gets the vote weight from localStorage for thevote slider setting.
+   *
+   *  @param {string} user Voting user
+   */
   getSavedVoteWeight = (user) => (
     localStorage.getItem('voteWeight-' + user)
   )
-
-
 
   render() {
     const {

@@ -54,7 +54,7 @@ export const getGroupDetails = (group, user) => {
  *  Get the community posts to show.
  */
 export const getPosts = () => {
-  return getData(`/api/recentactivity/posts`);
+  return getData(`/api/posts`);
 }
 
 /**

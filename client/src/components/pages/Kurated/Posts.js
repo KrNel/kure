@@ -86,7 +86,7 @@ class Posts extends Component {
       <ErrorBoundary>
         <div className="home">
           <Grid columns={1} stackable>
-            <Grid.Column width={12} className="main">
+            <Grid.Column width={16} className="main">
               <Grid>
                 <Grid.Row>
                   <Grid.Column>

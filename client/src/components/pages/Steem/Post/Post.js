@@ -142,7 +142,11 @@ class Post extends Component {
                 commentPayload={commentPayload}
               />
             )
-            : <Loading />
+            : !isFetchingDetails && !hasLength(post)
+              ? (
+                <div>That post does not exist.</div>
+              )
+              : <Loading />
           }
         </React.Fragment>
       </ErrorBoundary>

@@ -11,7 +11,7 @@ export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
 export const RECEIVE_LOGOUT = 'RECEIVE_LOGOUT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
-
+export const CANCEL_LOGIN = 'CANCEL_LOGIN';
 /**
  *  Action creator for requesting returning user athentication.
  *
@@ -36,6 +36,9 @@ export const receiveReturning = (res) => ({
   authedAt: Date.now()
 })
 
+/**
+ *  Action creator for cancelling the return login process.
+ */
 export const cancelReturning = () => ({
   type: CANCEL_RETURNING,
 })
@@ -82,6 +85,13 @@ export const receiveLogin = (res) => ({
   csrf: res.headers['x-csrf-token'],
   authedAt: Date.now()
 });
+
+/**
+ *  Action creator for cancelling the login process.
+ */
+export const cancelLogin = () => ({
+  type: CANCEL_LOGIN,
+})
 
 /**
  *  Function to fetch the returning user authentication from the database.
@@ -156,7 +166,17 @@ const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
       accessToken: accessToken,
       user: user
     }).then(res => {
-      dispatch(receiveLogin(res));
+      const accessToken = Cookies.get(SC_COOKIE);
+      if (accessToken) {
+        validateToken(accessToken)
+          .then(valid => {
+            if (valid) {
+              dispatch(receiveLogin(res));
+            }
+          })
+      }else {
+        dispatch(cancelLogin());
+      }
     });
 }
 

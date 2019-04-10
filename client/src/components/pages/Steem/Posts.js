@@ -85,7 +85,6 @@ class Posts extends Component {
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
-        this.isInfScrollMore = true;
         this.getPosts('more');
       }
     }
