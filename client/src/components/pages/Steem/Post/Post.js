@@ -142,11 +142,11 @@ class Post extends Component {
                 commentPayload={commentPayload}
               />
             )
-            : !isFetchingDetails && !hasLength(post)
-              ? (
+            : isFetchingDetails && !hasLength(post)
+              ? <Loading />
+              : (
                 <div>That post does not exist.</div>
               )
-              : <Loading />
           }
         </React.Fragment>
       </ErrorBoundary>
@@ -214,7 +214,13 @@ class Post extends Component {
    }
  }
 
-const mapDispatchToProps = (dispatch) => (
+ /**
+  *  Map redux dispatch functions to component props.
+  *
+  *  @param {object} dispatch - Redux dispatch
+  *  @returns {object} - Object with recent activity data
+  */
+const mapDispatchToProps = dispatch => (
   {
     getContent: (author, permlink) => (
       dispatch(getDetailsContent(author, permlink))

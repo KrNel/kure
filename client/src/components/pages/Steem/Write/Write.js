@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Label } from 'semantic-ui-react'
+import { Form, Label, Select } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
@@ -30,10 +30,16 @@ class Write extends Component {
     this.state = {
       title: '',
       body: '',
-      tags: ''
+      tags: '',
+      reward: '50',
     }
 
     this.redirect = '';
+    this.rewardOptions = [
+      {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
+      {key: 1, value: '100', text: '100% STEEM'},
+      {key: 2, value: '0', text: 'Decline Payout'},
+    ];
   }
 
 
@@ -57,17 +63,17 @@ class Write extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const { title, body, tags } = this.state;
+    const { title, body, tags, reward } = this.state;
     const { createPost } = this.props;
 
     if (body === '' || title === '' || tags === '') return;
 
-    const post = this.getNewPostData(title, body, tags);
+    const post = this.getNewPostData(title, body, tags, reward);
 
     createPost(post);
   }
 
-  getNewPostData = (title, body, tags) => {
+  getNewPostData = (title, body, tags, reward) => {
     tags = tags.split(' ');
     const { user } = this.props;
     const post = {
@@ -81,10 +87,22 @@ class Write extends Component {
     post.author = user;
     post.parentPermlink = tags[0];
     post.jsonMetadata = createPostMetadata(post.body, tags);
-    post.reward = 'half';
+    post.reward = reward;
 
     return post;
   }
+
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the element triggering the event
+   */
+   handleRewardChange = (e, {value}) => {
+     this.setState({
+       reward: value,
+      });
+   }
 
   render() {
     const {
@@ -129,9 +147,14 @@ class Write extends Component {
               onChange={this.handleChange}
             />
 
-            <Form.Checkbox
-              label='Payout at 50/50'
-            />
+            <Form.Group>
+              <Form.Field
+                control={Select}
+                defaultValue={this.rewardOptions[0].value}
+                options={this.rewardOptions}
+                onChange={this.handleRewardChange}
+              />
+            </Form.Group>
 
             <Form.Button>Submit</Form.Button>
             {
@@ -177,7 +200,13 @@ class Write extends Component {
    }
  }
 
-const mapDispatchToProps = (dispatch) => (
+ /**
+  *  Map redux dispatch functions to component props.
+  *
+  *  @param {object} dispatch - Redux dispatch
+  *  @returns {object} - Object with recent activity data
+  */
+const mapDispatchToProps = dispatch => (
   {
     createPost: (post) => (
       dispatch(sendPost(post))

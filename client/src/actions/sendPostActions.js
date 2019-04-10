@@ -36,6 +36,11 @@ const sendPostError = error => ({
   error,
 });
 
+/**
+ *  Action creator for clearing a new post after the page is loaded.
+ *
+ *  @return {object} The action data
+ */
 export const clearNewPost = () => ({
   type: CLEAR_NEW_POST,
 });

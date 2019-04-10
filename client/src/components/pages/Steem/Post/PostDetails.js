@@ -52,6 +52,13 @@ class PostDetails extends Component {
 
     this.images = [];
     this.imagesAlts = [];
+    this.sortOptions = [
+      {key: 0, value: 'new', text: 'New'},
+      {key: 1, value: 'old', text: 'Old'},
+      //{key: 2, value: 'votes', text: 'Votes'},
+      {key: 3, value: 'rep', text: 'Reputation'},
+      {key: 4, value: 'payout', text: 'Payout'}
+    ];
 
     this.state = {
       sortBy: 'new',
@@ -162,19 +169,6 @@ class PostDetails extends Component {
     const comments = replies;
     const pid = post.id;
 
-    const sortPicker = (
-      <Form>
-        <Form.Group>
-          <Form.Field
-            control={Select}
-            defaultValue={sortOptions[0].value}
-            options={sortOptions}
-            onChange={this.handleSortChange}
-          />
-        </Form.Group>
-      </Form>
-    );
-
     return (
       <HelmetProvider>
         <React.Fragment>
@@ -281,10 +275,23 @@ class PostDetails extends Component {
                   }
                   <div className='comments' id='comments'>
                     {
-                      comments && (
+                      !!comments.length && (
                         <React.Fragment>
-                          <div className='left'><h2>Comments</h2></div>
-                          <div className='right'>{  sortPicker }</div>
+                          <div className='left'>
+                            <h2>Comments</h2>
+                          </div>
+                          <div className='right'>
+                            <Form>
+                              <Form.Group>
+                                <Form.Field
+                                  control={Select}
+                                  defaultValue={this.sortOptions[0].value}
+                                  options={this.sortOptions}
+                                  onChange={this.handleSortChange}
+                                />
+                              </Form.Group>
+                            </Form>
+                          </div>
                           <Comments
                             comments={comments}
                             sendComment={sendComment}
@@ -311,13 +318,5 @@ class PostDetails extends Component {
     )
   }
 }
-
-const sortOptions = [
-  {key: 0, value: 'new', text: 'New'},
-  {key: 1, value: 'old', text: 'Old'},
-  //{key: 2, value: 'votes', text: 'Votes'},
-  {key: 3, value: 'rep', text: 'Reputation'},
-  {key: 4, value: 'payout', text: 'Payout'}
-];
 
 export default PostDetails;

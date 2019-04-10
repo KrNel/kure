@@ -287,7 +287,13 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => (
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
   {
     getContent: (selectedFilter, query, nextPost, page) => (
       dispatch(getSummaryContent(selectedFilter, query, nextPost, page))
