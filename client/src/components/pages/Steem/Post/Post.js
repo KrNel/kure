@@ -122,31 +122,30 @@ class Post extends Component {
             addPostLoading={addPostLoading}
           />
           {
-            !isFetchingDetails && hasLength(post)
-            ? (
-              <PostDetails
-                match={match}
-                showModal={showModal}
-                user={user}
-                csrf={csrf}
-                isAuth={isAuth}
-                getContent={getContent}
-                post={post}
-                handleUpvote={handleUpvote}
-                upvotePayload={upvotePayload}
-                replies={replies}
-                sendComment={sendComment}
-                isCommenting={isCommenting}
-                commentedId={commentedId}
-                isFetching={isFetchingDetails}
-                commentPayload={commentPayload}
-              />
-            )
-            : isFetchingDetails && !hasLength(post)
-              ? <Loading />
-              : (
-                <div>That post does not exist.</div>
+            !isFetchingDetails && !hasLength(post)
+            ? <div>That post does not exist.</div>
+            : !isFetchingDetails && hasLength(post)
+              ? (
+                <PostDetails
+                  match={match}
+                  showModal={showModal}
+                  user={user}
+                  csrf={csrf}
+                  isAuth={isAuth}
+                  getContent={getContent}
+                  post={post}
+                  handleUpvote={handleUpvote}
+                  upvotePayload={upvotePayload}
+                  replies={replies}
+                  sendComment={sendComment}
+                  isCommenting={isCommenting}
+                  commentedId={commentedId}
+                  isFetching={isFetchingDetails}
+                  commentPayload={commentPayload}
+                />
               )
+              :  <Loading />
+
           }
         </React.Fragment>
       </ErrorBoundary>

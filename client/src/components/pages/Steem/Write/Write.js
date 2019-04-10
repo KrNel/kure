@@ -32,9 +32,11 @@ class Write extends Component {
       body: '',
       tags: '',
       reward: '50',
+      tagErrors: '',
     }
 
     this.redirect = '';
+    //this.tagErrors = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
       {key: 1, value: '100', text: '100% STEEM'},
@@ -43,19 +45,34 @@ class Write extends Component {
   }
 
 
-  /*componentDidMount() {
-    if (this.props.newPost) this.props.clearPost();
-  }*/
-
+  componentDidMount() {
+    if (this.props.newPost) {
+      this.redirect = '';
+      this.props.clearPost();
+    }
+  }
 
   /**
    *  Set state for the reply form.
    */
   handleChange = (e, { name, value }) => {
     this.setState({
-      [name]: value
+      [name]: value,
+      tagErrors: '',
     });
   }
+
+  /**
+   *  Set state values for when tag input text changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} value Value of the element triggering the event
+   */
+   handleRewardChange = (e, {value}) => {
+     this.setState({
+       reward: value,
+      });
+   }
 
   /**
    *  Collect and process the form data for adding the post to the blockchain.
@@ -63,18 +80,41 @@ class Write extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
+
     const { title, body, tags, reward } = this.state;
     const { createPost } = this.props;
-
+console.log('tags',tags)
     if (body === '' || title === '' || tags === '') return;
 
     const post = this.getNewPostData(title, body, tags, reward);
-
-    createPost(post);
+console.log('post',post)
+    /*if (post !== null)
+      createPost(post);*/
   }
 
+  /**
+   *  Constructs the post object with the content required.
+   *
+   *  @param {string} title Title of post
+   *  @param {string} body Body of post
+   *  @param {string} tags Tags for post
+   *  @param {string} reward Reward option for the post
+   *  @return {object} Post object data
+   */
   getNewPostData = (title, body, tags, reward) => {
-    tags = tags.split(' ');
+console.log('gtags',tags)
+    //tags = tags.trim().split(' ');
+
+    const validTags = this.validateTags(tags);
+console.log('validTags',validTags)
+    if (validTags.errors !== '') {
+      this.setState({tagErrors: validTags.errors});
+      return null;
+    }else {
+      tags = validTags.tags;
+    }
+
+
     const { user } = this.props;
     const post = {
       body,
@@ -92,22 +132,45 @@ class Write extends Component {
     return post;
   }
 
-  /**
-   *  Set state values for when tag input text changes.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {string} value Value of the element triggering the event
-   */
-   handleRewardChange = (e, {value}) => {
-     this.setState({
-       reward: value,
-      });
-   }
+  validateTags(tags) {
+console.log('vtags',tags)
+    if (!tags || tags.trim() === '')
+      return { errors: 'Tags are required.' }
+
+    tags = tags.trim().split(' ');
+
+    if (tags.length > 5)
+      return { errors: 'Maximum 5 tags.' }
+
+    if (tags.find(t => t.length > 24))
+      return { errors: 'Tags must be shorter than 24 chars.' }
+
+    if (tags.find(t => t.split('-').length > 2))
+      return { errors: 'Only one dash per tag.' }
+
+    if (tags.find(t => t.indexOf(',') >= 0))
+      return { errors: 'Separate tags with spaces.' }
+
+    if (tags.find(t => /[A-Z]/.test(t)))
+      return { errors: 'Must be lowercase.' }
+
+    if (tags.find(t => !/^[a-z0-9-#]+$/.test(t)) > 5)
+      return { errors: 'Invalid characters.' }
+
+    if (tags.find(t => !/^[a-z-#]/.test(t)))
+      return { errors: 'Must start with letter.' }
+
+    if (tags.find(t => !/[a-z0-9]$/.test(t)))
+      return { errors: 'Must end with letter or number.' }
+
+    return { tags: tags, errors: '' };
+  }
 
   render() {
     const {
       state: {
         body,
+        tagErrors,
       },
       props: {
         isPosting,
@@ -119,12 +182,11 @@ class Write extends Component {
 
     if (newPost) {
       this.redirect = newPost;
-      clearPost();
     }
-
+console.log('this.tagErrors',this.tagErrors)
     return (
-      (this.redirect)
-      ? <Redirect to={this.redirect} />
+      (newPost)
+      ? <Redirect to={newPost} />
       : (
         <div id='write'>
           <Form onSubmit={this.handleSubmit} loading={isPosting}>
@@ -141,11 +203,20 @@ class Write extends Component {
               name='body'
             />
 
-            <Form.Input
-              placeholder='Tags separated by spaces'
-              name='tags'
-              onChange={this.handleChange}
-            />
+            <Form.Field>
+              <Form.Input
+                placeholder='Tags separated by spaces'
+                name='tags'
+                onChange={this.handleChange}
+              />
+              {
+                tagErrors && (
+                  <Label basic color='red' pointing>
+                    {tagErrors}
+                  </Label>
+                )
+              }
+            </Form.Field>
 
             <Form.Group>
               <Form.Field

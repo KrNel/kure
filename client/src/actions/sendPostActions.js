@@ -73,6 +73,8 @@ export const sendPost = post => (dispatch, getState) => {
   if (lastPosted && (now - lastPosted) < 300000)
     dispatch(sendPostError('Must wait 5 minutes between posts.'));
 
+  
+
   const {
     parentAuthor,
     parentPermlink,
