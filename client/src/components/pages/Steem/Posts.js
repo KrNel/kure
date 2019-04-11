@@ -2,7 +2,8 @@ import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Header, Label} from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom';
+//import InfiniteScroll from 'redux-infinite-scroll';
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
@@ -27,14 +28,14 @@ class Posts extends Component {
     csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
     isFetchingSummary: PropTypes.bool,
-    noMore: PropTypes.bool,
+    hasMore: PropTypes.bool,
   };
 
   static defaultProps = {
     user: '',
     csrf: '',
     isFetchingSummary: false,
-    noMore: false,
+    hasMore: true,
     match: {}
   };
 
@@ -79,13 +80,12 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = (e) => {
-    const {isFetchingSummary, noMore} = this.props;
-    if (!isFetchingSummary && !noMore) {
+    const {isFetchingSummary, hasMore} = this.props;
+    if (!isFetchingSummary && hasMore) {
       var lastLi = document.querySelector("#postList > div.postSummary:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
-        this.isInfScrollMore = true;
         this.getPosts('more');
       }
     }
@@ -255,7 +255,7 @@ const mapStateToProps = state => {
     summaryPost: {
       isFetchingSummary,
       prevPage,
-      noMore,
+      hasMore,
       posts,
     },
     userGroups: {
@@ -278,7 +278,7 @@ const mapStateToProps = state => {
     posts,
     isFetchingSummary,
     prevPage,
-    noMore,
+    hasMore,
     groups,
     postExists,
     addPostLoading,
@@ -288,7 +288,13 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => (
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
   {
     getContent: (selectedFilter, query, nextPost, page) => (
       dispatch(getSummaryContent(selectedFilter, query, nextPost, page))

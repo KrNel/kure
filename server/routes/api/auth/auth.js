@@ -71,12 +71,8 @@ const validateToken = (accessToken) => {
  */
 const setTokenCookie = (res, expiresAt, accessToken) => {
   return new Promise((resolve) => {
-    //res.header('Access-Control-Allow-Origin', yourExactHostname);
-    //res.header('Access-Control-Allow-Credentials', true);
-    //res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.cookie(config.scCookie, accessToken, {
       secure: true,
-      //httpOnly: true,
       maxAge: expiresAt
     });
     resolve(true);
@@ -202,10 +198,6 @@ router.get('/returning', (req, res) => {
 const returning = async (db, res, accessToken) => {
   const fail = {isAuth: false, user:''};
   if (!accessToken) return fail;
-
-  //Validate stored token with SteemConnect api
-  const isValidToken = await validateToken(accessToken);
-  if (!isValidToken) return fail;
 
   //Extract user name from the token for use in frontend app
   const user = jwt.decode(accessToken)['user'];

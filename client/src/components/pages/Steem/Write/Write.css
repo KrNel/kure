@@ -1,4 +1,5 @@
 
 #write .ui.form textarea#body {
-  min-height: 20em;
+  min-height: 10em;
+  height: 20em;
 }

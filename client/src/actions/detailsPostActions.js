@@ -39,9 +39,14 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
   dispatch(detailsStart());
   return client.database.call('get_content', [author, permlink])
     .then(post => {
-      dispatch(getUserGroupsFetch());
+      if (post.created === '1970-01-01T00:00:00') {
+        dispatch(detailsSuccess({}));
+      }
+      else {
+        dispatch(getUserGroupsFetch());
+        dispatch(detailsSuccess(post));
+      }
 
-      dispatch(detailsSuccess(post));
       if (post.children > 0) {
         dispatch(getPostComments(post.author, post.permlink));
       }

@@ -122,27 +122,30 @@ class Post extends Component {
             addPostLoading={addPostLoading}
           />
           {
-            !isFetchingDetails && hasLength(post)
-            ? (
-              <PostDetails
-                match={match}
-                showModal={showModal}
-                user={user}
-                csrf={csrf}
-                isAuth={isAuth}
-                getContent={getContent}
-                post={post}
-                handleUpvote={handleUpvote}
-                upvotePayload={upvotePayload}
-                replies={replies}
-                sendComment={sendComment}
-                isCommenting={isCommenting}
-                commentedId={commentedId}
-                isFetching={isFetchingDetails}
-                commentPayload={commentPayload}
-              />
-            )
-            : <Loading />
+            !isFetchingDetails && !hasLength(post)
+            ? <div>That post does not exist.</div>
+            : !isFetchingDetails && hasLength(post)
+              ? (
+                <PostDetails
+                  match={match}
+                  showModal={showModal}
+                  user={user}
+                  csrf={csrf}
+                  isAuth={isAuth}
+                  getContent={getContent}
+                  post={post}
+                  handleUpvote={handleUpvote}
+                  upvotePayload={upvotePayload}
+                  replies={replies}
+                  sendComment={sendComment}
+                  isCommenting={isCommenting}
+                  commentedId={commentedId}
+                  isFetching={isFetchingDetails}
+                  commentPayload={commentPayload}
+                />
+              )
+              :  <Loading />
+
           }
         </React.Fragment>
       </ErrorBoundary>
@@ -210,7 +213,13 @@ class Post extends Component {
    }
  }
 
-const mapDispatchToProps = (dispatch) => (
+ /**
+  *  Map redux dispatch functions to component props.
+  *
+  *  @param {object} dispatch - Redux dispatch
+  *  @returns {object} - Object with recent activity data
+  */
+const mapDispatchToProps = dispatch => (
   {
     getContent: (author, permlink) => (
       dispatch(getDetailsContent(author, permlink))

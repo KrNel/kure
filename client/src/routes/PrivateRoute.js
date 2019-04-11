@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import NotAuthorized from '../components/Auth/NotAuthorized';
 import Authorizing from '../components/Auth/Authorizing';
@@ -25,7 +26,14 @@ const PrivateRoute = ({ component: Component, isAuthorizing, isAuth, ...rest }) 
             : <NotAuthorized />
     )}
   />
-);
+)
+
+PrivateRoute.propTypes = {
+  component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+  isAuthorizing: PropTypes.bool.isRequired,
+  isAuth: PropTypes.bool.isRequired,
+};
+
 
 /**
  *  Map redux state to component props.

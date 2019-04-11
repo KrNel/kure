@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import {getUserGroups} from './groups';
+import { getUserGroups } from './groups';
 
 const router = new Router();
 
@@ -45,7 +45,7 @@ router.get('/:user/:limit', (req, res, next) => {
  *  @param {function} next Middleware function
  *  @returns {object} Recent post data object to send to frontend
  */
-const getRecentPosts = async (db, next, limit = 50) => {
+export const getRecentPosts = async (db, next, limit = 50) => {
   return new Promise((resolve, reject) => {
     db.collection('kposts').aggregate([
       { $lookup: {
@@ -174,24 +174,5 @@ const getMySubmissions = (db, next, user, limit) => {
     })
   }).catch(next)
 }
-
-/**
- *  GET route to get the recent post activity.
- *  Route: /api/recentposts/posts
- *
- *  Gets the local DB object.
- *  Retrieve the recently active posts from the DB.
- */
-router.get('/posts', (req, res, next) => {
-  const db = req.app.locals.db;
-  const limit = 100;
-
-  //Get posts data from DB and return
-  getRecentPosts(db, next, limit)
-    .then(data => {
-      res.json({ posts: data })
-    })
-    .catch(next);
-})
 
 export default router;

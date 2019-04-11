@@ -9,6 +9,7 @@ import { addPost } from './addPostReducer';
 import { comments } from './commentsReducer';
 import { upvote } from './upvoteReducer';
 import { sendComment } from './sendCommentReducer';
+import { sendPost } from './sendPostReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   comments,
   upvote,
   sendComment,
+  sendPost,
 });
 
 export default rootReducer;
