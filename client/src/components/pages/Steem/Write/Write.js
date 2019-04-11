@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Label, Select } from 'semantic-ui-react'
+import { Grid, Form, Label, Select } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
@@ -36,7 +36,6 @@ class Write extends Component {
     }
 
     this.redirect = '';
-    //this.tagErrors = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
       {key: 1, value: '100', text: '100% STEEM'},
@@ -46,9 +45,10 @@ class Write extends Component {
 
 
   componentDidMount() {
-    if (this.props.newPost) {
+    const { newPost, clearPost } = this.props;
+    if (newPost) {
       this.redirect = '';
-      this.props.clearPost();
+      clearPost();
     }
   }
 
@@ -83,13 +83,13 @@ class Write extends Component {
 
     const { title, body, tags, reward } = this.state;
     const { createPost } = this.props;
-console.log('tags',tags)
+
     if (body === '' || title === '' || tags === '') return;
 
     const post = this.getNewPostData(title, body, tags, reward);
-console.log('post',post)
-    /*if (post !== null)
-      createPost(post);*/
+
+    if (post !== null)
+      createPost(post);
   }
 
   /**
@@ -102,11 +102,11 @@ console.log('post',post)
    *  @return {object} Post object data
    */
   getNewPostData = (title, body, tags, reward) => {
-console.log('gtags',tags)
+
     //tags = tags.trim().split(' ');
 
     const validTags = this.validateTags(tags);
-console.log('validTags',validTags)
+
     if (validTags.errors !== '') {
       this.setState({tagErrors: validTags.errors});
       return null;
@@ -133,7 +133,7 @@ console.log('validTags',validTags)
   }
 
   validateTags(tags) {
-console.log('vtags',tags)
+
     if (!tags || tags.trim() === '')
       return { errors: 'Tags are required.' }
 
@@ -183,63 +183,69 @@ console.log('vtags',tags)
     if (newPost) {
       this.redirect = newPost;
     }
-console.log('this.tagErrors',this.tagErrors)
+
     return (
       (newPost)
       ? <Redirect to={newPost} />
       : (
-        <div id='write'>
-          <Form onSubmit={this.handleSubmit} loading={isPosting}>
-            <Form.Input
-              placeholder='Title'
-              name='title'
-              onChange={this.handleChange}
-            />
+        <Grid verticalAlign='middle' columns={1} centered>
+          <Grid.Row>
+            <Grid.Column width={13}>
+              <div id='write'>
+                <Form onSubmit={this.handleSubmit} loading={isPosting}>
+                  <Form.Input
+                    placeholder='Title'
+                    name='title'
+                    onChange={this.handleChange}
+                  />
 
-            <Form.TextArea
-              id='body'
-              placeholder='Write something...'
-              onChange={this.handleChange}
-              name='body'
-            />
+                  <Form.TextArea
+                    id='body'
+                    placeholder='Write something...'
+                    onChange={this.handleChange}
+                    name='body'
+                  />
 
-            <Form.Field>
-              <Form.Input
-                placeholder='Tags separated by spaces'
-                name='tags'
-                onChange={this.handleChange}
-              />
-              {
-                tagErrors && (
-                  <Label basic color='red' pointing>
-                    {tagErrors}
-                  </Label>
-                )
-              }
-            </Form.Field>
+                  <Form.Field>
+                    <Form.Input
+                      placeholder='Tags separated by spaces'
+                      name='tags'
+                      onChange={this.handleChange}
+                    />
+                    {
+                      tagErrors && (
+                        <Label basic color='red' pointing>
+                          {tagErrors}
+                        </Label>
+                      )
+                    }
+                  </Form.Field>
 
-            <Form.Group>
-              <Form.Field
-                control={Select}
-                defaultValue={this.rewardOptions[0].value}
-                options={this.rewardOptions}
-                onChange={this.handleRewardChange}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Field
+                      control={Select}
+                      defaultValue={this.rewardOptions[0].value}
+                      options={this.rewardOptions}
+                      onChange={this.handleRewardChange}
+                    />
+                  </Form.Group>
 
-            <Form.Button>Submit</Form.Button>
-            {
-              error && (
-                <Label basic color='red' pointing='left'>
-                  {error}
-                </Label>
-              )
-            }
+                  <Form.Button>Submit</Form.Button>
+                  {
+                    error && (
+                      <Label basic color='red' pointing='left'>
+                        {error}
+                      </Label>
+                    )
+                  }
 
-          </Form>
+                </Form>
 
-          <Preview body={body} />
-        </div>
+                <Preview body={body} />
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       )
     )
   }

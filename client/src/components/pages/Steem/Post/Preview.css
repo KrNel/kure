@@ -1,0 +1,10 @@
+.writingPreviewHeader {
+  margin-top: 1rem;
+}
+
+.writingPreview {
+  border: 1px solid var(--soft-grey);
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}

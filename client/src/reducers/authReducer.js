@@ -2,6 +2,7 @@ import {
   REQUEST_RETURNING,
   RECEIVE_RETURNING,
   CANCEL_RETURNING,
+  ERROR_RETURNING,
   REQUEST_LOGOUT,
   RECEIVE_LOGOUT,
   REQUEST_LOGIN,
@@ -30,6 +31,7 @@ export const auth = (
         ...state,
         isAuthorizing: true,
       });
+    case ERROR_RETURNING:
     case RECEIVE_RETURNING:
       return ({
         ...state,

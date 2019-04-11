@@ -1,6 +1,7 @@
 import React from 'react';
 
 import PostBody from './PostBody';
+import './Preview.css';
 
 const Preview = ({body}) => (
   body && (

@@ -7,6 +7,7 @@ import {SC_COOKIE} from '../settings';
 export const REQUEST_RETURNING = 'REQUEST_RETURNING';
 export const RECEIVE_RETURNING = 'RECEIVE_RETURNING';
 export const CANCEL_RETURNING = 'CANCEL_RETURNING';
+export const ERROR_RETURNING = 'ERROR_RETURNING';
 export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
 export const RECEIVE_LOGOUT = 'RECEIVE_LOGOUT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
@@ -34,6 +35,15 @@ export const receiveReturning = (res) => ({
   user: res.data.user,
   csrf: res.headers['x-csrf-token'],
   authedAt: Date.now()
+})
+
+export const errorReturning = (res) => ({
+  type: ERROR_RETURNING,
+  isAuth: false,
+  isAuthorizing: false,
+  user: '',
+  csrf: '',
+  authedAt: '',
 })
 
 /**
@@ -110,7 +120,12 @@ const fetchReturning = () => async dispatch => {
         .then(valid => {
           if (valid) {
             dispatch(receiveReturning(res));
+          }else {
+            dispatch(errorReturning());
           }
+        })
+        .catch((err) => {
+          //false when .me() fail for revoked or invalid token
         })
     }else {
       dispatch(cancelReturning());
@@ -123,9 +138,9 @@ export const validateToken = (accessToken) => {
   return new Promise((resolve, reject) => {
     SteemConnect.setAccessToken(accessToken);
     SteemConnect.me((err, result) => {
-      (!err) ? resolve(true) : reject(false);
+      (!err) ? resolve(result) : reject(false);
     })
-    resolve(true);
+    //resolve(true);
   });
 }
 
@@ -157,7 +172,7 @@ const fetchLogout = (state) => dispatch => {
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchLogin = (state, expiresAt, accessToken, user) => dispatch => {
+const fetchLogin = (expiresAt, accessToken, user) => dispatch => {
   //const user = state.auth.userData.name;
   dispatch(requestLogin(user));
 
@@ -214,6 +229,6 @@ export const handleLogout = () => (dispatch, getState) => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const handleLogin = (expiresAt, accessToken, user) => (dispatch, getState) => {
-  return dispatch(fetchLogin(getState(), expiresAt, accessToken, user));
+export const handleLogin = (expiresAt, accessToken, user) => dispatch => {
+  return dispatch(fetchLogin(expiresAt, accessToken, user));
 }

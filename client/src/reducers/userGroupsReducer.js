@@ -1,6 +1,7 @@
 import {
   GET_USERGROUPS_START,
   GET_USERGROUPS_SUCCESS,
+  GET_USERGROUPS_ERROR,
 } from '../actions/userGroupsActions';
 
 /**
@@ -21,6 +22,12 @@ export const userGroups = (
       return ({
         ...state,
         isFetchingUserGroups: true,
+      });
+    case GET_USERGROUPS_ERROR:
+      return ({
+        ...state,
+        isFetchingUserGroups: false,
+        groups: [],
       });
     case GET_USERGROUPS_SUCCESS:
       return ({

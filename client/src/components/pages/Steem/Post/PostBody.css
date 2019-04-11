@@ -1,5 +1,9 @@
 @import '../../../../variables.css';
 
+.Body {
+  font-size: 1.35rem;
+}
+
 .Body h1, h2, h3, h4, h5, h6 {
   /*font-family: var(--font-content);*/
   font-weight: 600;

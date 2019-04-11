@@ -3,6 +3,7 @@ import {handleReturning} from './authActions';
 
 export const GET_USERGROUPS_START = 'GET_USERGROUPS_START';
 export const GET_USERGROUPS_SUCCESS = 'GET_USERGROUPS_SUCCESS';
+export const GET_USERGROUPS_ERROR = 'GET_USERGROUPS_ERROR';
 
 /**
  *  Action creator for starting retrieval of user's groups data.
@@ -11,6 +12,15 @@ export const GET_USERGROUPS_SUCCESS = 'GET_USERGROUPS_SUCCESS';
  */
 export const userGroupsStart = () => ({
   type: GET_USERGROUPS_START,
+});
+
+/**
+ *  Action creator for error retrieval of user's groups data.
+ *
+ *  @return {object} The action data
+ */
+export const userGroupsError = () => ({
+  type: GET_USERGROUPS_ERROR,
 });
 
 /**
@@ -37,6 +47,9 @@ export const getUserGroupsFetch = () => async (dispatch, getState) => {
 
   //on first page load authenticate before proceeding
   let { user } = state.auth;
+
+  if (!user) return dispatch(userGroupsError());
+  
   const cont = await user === '' ? handleReturning() : '';//eslint-disable-line
 
   const { groups } = state.userGroups;
