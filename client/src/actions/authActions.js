@@ -125,7 +125,7 @@ const fetchReturning = () => async dispatch => {
           }
         })
         .catch((err) => {
-          //false when .me() fail for revoked or invalid token
+          dispatch(errorReturning());
         })
     }else {
       dispatch(cancelReturning());

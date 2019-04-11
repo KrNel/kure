@@ -176,7 +176,6 @@ class Write extends Component {
         isPosting,
         newPost,
         error,
-        clearPost,
       }
     } = this;
 
