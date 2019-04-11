@@ -18,10 +18,13 @@ class Write extends Component {
   static propTypes = {
     user: PropTypes.string,
     createPost: PropTypes.func.isRequired,
+    newPost: PropTypes.string,
+    clearPost: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     user: '',
+    newPost: '',
   }
 
   constructor(props) {
@@ -43,7 +46,9 @@ class Write extends Component {
     ];
   }
 
-
+  /**
+   *
+   */
   componentDidMount() {
     const { newPost, clearPost } = this.props;
     if (newPost) {

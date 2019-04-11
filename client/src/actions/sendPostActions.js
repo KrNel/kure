@@ -115,6 +115,9 @@ export const sendPost = post => (dispatch, getState) => {
 
     const now = Date.now();
     const lastPosted = localStorage.getItem('lastPostedAt-' + user);
+
+    //Check if last post was less than 5 minuts ago.
+    //Send error message or send post to Steem if under or over 5 minutes.
     if (lastPosted && (now - lastPosted) < 300000)
       return dispatch(sendPostError('Must wait 5 minutes between posts.'));
     else

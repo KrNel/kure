@@ -37,6 +37,12 @@ export const receiveReturning = (res) => ({
   authedAt: Date.now()
 })
 
+/**
+ *  Action creator for erroring returning user athentication.
+ *
+ *  @param {object} res Results of the database fetch
+ *  @return {object} The action data
+ */
 export const errorReturning = (res) => ({
   type: ERROR_RETURNING,
   isAuth: false,
@@ -140,7 +146,6 @@ export const validateToken = (accessToken) => {
     SteemConnect.me((err, result) => {
       (!err) ? resolve(result) : reject(false);
     })
-    //resolve(true);
   });
 }
 

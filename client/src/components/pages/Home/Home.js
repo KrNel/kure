@@ -53,7 +53,6 @@ class Home extends Component {
   state = {
     showGrid: true,
     tabSelected: 'new',
-    hasMore: true,
   }
 
   //this fetches when page loaded after site loads from elsewhere (user defined)
@@ -65,8 +64,6 @@ class Home extends Component {
       csrf,
       isAuth
     } = this.props;
-
-    //window.addEventListener("scroll", this.handleScroll);
 
     if (user === '')
       user = 'x';
@@ -83,28 +80,6 @@ class Home extends Component {
     if (prevProps.user !== user)
       dispatch(fetchPosts(selected, user));
   }
-
-  /*componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }*/
-
-  /**
-   *  Infinite scroll. Checks to see if the last post in the list is reached,
-   *  then calls fetch to get new posts.
-   */
-  /*handleScroll = (e) => {
-    const {isFetching, hasMore} = this.props;
-    if (!isFetching && hasMore) {
-      var lastLi = document.querySelector("#postList > div.postSummary:last-child");
-      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-      var pageOffset = window.pageYOffset + window.innerHeight;
-      if (pageOffset > lastLiOffset) {
-        //this.getPosts('more');
-        const {selected, dispatch, user} = this.props;
-        dispatch(fetchPosts(selected, user));
-      }
-    }
-  }*/
 
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
