@@ -23,10 +23,10 @@ export const summaryStart = () => ({
  *  @param {array} posts Posts to display
  *  @return {object} The action data
  */
-export const summarySuccess = (posts, noMore, prevPage) => ({
+export const summarySuccess = (posts, hasMore, prevPage) => ({
   type: GET_SUMMARY_SUCCESS,
   posts,
-  noMore,
+  hasMore,
   prevPage,
 });
 
@@ -44,7 +44,7 @@ export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dis
 
   return client.database.getDiscussions(selectedFilter, query)
     .then(result => {
-      let noMore = false;
+      let hasMore = true;
       let newPosts = null;
 
       const state = getState();
@@ -56,13 +56,13 @@ export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dis
           newPosts = result;
         }
       }else {
-        noMore = true;
+        hasMore = false;
         newPosts = state.summaryPost.posts;
       }
 
       dispatch(getUserGroupsFetch());
 
-      dispatch(summarySuccess(newPosts, noMore, page));
+      dispatch(summarySuccess(newPosts, hasMore, page));
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });

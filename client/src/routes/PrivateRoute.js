@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import NotAuthorized from '../components/Auth/NotAuthorized';
 import Authorizing from '../components/Auth/Authorizing';
@@ -14,23 +15,25 @@ import Authorizing from '../components/Auth/Authorizing';
  *  @param {bool} props.isAuthorizing Shows a loading spinner for user authentication process
  *  @returns {Component} Renders the route for component requesting authenticated access
  */
-const PrivateRoute = ({ component: Component, isAuthorizing, isAuth, ...rest }) => {
-  console.log('isAuthorizing',isAuthorizing)
-  console.log('isAuth',isAuth)
-  return (
-    <Route
-      {...rest}
-      render={(props) => (
-        (isAuthorizing)
-          ? <Authorizing />
-        : (isAuth)
-              ? <Component {...props} {...rest} />
-              : <NotAuthorized />
-      )}
-    />
-  )
+const PrivateRoute = ({ component: Component, isAuthorizing, isAuth, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) => (
+      (isAuthorizing)
+        ? <Authorizing />
+      : (isAuth)
+            ? <Component {...props} {...rest} />
+            : <NotAuthorized />
+    )}
+  />
+)
 
-}
+PrivateRoute.propTypes = {
+  component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+  isAuthorizing: PropTypes.bool.isRequired,
+  isAuth: PropTypes.bool.isRequired,
+};
+
 
 /**
  *  Map redux state to component props.

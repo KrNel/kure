@@ -229,14 +229,16 @@ class Write extends Component {
                     />
                   </Form.Group>
 
-                  <Form.Button>Submit</Form.Button>
-                  {
-                    error && (
-                      <Label basic color='red' pointing='left'>
-                        {error}
-                      </Label>
-                    )
-                  }
+                  <Form.Group>
+                    <Form.Button>Submit</Form.Button>
+                    {
+                      error && (
+                        <Label basic color='red' pointing='left'>
+                          {error}
+                        </Label>
+                      )
+                    }
+                  </Form.Group>
 
                 </Form>
 

@@ -67,14 +67,6 @@ export const sendPost = post => (dispatch, getState) => {
     },
   } = getState();
 
-  const now = Date.now();
-  const lastPosted = localStorage.getItem('lastPostedAt-' + user);
-  //TODO: send message about 5minute posting limit
-  if (lastPosted && (now - lastPosted) < 300000)
-    dispatch(sendPostError('Must wait 5 minutes between posts.'));
-
-  
-
   const {
     parentAuthor,
     parentPermlink,
@@ -121,11 +113,16 @@ export const sendPost = post => (dispatch, getState) => {
 
     operations.push(['comment_options', commentOptions]);
 
-    return SteemConnect.broadcast(operations)
-      .then(res => {
-        localStorage.setItem('lastPostedAt-' + user, now);
-        dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`));
-    });
+    const now = Date.now();
+    const lastPosted = localStorage.getItem('lastPostedAt-' + user);
+    if (lastPosted && (now - lastPosted) < 300000)
+      return dispatch(sendPostError('Must wait 5 minutes between posts.'));
+    else
+      return SteemConnect.broadcast(operations)
+        .then(res => {
+          localStorage.setItem('lastPostedAt-' + user, now);
+          setTimeout(() => dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`)), 1000);
+      });
   })
 
 }

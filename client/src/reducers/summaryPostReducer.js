@@ -15,7 +15,7 @@ export const summaryPost = (
     isFetchingSummary: false,
     prevPage: '',
     posts: [],
-    noMore: false,
+    hasMore: true,
   },
   action) => {
 
@@ -30,7 +30,7 @@ export const summaryPost = (
         ...state,
         isFetchingSummary: false,
         posts: action.posts,
-        noMore: action.noMore,
+        hasMore: action.hasMore,
         prevPage: action.prevPage,
       });
     default:

@@ -45,7 +45,7 @@ export const requestPosts = section => ({
  *  @param {object} data Data returned from database
  *  @returns {object} The action data
  */
-export const receivePosts = (section, data) => ({
+export const receivePosts = (section, data, hasMore) => ({
   type: RECEIVE_POSTS,
   section,
   posts: data.posts,
@@ -53,6 +53,7 @@ export const receivePosts = (section, data) => ({
   myComms: data.myComms,
   mySubs: data.mySubs,
   receivedAt: Date.now(),
+  hasMore: hasMore,
 });
 
 /**
