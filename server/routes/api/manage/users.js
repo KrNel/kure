@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import csrfValidateRequest from '../auth/csrfValidateRequest';
 import { verifyAccess } from '../../../utils/verifyAccess';
 
 const router = new Router();
@@ -16,22 +15,17 @@ const router = new Router();
 router.post('/add', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user, newUser, group, access } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Insert user in DB
-    const exists = await userExists(db, next, newUser, group);
-    if (exists) {
-       res.json({exists: true});
+  //Insert user in DB
+  const exists = await userExists(db, next, newUser, group);
+  if (exists) {
+     res.json({exists: true});
+  }else {
+    const userAdd = await verifyAccess(db, next, group, user, 'user', 'add') && await addUserToGroup(db, next, user, newUser, group, access);
+    if (userAdd) {
+       res.json({user: userAdd});
     }else {
-      const userAdd = await verifyAccess(db, next, group, user, 'user', 'add') && await addUserToGroup(db, next, user, newUser, group, access);
-      if (userAdd) {
-         res.json({user: userAdd});
-      }else {
-        res.json({user: userAdd});
-      }
+      res.json({user: userAdd});
     }
   }
 })
@@ -118,18 +112,13 @@ const addUserToGroup = async (db, next, user, newUser, group, access = 3) => {
 router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   const { group, user, userToDel } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Delete user from DB
-    const userDeleted = await verifyAccess(db, next, group, user, 'user', 'del') && await deleteUserFromGroup(db, next, userToDel, group);
-    if (userDeleted) {
-      res.json(true);
-    }else {
-      res.json(false);
-    }
+  //Delete user from DB
+  const userDeleted = await verifyAccess(db, next, group, user, 'user', 'del') && await deleteUserFromGroup(db, next, userToDel, group);
+  if (userDeleted) {
+    res.json(true);
+  }else {
+    res.json(false);
   }
 })
 
@@ -177,16 +166,10 @@ router.post('/approve', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, newUser, user } = req.body;
 
-  const csrfValid = await csrfValidateRequest(req, res, user);
-
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    const access = await verifyAccess(db, next, group, user, 'pending', 'add');
-    if (access) {
-      const approved = await approvalJoinGroup(db, next, group, newUser, user);
-      res.json({newUser: approved});
-    }
+  const access = await verifyAccess(db, next, group, user, 'pending', 'add');
+  if (access) {
+    const approved = await approvalJoinGroup(db, next, group, newUser, user);
+    res.json({newUser: approved});
   }
 })
 
@@ -265,15 +248,10 @@ const approvalJoinGroup = (db, next, group, newUser, approver) => {
 router.post('/deny', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, newUser, user } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Delete group from DB
-    const denied = await verifyAccess(db, next, group, user, 'pending', 'del') && await denyJoinGroup(db, next, group, newUser);
-    res.json(denied || false);
-  }
+  //Delete group from DB
+  const denied = await verifyAccess(db, next, group, user, 'pending', 'del') && await denyJoinGroup(db, next, group, newUser);
+  res.json(denied || false);
 })
 
 /**

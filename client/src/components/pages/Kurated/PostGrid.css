@@ -23,6 +23,7 @@
   white-space: wrap;
   overflow: hidden;
   min-height: 0%;
+  max-height: 100%;
 }
 
 .overlayImage .recentTitle {
