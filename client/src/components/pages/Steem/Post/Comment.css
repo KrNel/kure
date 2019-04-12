@@ -56,7 +56,13 @@ ul.commentList > li {
   width:100% !important;
 }
 
-.commentHead {
+.commentBody .Body {
+  font-size: 1.1rem;
+  letter-spacing: 0.01rem;
+}
+
+.commentBody .Body sub {
+  font-size: 0.9rem;
 }
 
 .commentFooter {
