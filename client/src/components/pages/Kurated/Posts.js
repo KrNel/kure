@@ -84,26 +84,24 @@ class Posts extends Component {
 
     return (
       <ErrorBoundary>
-        <div className="home">
-          <Grid columns={1} stackable>
-            <Grid.Column width={16} className="main">
-              <Grid>
-                <Grid.Row>
-                  <Grid.Column>
-                    <Label size='big' color='blue'>
-                      <Header as="h3">Kurated Posts</Header>
-                    </Label>
-                    <ToggleView
-                      toggleView={this.toggleView}
-                      showGrid={showGrid}
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-                {recentPostsComp}
-              </Grid>
-            </Grid.Column>
-          </Grid>
-        </div>
+        <Grid columns={1} stackable>
+          <Grid.Column width={16} className="main">
+            <Grid stackable>
+              <Grid.Row>
+                <Grid.Column>
+                  <Label size='big' color='blue'>
+                    <Header as="h3">Kurated Posts</Header>
+                  </Label>
+                  <ToggleView
+                    toggleView={this.toggleView}
+                    showGrid={showGrid}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              {recentPostsComp}
+            </Grid>
+          </Grid.Column>
+        </Grid>
       </ErrorBoundary>
     )
   }
