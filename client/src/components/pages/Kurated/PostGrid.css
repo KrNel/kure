@@ -29,6 +29,21 @@
 .overlayImage .recentTitle {
   font-size: 1.5rem;
   line-height: 1.5rem;
+  position: relative;
+  display: block;
+  color: #838485;
+  max-width: 24rem;
+  min-width: 0rem;
+  min-height: 0%;
+  max-height: 100%;
+  overflow: hidden;
+  white-space: normal;
+}
+
+.overlayImage .recentTitle .titleContent {
+  position: relative;
+  display: block;
+  max-height: 6.2rem;
 }
 
 .overlayImage a {

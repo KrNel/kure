@@ -53,15 +53,15 @@ class PostDetails extends Component {
     this.images = [];
     this.imagesAlts = [];
     this.sortOptions = [
-      {key: 0, value: 'new', text: 'New'},
-      {key: 1, value: 'old', text: 'Old'},
+      {key: 0, value: 'old', text: 'Old'},
+      {key: 1, value: 'new', text: 'New'},
       //{key: 2, value: 'votes', text: 'Votes'},
       {key: 3, value: 'rep', text: 'Reputation'},
       {key: 4, value: 'payout', text: 'Payout'}
     ];
 
     this.state = {
-      sortBy: 'new',
+      sortBy: 'old',
     }
   }
 
