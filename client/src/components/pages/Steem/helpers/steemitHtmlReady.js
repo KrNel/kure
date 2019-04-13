@@ -92,7 +92,7 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
   state.links = new Set();
   try {
     const doc = DOMParser.parseFromString(html, 'text/html');
-    
+
     traverse(doc, state);
     if (mutate) proxifyImages(doc);
     // console.log('state', state)
@@ -107,7 +107,7 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
 
 function traverse(node, state, depth = 0) {
   if (!node || !node.childNodes) return;
-  Array.prototype.forEach.call(node.childNodes, child => {
+  Array(...node.childNodes).forEach(child => {
     // console.log(depth, 'child.tag,data', child.tagName, child.data)
     const tag = child.tagName ? child.tagName.toLowerCase() : null;
     if (tag) state.htmltags.add(tag);
@@ -178,7 +178,7 @@ function img(state, child) {
 // For all img elements with non-local URLs, prepend the proxy URL (e.g. `https://img0.steemit.com/0x0/`)
 function proxifyImages(doc) {
   if (!doc) return;
-  Array.prototype.forEach.call(doc.getElementsByTagName('img'), node => {
+  [...doc.getElementsByTagName('img')].forEach(node => {
     const url = node.getAttribute('src');
     if (!linksRe.local.test(url)) {
       node.setAttribute('src', getProxyImageURL(url));
