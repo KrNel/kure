@@ -20,8 +20,6 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-helmet-async": "^1.0.2",
-    "react-infinite-scroll-component": "^4.5.2",
-    "react-infinite-scroller": "^1.2.4",
     "react-moment": "^0.8.4",
     "react-rangeslider": "^2.2.0",
     "react-redux": "^6.0.0",

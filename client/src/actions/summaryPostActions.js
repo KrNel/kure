@@ -45,8 +45,13 @@ export const getSummaryContent = (selectedFilter, query, page) => (dispatch, get
   dispatch(summaryStart());
 
   const state = getState();
-  let { posts, startAuthor, startPermlink } = state.summaryPost;
+  let { posts, startAuthor, startPermlink, prevPage } = state.summaryPost;
   let nextPost = false;
+
+  if (page !== prevPage) {
+    startAuthor = undefined;
+    startPermlink = undefined;
+  }
 
   if (startAuthor !== undefined && startPermlink !== undefined) {
     nextPost = true;
