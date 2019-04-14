@@ -144,7 +144,7 @@ export const extractImage = (json_metadata, body, author, permlink) => {
       image_link = getValidImage(jsonMetadata.image);
     }
   } catch (error) {
-      console.error('Invalid json metadata string', json_metadata, 'in post', author, permlink);
+      console.error('Invalid json metadata string', json_metadata, 'in post', author, permlink);// eslint-disable-line no-console
   }
 
   // If nothing found in json metadata, parse body and check images/links

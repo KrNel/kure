@@ -29,7 +29,13 @@ const ErrorLabel = ({text, position}) => {
 }
 
 ErrorLabel.propTypes = {
-  text: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  position: PropTypes.string,
+};
+
+ErrorLabel.defaultProps = {
+  text: '',
+  position: '',
 };
 
 export default ErrorLabel;

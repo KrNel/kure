@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Avatar from './Avatar';
 import AuthorReputation from './AuthorReputation';
@@ -40,5 +41,21 @@ const AuthorCatgoryTime = ({author, authorReputation, category, created, permlin
     </li>
   </ul>
 )
+
+AuthorCatgoryTime.propTypes = {
+  author: PropTypes.string,
+  authorReputation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  category: PropTypes.string,
+  created: PropTypes.string,
+  permlink: PropTypes.string,
+};
+
+AuthorCatgoryTime.defaultProps = {
+  author: '',
+  authorReputation: '',
+  category: '',
+  created: '',
+  permlink: '',
+};
 
 export default AuthorCatgoryTime;

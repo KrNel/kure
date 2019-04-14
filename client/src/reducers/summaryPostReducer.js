@@ -16,6 +16,8 @@ export const summaryPost = (
     prevPage: '',
     posts: [],
     hasMore: true,
+    startAuthor: undefined,
+    startPermlink: undefined,
   },
   action) => {
 
@@ -32,6 +34,8 @@ export const summaryPost = (
         posts: action.posts,
         hasMore: action.hasMore,
         prevPage: action.prevPage,
+        startAuthor: action.startAuthor,
+        startPermlink: action.startPermlink,
       });
     default:
       return state

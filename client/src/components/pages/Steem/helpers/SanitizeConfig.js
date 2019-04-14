@@ -68,7 +68,6 @@ export default ({
   large = true,
   noImage = false,
   sanitizeErrors = [],
-  appUrl,
   secureLinks = false,
 }) => ({
   allowedTags,
@@ -117,7 +116,7 @@ export default ({
           };
         }
       }
-      console.log('Blocked, did not match iframe "src" white list urls:', tagName, attribs);
+      console.log('Blocked, did not match iframe "src" white list urls:', tagName, attribs); // eslint-disable-line no-console
       sanitizeErrors.push(`Invalid iframe URL: ${srcAtty}`);
       return { tagName: 'div', text: `(Unsupported ${srcAtty})` };
     },
@@ -126,7 +125,7 @@ export default ({
       // See https://github.com/punkave/sanitize-html/issues/117
       let { src, alt } = attribs;
       if (!/^(https?:)?\/\//i.test(src)) {
-        console.log('Blocked, image tag src does not appear to be a url', tagName, attribs);
+        console.log('Blocked, image tag src does not appear to be a url', tagName, attribs); // eslint-disable-line no-console
         sanitizeErrors.push('An image in this post did not save properly.');
         return { tagName: 'img', attribs: { src: 'brokenimg.jpg' } };
       }

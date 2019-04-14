@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Label } from "semantic-ui-react";
 
 import Category from './Category'
@@ -17,5 +18,13 @@ const Tags = ({tags}) => (
     }
   </ul>
 )
+
+Tags.propTypes = {
+  tags: PropTypes.arrayOf(PropTypes.string),
+};
+
+Tags.defaultProps = {
+  tags: [],
+};
 
 export default Tags;

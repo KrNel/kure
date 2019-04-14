@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import './Avatar.css';
 
 /**
@@ -20,5 +22,17 @@ const Avatar = ({author, height = '30px', width = '30px'}) => {
     />
   )
 }
+
+Avatar.propTypes = {
+  author: PropTypes.string,
+  height: PropTypes.string,
+  width: PropTypes.string,
+};
+
+Avatar.defaultProps = {
+  author: '',
+  height: '',
+  width: '',
+};
 
 export default Avatar;

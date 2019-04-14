@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Icon } from "semantic-ui-react";
 
 import './ToggleView.css';
@@ -21,5 +22,15 @@ const ToggleView = ({toggleView, showGrid}) => (
     </span>
   </div>
 )
+
+ToggleView.propTypes = {
+  toggleView: PropTypes.func,
+  showGrid: PropTypes.bool,
+};
+
+ToggleView.defaultProps = {
+  toggleView: () => {},
+  showGrid: false,
+};
 
 export default ToggleView;

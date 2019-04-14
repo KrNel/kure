@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Header, Segment, Label } from "semantic-ui-react";
 
 import GroupLink from '../../kure/GroupLink';
@@ -55,5 +56,13 @@ const CommunityActivity = ({groups}) => (
     }
   </React.Fragment>
 )
+
+CommunityActivity.propTypes = {
+  groups: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+CommunityActivity.defaultProps = {
+  groups: [],
+};
 
 export default CommunityActivity;

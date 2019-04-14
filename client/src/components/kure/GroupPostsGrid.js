@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import PostGrid from '../pages/Kurated/PostGrid';
 import './GroupPostsGrid.css';
@@ -13,5 +14,13 @@ const GroupPostsGrid = ({posts}) => (
     }
   </React.Fragment>
 )
+
+GroupPostsGrid.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+GroupPostsGrid.defaultProps = {
+  posts: [],
+};
 
 export default GroupPostsGrid;

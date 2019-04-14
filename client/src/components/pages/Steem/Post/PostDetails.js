@@ -4,8 +4,8 @@ import { Grid, Form, Select } from "semantic-ui-react";
 import _ from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
-import PostBody, { getHtml } from './PostBody';
-import { getFromMetadata, extractImageTags } from '../helpers/parser';
+import PostBody from './PostBody';
+import { getFromMetadata } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
 import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
@@ -50,8 +50,8 @@ class PostDetails extends Component {
   constructor(props) {
     super(props);
 
-    this.images = [];
-    this.imagesAlts = [];
+    //this.images = [];
+    //this.imagesAlts = [];
     this.sortOptions = [
       {key: 0, value: 'old', text: 'Old'},
       {key: 1, value: 'new', text: 'New'},
@@ -160,8 +160,8 @@ class PostDetails extends Component {
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
     const body = post.body || '';
-    const parsedBody = getHtml(body, {}, 'text');
-    this.images = extractImageTags(parsedBody);
+    //const parsedBody = getHtml(body, {}, 'text');
+    //this.images = extractImageTags(parsedBody);
 
     let tags = getFromMetadata(post.json_metadata, 'tags');
     if (tags === null) tags = [post.category];
@@ -212,7 +212,7 @@ class PostDetails extends Component {
                             full
                             rewriteLinks={false}
                             body={body}
-                            json_metadata={post.json_metadata}
+                            jsonMetadata={post.json_metadata}
                           />
                           <br />
                           <div className='footer'>

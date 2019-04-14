@@ -14,12 +14,13 @@ class ReplyForm extends Component {
     sendComment: PropTypes.func.isRequired,
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
-
+    toggleReplyForm: PropTypes.func,
   };
 
   static defaultProps = {
     parentPost: {},
     commentedId: 0,
+    toggleReplyForm: () => {},
   }
 
   state = {

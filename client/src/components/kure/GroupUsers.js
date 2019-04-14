@@ -33,7 +33,7 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
           users.map((u, i) => {
             const role = roles.kGroupsRoles[u.access];
             return (
-              <Table.Row key={i}>
+              <Table.Row key={u._id}>
                 <Table.Cell>
                   <UserLink user={u.user} />
                 </Table.Cell>

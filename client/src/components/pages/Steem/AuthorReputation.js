@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Author from './Author';
 import RepLog10 from '../../../utils/reputationCalc';
@@ -15,5 +16,15 @@ const AuthorReputation = ({author, reputation}) => (
     {`\u00A0(${RepLog10(reputation)})`}
   </React.Fragment>
 )
+
+AuthorReputation.propTypes = {
+  author: PropTypes.string,
+  reputation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+};
+
+AuthorReputation.defaultProps = {
+  author: '',
+  reputation: '',
+};
 
 export default AuthorReputation;

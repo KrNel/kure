@@ -32,10 +32,12 @@ class GroupManage extends Component {
         group: PropTypes.object.isRequired,
         posts: PropTypes.array.isRequired,
         users: PropTypes.array.isRequired,
+        pending: PropTypes.array.isRequired,
     }).isRequired,
     onPostUpdate: PropTypes.func.isRequired,
     onUserUpdate: PropTypes.func.isRequired,
     onJoinRequestUpdate: PropTypes.func.isRequired,
+
   };
 
   constructor(props) {

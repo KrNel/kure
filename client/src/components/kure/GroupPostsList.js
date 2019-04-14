@@ -89,14 +89,12 @@ GroupPostsList.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   showModal: PropTypes.func,
   deletingPost: PropTypes.string,
-  user: PropTypes.string,
   access: PropTypes.number,
 };
 
 GroupPostsList.defaultProps = {
   posts: [],
   deletingPost: '',
-  user: '',
   showModal: () => {},
   access: 99,
 };

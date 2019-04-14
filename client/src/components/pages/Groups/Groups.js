@@ -19,10 +19,12 @@ class Groups extends Component {
 
   static propTypes = {
     user: PropTypes.string,
+    match: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
     user: 'x',
+    match: {},
   };
 
   state = {
@@ -87,6 +89,9 @@ class Groups extends Component {
         groups,
         showGrid,
         tabSelected,
+      },
+      props: {
+        match
       }
     } = this;
 
@@ -97,7 +102,7 @@ class Groups extends Component {
           <ErrorBoundary>
             <GroupSummary
               groups={groups}
-              match={this.props.match}
+              match={match}
               toggleView={this.toggleView}
               showGrid={showGrid}
               tabSelected={tabSelected}

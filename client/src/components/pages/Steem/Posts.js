@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Header, Label} from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
-//import InfiniteScroll from 'redux-infinite-scroll';
+//
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
@@ -29,6 +29,20 @@ class Posts extends Component {
     match: PropTypes.shape(PropTypes.object.isRequired),
     isFetchingSummary: PropTypes.bool,
     hasMore: PropTypes.bool,
+    prevPage: PropTypes.string,
+    groups: PropTypes.arrayOf(PropTypes.object),
+    modalOpenAddPost: PropTypes.bool,
+    postExists: PropTypes.bool,
+    addPostLoading: PropTypes.bool,
+    showModal: PropTypes.func,
+    handleModalClickAddPost: PropTypes.func,
+    onModalCloseAddPost: PropTypes.func,
+    handleGroupSelect: PropTypes.func,
+    handleUpvote: PropTypes.func,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    page: PropTypes.string,
+    posts: PropTypes.arrayOf(PropTypes.object),
+    getContent: PropTypes.func,
   };
 
   static defaultProps = {
@@ -36,7 +50,21 @@ class Posts extends Component {
     csrf: '',
     isFetchingSummary: false,
     hasMore: true,
-    match: {}
+    match: {},
+    prevPage: '',
+    groups: [{}],
+    modalOpenAddPost: false,
+    postExists: false,
+    addPostLoading: false,
+    showModal: () => {},
+    handleModalClickAddPost: () => {},
+    onModalCloseAddPost: () => {},
+    handleGroupSelect: () => {},
+    handleUpvote: () => {},
+    upvotePayload: {},
+    page: '',
+    posts: [{}],
+    getContent: () => {},
   };
 
   constructor(props) {
@@ -51,7 +79,7 @@ class Posts extends Component {
     if (tag) {
       this.tag = tag;
     }
-    window.addEventListener("scroll", this.handleScroll);
+  window.addEventListener("scroll", this.handleScroll);
     this.getPosts();
   }
 
@@ -99,20 +127,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {getContent, posts, match, page} = this.props;
-
-    let startAuthor = undefined;
-    let startPermlink = undefined;
-
-    if (posts.length && action === 'more') {
-      startAuthor = document.querySelector('.postSummary:last-child li.author').dataset.author;
-      startPermlink = document.querySelector('.postSummary:last-child div.summary-content').dataset.permlink;
-    }
-
-    let nextPost = false;
-    if (startAuthor !== undefined && startPermlink !== undefined) {
-      nextPost = true;
-    }
+    const {getContent, match, page} = this.props;
 
     let tag = this.tag;
     let filter = this.selectedFilter;
@@ -131,11 +146,9 @@ class Posts extends Component {
       tag: tag,
       limit: 20,
       truncate_body: 0,
-      start_author: startAuthor,
-      start_permlink: startPermlink
     };
 
-    getContent(filter, query, nextPost, page)
+    getContent(filter, query, page)
   }
 
   /**

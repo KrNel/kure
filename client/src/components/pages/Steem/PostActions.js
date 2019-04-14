@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types'
 import { Icon } from "semantic-ui-react";
 
 import Vote from './Vote';
@@ -19,6 +20,41 @@ import './PostActions.css';
  *  @param {function} showModal Parent function to show the add post modal
  */
 class PostActions extends Component {
+
+  static propTypes = {
+    activeVotes: PropTypes.arrayOf(PropTypes.object),
+    commentCount: PropTypes.number,
+    author: PropTypes.string,
+    category: PropTypes.string,
+    payoutValue: PropTypes.number,
+    permlink: PropTypes.string,
+    title: PropTypes.string,
+    showModal: PropTypes.func,
+    user: PropTypes.string,
+    handleUpvote: PropTypes.func,
+    upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+    ratio: PropTypes.number,
+    pid: PropTypes.number,
+    image: PropTypes.string,
+  };
+
+  static defaultProps = {
+    activeVotes: [],
+    commentCount: '',
+    author: '',
+    category: '',
+    payoutValue: '',
+    permlink: '',
+    title: '',
+    showModal: () => {},
+    user: '',
+    handleUpvote: () => {},
+    upvotePayload: {},
+    ratio: '',
+    pid: '',
+    image: '',
+  };
+
 
   resteem = (e) => {
     e.preventDefault();

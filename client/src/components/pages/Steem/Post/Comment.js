@@ -59,7 +59,7 @@ class Comment extends Component {
    */
   toggleReplyForm = () => {
     const { showReplyForm } = this.state;
-    this.setState({ showReplyForm: !showReplyForm, showEdit: false });
+    this.setState({ showReplyForm: !showReplyForm });
   }
 
   /**
