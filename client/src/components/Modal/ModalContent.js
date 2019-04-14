@@ -21,7 +21,9 @@ const ModalContent = ({modalOpen, onModalClose}) => (
     </Modal.Content>
     <Modal.Actions>
       <Button primary>
-        Proceed <Icon name='right chevron' />
+        Proceed 
+        {' '}
+        <Icon name='right chevron' />
       </Button>
     </Modal.Actions>
   </Modal>
