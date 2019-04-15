@@ -79,7 +79,7 @@ class Posts extends Component {
     if (tag) {
       this.tag = tag;
     }
-  window.addEventListener("scroll", this.handleScroll);
+    window.addEventListener("scroll", this.handleScroll);
     this.getPosts();
   }
 
@@ -90,7 +90,6 @@ class Posts extends Component {
   componentDidUpdate(prevProps) {
     const {match} = this.props;
     if (match.url !== prevProps.match.url) {
-      //this.isPageLoading = true;
       if (match.params.tag)
         this.tag = match.params.tag;
       else

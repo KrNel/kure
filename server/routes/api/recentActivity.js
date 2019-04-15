@@ -1,8 +1,11 @@
 import { Router } from 'express';
+import { ObjectId } from 'mongodb';
 
 import { getUserGroups } from './groups';
 
 const router = new Router();
+
+let last_id = null;
 
 /**
  *  GET route to get the recent post activity.
@@ -11,18 +14,19 @@ const router = new Router();
  *  Gets the local DB object.
  *  Retrieve the recently active posts from the DB.
  */
-router.get('/:user/:limit', (req, res, next) => {
+router.get('/:user/:limit/:nextId?', (req, res, next) => {
   const db = req.app.locals.db;
   const user = req.params.user;
   const limit = parseInt(req.params.limit);
+  const nextId = req.params.nextId;
 
   const myCommsLimit = limit;
   const mySubsLimit = limit;
-  const recentPostLimit = 50;
+  const recentPostLimit = limit;
   const groupLimit = 20;
   const postLimit = 10;
 
-  const recentPosts = getRecentPosts(db, next, recentPostLimit);
+  const recentPosts = getRecentPosts(db, next, recentPostLimit, nextId);
   const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
   const myCommunities = getUserGroups(db, next, user, 'all', myCommsLimit);
   const mySubmissions = getMySubmissions(db, next, user, mySubsLimit)
@@ -45,38 +49,84 @@ router.get('/:user/:limit', (req, res, next) => {
  *  @param {function} next Middleware function
  *  @returns {object} Recent post data object to send to frontend
  */
-export const getRecentPosts = async (db, next, limit = 50) => {
+export const getRecentPosts = async (db, next, limit = 50, nextId) => {
   return new Promise((resolve, reject) => {
-    db.collection('kposts').aggregate([
-      { $lookup: {
-        from: 'kgroups',
-        as: 'kgroup',
-        let: { kpost_group : '$group' },
-        pipeline: [
-          { $match: {
-            $expr: { $eq: [ '$name', '$$kpost_group' ] }
-          } }
-        ]
-      } },
-      { $unwind: '$kgroup' },
-      { $project: {
-          display: '$kgroup.display',
-          created: 1,
-          group: 1,
-          likes: 1,
-          views: 1,
-          rating: 1,
-          st_permlink: 1,
-          st_author: 1,
-          st_category: 1,
-          st_title: 1,
-          st_image: 1,
-      } },
-      { $sort: {_id: -1} },
-      { $limit : limit }
-    ]).toArray((err, result) => {
-      err ? reject(err) : resolve(result);
-    })
+    if (nextId) {
+      db.collection('kposts').aggregate([
+        {
+          $match : {
+            _id: { $lt: ObjectId(nextId) }
+          }
+        },
+        { $lookup: {
+          from: 'kgroups',
+          as: 'kgroup',
+          let: { kpost_group : '$group' },
+          pipeline: [
+            { $match: {
+              $expr: {
+                $eq: [ '$name', '$$kpost_group' ],
+              }
+            } }
+          ]
+        } },
+        { $unwind: '$kgroup' },
+        { $project: {
+            display: '$kgroup.display',
+            created: 1,
+            group: 1,
+            likes: 1,
+            views: 1,
+            rating: 1,
+            st_permlink: 1,
+            st_author: 1,
+            st_category: 1,
+            st_title: 1,
+            st_image: 1,
+        } },
+        { $sort: {_id: -1} },
+        { $limit : limit }
+      ]).toArray((err, result) => {
+        if (result.length) {
+          last_id = result[result.length-1]._id;
+        }
+        err ? reject(err) : resolve(result);
+      })
+    }else {
+      db.collection('kposts').aggregate([
+        { $lookup: {
+          from: 'kgroups',
+          as: 'kgroup',
+          let: { kpost_group : '$group' },
+          pipeline: [
+            { $match: {
+              $expr: {
+                $eq: [ '$name', '$$kpost_group' ],
+              }
+            } }
+          ]
+        } },
+        { $unwind: '$kgroup' },
+        { $project: {
+            display: '$kgroup.display',
+            created: 1,
+            group: 1,
+            likes: 1,
+            views: 1,
+            rating: 1,
+            st_permlink: 1,
+            st_author: 1,
+            st_category: 1,
+            st_title: 1,
+            st_image: 1,
+        } },
+        { $sort: {_id: -1} },
+        { $limit : limit }
+      ]).toArray((err, result) => {
+        last_id = result[limit-1]._id;
+        err ? reject(err) : resolve(result);
+      })
+    }
   }).catch(next)
 }
 

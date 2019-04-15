@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Label } from "semantic-ui-react";
+import { Grid, Header, Label, Button } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import CommunityActivity from './CommunityActivity';
@@ -34,7 +34,7 @@ class Home extends Component {
 
   static propTypes = {
     selected: PropTypes.string.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    getContent: PropTypes.func.isRequired,
     user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -42,12 +42,12 @@ class Home extends Component {
     mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
-    csrf: PropTypes.string,
+    hasMore: PropTypes.bool,
   };
 
   static defaultProps = {
     user: 'x',
-    csrf: '',
+    hasMore: true,
   };
 
   state = {
@@ -55,30 +55,69 @@ class Home extends Component {
     tabSelected: 'new',
   }
 
+  limit = 20;
+
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
     let {
-      selected,
-      dispatch,
-      user,
-      csrf,
-      isAuth
+      posts
     } = this.props;
 
-    if (user === '')
-      user = 'x';
-    if ((!isAuth && user === 'x') || isAuth) {//fetch data when not logged in, or logged in, on first page view
-      dispatch(fetchPosts(selected, user));
+    window.addEventListener("scroll", this.handleScroll);
+
+    if (!posts.length)
+      this.getPosts();
+    /*if ((!isAuth && user === '') || isAuth) {//fetch data when not logged in, or logged in, on first page view
+      //dispatch(fetchPosts(selected, user, this.limit));
+      this.getPosts();
     }else if (csrf && !isAuth) {
-      dispatch(fetchPosts(selected, 'x'));//fetch data when logged out right after page refresh
+      //dispatch(fetchPosts(selected, 'x', this.limit));//fetch data when logged out right after page refresh
+      this.getPosts();
+    }*/
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+
+  /**
+   *  Infinite scroll. Checks to see if the last post in the list is reached,
+   *  then calls fetch to get new posts.
+   */
+  handleScroll = (e) => {
+    const { isFetching, hasMore } = this.props;
+    const { showGrid, tabSelected } = this.state;
+
+    if (!isFetching && hasMore && showGrid && tabSelected === 'new') {
+      var lastLi = document.querySelector(".home div.eight.wide.column:last-child");
+      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      var pageOffset = window.pageYOffset + window.innerHeight;
+      if (pageOffset > lastLiOffset) {
+        this.getPosts();
+      }
     }
   }
 
   //need this for first page load, as user is empty and cant fetch on componentDidMount
-  componentDidUpdate(prevProps) {
-    const {selected, dispatch, user} = this.props;
+  /*componentDidUpdate(prevProps) {
+    const {user} = this.props;
     if (prevProps.user !== user)
-      dispatch(fetchPosts(selected, user));
+      //dispatch(fetchPosts(selected, user, this.limit));
+      this.getPosts();
+  }*/
+
+  getPosts = () => {
+    let {selected, getContent, user, posts} = this.props;
+
+    if (user === '')
+      user = 'x';
+
+    let nextPageId = '';
+    if (posts.length) {
+      nextPageId = posts[posts.length-1]._id;
+    }
+
+    getContent(selected, user, this.limit, nextPageId);
   }
 
   /**
@@ -104,9 +143,7 @@ class Home extends Component {
     const { showGrid, tabSelected } = this.state;
 
     const recentPostsComp =
-      isFetching
-      ? <Loading />
-      : showGrid
+      showGrid
         ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
         : <RecentPostsList posts={posts} isAuth={isAuth} />
 
@@ -153,6 +190,7 @@ class Home extends Component {
                   </Grid.Column>
                 </Grid.Row>
                 {selectedTab}
+                { isFetching && <Loading /> }
               </Grid>
             </Grid.Column>
 
@@ -178,6 +216,7 @@ const mapStateToProps = state => {
   const {
     isFetching,
     lastUpdated,
+    hasMore,
     postItems: posts,
     groupItems: groups,
     myCommunities: myComms,
@@ -189,6 +228,7 @@ const mapStateToProps = state => {
     groupItems: [],
     myCommunities: [],
     mySubmissions: [],
+    hasMore: true,
   }
 
   return {
@@ -202,7 +242,22 @@ const mapStateToProps = state => {
     isAuth: auth.isAuth,
     user: auth.user,
     csrf: auth.csrf,
+    hasMore,
   }
 }
 
-export default connect(mapStateToProps)(Home);
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+  {
+    getContent: (selected, user, limit, nextPageId) => (
+      dispatch(fetchPosts(selected, user, limit, nextPageId))
+    ),
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
