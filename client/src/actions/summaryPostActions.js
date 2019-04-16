@@ -41,11 +41,21 @@ export const summarySuccess = (posts, hasMore, prevPage, startAuthor, startPerml
  *  @param {boolean} nextPost If there are preceeding posts
  *  @returns {function} Dispatches returned action object
  */
-export const getSummaryContent = (selectedFilter, query, page) => (dispatch, getState) => {
+export const getSummaryContent = (selectedFilter, query, page, action) => (dispatch, getState) => {
   dispatch(summaryStart());
 
   const state = getState();
-  let { posts, startAuthor, startPermlink, prevPage } = state.summaryPost;
+  const { summaryPost } = state;
+  const { posts, prevPage } = summaryPost;
+
+  let startAuthor = undefined;
+  let startPermlink = undefined;
+
+  if (posts.length && action === 'more') {
+    startAuthor = summaryPost.startAuthor;
+    startPermlink = summaryPost.startPermlink;
+  }
+
   let nextPost = false;
 
   if (page !== prevPage) {

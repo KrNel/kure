@@ -130,7 +130,7 @@ class Posts extends Component {
 
     let tag = this.tag;
     let filter = this.selectedFilter;
-
+console.log('tag',tag)
     if (match.path === '/@:author/feed') {
       tag = match.params.author;
       filter = 'feed';
@@ -146,8 +146,8 @@ class Posts extends Component {
       limit: 20,
       truncate_body: 0,
     };
-
-    getContent(filter, query, page)
+console.log('query',query)
+    getContent(filter, query, page, action)
   }
 
   /**
@@ -308,8 +308,8 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    getContent: (selectedFilter, query, nextPost, page) => (
-      dispatch(getSummaryContent(selectedFilter, query, nextPost, page))
+    getContent: (selectedFilter, query, page) => (
+      dispatch(getSummaryContent(selectedFilter, query, page))
     ),
     showModal: (e, type, data) => (
       dispatch(addPostActions.showModal(e, type, data))
