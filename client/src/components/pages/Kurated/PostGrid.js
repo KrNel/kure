@@ -19,7 +19,7 @@ import './PostGrid.css'
 const PostGrid = ({post}) => {
   if (post) {
     return (
-      <Grid.Column width={8}>
+      <Grid.Column width={8} className='infiniteEl'>
         <div className='postBox'>
           <div className='cropImage'>
             {
@@ -30,12 +30,14 @@ const PostGrid = ({post}) => {
           </div>
           <div className='overlayImage'>
             <div className='recentTitle'>
-              <TitleLink
-                title={post.st_title}
-                category={post.st_category}
-                author={post.st_author}
-                permlink={post.st_permlink}
-              />
+              <div className='titleContent'>
+                <TitleLink
+                  title={post.st_title}
+                  category={post.st_category}
+                  author={post.st_author}
+                  permlink={post.st_permlink}
+                />
+              </div>
             </div>
             <div className='left'>
               {'by '}

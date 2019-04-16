@@ -1,5 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import { Form, Select, Label } from "semantic-ui-react";
 
 /**
@@ -53,7 +53,17 @@ const Picker = ({ options, onChange, onClick, addErrorPost, label, type }) => {
 Picker.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  onClick: PropTypes.func,
+  addErrorPost: PropTypes.string,
+  type: PropTypes.string,
+};
+
+Picker.defaultProps = {
+  label: '',
+  onClick: () => {},
+  addErrorPost: '',
+  type: '',
 };
 
 export default Picker

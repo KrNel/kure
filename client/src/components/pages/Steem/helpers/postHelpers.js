@@ -110,7 +110,7 @@ export const createPermlink = (title, author, parent_author, parent_permlink) =>
         return checkPermLinkLength(permlink);
       })
       .catch(err => {
-        console.warn('Error while getting content', err);
+        console.warn('Error while getting content', err); // eslint-disable-line no-console
         return permlink;
       });
   }

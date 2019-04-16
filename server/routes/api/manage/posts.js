@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import csrfValidateRequest from '../auth/csrfValidateRequest';
 import { verifyAccess } from '../../../utils/verifyAccess';
 
 const router = new Router();
@@ -20,20 +19,14 @@ router.post('/add', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user, group, author, category, permlink, title, image } = req.body;
 
-  const csrfValid = await csrfValidateRequest(req, res, user);
-
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Check if post exists
-    const exists = await postExists(db, next, author, permlink, group);
-    if (exists) {
-       res.json({exists: true});
-    }else {
-      //Insert new post into DB
-      const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title, image);
-      res.json({post: postAdd});
-    }
+  //Check if post exists
+  const exists = await postExists(db, next, author, permlink, group);
+  if (exists) {
+     res.json({exists: true});
+  }else {
+    //Insert new post into DB
+    const postAdd = await verifyAccess(db, next, group, user, 'post', 'add') && await addPost(db, next, user, group, category, author, permlink, title, image);
+    res.json({post: postAdd});
   }
 })
 
@@ -127,18 +120,13 @@ const addPost = (db, next, user, group, category, author, permlink, title, image
 router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   let { author, post, group, user } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Delete post from DB
-    const postDeleted = await verifyAccess(db, next, group, user, 'post', 'del') && await deletePost(db, next, author, post, group);
-    if (postDeleted) {
-      res.json(true);
-    }else {
-      res.json(false);
-    }
+  //Delete post from DB
+  const postDeleted = await verifyAccess(db, next, group, user, 'post', 'del') && await deletePost(db, next, author, post, group);
+  if (postDeleted) {
+    res.json(true);
+  }else {
+    res.json(false);
   }
 })
 

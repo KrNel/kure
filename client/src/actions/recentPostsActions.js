@@ -45,7 +45,7 @@ export const requestPosts = section => ({
  *  @param {object} data Data returned from database
  *  @returns {object} The action data
  */
-export const receivePosts = (section, data) => ({
+export const receivePosts = (section, data, hasMore) => ({
   type: RECEIVE_POSTS,
   section,
   posts: data.posts,
@@ -53,6 +53,7 @@ export const receivePosts = (section, data) => ({
   myComms: data.myComms,
   mySubs: data.mySubs,
   receivedAt: Date.now(),
+  hasMore,
 });
 
 /**
@@ -62,10 +63,15 @@ export const receivePosts = (section, data) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-export const fetchPosts = (section, user) => dispatch => {
+export const fetchPosts = (section, user, limit, nextId) => dispatch => {
   dispatch(requestPosts(section));
-  return getRecentActivity(user, 10) //limit 10 'my communities'
+
+  let hasMore = true;
+
+  return getRecentActivity(user, limit, nextId) //limit 10 'my communities'
     .then(data => {
-      dispatch(receivePosts(section, data.data));
+      if (!data.data.posts.length)
+        hasMore = false;
+      dispatch(receivePosts(section, data.data, hasMore));
     });
 }

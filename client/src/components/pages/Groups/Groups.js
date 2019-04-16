@@ -19,10 +19,12 @@ class Groups extends Component {
 
   static propTypes = {
     user: PropTypes.string,
+    match: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
     user: 'x',
+    match: {},
   };
 
   state = {
@@ -87,6 +89,9 @@ class Groups extends Component {
         groups,
         showGrid,
         tabSelected,
+      },
+      props: {
+        match
       }
     } = this;
 
@@ -97,7 +102,7 @@ class Groups extends Component {
           <ErrorBoundary>
             <GroupSummary
               groups={groups}
-              match={this.props.match}
+              match={match}
               toggleView={this.toggleView}
               showGrid={showGrid}
               tabSelected={tabSelected}
@@ -124,4 +129,18 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Groups);
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+  {
+    /*getGroups: (selected, user, limit, nextPageId) => (
+      dispatch(getCommunityPage(selected, user, limit, nextPageId))
+    ),*/
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);

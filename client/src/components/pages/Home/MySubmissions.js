@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
@@ -44,5 +45,15 @@ const MySubmissions = ({ isAuth, mySubs }) => (
     </Segment>
   </Segment.Group>
 )
+
+MySubmissions.propTypes = {
+  isAuth: PropTypes.bool,
+  mySubs: PropTypes.arrayOf(PropTypes.object),
+};
+
+MySubmissions.defaultProps = {
+  isAuth: false,
+  mySubs: [],
+};
 
 export default MySubmissions;

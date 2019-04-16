@@ -52,9 +52,11 @@ const getEmbed = link => {
 // Should return Object(React Compatible) if returnType is Object
 export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options = {}) {
   const parsedJsonMetadata = jsonParse(jsonMetadata) || {};
+
   parsedJsonMetadata.image = parsedJsonMetadata.image || [];
 
   let parsedBody = body.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
+
   parsedBody.replace(imageRegex, img => {
     if (filter(parsedJsonMetadata.image, i => i.indexOf(img) !== -1).length === 0) {
       parsedJsonMetadata.image.push(img);
@@ -63,6 +65,7 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
 
   parsedBody = improve(parsedBody);
   parsedBody = remarkable.render(parsedBody);
+
   const htmlReadyOptions = { mutate: true, resolveIframe: returnType === 'text' };
   parsedBody = htmlReady(parsedBody, htmlReadyOptions).html;
   parsedBody = parsedBody.replace(dtubeImageRegex, '');
@@ -73,7 +76,6 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
   parsedBody = sanitizeHtml(
     parsedBody,
     sanitizeConfig({
-      appUrl: options.appUrl,
       secureLinks: options.secureLinks,
     }),
   );
@@ -111,25 +113,23 @@ export function getHtml(body, jsonMetadata = {}, returnType = 'Object', options 
  */
 const Body = props => {
   const options = {
-    appUrl: "http://localhost:3000",
     rewriteLinks: false,
     secureLinks: false,
   };
 
-  const htmlSections = getHtml(props.body, props.jsonMetadata, 'Object', options);
+  const { body, jsonMetadata } = props;
+  const htmlSections = getHtml(body, jsonMetadata, 'Object', options);
   return <div className='Body'>{htmlSections}</div>;
 };
 
 Body.propTypes = {
   body: PropTypes.string,
   jsonMetadata: PropTypes.string,
-  full: PropTypes.bool,
 };
 
 Body.defaultProps = {
   body: '',
   jsonMetadata: '',
-  full: false,
 };
 
 export default Body;

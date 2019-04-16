@@ -23,11 +23,13 @@ export const summaryStart = () => ({
  *  @param {array} posts Posts to display
  *  @return {object} The action data
  */
-export const summarySuccess = (posts, hasMore, prevPage) => ({
+export const summarySuccess = (posts, hasMore, prevPage, startAuthor, startPermlink) => ({
   type: GET_SUMMARY_SUCCESS,
   posts,
   hasMore,
   prevPage,
+  startAuthor,
+  startPermlink,
 });
 
 
@@ -39,30 +41,58 @@ export const summarySuccess = (posts, hasMore, prevPage) => ({
  *  @param {boolean} nextPost If there are preceeding posts
  *  @returns {function} Dispatches returned action object
  */
-export const getSummaryContent = (selectedFilter, query, nextPost, page) => (dispatch, getState) => {
+export const getSummaryContent = (selectedFilter, query, page, action) => (dispatch, getState) => {
   dispatch(summaryStart());
+
+  const state = getState();
+  const { summaryPost } = state;
+  const { posts, prevPage } = summaryPost;
+
+  let startAuthor = undefined;
+  let startPermlink = undefined;
+
+  if (posts.length && action === 'more') {
+    startAuthor = summaryPost.startAuthor;
+    startPermlink = summaryPost.startPermlink;
+  }
+
+  let nextPost = false;
+
+  if (page !== prevPage) {
+    startAuthor = undefined;
+    startPermlink = undefined;
+  }
+
+  if (startAuthor !== undefined && startPermlink !== undefined) {
+    nextPost = true;
+  }
+
+  query.start_author = startAuthor;
+  query.start_permlink =  startPermlink;
 
   return client.database.getDiscussions(selectedFilter, query)
     .then(result => {
       let hasMore = true;
       let newPosts = null;
 
-      const state = getState();
-
       if (result) {
         if (nextPost) {
-          newPosts = [...state.summaryPost.posts, ...result.slice(1)];
+          newPosts = [...posts, ...result.slice(1)];
         }else {
           newPosts = result;
         }
       }else {
         hasMore = false;
-        newPosts = state.summaryPost.posts;
+        newPosts = posts;
       }
+
+      const lastPost = newPosts[newPosts.length - 1];
+      startAuthor = lastPost.author;
+      startPermlink = lastPost.permlink;
 
       dispatch(getUserGroupsFetch());
 
-      dispatch(summarySuccess(newPosts, hasMore, page));
+      dispatch(summarySuccess(newPosts, hasMore, page, startAuthor, startPermlink));
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });

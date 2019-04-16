@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import csrfValidateRequest from '../auth/csrfValidateRequest';
 import verifyAccess from '../../../utils/verifyAccess';
 
 const router = new Router();
@@ -19,39 +18,34 @@ router.post('/add', async (req, res, next) => {
   let { group, user } = req.body;
   group = group.trim();
   const groupClean = group.toLowerCase().replace(/\s/g, '-');
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Check if group exists
-    const exists = await groupExists(db, next, groupClean);
-    if (exists) {
-       res.json({exists: true});
+  //Check if group exists
+  const exists = await groupExists(db, next, groupClean);
+  if (exists) {
+     res.json({exists: true});
+  }else {
+    //Check if user has reached the number of allowed Owned Groups
+    const exceeded = await exceededGrouplimit(db, next, user);
+    if (exceeded) {
+      res.json({exceeded: true});
     }else {
-      //Check if user has reached the number of allowed Owned Groups
-      const exceeded = await exceededGrouplimit(db, next, user);
-      if (exceeded) {
-        res.json({exceeded: true});
-      }else {
-        //Insert the group
-        const created = groupUpsert(db, next, group, groupClean, user);
-        res.json({
-          group: {
-            name: groupClean,
-            display: group,
-            owner: user,
-            followers: 0,
-            likes: 0,
-            created: created,
-            updated: created,
-            posts: 0,
-            rating: 0,
-            users: 1,
-            joinRequests: 0
-          }
-        });
-      }
+      //Insert the group
+      const created = groupUpsert(db, next, group, groupClean, user);
+      res.json({
+        group: {
+          name: groupClean,
+          display: group,
+          owner: user,
+          followers: 0,
+          likes: 0,
+          created: created,
+          updated: created,
+          posts: 0,
+          rating: 0,
+          users: 1,
+          joinRequests: 0
+        }
+      });
     }
   }
 })
@@ -176,15 +170,10 @@ const groupUpsert = (db, next, group, groupTrim, user) => {
 router.post('/delete', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Delete group from DB
-    const groupDeleted = await verifyAccess(db, next, group, user, 'group', 'del') && await deleteGroup(db, next, group, user);
-    res.json(groupDeleted || false);
-  }
+  //Delete group from DB
+  const groupDeleted = await verifyAccess(db, next, group, user, 'group', 'del') && await deleteGroup(db, next, group, user);
+  res.json(groupDeleted || false);
 })
 
 /**
@@ -243,15 +232,10 @@ const deleteGroup = (db, next, group, user) => {
 router.post('/join', async (req, res, next) => {
   const db = req.app.locals.db;
   let { group, user } = req.body;
-  const csrfValid = await csrfValidateRequest(req, res, user);
 
-  //Respond to frontend with failed CSRF validation, else continue
-  if (!csrfValid) res.json({invalidCSRF: true});
-  else {
-    //Add join request to DB
-    const joinRequested = await requestJoinGroup(db, next, group, user);
-    res.json(joinRequested || false);
-  }
+  //Add join request to DB
+  const joinRequested = await requestJoinGroup(db, next, group, user);
+  res.json(joinRequested || false);
 })
 
 /**

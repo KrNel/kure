@@ -224,7 +224,7 @@ class GroupDetails extends Component {
 
       return (
         <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
-          <Label size='big' color='gray'>
+          <Label size='big'>
             <Header as="h3">{t.name}</Header>
           </Label>
         </a>
@@ -232,46 +232,56 @@ class GroupDetails extends Component {
     })
 
     return (
-      isLoading ? <Loading /> : !notExists
-      ? (
-        <ErrorBoundary>
-          <Grid columns={1} stackable>
-            <Grid.Row>
-              <Grid.Column>
-                <Label size='large' color='blue'>
-                  <Header as='h2'>
-                    {groupData.display}
-                  </Header>
-                </Label>
+      isLoading
+      ? <Loading />
+      : !notExists
+        ? (
+          <ErrorBoundary>
+            <Grid columns={1} stackable>
+
+              <Grid.Column width={16} className="main">
+                <Grid stackable>
+
+                  <Grid.Row>
+                    <Grid.Column>
+                      <Label size='large' color='blue'>
+                        <Header as='h2'>
+                          {groupData.display}
+                        </Header>
+                      </Label>
+                    </Grid.Column>
+                  </Grid.Row>
+                  <Grid.Row>
+                    <Grid.Column>
+                      <div className='left'>
+                        {tabViews}
+                        { isAuth && (
+                          <Label size='large'>
+                            {'Membership: '}
+                            {
+                              joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                            }
+                          </Label>
+                        )}
+                      </div>
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
+                      <div className='clear' />
+                    </Grid.Column>
+                  </Grid.Row>
+                  {selectedTab}
+                </Grid>
               </Grid.Column>
-            </Grid.Row>
-            <Grid.Column>
-              <div className='left'>
-                {tabViews}
-                { isAuth && (
-                  <Label size='large'>
-                    {'Membership: '}
-                    {
-                      joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                    }
-                  </Label>
-                )}
-              </div>
-              <ToggleView
-                toggleView={this.toggleView}
-                showGrid={showGrid}
-              />
-              <div className='clear' />
-              {selectedTab}
-            </Grid.Column>
-          </Grid>
-        </ErrorBoundary>
-      )
-      : (
-        <Segment>
-          {`That group doesn't exist.`}
-        </Segment>
-      )
+            </Grid>
+          </ErrorBoundary>
+        )
+        : (
+          <Segment>
+            {`That group doesn't exist.`}
+          </Segment>
+        )
     )
   }
 }

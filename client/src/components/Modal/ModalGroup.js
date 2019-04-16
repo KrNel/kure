@@ -31,7 +31,8 @@ class ModalGroup extends Component {
   }
 
   onGroupSelect = (e, {value}) => {
-    this.props.handleGroupSelect(value);
+    const { handleGroupSelect } = this.props;
+    handleGroupSelect(value);
   }
 
   onClick = (e) => {
@@ -80,9 +81,23 @@ class ModalGroup extends Component {
 }
 
 ModalGroup.propTypes = {
-  modalOpen: PropTypes.bool.isRequired,
-  onModalClose: PropTypes.func.isRequired,
-  handleModalClick: PropTypes.func.isRequired,
+  modalOpen: PropTypes.bool,
+  onModalClose: PropTypes.func,
+  handleModalClick: PropTypes.func,
+  addErrorPost: PropTypes.string,
+  handleGroupSelect: PropTypes.func,
+  groups: PropTypes.arrayOf(PropTypes.object.isRequired),
+  addPostLoading: PropTypes.bool,
+};
+
+ModalGroup.defaultProps = {
+  modalOpen: false,
+  onModalClose: () => {},
+  handleModalClick: () => {},
+  addErrorPost: '',
+  handleGroupSelect: () => {},
+  groups: [],
+  addPostLoading: false,
 };
 
 export default ModalGroup

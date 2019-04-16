@@ -20,11 +20,15 @@ class Write extends Component {
     createPost: PropTypes.func.isRequired,
     newPost: PropTypes.string,
     clearPost: PropTypes.func.isRequired,
+    isPosting: PropTypes.bool,
+    error: PropTypes.string,
   };
 
   static defaultProps = {
     user: '',
     newPost: '',
+    isPosting: false,
+    error: '',
   }
 
   constructor(props) {

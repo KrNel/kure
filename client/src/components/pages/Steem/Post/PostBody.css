@@ -2,6 +2,8 @@
 
 .Body {
   font-size: 1.35rem;
+  letter-spacing: 0.01rem;
+  overflow-wrap: break-word;
 }
 
 .Body h1, h2, h3, h4, h5, h6 {

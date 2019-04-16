@@ -95,7 +95,7 @@ const GroupSummary = (props) => {
   }else {
     return (
       <Segment>
-        No communities.
+        {'No communities.'}
       </Segment>
     )
   }

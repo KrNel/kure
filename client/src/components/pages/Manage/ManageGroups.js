@@ -33,6 +33,11 @@ class ManageGroups extends Component {
     csrf: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     headerText: PropTypes.string.isRequired,
+    match: PropTypes.shape(PropTypes.object.isRequired),
+  };
+
+  static defaultProps = {
+    match: {},
   };
 
   constructor(props) {

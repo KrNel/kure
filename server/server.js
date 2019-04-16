@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import {createLogger, format, transports} from 'winston';
-const { combine, timestamp, label, printf, json, prettyPrint } = format;
+const { prettyPrint } = format;
 import 'winston-daily-rotate-file';
 
 
@@ -80,7 +80,7 @@ MongoClient.connect(mongoURL, { useNewUrlParser: true }).then(connection => {
   //persist db connection in app.locals
 	app.locals.db = db;
 }).catch(err => {
-	console.error('MongoDB Connection Error: ', err);
+	logger.log('MongoDB Connection Error: ', err);
 });
 
 // logger api
@@ -92,7 +92,7 @@ app.post('/api/logger', (req, res) => {
 //Routes for React fetchs
 app.use('/api', api);
 
-app.use((err, req, res) => {
+app.use((err) => {
   logger.log({level: 'error', message: err});
 })
 

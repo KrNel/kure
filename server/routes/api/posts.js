@@ -11,12 +11,13 @@ const router = new Router();
  *  Gets the local DB object.
  *  Retrieve the recently active posts from the DB.
  */
-router.get('/', (req, res, next) => {
+router.get('/:limit/:nextId?', (req, res, next) => {
   const db = req.app.locals.db;
-  const limit = 100;
+  const limit = parseInt(req.params.limit);
+  const nextId = req.params.nextId;
 
   //Get posts data from DB and return
-  getRecentPosts(db, next, limit)
+  getRecentPosts(db, next, limit, nextId)
     .then(data => {
       res.json({ posts: data })
     })

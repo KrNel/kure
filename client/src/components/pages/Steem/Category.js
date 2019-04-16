@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 /**
@@ -16,5 +17,13 @@ const Category = ({category}) => (
     </Link>
   </React.Fragment>
 )
+
+Category.propTypes = {
+  category: PropTypes.string,
+};
+
+Category.defaultProps = {
+  category: '',
+};
 
 export default Category;

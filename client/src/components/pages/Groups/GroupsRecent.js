@@ -18,7 +18,7 @@ const GroupsRecent = ({ groupsActivity }) => {
         <Grid columns={1} stackable id='GroupPageRecent'>
           {
             groupsActivity.map((g,i) => (
-              <Grid.Column key={i} width={8}>
+              <Grid.Column key={g._id} width={8}>
                 <Segment.Group className='box'>
                   <Segment>
                     <Label attached='top' className='head'>

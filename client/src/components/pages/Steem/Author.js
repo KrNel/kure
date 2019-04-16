@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import UserLink from './UserLink';
 
@@ -13,5 +14,13 @@ const Author = ({author}) => (
     <UserLink user={author} />
   </strong>
 )
+
+Author.propTypes = {
+  author: PropTypes.string,
+};
+
+Author.defaultProps = {
+  author: '',
+};
 
 export default Author;

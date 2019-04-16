@@ -41,7 +41,7 @@ router.post('/login', (req, res) => {
     }).then(isAuth => {
       //Return authentication object
       if (isAuth) res.json({ isAuth: isAuth, user: user });
-    }).catch(err => console.error(err) );
+    }).catch(err => console.error(err) );// eslint-disable-line no-console
 })
 
 /**
@@ -55,7 +55,7 @@ const validateToken = (accessToken) => {
   return new Promise((resolve, reject) => {
     SteemConnect.setAccessToken(accessToken);
     SteemConnect.me((err, result) => {
-      (!err) ? resolve(true) : reject(false);
+      (!err) ? resolve(result) : reject(false);
     })
     resolve(true);
   });

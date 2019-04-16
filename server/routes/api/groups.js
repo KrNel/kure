@@ -108,7 +108,6 @@ router.get('/list/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user } = req.params;
 
-  const listlimit = 50;
   const groupLimit = 20;
   const postLimit = 5;
 

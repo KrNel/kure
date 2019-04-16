@@ -1,4 +1,5 @@
 import React, {Component}  from 'react';
+import PropTypes from 'prop-types';
 import { Form, Button } from "semantic-ui-react";
 
 import Picker from '../../Picker/Picker';
@@ -7,6 +8,14 @@ import Picker from '../../Picker/Picker';
  *  Displays and sets state for filtering Steem contentActions
  */
 class FitlerPosts extends Component {
+
+  static propTypes = {
+    handleSubmitFilter: PropTypes.func,
+  };
+
+  static defaultProps = {
+    handleSubmitFilter: () => {},
+  };
 
   constructor(props) {
     super(props);

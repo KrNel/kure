@@ -28,10 +28,6 @@ export const comments = (
         ...state,
         isFetchingComments: false,
         replies: action.comments,
-        /*post: {
-          ...state.post,
-          replies: action.comments,
-        }*/
       });
     default:
       return state

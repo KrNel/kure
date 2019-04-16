@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
@@ -39,5 +40,15 @@ const MyCommunities = ({ isAuth, myComms }) => (
     </Segment>
   </Segment.Group>
 )
+
+MyCommunities.propTypes = {
+  isAuth: PropTypes.bool,
+  myComms: PropTypes.arrayOf(PropTypes.object),
+};
+
+MyCommunities.defaultProps = {
+  isAuth: false,
+  myComms: [],
+};
 
 export default MyCommunities;

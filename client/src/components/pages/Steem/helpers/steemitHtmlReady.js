@@ -21,6 +21,8 @@ const DOMParser = new xmldom.DOMParser({
 });
 const XMLSerializer = new xmldom.XMLSerializer();
 
+let prevUrl;
+
 /**
  * Functions performed by HTMLReady
  *
@@ -92,7 +94,7 @@ export default function(html, { mutate = true, resolveIframe } = {}) {
   state.links = new Set();
   try {
     const doc = DOMParser.parseFromString(html, 'text/html');
-    
+
     traverse(doc, state);
     if (mutate) proxifyImages(doc);
     // console.log('state', state)
@@ -136,8 +138,13 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
+
   const { mutate, resolveIframe } = state;
   const url = child.getAttribute('src');
+
+  //if previous iframe URL is same as current, skip DOM node
+  if (prevUrl === url) return;
+
   let domString;
   const embed = embedjs.get(url || '', { width: '100%', height: 400 });
   if (embed && embed.id) {
@@ -146,6 +153,10 @@ function iframe(state, child) {
     images.add(`https://img.youtube.com/vi/${embed.id}/0.jpg`);
     if (!resolveIframe) domString = `~~~ embed:${embed.id} ${embed.provider_name} ${embed.url} ~~~`;
   }
+
+  //save iframe URL, liekly youtube link, to compare for looping 13 times issue
+  //with Array.prototype.forEach.call(node.childNodes, child => {
+  prevUrl = url;
 
   if (!mutate) return;
 
@@ -180,7 +191,7 @@ function proxifyImages(doc) {
   if (!doc) return;
   Array.prototype.forEach.call(doc.getElementsByTagName('img'), node => {
     const url = node.getAttribute('src');
-    if (!linksRe.local.test(url)) {
+    if (!linksRe.local.test(url)) {// eslint-disable-line import/no-named-as-default-member
       node.setAttribute('src', getProxyImageURL(url));
     }
   });
@@ -214,7 +225,7 @@ function linkifyNode(child, state) {
       return newChild;
     }
   } catch (error) {
-    console.log(error);
+    console.log(error);// eslint-disable-line no-console
   }
 }
 
@@ -249,8 +260,8 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
     },
   );
 
-  content = content.replace(linksRe.any, ln => {
-    if (linksRe.image.test(ln)) {
+  content = content.replace(linksRe.any, ln => {// eslint-disable-line import/no-named-as-default-member
+    if (linksRe.image.test(ln)) {// eslint-disable-line import/no-named-as-default-member
       if (images) images.add(ln);
       return `<img src="${ln}" />`;
     }
@@ -268,7 +279,7 @@ function isEmbedable(child, links, images, resolveIframe) {
   try {
     if (!child.data) return false;
     const data = child.data;
-    const foundLinks = data.match(linksRe.any);
+    const foundLinks = data.match(linksRe.any);// eslint-disable-line import/no-named-as-default-member
     if (!foundLinks) return false;
     const embed = embedjs.get(foundLinks[0] || '', { width: '100%', height: 400 });
     if (embed && embed.id) {
@@ -286,7 +297,7 @@ function isEmbedable(child, links, images, resolveIframe) {
     }
     return false;
   } catch (error) {
-    console.log(error);
+    console.log(error);// eslint-disable-line no-console
     return false;
   }
 }
