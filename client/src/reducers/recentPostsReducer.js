@@ -1,7 +1,7 @@
 import {
   SELECT_SECTION, INVALIDATE_SECTION,
   REQUEST_POSTS, RECEIVE_POSTS
-} from '../actions/recentPostsActions'
+} from '../actions/recentPostsActions';
 
 /**
  *  Reducer function to return selected activity.

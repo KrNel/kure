@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Label, Button } from "semantic-ui-react";
+import { Grid, Header, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import CommunityActivity from './CommunityActivity';
@@ -59,21 +59,12 @@ class Home extends Component {
 
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
-    let {
-      posts
-    } = this.props;
+    const { posts } = this.props;
 
     window.addEventListener("scroll", this.handleScroll);
 
     if (!posts.length)
       this.getPosts();
-    /*if ((!isAuth && user === '') || isAuth) {//fetch data when not logged in, or logged in, on first page view
-      //dispatch(fetchPosts(selected, user, this.limit));
-      this.getPosts();
-    }else if (csrf && !isAuth) {
-      //dispatch(fetchPosts(selected, 'x', this.limit));//fetch data when logged out right after page refresh
-      this.getPosts();
-    }*/
   }
 
   componentWillUnmount() {
@@ -86,10 +77,10 @@ class Home extends Component {
    */
   handleScroll = (e) => {
     const { isFetching, hasMore } = this.props;
-    const { showGrid, tabSelected } = this.state;
+    const { tabSelected } = this.state;
 
-    if (!isFetching && hasMore && showGrid && tabSelected === 'new') {
-      var lastLi = document.querySelector(".home div.eight.wide.column:last-child");
+    if (!isFetching && hasMore && tabSelected === 'new') {
+      var lastLi = document.querySelector(".home div.infiniteEl:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
@@ -98,14 +89,10 @@ class Home extends Component {
     }
   }
 
-  //need this for first page load, as user is empty and cant fetch on componentDidMount
-  /*componentDidUpdate(prevProps) {
-    const {user} = this.props;
-    if (prevProps.user !== user)
-      //dispatch(fetchPosts(selected, user, this.limit));
-      this.getPosts();
-  }*/
-
+  /**
+   *  Gets the redux props values required to keep track of the infinite scroll
+   *  and updated the next page's ID to grab the next set of posts to display.
+   */
   getPosts = () => {
     let {selected, getContent, user, posts} = this.props;
 

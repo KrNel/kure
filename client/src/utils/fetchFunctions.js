@@ -53,8 +53,8 @@ export const getGroupDetails = (group, user) => {
 /**
  *  Get the community posts to show.
  */
-export const getPosts = () => {
-  return getData(`/api/posts`);
+export const getPosts = (limit, nextId) => {
+  return getData(`/api/posts/${limit}/${nextId}`);
 }
 
 /**

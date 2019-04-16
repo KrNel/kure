@@ -129,4 +129,18 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Groups);
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+  {
+    /*getGroups: (selected, user, limit, nextPageId) => (
+      dispatch(getCommunityPage(selected, user, limit, nextPageId))
+    ),*/
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);

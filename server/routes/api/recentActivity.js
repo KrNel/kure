@@ -87,9 +87,6 @@ export const getRecentPosts = async (db, next, limit = 50, nextId) => {
         { $sort: {_id: -1} },
         { $limit : limit }
       ]).toArray((err, result) => {
-        if (result.length) {
-          last_id = result[result.length-1]._id;
-        }
         err ? reject(err) : resolve(result);
       })
     }else {
@@ -123,7 +120,6 @@ export const getRecentPosts = async (db, next, limit = 50, nextId) => {
         { $sort: {_id: -1} },
         { $limit : limit }
       ]).toArray((err, result) => {
-        last_id = result[limit-1]._id;
         err ? reject(err) : resolve(result);
       })
     }

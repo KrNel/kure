@@ -19,7 +19,7 @@ import './PostGrid.css'
 const PostGrid = ({post}) => {
   if (post) {
     return (
-      <Grid.Column width={8}>
+      <Grid.Column width={8} className='infiniteEl'>
         <div className='postBox'>
           <div className='cropImage'>
             {
