@@ -55,6 +55,7 @@ class Home extends Component {
     tabSelected: 'new',
   }
 
+  // limit for infinite scroll results to grab each time
   limit = 20;
 
   //this fetches when page loaded after site loads from elsewhere (user defined)

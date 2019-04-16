@@ -130,7 +130,7 @@ class Posts extends Component {
 
     let tag = this.tag;
     let filter = this.selectedFilter;
-console.log('tag',tag)
+
     if (match.path === '/@:author/feed') {
       tag = match.params.author;
       filter = 'feed';
@@ -146,7 +146,7 @@ console.log('tag',tag)
       limit: 20,
       truncate_body: 0,
     };
-console.log('query',query)
+
     getContent(filter, query, page, action)
   }
 

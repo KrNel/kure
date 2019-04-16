@@ -16,8 +16,8 @@ export const requestPosts = () => ({
 /**
  *  Action creator to receive recent post activity.
  *
- *  @param {string} section Section selected
- *  @param {object} data Data returned from database
+ *  @param {string} posts Data returned from database
+ *  @param {object} hasMore If there are more posts to grab
  *  @returns {object} The action data
  */
 export const receivePosts = (posts, hasMore) => ({
@@ -26,6 +26,13 @@ export const receivePosts = (posts, hasMore) => ({
   hasMore,
 });
 
+/**
+ *  Function to fetch the recent activity from the database.
+ *
+ *  @param {string} limit Limit of posts to return
+ *  @param {function} nextId The next Id to use for querying posts
+ *  @returns {function} Dispatches returned action object
+ */
 export const fetchPosts = (limit, nextId) => dispatch => {
   dispatch(requestPosts());
 

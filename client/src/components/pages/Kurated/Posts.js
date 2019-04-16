@@ -18,16 +18,25 @@ import Loading from '../../Loading/Loading';
 class Posts extends Component {
   static propTypes = {
     isAuth: PropTypes.bool,
+    posts: PropTypes.arrayOf(PropTypes.object.isRequired),
+    isFetching: PropTypes.bool,
+    hasMore: PropTypes.bool,
+    getContent: PropTypes.func,
   };
 
   static defaultProps = {
     isAuth: false,
+    posts: [],
+    isFetching: false,
+    hasMore: true,
+    getContent: () => {},
   };
 
   state = {
     showGrid: true,
   };
 
+  // limit for infinite scroll results to grab each time
   limit = 20;
 
   /**

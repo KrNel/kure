@@ -5,8 +5,6 @@ import { getUserGroups } from './groups';
 
 const router = new Router();
 
-let last_id = null;
-
 /**
  *  GET route to get the recent post activity.
  *  Route: /api/recentposts
