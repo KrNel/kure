@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Form, Label, Select } from 'semantic-ui-react'
+import { Grid, Form, Label, Select, Button } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
@@ -123,6 +123,22 @@ class Write extends Component {
 
     if (post !== null)
       createPost(post);
+  }
+
+  /**
+   *  Clear the post write form.
+   */
+  handleClear = () => {
+    this.setState({
+      body: '',
+      title: '',
+      tags: '',
+    });
+
+    this.permlink = '';
+    
+    const { isUpdating, cancelEdit } = this.props;
+    if (isUpdating) cancelEdit();
   }
 
   /**
@@ -276,13 +292,21 @@ class Write extends Component {
                   }
 
                   <Form.Group>
-                    <Form.Button>
+                    <Form.Button
+                      color='blue'
+                      disabled={body === ''}
+                    >
                       {
                         isUpdating
                         ? 'Update'
                         : 'Submit'
                       }
                     </Form.Button>
+                    <Button
+                      content='Clear'
+                      disabled={body === ''}
+                      onClick={this.handleClear}
+                    />
                     {
                       error && (
                         <Label basic color='red' pointing='left'>
