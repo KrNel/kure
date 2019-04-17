@@ -40,7 +40,7 @@ export const fetchPosts = (limit, nextId) => dispatch => {
 
   return getPosts(limit, nextId)
     .then(data => {
-      if (!data.data.posts.length)
+      if (data.data.posts.length < limit)
         hasMore = false;
       dispatch(receivePosts(data.data.posts, hasMore));
     });

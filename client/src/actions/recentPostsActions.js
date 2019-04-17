@@ -70,7 +70,7 @@ export const fetchPosts = (section, user, limit, nextId) => dispatch => {
 
   return getRecentActivity(user, limit, nextId) //limit 10 'my communities'
     .then(data => {
-      if (!data.data.posts.length)
+      if (data.data.posts.length < limit)
         hasMore = false;
       dispatch(receivePosts(section, data.data, hasMore));
     });
