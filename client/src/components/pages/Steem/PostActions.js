@@ -36,6 +36,8 @@ class PostActions extends Component {
     ratio: PropTypes.number,
     pid: PropTypes.number,
     image: PropTypes.string,
+    isPost: PropTypes.bool,
+    onEditPost: PropTypes.func,
   };
 
   static defaultProps = {
@@ -53,6 +55,8 @@ class PostActions extends Component {
     ratio: '',
     pid: '',
     image: '',
+    isPost: false,
+    onEditPost: () => {},
   };
 
 
@@ -81,6 +85,8 @@ class PostActions extends Component {
         ratio,
         pid,
         image,
+        isPost,
+        onEditPost,
       },
     } = this;
 
@@ -131,9 +137,21 @@ class PostActions extends Component {
           {
             user
             && (
-              <a href="/group/add" onClick={(e) => showModal(e, 'addPost', {author, category, permlink, title, image})} title="Add to a community">
-                <Icon name='plus circle' size='large' />
-              </a>
+              <React.Fragment>
+                {
+                  isPost && author === user && (
+                    <span>
+                      <a href="/post/edit" onClick={e => onEditPost(e)} title="Edit post">
+                        <Icon name='compose' size='large' />
+                      </a>
+                      {` `}
+                    </span>
+                  )
+                }
+                <a href="/group/add" onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})} title="Add to a community">
+                  <Icon name='plus circle' size='large' />
+                </a>
+              </React.Fragment>
             )
           }
         </div>

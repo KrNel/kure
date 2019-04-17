@@ -31,6 +31,10 @@ export const getRecentActivity = (user, limit = 10, nextId) => {
   return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
 }
 
+export const getPanelActivity = (user, limit = 10, nextId) => {
+  return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
+}
+
 /**
  *  Get the list of communities on the site. Most recently created first.
  *

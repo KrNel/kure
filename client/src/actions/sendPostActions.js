@@ -1,10 +1,13 @@
 import SteemConnect from '../utils/auth/scAPI';
 import { createPermlink } from '../components/pages/Steem/helpers/postHelpers';
+import { jsonParse } from '../components/pages/Steem/helpers/formatter';
 
 export const SEND_POST_START = 'SEND_POST_START';
 export const SEND_POST_SUCCESS = 'SEND_POST_SUCCESS';
 export const SEND_POST_ERROR = 'SEND_POST_ERROR';
 export const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
+export const SHOW_EDIT_POST = 'SHOW_EDIT_POST';
+export const CANCEL_EDIT_POST = 'CANCEL_EDIT_POST';
 
 /**
  *  Action creator for starting to send a post.
@@ -45,11 +48,44 @@ export const clearNewPost = () => ({
   type: CLEAR_NEW_POST,
 });
 
+/**
+ *  Action creator for starting to edit a post.
+ *
+ *  @return {object} The action data
+ */
+const showEditPost = (draft) => ({
+  type: SHOW_EDIT_POST,
+  draft,
+});
+
+/**
+ *  Action creator for clearing a new post after the page is loaded.
+ *
+ *  @return {object} The action data
+ */
+export const cancelEditPost = () => ({
+  type: CANCEL_EDIT_POST,
+});
+
 const rewardsValues = {
   all: '100',
   half: '50',
   none: '0',
 };
+
+
+export const editPost = post => dispatch => {
+  const jsonMetadata = jsonParse(post.json_metadata);
+
+  const draft = {
+    ...post,
+    originalBody: post.body,
+    jsonMetadata,
+    isUpdating: true,
+  };
+
+  return dispatch(showEditPost(draft));
+}
 
 /**
  *  Uses SteemConnect to send a comment to the Steem blockchain.
@@ -65,6 +101,9 @@ export const sendPost = post => (dispatch, getState) => {
     auth: {
       user
     },
+    sendPost: {
+      isUpdating
+    }
   } = getState();
 
   const {
@@ -77,7 +116,9 @@ export const sendPost = post => (dispatch, getState) => {
     reward,
   } = post;
 
-  const permLink = createPermlink(title, author, parentAuthor, parentPermlink);
+  const permLink = isUpdating
+    ? Promise.resolve(post.permlink)
+    : createPermlink(title, author, parentAuthor, parentPermlink);
 
   return permLink.then(permlink => {
     const operations = [];
@@ -94,6 +135,13 @@ export const sendPost = post => (dispatch, getState) => {
       },
     ];
     operations.push(commentOp);
+
+    if (isUpdating) {
+      return SteemConnect.broadcast(operations)
+        .then(res => {
+          dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`));
+      });
+    }
 
     const commentOptions = {
       author,
@@ -124,7 +172,7 @@ export const sendPost = post => (dispatch, getState) => {
       return SteemConnect.broadcast(operations)
         .then(res => {
           localStorage.setItem('lastPostedAt-' + user, now);
-          setTimeout(() => dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`)), 1000);
+          setTimeout(() => dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`)), 1500);
       });
   })
 

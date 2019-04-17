@@ -3,6 +3,8 @@ import {
   SEND_POST_SUCCESS,
   SEND_POST_ERROR,
   CLEAR_NEW_POST,
+  SHOW_EDIT_POST,
+  CANCEL_EDIT_POST,
 } from '../actions/sendPostActions';
 
 /**
@@ -17,6 +19,8 @@ export const sendPost = (
     isPosting: false,
     newPost: '',
     error: '',
+    isUpdating: false,
+    draft: {},
   },
   action) => {
 
@@ -38,6 +42,7 @@ export const sendPost = (
       return ({
         ...state,
         isPosting: false,
+        isUpdating: false,
         newPost: action.newPost,
       });
     case CLEAR_NEW_POST:
@@ -46,6 +51,18 @@ export const sendPost = (
         isPosting: false,
         newPost: '',
         error: '',
+      });
+    case SHOW_EDIT_POST:
+      return ({
+        ...state,
+        isUpdating: true,
+        draft: action.draft,
+      });
+    case CANCEL_EDIT_POST:
+      return ({
+        ...state,
+        isUpdating: false,
+        draft: {},
       });
     default:
       return state

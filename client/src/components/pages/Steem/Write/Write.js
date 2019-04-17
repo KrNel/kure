@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
 import { createPostMetadata } from '../helpers/postHelpers';
-import { sendPost, clearNewPost } from '../../../../actions/sendPostActions';
+import { sendPost, clearNewPost, cancelEditPost } from '../../../../actions/sendPostActions';
 import './Write.css'
 
 /**
@@ -22,6 +22,9 @@ class Write extends Component {
     clearPost: PropTypes.func.isRequired,
     isPosting: PropTypes.bool,
     error: PropTypes.string,
+    isUpdating: PropTypes.bool,
+    draft: PropTypes.shape(PropTypes.object.isRequired),
+    cancelEdit: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -29,6 +32,8 @@ class Write extends Component {
     newPost: '',
     isPosting: false,
     error: '',
+    isUpdating: false,
+    draft: {},
   }
 
   constructor(props) {
@@ -43,6 +48,7 @@ class Write extends Component {
     }
 
     this.redirect = '';
+    this.permlink = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
       {key: 1, value: '100', text: '100% STEEM'},
@@ -51,14 +57,32 @@ class Write extends Component {
   }
 
   /**
-   *
+   *  When a post is successfully added to Steem, clear the form and redirect
+   *  to the post itself.
+   *  If an edit is requested, then show the existing post data.
    */
   componentDidMount() {
-    const { newPost, clearPost } = this.props;
+    window.scrollTo(0, 0);
+
+    const { newPost, clearPost, isUpdating, draft } = this.props;
     if (newPost) {
       this.redirect = '';
       clearPost();
     }
+
+    if (isUpdating && draft) {
+      this.permlink = draft.permlink;
+      this.setState({
+        title: draft.title,
+        body: draft.body,
+        tags: draft.jsonMetadata.tags.join(' '),
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { isUpdating, cancelEdit } = this.props;
+    if (isUpdating) cancelEdit();
   }
 
   /**
@@ -123,20 +147,23 @@ class Write extends Component {
       tags = validTags.tags;
     }
 
+    const { user, draft } = this.props;
 
-    const { user } = this.props;
     const post = {
       body,
       title,
     };
 
-    post.title = title;
-    post.body = body;
+    const oldMetadata = draft && draft.jsonMetadata;
+
+    //post.title = title;
+    //post.body = body;
     post.parentAuthor = '';
     post.author = user;
     post.parentPermlink = tags[0];
-    post.jsonMetadata = createPostMetadata(post.body, tags);
+    post.jsonMetadata = createPostMetadata(post.body, tags, oldMetadata);
     post.reward = reward;
+    post.permlink = this.permlink;
 
     return post;
   }
@@ -180,11 +207,14 @@ class Write extends Component {
       state: {
         body,
         tagErrors,
+        title,
+        tags,
       },
       props: {
         isPosting,
         newPost,
         error,
+        isUpdating,
       }
     } = this;
 
@@ -204,6 +234,7 @@ class Write extends Component {
                   <Form.Input
                     placeholder='Title'
                     name='title'
+                    value={title}
                     onChange={this.handleChange}
                   />
 
@@ -212,12 +243,14 @@ class Write extends Component {
                     placeholder='Write something...'
                     onChange={this.handleChange}
                     name='body'
+                    value={body}
                   />
 
                   <Form.Field>
                     <Form.Input
                       placeholder='Tags separated by spaces'
                       name='tags'
+                      value={tags}
                       onChange={this.handleChange}
                     />
                     {
@@ -229,17 +262,27 @@ class Write extends Component {
                     }
                   </Form.Field>
 
-                  <Form.Group>
-                    <Form.Field
-                      control={Select}
-                      defaultValue={this.rewardOptions[0].value}
-                      options={this.rewardOptions}
-                      onChange={this.handleRewardChange}
-                    />
-                  </Form.Group>
+                  {
+                    !isUpdating && (
+                    <Form.Group>
+                      <Form.Field
+                        control={Select}
+                        defaultValue={this.rewardOptions[0].value}
+                        options={this.rewardOptions}
+                        onChange={this.handleRewardChange}
+                      />
+                    </Form.Group>
+                    )
+                  }
 
                   <Form.Group>
-                    <Form.Button>Submit</Form.Button>
+                    <Form.Button>
+                      {
+                        isUpdating
+                        ? 'Update'
+                        : 'Submit'
+                      }
+                    </Form.Button>
                     {
                       error && (
                         <Label basic color='red' pointing='left'>
@@ -276,7 +319,9 @@ class Write extends Component {
        isPosting,
        newPost,
        error,
-     }
+       isUpdating,
+       draft,
+     },
    } = state;
 
    return {
@@ -284,6 +329,8 @@ class Write extends Component {
      isPosting,
      newPost,
      error,
+     isUpdating,
+     draft,
    }
  }
 
@@ -300,6 +347,9 @@ const mapDispatchToProps = dispatch => (
     ),
     clearPost: () => (
       dispatch(clearNewPost())
+    ),
+    cancelEdit: () => (
+      dispatch(cancelEditPost())
     ),
   }
 );

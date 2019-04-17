@@ -6,7 +6,8 @@ import {
   REQUEST_LOGOUT,
   RECEIVE_LOGOUT,
   REQUEST_LOGIN,
-  RECEIVE_LOGIN
+  RECEIVE_LOGIN,
+  RECEIVE_CSRF,
 } from '../actions/authActions';
 
 /**
@@ -41,10 +42,18 @@ export const auth = (
         csrf: action.csrf || '',
         lastUpdated: action.authedAt
       });
+    case RECEIVE_CSRF:
+      return ({
+        ...state,
+        csrf: action.csrf,
+      });
     case CANCEL_RETURNING:
       return ({
         ...state,
         isAuthorizing: false,
+        isAuth: false,
+        csrf: '',
+        user: '',
       });
     case REQUEST_LOGIN: {
       return ({

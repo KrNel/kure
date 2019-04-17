@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Form, Select } from "semantic-ui-react";
-import _ from 'lodash';
+import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import PostBody from './PostBody';
 import { getFromMetadata } from '../helpers/parser';
@@ -16,6 +18,7 @@ import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
+import { editPost } from '../../../../actions/sendPostActions';
 import './PostDetails.css'
 
 /**
@@ -36,6 +39,8 @@ class PostDetails extends Component {
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    isUpdating: PropTypes.bool,
+    showEditPost: PropTypes.func,
   };
 
   static defaultProps = {
@@ -45,13 +50,13 @@ class PostDetails extends Component {
     commentedId: 0,
     isAuth: false,
     replies: [],
+    isUpdating: false,
+    showEditPost: () => {},
   }
 
   constructor(props) {
     super(props);
 
-    //this.images = [];
-    //this.imagesAlts = [];
     this.sortOptions = [
       {key: 0, value: 'old', text: 'Old'},
       {key: 1, value: 'new', text: 'New'},
@@ -82,23 +87,29 @@ class PostDetails extends Component {
       });
    }
 
+   handleEditPost = e => {
+     e.preventDefault();
+     const { showEditPost, post } = this.props;
+     showEditPost(post);
+   }
+
   /**
    *  Lifted from busy.org source code to play d.tube videos on-site.
    */
   renderDtubeEmbedPlayer(post) {
-    const parsedJsonMetaData = _.attempt(JSON.parse, post.json_metadata);
+    const parsedJsonMetaData = attempt(JSON.parse, post.json_metadata);
 
-    if (_.isError(parsedJsonMetaData)) {
+    if (isError(parsedJsonMetaData)) {
       return null;
     }
 
     const video = getFromMetadata(post.json_metadata, 'video');
-    const isDtubeVideo = _.has(video, 'content.videohash') && _.has(video, 'info.snaphash');
+    const isDtubeVideo = has(video, 'content.videohash') && has(video, 'info.snaphash');
 
     if (isDtubeVideo) {
-      const videoTitle = _.get(video, 'info.title', '');
-      const author = _.get(video, 'info.author', '');
-      const permlink = _.get(video, 'info.permlink', '');
+      const videoTitle = get(video, 'info.title', '');
+      const author = get(video, 'info.author', '');
+      const permlink = get(video, 'info.permlink', '');
       const dTubeEmbedUrl = `https://emb.d.tube/#!/${author}/${permlink}/true`;
       const dTubeIFrame = `<iframe width="100%" height="340" src="${dTubeEmbedUrl}" title="${videoTitle}" allowFullScreen></iframe>`;
       const embed = {
@@ -126,6 +137,7 @@ class PostDetails extends Component {
       isCommenting,
       commentedId,
       commentPayload,
+      isUpdating,
     } = this.props;
 
     const {
@@ -160,8 +172,6 @@ class PostDetails extends Component {
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
     const body = post.body || '';
-    //const parsedBody = getHtml(body, {}, 'text');
-    //this.images = extractImageTags(parsedBody);
 
     let tags = getFromMetadata(post.json_metadata, 'tags');
     if (tags === null) tags = [post.category];
@@ -170,153 +180,191 @@ class PostDetails extends Component {
     const pid = post.id;
 
     return (
-      <HelmetProvider>
-        <React.Fragment>
-          <Helmet>
-            <title>{title}</title>
-            <link rel="canonical" href={canonicalUrl} />
-            <link rel="amphtml" href={ampUrl} />
-            <meta property="description" content={desc} />
-            <meta property="og:title" content={metaTitle} />
-            <meta property="og:type" content="article" />
-            <meta property="og:url" content={url} />
-            <meta property="og:image" content={image} />
-            <meta property="og:description" content={desc} />
-            <meta property="og:site_name" content="Kure" />
-            <meta property="article:tag" content={category} />
-            <meta property="article:published_time" content={new Date(created).toDateString()} />
-          </Helmet>
-          <Grid verticalAlign='middle' columns={1} centered>
-            <Grid.Row>
-              <Grid.Column width={11}>
-                <React.Fragment>
-                  {
-                    isFetching ? <Loading />
-                    : (
-                      <React.Fragment>
-                        <div className='PostContent'>
-                          <h1>
-                            {title}
-
-                          </h1>
-                          <AuthorCatgoryTime
-                            author={author}
-                            authorReputation={authorReputation}
-                            category={category}
-                            created={created}
-                            permlink={permlink}
-                          />
-                          <hr />
-                          {this.renderDtubeEmbedPlayer(post)}
-                          <PostBody
-                            full
-                            rewriteLinks={false}
-                            body={body}
-                            jsonMetadata={post.json_metadata}
-                          />
-                          <br />
-                          <div className='footer'>
-                            <div className='left'>
-                              <Tags tags={tags} />
-                            </div>
-                            <div className='alt-site right'>
-                              {`View on `}
-                              <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={`https://steemit.com${post.url}`}
-                              >
-                                {'Steemit'}
-                              </a>
-                              {' | '}
-                              <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={`https://busy.org/@${author}/${permlink}`}
-                              >
-                                {'Busy'}
-                              </a>
-                            </div>
-                            <div className='clear' />
-                            <div className='post-actions'>
-                              <PostActions
-                                activeVotes={activeVotes}
-                                commentCount={commentCount}
-                                author={author}
-                                category={category}
-                                payoutValue={totalPayout}
-                                permlink={permlink}
-                                title={title}
-                                showModal={showModal}
-                                user={user}
-                                handleUpvote={handleUpvote}
-                                upvotePayload={upvotePayload}
-                                ratio={ratio}
-                                pid={pid}
-                                image={image}
-                              />
-                            </div>
-                            <hr />
-                            {
-                              isAuth &&
-                              (
-                                <ReplyForm
-                                  sendComment={sendComment}
-                                  isCommenting={isCommenting}
-                                  parentPost={post}
-                                  commentedId={commentedId}
-                                />
-                              )
-                            }
-                          </div>
-                        </div>
-                      </React.Fragment>
-                    )
-                  }
-                  <div className='comments' id='comments'>
+      isUpdating
+      ? <Redirect to='/write' />
+      : (
+        <HelmetProvider>
+          <React.Fragment>
+            <Helmet>
+              <title>{title}</title>
+              <link rel="canonical" href={canonicalUrl} />
+              <link rel="amphtml" href={ampUrl} />
+              <meta property="description" content={desc} />
+              <meta property="og:title" content={metaTitle} />
+              <meta property="og:type" content="article" />
+              <meta property="og:url" content={url} />
+              <meta property="og:image" content={image} />
+              <meta property="og:description" content={desc} />
+              <meta property="og:site_name" content="Kure" />
+              <meta property="article:tag" content={category} />
+              <meta property="article:published_time" content={new Date(created).toDateString()} />
+            </Helmet>
+            <Grid verticalAlign='middle' columns={1} centered>
+              <Grid.Row>
+                <Grid.Column width={11}>
+                  <React.Fragment>
                     {
-                      !!comments.length && (
+                      isFetching ? <Loading />
+                      : (
                         <React.Fragment>
-                          <div className='left'>
-                            <h2>Comments</h2>
-                          </div>
-                          <div className='right'>
-                            <Form>
-                              <Form.Group>
-                                <Form.Field
-                                  control={Select}
-                                  defaultValue={this.sortOptions[0].value}
-                                  options={this.sortOptions}
-                                  onChange={this.handleSortChange}
+                          <div className='PostContent'>
+                            <h1>
+                              {title}
+
+                            </h1>
+                            <AuthorCatgoryTime
+                              author={author}
+                              authorReputation={authorReputation}
+                              category={category}
+                              created={created}
+                              permlink={permlink}
+                            />
+                            <hr />
+                            {this.renderDtubeEmbedPlayer(post)}
+                            <PostBody
+                              full
+                              rewriteLinks={false}
+                              body={body}
+                              jsonMetadata={post.json_metadata}
+                            />
+                            <br />
+                            <div className='footer'>
+                              <div className='left'>
+                                <Tags tags={tags} />
+                              </div>
+                              <div className='alt-site right'>
+                                {`View on `}
+                                <a
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  href={`https://steemit.com${post.url}`}
+                                >
+                                  {'Steemit'}
+                                </a>
+                                {' | '}
+                                <a
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  href={`https://busy.org/@${author}/${permlink}`}
+                                >
+                                  {'Busy'}
+                                </a>
+                              </div>
+                              <div className='clear' />
+                              <div className='post-actions'>
+                                <PostActions
+                                  activeVotes={activeVotes}
+                                  commentCount={commentCount}
+                                  author={author}
+                                  category={category}
+                                  payoutValue={totalPayout}
+                                  permlink={permlink}
+                                  title={title}
+                                  showModal={showModal}
+                                  user={user}
+                                  handleUpvote={handleUpvote}
+                                  upvotePayload={upvotePayload}
+                                  ratio={ratio}
+                                  pid={pid}
+                                  image={image}
+                                  isPost
+                                  onEditPost={this.handleEditPost}
                                 />
-                              </Form.Group>
-                            </Form>
+                              </div>
+                              <hr />
+                              {
+                                isAuth &&
+                                (
+                                  <ReplyForm
+                                    sendComment={sendComment}
+                                    isCommenting={isCommenting}
+                                    parentPost={post}
+                                    commentedId={commentedId}
+                                  />
+                                )
+                              }
+                            </div>
                           </div>
-                          <Comments
-                            comments={comments}
-                            sendComment={sendComment}
-                            isCommenting={isCommenting}
-                            commentedId={commentedId}
-                            isAuth={isAuth}
-                            commentPayload={commentPayload}
-                            pid={pid}
-                            handleUpvote={handleUpvote}
-                            user={user}
-                            upvotePayload={upvotePayload}
-                            sortBy={sortBy}
-                          />
                         </React.Fragment>
                       )
                     }
-                  </div>
-                </React.Fragment>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </React.Fragment>
-      </HelmetProvider>
+                    <div className='comments' id='comments'>
+                      {
+                        !!comments.length && (
+                          <React.Fragment>
+                            <div className='left'>
+                              <h2>Comments</h2>
+                            </div>
+                            <div className='right'>
+                              <Form>
+                                <Form.Group>
+                                  <Form.Field
+                                    control={Select}
+                                    defaultValue={this.sortOptions[0].value}
+                                    options={this.sortOptions}
+                                    onChange={this.handleSortChange}
+                                  />
+                                </Form.Group>
+                              </Form>
+                            </div>
+                            <Comments
+                              comments={comments}
+                              sendComment={sendComment}
+                              isCommenting={isCommenting}
+                              commentedId={commentedId}
+                              isAuth={isAuth}
+                              commentPayload={commentPayload}
+                              pid={pid}
+                              handleUpvote={handleUpvote}
+                              user={user}
+                              upvotePayload={upvotePayload}
+                              sortBy={sortBy}
+                            />
+                          </React.Fragment>
+                        )
+                      }
+                    </div>
+                  </React.Fragment>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </React.Fragment>
+        </HelmetProvider>
+      )
     )
   }
 }
 
-export default PostDetails;
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
+ const mapStateToProps = state => {
+   const {
+     sendPost: {
+       isUpdating,
+     }
+   } = state;
+
+   return {
+     isUpdating,
+   }
+ }
+
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+ {
+   showEditPost: (post) => (
+     dispatch(editPost(post))
+   ),
+ }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostDetails);
