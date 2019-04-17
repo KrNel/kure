@@ -18,11 +18,7 @@
     "prod": "pm2 start start-server.js",
     "restart": "pm2 startOrRestart pm2.config.js",
     "client": "babel-node start-client.js",
-<<<<<<< HEAD
     "lint": "eslint ./server",
-=======
-    "lint": "./node_modules/eslint/bin/eslint.js --fix --ext .js .",
->>>>>>> origin/master
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -51,26 +47,12 @@
     "xss": "^1.0.3"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "babel-eslint": "^10.0.1",
     "concurrently": "^4.1.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.17.1",
     "eslint-plugin-node": "^8.0.1",
-=======
-    "babel-eslint": "^9.0.0",
-    "concurrently": "^4.1.0",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-react-app": "^3.0.8",
-    "eslint-plugin-flowtype": "^2.50.3",
-    "eslint-plugin-import": "^2.17.1",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-react": "^7.12.4",
-    "eslint-plugin-standard": "^4.0.0",
->>>>>>> origin/master
     "nodemon": "^1.18.9"
   },
   "eslintConfig": {
