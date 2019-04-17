@@ -308,8 +308,8 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    getContent: (selectedFilter, query, page) => (
-      dispatch(getSummaryContent(selectedFilter, query, page))
+    getContent: (selectedFilter, query, page, action) => (
+      dispatch(getSummaryContent(selectedFilter, query, page, action))
     ),
     showModal: (e, type, data) => (
       dispatch(addPostActions.showModal(e, type, data))

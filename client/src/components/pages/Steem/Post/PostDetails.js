@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Form, Select } from "semantic-ui-react";
-import _ from 'lodash';
+import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import PostBody from './PostBody';
@@ -50,8 +50,6 @@ class PostDetails extends Component {
   constructor(props) {
     super(props);
 
-    //this.images = [];
-    //this.imagesAlts = [];
     this.sortOptions = [
       {key: 0, value: 'old', text: 'Old'},
       {key: 1, value: 'new', text: 'New'},
@@ -86,19 +84,19 @@ class PostDetails extends Component {
    *  Lifted from busy.org source code to play d.tube videos on-site.
    */
   renderDtubeEmbedPlayer(post) {
-    const parsedJsonMetaData = _.attempt(JSON.parse, post.json_metadata);
+    const parsedJsonMetaData = attempt(JSON.parse, post.json_metadata);
 
-    if (_.isError(parsedJsonMetaData)) {
+    if (isError(parsedJsonMetaData)) {
       return null;
     }
 
     const video = getFromMetadata(post.json_metadata, 'video');
-    const isDtubeVideo = _.has(video, 'content.videohash') && _.has(video, 'info.snaphash');
+    const isDtubeVideo = has(video, 'content.videohash') && has(video, 'info.snaphash');
 
     if (isDtubeVideo) {
-      const videoTitle = _.get(video, 'info.title', '');
-      const author = _.get(video, 'info.author', '');
-      const permlink = _.get(video, 'info.permlink', '');
+      const videoTitle = get(video, 'info.title', '');
+      const author = get(video, 'info.author', '');
+      const permlink = get(video, 'info.permlink', '');
       const dTubeEmbedUrl = `https://emb.d.tube/#!/${author}/${permlink}/true`;
       const dTubeIFrame = `<iframe width="100%" height="340" src="${dTubeEmbedUrl}" title="${videoTitle}" allowFullScreen></iframe>`;
       const embed = {
@@ -160,8 +158,6 @@ class PostDetails extends Component {
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
     const body = post.body || '';
-    //const parsedBody = getHtml(body, {}, 'text');
-    //this.images = extractImageTags(parsedBody);
 
     let tags = getFromMetadata(post.json_metadata, 'tags');
     if (tags === null) tags = [post.category];
