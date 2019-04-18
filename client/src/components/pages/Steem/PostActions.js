@@ -155,6 +155,7 @@ class PostActions extends Component {
             )
           }
         </div>
+        <div className='clear' />
       </React.Fragment>
     )
   }

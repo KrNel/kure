@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Form, Label, Select, Button } from 'semantic-ui-react';
+import { Form, Label, Select, Button } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
@@ -64,7 +64,7 @@ class Write extends Component {
   componentDidMount() {
     window.scrollTo(0, 0);
 
-    const { newPost, clearPost, isUpdating, draft } = this.props;
+    const { newPost, clearPost, isUpdating, draft, reset } = this.props;
     if (newPost) {
       this.redirect = '';
       clearPost();
@@ -76,6 +76,15 @@ class Write extends Component {
         title: draft.title,
         body: draft.body,
         tags: draft.jsonMetadata.tags.join(' '),
+      });
+    }
+
+    if (reset) {
+      clearPost();
+      this.setState({
+        title: '',
+        body: '',
+        tags: '',
       });
     }
   }
@@ -152,8 +161,6 @@ class Write extends Component {
    */
   getNewPostData = (title, body, tags, reward) => {
 
-    //tags = tags.trim().split(' ');
-
     const validTags = this.validateTags(tags);
 
     if (validTags.errors !== '') {
@@ -172,8 +179,6 @@ class Write extends Component {
 
     const oldMetadata = draft && draft.jsonMetadata;
 
-    //post.title = title;
-    //post.body = body;
     post.parentAuthor = '';
     post.author = user;
     post.parentPermlink = tags[0];
@@ -300,7 +305,7 @@ class Write extends Component {
                 }
               </Form.Button>
               <Button
-                content='Clear'
+                content='Cancel'
                 disabled={body === ''}
                 onClick={this.handleClear}
               />

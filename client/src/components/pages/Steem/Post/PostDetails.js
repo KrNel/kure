@@ -4,7 +4,6 @@ import { Grid, Form, Select } from "semantic-ui-react";
 import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 
 import Editor from '../Write/Editor';
 import PostBody from './PostBody';
@@ -67,7 +66,7 @@ class PostDetails extends Component {
     ];
 
     this.state = {
-      sortBy: 'old',
+      sortBy: 'payout',
     }
   }
 
@@ -308,7 +307,7 @@ class PostDetails extends Component {
                               <Form.Group>
                                 <Form.Field
                                   control={Select}
-                                  defaultValue={this.sortOptions[0].value}
+                                  defaultValue={this.sortOptions[3].value}
                                   options={this.sortOptions}
                                   onChange={this.handleSortChange}
                                 />
