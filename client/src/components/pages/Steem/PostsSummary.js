@@ -129,7 +129,7 @@ const PostsSummary = (props) => {
                 </div>
               </div>
             </div>
-            <hr />
+            <hr className='summaryDivider' />
           </div>
         )
       })
