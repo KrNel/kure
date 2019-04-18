@@ -138,8 +138,14 @@ class Comment extends Component {
     if (vp)
       comment = vp;
 
-    if (updatedComment && updatedId === comment.id)
-      comment = updatedComment;
+    if (updatedComment && updatedId === comment.id) {
+      comment = {
+        ...comment,
+        active_votes: updatedComment.active_votes,
+        body: updatedComment.body,
+        json_metadata: updatedComment.json_metadata,
+      }
+    }
 
     const depth = comment.depth;
 

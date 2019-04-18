@@ -54,6 +54,12 @@ export const sendComment = (
         editingComment: 0,
         updatedComment: action.comment,
         updatedId: action.comment.id,
+        /*commentPayload: {
+          ...state.commentPayload,
+          [action.parentId]: [
+            action.comment
+          ],
+        },*/
       });
     default:
       return state
