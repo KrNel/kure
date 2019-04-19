@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import jwt from 'jsonwebtoken';
 
 import SteemConnect from '../utils/auth/scAPI';
 import {SC_COOKIE} from '../settings';
@@ -212,6 +213,10 @@ const fetchLogin = (expiresAt, accessToken, user) => dispatch => {
         dispatch(cancelLogin());
       }
     });
+}
+
+export const cookieUser = () => {
+  return jwt.decode(Cookies.get(SC_COOKIE))['user'];
 }
 
 /**

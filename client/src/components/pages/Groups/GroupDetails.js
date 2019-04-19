@@ -51,27 +51,10 @@ class GroupDetails extends Component {
    *  Fetch post detail from Steem blockchain on component mount.
    */
   componentDidMount() {
-    /*let {
-      match: {
-        params: {
-          group
-        }
-      },
-      user,
-      isAuth,
-      csrf,
-    } = this.props;*/
-
 
     window.addEventListener("scroll", this.handleScroll);
 
-    //if (!posts.length)
-      this.getPosts();
-
-    /*if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
-      getPosts(group, user);
-    else if (csrf && !isAuth)//fetch data when logged out right after page refresh
-      getPosts(group, 'x');*/
+    this.getPosts();
   }
 
   /**
@@ -132,17 +115,13 @@ class GroupDetails extends Component {
         },
       },
     } = this.props;
-    let { user } = this.props;
-
-    if (user === '')
-      user = 'x';
 
     let nextPageId = '';
     if (kposts.length) {
       nextPageId = kposts[kposts.length-1]._id;
     }
 
-    getContent(group, user, this.limit, nextPageId);
+    getContent(group, this.limit, nextPageId);
   }
 
   /**
@@ -158,36 +137,6 @@ class GroupDetails extends Component {
     const { joinGroupRequest } = this.props;
     joinGroupRequest(group);
   }
-
-  /**
-   *  Send request to DB, return true to remove `Join` for group.
-   *
-   *  @param {string} group Group being requested to join
-   */
-  /*joinGroupRequest = (group) => {
-    const {user, csrf} = this.props;
-    requestToJoinGroup({group, user}, csrf)
-    .then(result => {
-      const {
-        groupData,
-      } = this.state;
-
-      let kaccess = groupData.kaccess;
-
-      if (result.data) {
-        kaccess[0] = {access: 100};
-      }
-      this.setState({
-        groupData: {
-          ...groupData,
-          kaccess: kaccess,
-        },
-        groupRequested: ''
-      });
-    }).catch(err => {
-      logger('error', err);
-    });
-  }*/
 
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
@@ -265,7 +214,7 @@ class GroupDetails extends Component {
 
     return (
       !groupData.notExists
-      ? !!groupData.kposts.length
+      ? groupData.kposts.length
         ? (
           <ErrorBoundary>
             <div className='community'>
@@ -355,15 +304,15 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    getContent: (group, user, limit, nextId) => (
-      dispatch(getGroupData(group, user, limit, nextId))
+    getContent: (group, limit, nextId) => (
+      dispatch(getGroupData(group, limit, nextId))
     ),
     clearContent: () => (
       dispatch(groupClear())
     ),
     joinGroupRequest: () => (
       dispatch(joinGroup())
-    )
+    ),
   }
 );
 

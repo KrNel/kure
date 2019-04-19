@@ -1,5 +1,5 @@
 import { getUserGroups, logger } from '../utils/fetchFunctions';
-import {handleReturning} from './authActions';
+import { cookieUser } from './authActions';
 
 export const GET_USERGROUPS_START = 'GET_USERGROUPS_START';
 export const GET_USERGROUPS_SUCCESS = 'GET_USERGROUPS_SUCCESS';
@@ -40,17 +40,16 @@ export const userGroupsSuccess = (groups) => ({
  *  @param {string} user User to get groups for
  *  @returns {function} Dispatches returned action object
  */
-export const getUserGroupsFetch = () => async (dispatch, getState) => {
+export const getUserGroupsFetch = () => (dispatch, getState) => {
   dispatch(userGroupsStart());
 
   const state = getState();
 
   //on first page load authenticate before proceeding
-  let { user } = state.auth;
+  let { auth: { user } } = state;
+  if (!user) user = cookieUser();
 
   if (!user) return dispatch(userGroupsError());
-  
-  const cont = await user === '' ? handleReturning() : '';//eslint-disable-line
 
   const { groups } = state.userGroups;
   if (!groups.length || groups[0].text !== "No Groups") return;

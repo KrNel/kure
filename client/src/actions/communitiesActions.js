@@ -3,6 +3,7 @@ import {
   requestToJoinGroup,
   logger } from '../utils/fetchFunctions';
 import { hasLength } from '../utils/helpers';
+import { cookieUser } from './authActions';
 
 export const GET_COMMUNITY_START = 'GET_COMMUNITY_START';
 export const GET_COMMUNITY_SUCCESS = 'GET_COMMUNITY_SUCCESS';
@@ -75,10 +76,13 @@ const joinGroupSuccess = kaccess => ({
  *  @param {object} nextId Fetch next page of results based on last ID
  *  @returns {function} Dispatches returned action object
  */
-export const getGroupData = (group, user, limit, nextId) => dispatch => {
+export const getGroupData = (group, limit, nextId) => (dispatch, getState) => {
   dispatch(getGroupStart());
   let hasMore = true;
   let notExists = false;
+
+  let { auth: { user } } = getState();
+  if (!user) user = cookieUser();
 
   return getGroupDetails(group, user, limit, nextId)
     .then(result => {
@@ -103,7 +107,7 @@ export const getGroupData = (group, user, limit, nextId) => dispatch => {
  *  @param {string} group Group to request join for
  *  @returns {function} Dispatches returned action object
  */
-export const joinGroup = group => (dispatch, getState) => {
+export const joinGroup = async group => (dispatch, getState) => {
   dispatch(joinGroupStart());
 
   const { state } = getState();
@@ -127,19 +131,4 @@ export const joinGroup = group => (dispatch, getState) => {
   }).catch(err => {
     logger('error', err);
   });
-  /*return getGroupDetails(group, user, limit, nextId)
-    .then(result => {
-      if (!hasLength(result.data)) {
-        hasMore = false;
-        notExists = true;
-        return dispatch(getGroupSuccess([], hasMore, notExists));
-      }
-
-      if (result.data.group.kposts.length < limit)
-        hasMore = false;
-
-      return dispatch(getGroupSuccess(result.data.group, hasMore, notExists));
-    }).catch(err => {
-      logger('error', err);
-    });*/
 }
