@@ -190,6 +190,8 @@ class Post extends Component {
        isCommenting,
        commentedId,
        commentPayload,
+       editingComment,
+       isUpdating,
      },
    } = state;
 
@@ -210,6 +212,8 @@ class Post extends Component {
      isCommenting,
      commentedId,
      commentPayload,
+     editingComment,
+     isUpdating,
    }
  }
 
