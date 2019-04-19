@@ -7,10 +7,10 @@ import Loading from '../../Loading/Loading';
 import GroupPostsList from '../../kure/GroupPostsList';
 import GroupPostsGrid from '../../kure/GroupPostsGrid';
 import GroupUsers from '../../kure/GroupUsers';
-import { requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
+
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
-import { getGroupData, groupClear } from '../../../actions/communitiesActions';
+import { getGroupData, groupClear, joinGroup } from '../../../actions/communitiesActions';
 
 import ToggleView from '../../kure/ToggleView';
 
@@ -40,7 +40,6 @@ class GroupDetails extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      groupRequested: '',
       showGrid: true,
       tabSelected: 'posts',
     };
@@ -78,7 +77,7 @@ class GroupDetails extends Component {
   /**
    *  Fetch post detail from Steem blockchain on component update.
    */
-  componentDidUpdate(prevProps) {
+  /*componentDidUpdate(prevProps) {
     const {
       user,
     } = this.props;
@@ -86,7 +85,7 @@ class GroupDetails extends Component {
     if (prevProps.user !== user) {
       this.getPosts();
     }
-  }
+  }*/
 
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -155,10 +154,9 @@ class GroupDetails extends Component {
    */
   onJoinGroup = (e, group) => {
     e.preventDefault();
-    this.setState({
-      groupRequested: group
-    });
-    this.joinGroupRequest(group);
+
+    const { joinGroupRequest } = this.props;
+    joinGroupRequest(group);
   }
 
   /**
@@ -166,7 +164,7 @@ class GroupDetails extends Component {
    *
    *  @param {string} group Group being requested to join
    */
-  joinGroupRequest = (group) => {
+  /*joinGroupRequest = (group) => {
     const {user, csrf} = this.props;
     requestToJoinGroup({group, user}, csrf)
     .then(result => {
@@ -189,7 +187,7 @@ class GroupDetails extends Component {
     }).catch(err => {
       logger('error', err);
     });
-  }
+  }*/
 
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
@@ -213,12 +211,12 @@ class GroupDetails extends Component {
       state: {
         showGrid,
         tabSelected,
-        groupRequested,
       },
       props: {
         isAuth,
         groupData,
         isFetching,
+        groupRequested,
       }
     } = this;
 
@@ -267,49 +265,51 @@ class GroupDetails extends Component {
 
     return (
       !groupData.notExists
-      ? (
-        <ErrorBoundary>
-          <div className='community'>
-            <Grid columns={1} stackable>
-              <Grid.Column width={16} className="main">
-                <Grid stackable>
-                  <Grid.Row>
-                    <Grid.Column>
-                      <Label size='large' color='blue'>
-                        <Header as='h2'>
-                          {groupData.display}
-                        </Header>
-                      </Label>
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row>
-                    <Grid.Column>
-                      <div className='left'>
-                        {tabViews}
-                        { isAuth && (
-                          <Label size='large'>
-                            {'Membership: '}
-                            {
-                              joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                            }
-                          </Label>
-                        )}
-                      </div>
-                      <ToggleView
-                        toggleView={this.toggleView}
-                        showGrid={showGrid}
-                      />
-                      <div className='clear' />
-                    </Grid.Column>
-                  </Grid.Row>
-                  {selectedTab}
-                  { isFetching && <Loading /> }
-                </Grid>
-              </Grid.Column>
-            </Grid>
-          </div>
-        </ErrorBoundary>
-      )
+      ? !!groupData.kposts.length
+        ? (
+          <ErrorBoundary>
+            <div className='community'>
+              <Grid columns={1} stackable>
+                <Grid.Column width={16} className="main">
+                  <Grid stackable>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Label size='large' color='blue'>
+                          <Header as='h2'>
+                            {groupData.display}
+                          </Header>
+                        </Label>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <div className='left'>
+                          {tabViews}
+                          { isAuth && (
+                            <Label size='large'>
+                              {'Membership: '}
+                              {
+                                joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                              }
+                            </Label>
+                          )}
+                        </div>
+                        <ToggleView
+                          toggleView={this.toggleView}
+                          showGrid={showGrid}
+                        />
+                        <div className='clear' />
+                      </Grid.Column>
+                    </Grid.Row>
+                    {selectedTab}
+                    { isFetching && <Loading /> }
+                  </Grid>
+                </Grid.Column>
+              </Grid>
+            </div>
+          </ErrorBoundary>
+        )
+        : <Loading />
       : (
         <Segment>
           {`That group doesn't exist.`}
@@ -361,9 +361,9 @@ const mapDispatchToProps = dispatch => (
     clearContent: () => (
       dispatch(groupClear())
     ),
-    /*joinGroupRequest: () => (
-
-    )*/
+    joinGroupRequest: () => (
+      dispatch(joinGroup())
+    )
   }
 );
 
