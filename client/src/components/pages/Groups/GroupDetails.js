@@ -7,10 +7,11 @@ import Loading from '../../Loading/Loading';
 import GroupPostsList from '../../kure/GroupPostsList';
 import GroupPostsGrid from '../../kure/GroupPostsGrid';
 import GroupUsers from '../../kure/GroupUsers';
-import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
+import { requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
-import {hasLength} from '../../../utils/helpers';
+import { getGroupData } from '../../../actions/communitiesActions';
+
 import ToggleView from '../../kure/ToggleView';
 
 /**
@@ -39,20 +40,19 @@ class GroupDetails extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      groupData: {kposts: [], kusers: []},
-      isLoading: true,
       groupRequested: '',
-      notExists: false,
       showGrid: true,
       tabSelected: 'posts',
     };
+
+    this.limit = 6;
   }
 
   /**
    *  Fetch post detail from Steem blockchain on component mount.
    */
   componentDidMount() {
-    let {
+    /*let {
       match: {
         params: {
           group
@@ -61,12 +61,18 @@ class GroupDetails extends Component {
       user,
       isAuth,
       csrf,
-    } = this.props;
+    } = this.props;*/
 
-    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
-      this.getGroupFetch(group, user);
+
+    window.addEventListener("scroll", this.handleScroll);
+
+    //if (!posts.length)
+      this.getPosts();
+
+    /*if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
+      getPosts(group, user);
     else if (csrf && !isAuth)//fetch data when logged out right after page refresh
-      this.getGroupFetch(group, 'x');
+      getPosts(group, 'x');*/
   }
 
   /**
@@ -74,41 +80,67 @@ class GroupDetails extends Component {
    */
   componentDidUpdate(prevProps) {
     const {
-      match: {
-        params: {
-          group
-        }
-      },
-      user
+      user,
     } = this.props;
 
     if (prevProps.user !== user) {
-      this.getGroupFetch(group, user);
+      this.getPosts();
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+
+  /**
+   *  Infinite scroll. Checks to see if the last post in the list is reached,
+   *  then calls fetch to get new posts.
+   */
+  handleScroll = (e) => {
+    const {
+      isFetching,
+      groupData: {
+        hasMore,
+      }
+    } = this.props;
+
+    if (!isFetching && hasMore) {
+      var lastLi = document.querySelector(".community div.infiniteEl:last-child");
+      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      var pageOffset = window.pageYOffset + window.innerHeight;
+      if (pageOffset > lastLiOffset) {
+        this.getPosts();
+      }
     }
   }
 
   /**
-   *  Get the various community data to display on the page.
-   *
-   *  @param {string} user User logged in
+   *  Gets the redux props values required to keep track of the infinite scroll
+   *  and updated the next page's ID to grab the next set of posts to display.
    */
-  getGroupFetch = (group, user) => {
-    getGroupDetails(group, user)
-    .then(result => {
-      if (hasLength(result.data)) {
-        this.setState({
-          groupData: result.data.group,
-          isLoading: false,
-        });
-      }else {
-        this.setState({
-          notExists: true,
-          isLoading: false,
-        });
-      }
-    }).catch(err => {
-      logger('error', err);
-    });
+  getPosts = () => {
+    const {
+      getContent,
+      groupData: {
+        kposts,
+      },
+      match: {
+        params: {
+          group
+        },
+      },
+    } = this.props;
+    let { user } = this.props;
+
+    if (user === '')
+      user = 'x';
+
+    let nextPageId = '';
+    if (kposts.length) {
+      nextPageId = kposts[kposts.length-1]._id;
+    }
+
+    getContent(group, user, this.limit, nextPageId);
   }
 
   /**
@@ -176,15 +208,14 @@ class GroupDetails extends Component {
   render() {
     const {
       state: {
-        groupData,
-        isLoading,
-        groupRequested,
-        notExists,
         showGrid,
         tabSelected,
+        groupRequested,
       },
       props: {
-        isAuth
+        isAuth,
+        groupData,
+        isFetching,
       }
     } = this;
 
@@ -232,11 +263,10 @@ class GroupDetails extends Component {
     })
 
     return (
-      isLoading
-      ? <Loading />
-      : !notExists
-        ? (
-          <ErrorBoundary>
+      !groupData.notExists
+      ? (
+        <ErrorBoundary>
+          <div className='community'>
             <Grid columns={1} stackable>
 
               <Grid.Column width={16} className="main">
@@ -272,16 +302,18 @@ class GroupDetails extends Component {
                     </Grid.Column>
                   </Grid.Row>
                   {selectedTab}
+                  { isFetching && <Loading /> }
                 </Grid>
               </Grid.Column>
             </Grid>
-          </ErrorBoundary>
-        )
-        : (
-          <Segment>
-            {`That group doesn't exist.`}
-          </Segment>
-        )
+          </div>
+        </ErrorBoundary>
+      )
+      : (
+        <Segment>
+          {`That group doesn't exist.`}
+        </Segment>
+      )
     )
   }
 }
@@ -293,13 +325,42 @@ class GroupDetails extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { user, csrf, isAuth } = state.auth;
+  const {
+    auth: {
+      user,
+      csrf,
+      isAuth,
+    },
+    communities: {
+      isFetching,
+      groupData,
+    }
+  } = state;
 
   return {
     user,
     csrf,
     isAuth,
+    isFetching,
+    groupData,
   }
 }
 
-export default connect(mapStateToProps)(GroupDetails);
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+  {
+    getContent: (group, user, limit, nextId) => (
+      dispatch(getGroupData(group, user, limit, nextId))
+    ),
+    /*joinGroupRequest: () => (
+
+    )*/
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

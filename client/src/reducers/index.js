@@ -11,6 +11,7 @@ import { upvote } from './upvoteReducer';
 import { sendComment } from './sendCommentReducer';
 import { sendPost } from './sendPostReducer';
 import { kurated } from './kuratedReducer';
+import { communities } from './communitiesReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   sendComment,
   sendPost,
   kurated,
+  communities,
 });
 
 export default rootReducer;

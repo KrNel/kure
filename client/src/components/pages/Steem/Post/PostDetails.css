@@ -4,7 +4,7 @@
   font-size: 1.3rem;
   line-height: 2.0rem;
   font-family: var(--font-content);
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 }
 
 .PostContent h1 {
@@ -13,7 +13,6 @@
 
 .PostContent > .Body {
   font-family: var(--font-body);
-
 }
 
 .PostContent .info {
@@ -30,11 +29,6 @@
   font-family: var(--font-content);
   font-size: 1.1rem;
 }
-
-.PostContent .post-actions {
-  margin-bottom: 2em;
-}
-
 
 .PostContent .alt-site {
   font-size: 1.0rem;

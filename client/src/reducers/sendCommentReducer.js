@@ -1,6 +1,8 @@
 import {
   SEND_COMMENT_START,
   SEND_COMMENT_SUCCESS,
+  EDIT_COMMENT_START,
+  EDIT_COMMENT_SUCCESS,
 } from '../actions/sendCommentActions';
 
 /**
@@ -15,6 +17,9 @@ export const sendComment = (
     isCommenting: false,
     commentedId: 0,
     commentPayload: {},
+    editingComment: 0,
+    isUpdating: false,
+    updatedId: 0,
   },
   action) => {
 
@@ -35,6 +40,20 @@ export const sendComment = (
             action.comment
           ],
         },
+      });
+    case EDIT_COMMENT_START:
+      return ({
+        ...state,
+        isUpdating: true,
+        editingComment: action.id,
+      });
+    case EDIT_COMMENT_SUCCESS:
+      return ({
+        ...state,
+        isUpdating: false,
+        editingComment: 0,
+        updatedComment: action.comment,
+        updatedId: action.comment.id,
       });
     default:
       return state

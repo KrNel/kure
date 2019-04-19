@@ -4,6 +4,7 @@ const client = new Client('https://hive.anyx.io/');
 
 export const GET_COMMENTS_START = 'GET_COMMENTS_START';
 export const GET_COMMENTS_SUCCESS = 'GET_COMMENTS_SUCCESS';
+export const CLEAR_COMMENTS = 'CLEAR_COMMENTS';
 
 /**
  *  Action creator for starting retrieval of comments data.
@@ -23,6 +24,16 @@ export const commentsStart = () => ({
 export const commentsSuccess = (comments) => ({
   type: GET_COMMENTS_SUCCESS,
   comments,
+});
+
+/**
+ *  Action creator for successful retrieval of comments data.
+ *
+ *  @param {object} comments Post to display
+ *  @return {object} The action data
+ */
+export const commentsClear = () => ({
+  type: CLEAR_COMMENTS,
 });
 
 /**

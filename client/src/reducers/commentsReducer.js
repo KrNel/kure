@@ -1,6 +1,7 @@
 import {
   GET_COMMENTS_START,
   GET_COMMENTS_SUCCESS,
+  CLEAR_COMMENTS,
 } from '../actions/commentsActions';
 
 /**
@@ -28,6 +29,11 @@ export const comments = (
         ...state,
         isFetchingComments: false,
         replies: action.comments,
+      });
+    case CLEAR_COMMENTS:
+      return ({
+        ...state,
+        replies: [],
       });
     default:
       return state

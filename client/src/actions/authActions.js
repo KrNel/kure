@@ -13,6 +13,8 @@ export const RECEIVE_LOGOUT = 'RECEIVE_LOGOUT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
 export const CANCEL_LOGIN = 'CANCEL_LOGIN';
+export const RECEIVE_CSRF = 'RECEIVE_CSRF';
+
 /**
  *  Action creator for requesting returning user athentication.
  *
@@ -30,11 +32,15 @@ export const requestReturning = () => ({
  */
 export const receiveReturning = (res) => ({
   type: RECEIVE_RETURNING,
-  isAuth: res.data.isAuth,
+  isAuth: true,
   isAuthorizing: false,
-  user: res.data.user,
-  csrf: res.headers['x-csrf-token'],
+  user: res.user,
   authedAt: Date.now()
+})
+
+export const receiveCSRF = (token) => ({
+  type: RECEIVE_CSRF,
+  csrf: token,
 })
 
 /**
@@ -115,17 +121,25 @@ export const cancelLogin = () => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-const fetchReturning = () => async dispatch => {
+const fetchReturning = () => dispatch => {
   dispatch(requestReturning());
 
-  return axios.get('/api/auth/returning', {
-  }).then(res => {
+  return new Promise((resolve, reject) => {
     const accessToken = Cookies.get(SC_COOKIE);
     if (accessToken) {
       validateToken(accessToken)
         .then(valid => {
           if (valid) {
-            dispatch(receiveReturning(res));
+            dispatch(receiveReturning(valid));
+
+            axios.get('/api/auth/returning', {
+              }).then(res => {
+                if (res.isAuth === false) {
+                  dispatch(cancelReturning());
+                }else {
+                  dispatch(receiveCSRF(res.headers['x-csrf-token']));
+                }
+              });
           }else {
             dispatch(errorReturning());
           }
@@ -207,10 +221,10 @@ const fetchLogin = (expiresAt, accessToken, user) => dispatch => {
  *  @param {function} getState Redux funtion to get the store state
  *  @returns {function} Dispatches returned action object
  */
-export const handleReturning = () => async (dispatch, getState) => {
+export const handleReturning = () => (dispatch, getState) => {
   const {isAuth, isAuthorizing} = getState().auth;
   if (!isAuth && !isAuthorizing)
-    return await dispatch(fetchReturning());
+    return dispatch(fetchReturning());
 }
 
 /**

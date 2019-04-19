@@ -31,6 +31,10 @@ export const getRecentActivity = (user, limit = 10, nextId) => {
   return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
 }
 
+export const getPanelActivity = (user, limit = 10, nextId) => {
+  return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
+}
+
 /**
  *  Get the list of communities on the site. Most recently created first.
  *
@@ -46,8 +50,8 @@ export const getGroupsPage = (user) => {
  *  @param {string} group Requested community
  *  @param {string} user User's related data for the community
  */
-export const getGroupDetails = (group, user) => {
-  return getData(`/api/groups/group/${group}/${user}`);
+export const getGroupDetails = (group, user, limit, nextId) => {
+  return getData(`/api/groups/group/${group}/${user}/${limit}/${nextId}`);
 }
 
 /**

@@ -239,8 +239,8 @@ const mapDispatchToProps = dispatch => (
     handleUpvote: (voter, author, permlink, weight) => (
       dispatch(upvotePost(voter, author, permlink, weight))
     ),
-    sendComment: (parentPost, body) => (
-      dispatch(sendComment(parentPost, body))
+    sendComment: (body, parentPost) => (
+      dispatch(sendComment(body, parentPost))
     ),
   }
 );

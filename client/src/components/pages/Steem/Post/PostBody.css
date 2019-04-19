@@ -1,8 +1,7 @@
 @import '../../../../variables.css';
 
 .Body {
-  font-size: 1.35rem;
-  letter-spacing: 0.01rem;
+  font-size: 1.3rem;
   overflow-wrap: break-word;
 }
 

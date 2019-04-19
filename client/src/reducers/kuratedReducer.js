@@ -1,5 +1,5 @@
 import {
-  REQUEST_POSTS, RECEIVE_POSTS
+  REQUEST_KURATED, RECEIVE_KURATED
 } from '../actions/kuratedActions';
 
 export const kurated = (state = {
@@ -9,12 +9,12 @@ export const kurated = (state = {
 }, action) => {
 
   switch (action.type) {
-    case REQUEST_POSTS:
+    case REQUEST_KURATED:
       return {
         ...state,
         isFetching: true,
       }
-    case RECEIVE_POSTS: {
+    case RECEIVE_KURATED: {
 
       return {
         ...state,

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { ObjectId } from 'mongodb';
 
 import {getRecentGroupActivity, getGroups} from './recentActivity';
 //import logger from '../../logger';
@@ -129,10 +130,12 @@ router.get('/list/:user', async (req, res, next) => {
  *  Gets the local DB object, group name.
  *  Retrieves the post, user and access group data for user, if logged in.
  */
-router.get('/group/:group/:user', async (req, res, next) => {
+router.get('/group/:group/:user/:limit/:nextId?', async (req, res, next) => {
   const db = req.app.locals.db;
-  const { group, user } = req.params;
-  getGroupDetails(db, next, user, group)
+  const { group, user, nextId } = req.params;
+  const limit = parseInt(req.params.limit);
+
+  getGroupDetails(db, next, user, group, limit, nextId)
     .then(result =>{
       res.json({group: result[0]})
     })
@@ -150,13 +153,13 @@ router.get('/group/:group/:user', async (req, res, next) => {
  *  @param {string} group Group to get data for
  *  @returns {object} Recent group activity  data object to send to frontend
  */
-export const getGroupDetails = async (db, next, user, group) => {
+export const getGroupDetails = async (db, next, user, group, limit, nextId) => {
   return new Promise((resolve, reject) => {
-
+    if (nextId) {
       db.collection('kgroups').aggregate([
         {
           $match : {
-            name : group
+            name : group,
           }
         },
         { $lookup: {
@@ -165,9 +168,11 @@ export const getGroupDetails = async (db, next, user, group) => {
             let: { kgroups_name : '$name' },
             pipeline: [
               { $match: {
+                _id: { $lt: ObjectId(nextId) },
                 $expr: { $eq: [ '$group', '$$kgroups_name' ] }
               } },
               { $sort: { _id: -1 } },
+              { $limit : limit }
             ]
           }
         },
@@ -204,7 +209,60 @@ export const getGroupDetails = async (db, next, user, group) => {
       ]).toArray((err, result) => {
         err ? reject(err) : resolve(result);
       })
+    }else {
+      db.collection('kgroups').aggregate([
+        {
+          $match : {
+            name : group,
+          }
+        },
+        { $lookup: {
+            from: 'kposts',
+            as: 'kposts',
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] }
+              } },
+              { $sort: { _id: -1 } },
+              { $limit : limit }
+            ]
+          }
+        },
+        { $lookup: {
+            from: 'kgroups_access',
+            as: 'kusers',
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] }
+              } },
+              { $sort: { _id: -1 } },
+            ]
+          }
+        },
+        {
+          $lookup: {
+            from: "kgroups_access",
+            as: "kaccess",
+            let: { kgroups_name : '$name' },
+            pipeline: [
+              { $match: {
+                user: user,
+                $expr: { $eq: [ '$group', '$$kgroups_name' ] } }
+              },
+              { $project: {
+                _id: 0,
+                access: 1
+              } }
+            ]
+           }
+        }
 
+      ]).toArray((err, result) => {
+        err ? reject(err) : resolve(result);
+      })
+    }
   }).catch(next)
 }
 
