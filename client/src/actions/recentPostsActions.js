@@ -1,4 +1,5 @@
 import { getRecentActivity } from '../utils/fetchFunctions';
+import { cookieUser } from './authActions';
 
 export const REQUEST_POSTS = 'REQUEST_POSTS';
 export const RECEIVE_POSTS = 'RECEIVE_POSTS';
@@ -63,8 +64,11 @@ export const receivePosts = (section, data, hasMore) => ({
  *  @param {function} dispatch Redux dispatch function
  *  @returns {function} Dispatches returned action object
  */
-export const fetchPosts = (section, user, limit, nextId) => dispatch => {
+export const fetchPosts = (section, limit, nextId) => (dispatch, getState) => {
   dispatch(requestPosts(section));
+
+  let { auth: { user } } = getState();
+  if (!user) user = cookieUser() || 'x';
 
   let hasMore = true;
 

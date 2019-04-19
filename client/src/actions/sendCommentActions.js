@@ -99,7 +99,6 @@ export const editComment = (body, comment) => dispatch => {
   dispatch(editCommentStart(comment.id));
 
   const { category, permlink, author, parent_permlink, parent_author } = comment;
-  const oldMetadata = comment.json_metadata;
 
   const jsonMetadata = createPostMetadata(body, [category]);
 
@@ -108,7 +107,7 @@ export const editComment = (body, comment) => dispatch => {
     .then(res => {
       if (res.result.block_num) {
         getComment(author, permlink)
-          .then(comment => {         
+          .then(comment => {
             dispatch(editCommentSuccess(comment));
           })
       }

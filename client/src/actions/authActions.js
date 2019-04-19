@@ -216,7 +216,9 @@ const fetchLogin = (expiresAt, accessToken, user) => dispatch => {
 }
 
 export const cookieUser = () => {
-  return jwt.decode(Cookies.get(SC_COOKIE))['user'];
+  const accessToken = Cookies.get(SC_COOKIE);
+  if (!accessToken) return null;
+  return jwt.decode(accessToken)['user'];
 }
 
 /**

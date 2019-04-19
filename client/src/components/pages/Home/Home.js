@@ -9,7 +9,6 @@ import ToggleView from '../../kure/ToggleView';
 import MyCommunities from './MyCommunities';
 import MySubmissions from './MySubmissions';
 import { fetchPosts } from '../../../actions/recentPostsActions';
-import { handleReturning } from '../../../actions/authActions';
 import RecentPostsList from './RecentPostsList';
 import RecentPostsGrid from './RecentPostsGrid';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
@@ -44,7 +43,6 @@ class Home extends Component {
     isFetching: PropTypes.bool.isRequired,
     isAuth: PropTypes.bool.isRequired,
     hasMore: PropTypes.bool,
-    authenticate: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -62,10 +60,7 @@ class Home extends Component {
 
   //this fetches when page loaded after site loads from elsewhere (user defined)
   componentDidMount() {
-    const { isAuth, authenticate, posts } = this.props;
-    if (!isAuth) {
-      authenticate();
-    }
+    const { posts } = this.props;
 
     window.addEventListener("scroll", this.handleScroll);
 
@@ -100,17 +95,14 @@ class Home extends Component {
    *  and updated the next page's ID to grab the next set of posts to display.
    */
   getPosts = () => {
-    let {selected, getContent, user, posts} = this.props;
-
-    if (user === '')
-      user = 'x';
+    let {selected, getContent, posts} = this.props;
 
     let nextPageId = '';
     if (posts.length) {
       nextPageId = posts[posts.length-1]._id;
     }
 
-    getContent(selected, user, this.limit, nextPageId);
+    getContent(selected, this.limit, nextPageId);
   }
 
   /**
@@ -247,11 +239,8 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    getContent: (selected, user, limit, nextPageId) => (
-      dispatch(fetchPosts(selected, user, limit, nextPageId))
-    ),
-    authenticate: () => (
-      dispatch(handleReturning())
+    getContent: (selected, limit, nextPageId) => (
+      dispatch(fetchPosts(selected, limit, nextPageId))
     ),
   }
 );
