@@ -10,7 +10,7 @@ import GroupUsers from '../../kure/GroupUsers';
 import { requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
-import { getGroupData } from '../../../actions/communitiesActions';
+import { getGroupData, groupClear } from '../../../actions/communitiesActions';
 
 import ToggleView from '../../kure/ToggleView';
 
@@ -45,7 +45,7 @@ class GroupDetails extends Component {
       tabSelected: 'posts',
     };
 
-    this.limit = 6;
+    this.limit = 20;
   }
 
   /**
@@ -90,6 +90,9 @@ class GroupDetails extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
+
+    const { clearContent } = this.props;
+    clearContent();
   }
 
   /**
@@ -268,10 +271,8 @@ class GroupDetails extends Component {
         <ErrorBoundary>
           <div className='community'>
             <Grid columns={1} stackable>
-
               <Grid.Column width={16} className="main">
                 <Grid stackable>
-
                   <Grid.Row>
                     <Grid.Column>
                       <Label size='large' color='blue'>
@@ -356,6 +357,9 @@ const mapDispatchToProps = dispatch => (
   {
     getContent: (group, user, limit, nextId) => (
       dispatch(getGroupData(group, user, limit, nextId))
+    ),
+    clearContent: () => (
+      dispatch(groupClear())
     ),
     /*joinGroupRequest: () => (
 

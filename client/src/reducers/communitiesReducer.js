@@ -1,6 +1,7 @@
 import {
   GET_COMMUNITY_START,
   GET_COMMUNITY_SUCCESS,
+  CLEAR_COMMUNITY
 } from '../actions/communitiesActions';
 
 export const communities = (state = {
@@ -21,8 +22,7 @@ export const communities = (state = {
         ...state,
         isFetching: true,
       }
-    case GET_COMMUNITY_SUCCESS: {
-
+    case GET_COMMUNITY_SUCCESS:
       return {
         ...state,
         isFetching: false,
@@ -37,7 +37,17 @@ export const communities = (state = {
           notExists: action.notExists,
         },
       }
-    }
+    case CLEAR_COMMUNITY:
+      return {
+        ...state,
+        groupData: {
+          kposts: [],
+          kusers: [],
+          hasMore: true,
+          notExists: false,
+        },
+        isFetching: false,
+      };
     default:
       return state
   }

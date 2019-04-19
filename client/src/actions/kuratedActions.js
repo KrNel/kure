@@ -6,7 +6,6 @@ export const RECEIVE_KURATED = 'RECEIVE_KURATED';
 /**
  *  Action creator to request recent post activity.
  *
- *  @param {string} section Section selected
  *  @returns {object} The action data
  */
 const requestPosts = () => ({
