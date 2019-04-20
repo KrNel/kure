@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
+
+import { editComment } from '../../../../actions/sendCommentActions';
 
 import Preview from './Preview';
 
@@ -11,16 +14,30 @@ class ReplyForm extends Component {
 
   static propTypes = {
     parentPost: PropTypes.shape(PropTypes.object.isRequired),
-    sendComment: PropTypes.func.isRequired,
-    isCommenting: PropTypes.bool.isRequired,
+    sendComment: PropTypes.func,
+    isCommenting: PropTypes.bool,
     commentedId: PropTypes.number,
     toggleReplyForm: PropTypes.func,
+    isUpdating: PropTypes.bool,
+    editingComment: PropTypes.number,
+    editCommentRedux: PropTypes.func,
+    comment: PropTypes.shape(PropTypes.object.isRequired),
+    handleCancelEdit: PropTypes.func,
+    commentBody: PropTypes.string,
   };
 
   static defaultProps = {
     parentPost: {},
     commentedId: 0,
     toggleReplyForm: () => {},
+    sendComment: () => {},
+    isCommenting: false,
+    isUpdating: false,
+    editingComment: 0,
+    editCommentRedux: () => {},
+    comment: {},
+    handleCancelEdit: () => {},
+    commentBody: '',
   }
 
   state = {
@@ -37,6 +54,7 @@ class ReplyForm extends Component {
         body: '',
       };
     }
+
     return null;
   }
 
@@ -54,11 +72,22 @@ class ReplyForm extends Component {
    */
   handleSendComment = () => {
     const { body } = this.state;
-    const {sendComment} = this.props;
+    const  { sendComment, parentPost } = this.props;
 
-    if (body) {
-      const {parentPost} = this.props;
-      sendComment(parentPost, body);
+    if (body && parentPost) {
+      sendComment(body, parentPost);
+    }
+  }
+
+  /**
+   *  Send the comment to redux for adding to Steem blockchain.
+   */
+  handleEditComment = () => {
+    const { body } = this.state;
+    const  { editCommentRedux, comment } = this.props;
+
+    if (body && comment) {
+      editCommentRedux(body, comment);
     }
   }
 
@@ -71,6 +100,14 @@ class ReplyForm extends Component {
     });
   }
 
+  /**
+   *  Cancel the comment edit form.
+   */
+  onCancelEdit = () => {
+    const { handleCancelEdit } = this.props;
+    handleCancelEdit();
+  }
+
   render() {
     const {
       state: {
@@ -80,8 +117,21 @@ class ReplyForm extends Component {
         isCommenting,
         commentedId,
         parentPost,
+        commentBody,
+        comment,
+        editingComment,
+        isUpdating,
       }
     } = this;
+
+    let cancelButtonClick = ['Clear', this.handleClearReply];
+    let submitButtonClick = ['Post', this.handleSendComment];
+    let disabled = body === '' || isCommenting;
+    if (commentBody) {
+      submitButtonClick = ['Update', this.handleEditComment];
+      cancelButtonClick = ['Cancel', this.onCancelEdit];
+      disabled = isUpdating;
+    }
 
     return (
       <ul className='repliesNoIndent'>
@@ -92,27 +142,31 @@ class ReplyForm extends Component {
                 isCommenting && commentedId === parentPost.id
                 && <Dimmer inverted active={isCommenting}><Loader /></Dimmer>
               }
+              {
+                isUpdating && editingComment === comment.id
+                && <Dimmer inverted active={isUpdating}><Loader /></Dimmer>
+              }
               <TextArea
                 placeholder='Share your thoughts'
                 onChange={this.handleChange}
                 name='body'
-                value={body}
-                disabled={isCommenting}
+                value={body || commentBody}
+                disabled={disabled}
               />
               <div>
                 <Button
                   size="large"
                   color="blue"
-                  content='Post'
-                  disabled={body === '' || isCommenting}
-                  onClick={this.handleSendComment}
+                  content={submitButtonClick[0]}
+                  disabled={disabled}
+                  onClick={submitButtonClick[1]}
                 />
                 <Button
                   size="large"
                   color="grey"
-                  content='Clear'
-                  disabled={body === '' || isCommenting}
-                  onClick={this.handleClearReply}
+                  content={cancelButtonClick[0]}
+                  disabled={disabled}
+                  onClick={cancelButtonClick[1]}
                 />
               </div>
 
@@ -130,4 +184,18 @@ class ReplyForm extends Component {
   }
 }
 
-export default ReplyForm;
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+ {
+   editCommentRedux: (body, comment) => (
+     dispatch(editComment(body, comment))
+   ),
+ }
+);
+
+export default connect(null, mapDispatchToProps)(ReplyForm);

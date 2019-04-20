@@ -7,10 +7,11 @@ import Loading from '../../Loading/Loading';
 import GroupPostsList from '../../kure/GroupPostsList';
 import GroupPostsGrid from '../../kure/GroupPostsGrid';
 import GroupUsers from '../../kure/GroupUsers';
-import { getGroupDetails, requestToJoinGroup, logger } from '../../../utils/fetchFunctions';
+
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
-import {hasLength} from '../../../utils/helpers';
+import { getGroupData, groupClear, joinGroup } from '../../../actions/communitiesActions';
+
 import ToggleView from '../../kure/ToggleView';
 
 /**
@@ -23,92 +24,112 @@ import ToggleView from '../../kure/ToggleView';
 class GroupDetails extends Component {
 
   static propTypes = {
-    user: PropTypes.string,
-    csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
     isAuth: PropTypes.bool,
+    clearContent: PropTypes.func,
+    isFetching: PropTypes.bool,
+    groupData: PropTypes.shape(PropTypes.object.isRequired),
+    getContent: PropTypes.func,
+    joinGroupRequest: PropTypes.func,
+    groupRequested: PropTypes.string,
   };
 
   static defaultProps = {
-    user: 'x',
-    csrf: '',
     isAuth: false,
     match: {},
+    clearContent: () => {},
+    isFetching: false,
+    groupData: {},
+    getContent: () => {},
+    joinGroupRequest: () => {},
+    groupRequested: '',
   };
 
   constructor(props) {
     super(props)
     this.state = {
-      groupData: {kposts: [], kusers: []},
-      isLoading: true,
-      groupRequested: '',
-      notExists: false,
       showGrid: true,
       tabSelected: 'posts',
     };
+
+    this.limit = 20;
   }
 
   /**
    *  Fetch post detail from Steem blockchain on component mount.
    */
   componentDidMount() {
-    let {
-      match: {
-        params: {
-          group
-        }
-      },
-      user,
-      isAuth,
-      csrf,
-    } = this.props;
 
-    if ((!isAuth && user === 'x') || isAuth)//fetch data when not logged in, or logged in, on first page view
-      this.getGroupFetch(group, user);
-    else if (csrf && !isAuth)//fetch data when logged out right after page refresh
-      this.getGroupFetch(group, 'x');
+    window.addEventListener("scroll", this.handleScroll);
+
+    this.getPosts();
   }
 
   /**
    *  Fetch post detail from Steem blockchain on component update.
    */
-  componentDidUpdate(prevProps) {
+  /*componentDidUpdate(prevProps) {
     const {
-      match: {
-        params: {
-          group
-        }
-      },
-      user
+      user,
     } = this.props;
 
     if (prevProps.user !== user) {
-      this.getGroupFetch(group, user);
+      this.getPosts();
+    }
+  }*/
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+
+    const { clearContent } = this.props;
+    clearContent();
+  }
+
+  /**
+   *  Infinite scroll. Checks to see if the last post in the list is reached,
+   *  then calls fetch to get new posts.
+   */
+  handleScroll = (e) => {
+    const {
+      isFetching,
+      groupData: {
+        hasMore,
+      }
+    } = this.props;
+
+    if (!isFetching && hasMore) {
+      var lastLi = document.querySelector(".community div.infiniteEl:last-child");
+      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      var pageOffset = window.pageYOffset + window.innerHeight;
+      if (pageOffset > lastLiOffset) {
+        this.getPosts();
+      }
     }
   }
 
   /**
-   *  Get the various community data to display on the page.
-   *
-   *  @param {string} user User logged in
+   *  Gets the redux props values required to keep track of the infinite scroll
+   *  and updated the next page's ID to grab the next set of posts to display.
    */
-  getGroupFetch = (group, user) => {
-    getGroupDetails(group, user)
-    .then(result => {
-      if (hasLength(result.data)) {
-        this.setState({
-          groupData: result.data.group,
-          isLoading: false,
-        });
-      }else {
-        this.setState({
-          notExists: true,
-          isLoading: false,
-        });
-      }
-    }).catch(err => {
-      logger('error', err);
-    });
+  getPosts = () => {
+    const {
+      getContent,
+      groupData: {
+        kposts,
+      },
+      match: {
+        params: {
+          group
+        },
+      },
+    } = this.props;
+
+    let nextPageId = '';
+    if (kposts.length) {
+      nextPageId = kposts[kposts.length-1]._id;
+    }
+
+    getContent(group, this.limit, nextPageId);
   }
 
   /**
@@ -120,40 +141,9 @@ class GroupDetails extends Component {
    */
   onJoinGroup = (e, group) => {
     e.preventDefault();
-    this.setState({
-      groupRequested: group
-    });
-    this.joinGroupRequest(group);
-  }
 
-  /**
-   *  Send request to DB, return true to remove `Join` for group.
-   *
-   *  @param {string} group Group being requested to join
-   */
-  joinGroupRequest = (group) => {
-    const {user, csrf} = this.props;
-    requestToJoinGroup({group, user}, csrf)
-    .then(result => {
-      const {
-        groupData,
-      } = this.state;
-
-      let kaccess = groupData.kaccess;
-
-      if (result.data) {
-        kaccess[0] = {access: 100};
-      }
-      this.setState({
-        groupData: {
-          ...groupData,
-          kaccess: kaccess,
-        },
-        groupRequested: ''
-      });
-    }).catch(err => {
-      logger('error', err);
-    });
+    const { joinGroupRequest } = this.props;
+    joinGroupRequest(group);
   }
 
   /**
@@ -176,15 +166,14 @@ class GroupDetails extends Component {
   render() {
     const {
       state: {
-        groupData,
-        isLoading,
-        groupRequested,
-        notExists,
         showGrid,
         tabSelected,
       },
       props: {
-        isAuth
+        isAuth,
+        groupData,
+        isFetching,
+        groupRequested,
       }
     } = this;
 
@@ -232,56 +221,57 @@ class GroupDetails extends Component {
     })
 
     return (
-      isLoading
-      ? <Loading />
-      : !notExists
+      !groupData.notExists
+      ? groupData.kposts.length
         ? (
           <ErrorBoundary>
-            <Grid columns={1} stackable>
-
-              <Grid.Column width={16} className="main">
-                <Grid stackable>
-
-                  <Grid.Row>
-                    <Grid.Column>
-                      <Label size='large' color='blue'>
-                        <Header as='h2'>
-                          {groupData.display}
-                        </Header>
-                      </Label>
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row>
-                    <Grid.Column>
-                      <div className='left'>
-                        {tabViews}
-                        { isAuth && (
-                          <Label size='large'>
-                            {'Membership: '}
-                            {
-                              joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                            }
-                          </Label>
-                        )}
-                      </div>
-                      <ToggleView
-                        toggleView={this.toggleView}
-                        showGrid={showGrid}
-                      />
-                      <div className='clear' />
-                    </Grid.Column>
-                  </Grid.Row>
-                  {selectedTab}
-                </Grid>
-              </Grid.Column>
-            </Grid>
+            <div className='community'>
+              <Grid columns={1} stackable>
+                <Grid.Column width={16} className="main">
+                  <Grid stackable>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Label size='large' color='blue'>
+                          <Header as='h2'>
+                            {groupData.display}
+                          </Header>
+                        </Label>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <div className='left'>
+                          {tabViews}
+                          { isAuth && (
+                            <Label size='large'>
+                              {'Membership: '}
+                              {
+                                joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                              }
+                            </Label>
+                          )}
+                        </div>
+                        <ToggleView
+                          toggleView={this.toggleView}
+                          showGrid={showGrid}
+                        />
+                        <div className='clear' />
+                      </Grid.Column>
+                    </Grid.Row>
+                    {selectedTab}
+                    { isFetching && <Loading /> }
+                  </Grid>
+                </Grid.Column>
+              </Grid>
+            </div>
           </ErrorBoundary>
         )
-        : (
-          <Segment>
-            {`That group doesn't exist.`}
-          </Segment>
-        )
+        : <Loading />
+      : (
+        <Segment>
+          {`That group doesn't exist.`}
+        </Segment>
+      )
     )
   }
 }
@@ -293,13 +283,41 @@ class GroupDetails extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { user, csrf, isAuth } = state.auth;
+  const {
+    auth: {
+      isAuth,
+    },
+    communities: {
+      isFetching,
+      groupData,
+    }
+  } = state;
 
   return {
-    user,
-    csrf,
     isAuth,
+    isFetching,
+    groupData,
   }
 }
 
-export default connect(mapStateToProps)(GroupDetails);
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+  {
+    getContent: (group, limit, nextId) => (
+      dispatch(getGroupData(group, limit, nextId))
+    ),
+    clearContent: () => (
+      dispatch(groupClear())
+    ),
+    joinGroupRequest: () => (
+      dispatch(joinGroup())
+    ),
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

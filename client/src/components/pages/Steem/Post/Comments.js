@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { hasLength, getUpvotes, sumPayout } from '../../../../utils/helpers';
 import Comment from './Comment';
@@ -73,6 +74,10 @@ const Comments = (props) => {
     handleUpvote,
     upvotePayload,
     sortBy,
+    editingComment,
+    isUpdating,
+    updatedComment,
+    updatedId,
   } = props;
 
   return (
@@ -93,6 +98,10 @@ const Comments = (props) => {
                 upvotePayload={upvotePayload}
                 user={user}
                 sortBy={sortBy}
+                editingComment={editingComment}
+                isUpdating={isUpdating}
+                updatedComment={updatedComment}
+                updatedId={updatedId}
               />
             </li>
           ))
@@ -113,6 +122,10 @@ const Comments = (props) => {
                 upvotePayload={upvotePayload}
                 user={user}
                 sortBy={sortBy}
+                editingComment={editingComment}
+                isUpdating={isUpdating}
+                updatedComment={updatedComment}
+                updatedId={updatedId}
               />
             </li>
           ))
@@ -134,6 +147,10 @@ Comments.propTypes = {
   commentPayload: PropTypes.shape(PropTypes.object.isRequired),
   pid: PropTypes.number.isRequired,
   sortBy: PropTypes.string.isRequired,
+  editingComment: PropTypes.number,
+  isUpdating: PropTypes.bool,
+  updatedComment: PropTypes.shape(PropTypes.object.isRequired),
+  updatedId: PropTypes.number,
 };
 
 Comments.defaultProps = {
@@ -141,6 +158,35 @@ Comments.defaultProps = {
   commentPayload: {},
   commentedId: 0,
   comments: [],
+  editingComment: 0,
+  isUpdating: false,
+  updatedComment: {},
+  updatedId: 0,
 }
 
-export default Comments;
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
+ const mapStateToProps = state => {
+   const {
+     sendComment: {
+       editingComment,
+       isUpdating,
+       updatedComment,
+       updatedId,
+     },
+   } = state;
+
+   return {
+     editingComment,
+     isUpdating,
+     updatedComment,
+     updatedId,
+   }
+ }
+
+export default connect(mapStateToProps)(Comments);
+//export default Comments;

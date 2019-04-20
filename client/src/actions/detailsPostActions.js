@@ -2,11 +2,13 @@ import { Client } from 'dsteem';
 
 import { getUserGroupsFetch } from './userGroupsActions';
 import { getPostComments } from './commentsActions';
+import { clearNewPost } from './sendPostActions';
 
 const client = new Client('https://hive.anyx.io/');
 
 export const GET_DETAILS_START = 'GET_DETAILS_START';
 export const GET_DETAILS_SUCCESS = 'GET_DETAILS_SUCCESS';
+export const CLEAR_POST = 'CLEAR_POST';
 
 /**
  *  Action creator for starting retrieval of post detail data.
@@ -26,6 +28,15 @@ export const detailsStart = () => ({
 export const detailsSuccess = (post) => ({
   type: GET_DETAILS_SUCCESS,
   post,
+});
+
+/**
+ *  Action creator for clearing post data.
+ *
+ *  @return {object} The action data
+ */
+export const clearPost = () => ({
+  type: CLEAR_POST,
 });
 
 /**

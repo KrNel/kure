@@ -35,7 +35,6 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     getContent: PropTypes.func.isRequired,
-    user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -46,7 +45,6 @@ class Home extends Component {
   };
 
   static defaultProps = {
-    user: 'x',
     hasMore: true,
   };
 
@@ -95,17 +93,14 @@ class Home extends Component {
    *  and updated the next page's ID to grab the next set of posts to display.
    */
   getPosts = () => {
-    let {selected, getContent, user, posts} = this.props;
-
-    if (user === '')
-      user = 'x';
+    let {selected, getContent, posts} = this.props;
 
     let nextPageId = '';
     if (posts.length) {
       nextPageId = posts[posts.length-1]._id;
     }
 
-    getContent(selected, user, this.limit, nextPageId);
+    getContent(selected, this.limit, nextPageId);
   }
 
   /**
@@ -228,8 +223,6 @@ const mapStateToProps = state => {
     isFetching,
     lastUpdated,
     isAuth: auth.isAuth,
-    user: auth.user,
-    csrf: auth.csrf,
     hasMore,
   }
 }
@@ -242,8 +235,8 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    getContent: (selected, user, limit, nextPageId) => (
-      dispatch(fetchPosts(selected, user, limit, nextPageId))
+    getContent: (selected, limit, nextPageId) => (
+      dispatch(fetchPosts(selected, limit, nextPageId))
     ),
   }
 );

@@ -41,3 +41,12 @@
   font-size: 1.15rem;
   margin: 0.2rem 0 0.5rem 0;
 }
+
+.summaryDivider {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid var(--main-border-light);
+  margin: 1em 0;
+  padding: 0;
+}

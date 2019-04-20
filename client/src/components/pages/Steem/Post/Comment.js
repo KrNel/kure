@@ -31,6 +31,10 @@ class Comment extends Component {
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
     sortBy: PropTypes.string,
+    editingComment: PropTypes.number,
+    isUpdating: PropTypes.bool,
+    updatedComment: PropTypes.shape(PropTypes.object.isRequired),
+    updatedId: PropTypes.number,
   };
 
   static defaultProps = {
@@ -39,10 +43,25 @@ class Comment extends Component {
     commentedId: 0,
     comment: {},
     sortBy: () => {},
+    editingComment: 0,
+    isUpdating: false,
+    updatedComment: {},
+    updatedId: 0,
   }
 
   state = {
     showReplyForm: false,
+    showEditForm: false,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (!props.isUpdating && props.updatedId === props.comment.id) {
+      return {
+        showEditForm: false,
+      };
+    }
+
+    return null;
   }
 
   /**
@@ -52,14 +71,17 @@ class Comment extends Component {
   onShowReplyForm = (e) => {
     e.preventDefault();
     this.toggleReplyForm();
-  };
+  }
 
   /**
    *  Toggle the display of the comment reply form.
    */
   toggleReplyForm = () => {
     const { showReplyForm } = this.state;
-    this.setState({ showReplyForm: !showReplyForm });
+    this.setState({
+      showReplyForm: !showReplyForm,
+      showEditForm: false,
+     });
   }
 
   /**
@@ -67,12 +89,34 @@ class Comment extends Component {
    */
   onShowEditForm = (e) => {
     e.preventDefault();
-  };
+    this.toggleEditForm();
+  }
+
+  /**
+   *  Toggle the display of the comment reply form.
+   */
+  toggleEditForm = () => {
+    const { showEditForm } = this.state;
+    this.setState({
+      showEditForm: !showEditForm,
+      showReplyForm: false,
+     });
+  }
+
+  /**
+   *  Cancel the comment edit form.
+   */
+  handleCancelEdit = () => {
+    this.setState({
+      showEditForm: false,
+    });
+  }
 
   render() {
     const {
       state: {
         showReplyForm,
+        showEditForm,
       },
       props: {
         sortComments,
@@ -85,6 +129,10 @@ class Comment extends Component {
         user,
         upvotePayload,
         sortBy,
+        editingComment,
+        isUpdating,
+        updatedComment,
+        updatedId,
       }
     } = this;
 
@@ -98,20 +146,16 @@ class Comment extends Component {
     if (vp)
       comment = vp;
 
-    const depth = comment.depth;
+    if (updatedComment && updatedId === comment.id) {
+      comment = {
+        ...comment,
+        active_votes: updatedComment.active_votes,
+        body: updatedComment.body,
+        json_metadata: updatedComment.json_metadata,
+      }
+    }
 
-    const replyForm =
-      showReplyForm && isAuth
-      ? (
-        <ReplyForm
-          sendComment={sendComment}
-          isCommenting={isCommenting}
-          parentPost={comment}
-          commentedId={commentedId}
-          toggleReplyForm={this.toggleReplyForm}
-        />
-      )
-      : null;
+    const depth = comment.depth;
 
     let replyClass = depth + 1 > 5 ? 'repliesNoIndent' : 'replies';
 
@@ -127,6 +171,32 @@ class Comment extends Component {
       parseFloat(comment.curator_payout_value);
     const totalRShares = comment.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
     const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
+
+    const replyForm =
+      isAuth && showReplyForm
+      ? (
+        <ReplyForm
+          sendComment={sendComment}
+          isCommenting={isCommenting}
+          parentPost={comment}
+          commentedId={commentedId}
+          toggleReplyForm={this.toggleReplyForm}
+        />
+      )
+      : null;
+
+    const editForm =
+      isAuth && showEditForm
+      ? (
+        <ReplyForm
+          commentBody={comment.body}
+          comment={comment}
+          handleCancelEdit={this.handleCancelEdit}
+          editingComment={editingComment}
+          isUpdating={isUpdating}
+        />
+      )
+      : null;
 
     return (
       <React.Fragment>
@@ -145,43 +215,51 @@ class Comment extends Component {
                   text={long(created)}
                 />
               </div>
-              <div className='commentBody'>
-                <Body
-                  full
-                  rewriteLinks={false}
-                  body={comment.body}
-                  json_metadata={comment.json_metadata}
-                />
-              </div>
-              <div className='commentFooter'>
-                <ul className="meta">
-                  <Vote
-                    activeVotes={activeVotes}
-                    author={author}
-                    payoutValue={totalPayout}
-                    permlink={permlink}
-                    user={user}
-                    handleUpvote={handleUpvote}
-                    upvotePayload={upvotePayload}
-                    ratio={ratio}
-                    pid={id}
-                  />
-                  {
-                    isAuth && (
-                      <li className='item'>
-                        <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
-                      </li>
-                    )
-                  }
-                  {
-                    isAuth && user === author && (
-                      <li className='item'>
-                        <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
-                      </li>
-                    )
-                  }
-                </ul>
-              </div>
+              {
+                showEditForm
+                ? editForm
+                : (
+                  <React.Fragment>
+                    <div className='commentBody'>
+                      <Body
+                        full
+                        rewriteLinks={false}
+                        body={comment.body}
+                        json_metadata={comment.json_metadata}
+                      />
+                    </div>
+                    <div className='commentFooter'>
+                      <ul className="meta">
+                        <Vote
+                          activeVotes={activeVotes}
+                          author={author}
+                          payoutValue={totalPayout}
+                          permlink={permlink}
+                          user={user}
+                          handleUpvote={handleUpvote}
+                          upvotePayload={upvotePayload}
+                          ratio={ratio}
+                          pid={id}
+                        />
+                        {
+                          isAuth && (
+                            <li className='item'>
+                              <a href='/reply' onClick={this.onShowReplyForm}>Reply</a>
+                            </li>
+                          )
+                        }
+                        {
+                          isAuth && user === author && (
+                            <li className='item'>
+                              <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
+                            </li>
+                          )
+                        }
+                      </ul>
+                    </div>
+                  </React.Fragment>
+                )
+              }
             </li>
             <div className='clear' />
           </ul>
@@ -207,6 +285,10 @@ class Comment extends Component {
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     sortBy={sortBy}
+                    editingComment={editingComment}
+                    isUpdating={isUpdating}
+                    updatedComment={updatedComment}
+                    updatedId={updatedId}
                   />
                 </li>
               ))
@@ -232,6 +314,11 @@ class Comment extends Component {
                       user={user}
                       handleUpvote={handleUpvote}
                       upvotePayload={upvotePayload}
+                      sortBy={sortBy}
+                      editingComment={editingComment}
+                      isUpdating={isUpdating}
+                      updatedComment={updatedComment}
+                      updatedId={updatedId}
                     />
                   </li>
                 ))

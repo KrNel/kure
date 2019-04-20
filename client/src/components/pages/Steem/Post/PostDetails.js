@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Form, Select } from "semantic-ui-react";
-import _ from 'lodash';
+import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { connect } from 'react-redux';
 
+import Editor from '../Write/Editor';
 import PostBody from './PostBody';
 import { getFromMetadata } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
@@ -16,6 +18,8 @@ import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
+import { editPost } from '../../../../actions/sendPostActions';
+import { clearPost } from '../../../../actions/detailsPostActions';
 import './PostDetails.css'
 
 /**
@@ -36,6 +40,9 @@ class PostDetails extends Component {
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
+    isUpdating: PropTypes.bool,
+    showEditPost: PropTypes.func,
+    clearPostDetails: PropTypes.func,
   };
 
   static defaultProps = {
@@ -45,13 +52,14 @@ class PostDetails extends Component {
     commentedId: 0,
     isAuth: false,
     replies: [],
+    isUpdating: false,
+    showEditPost: () => {},
+    clearPostDetails: () => {},
   }
 
   constructor(props) {
     super(props);
 
-    //this.images = [];
-    //this.imagesAlts = [];
     this.sortOptions = [
       {key: 0, value: 'old', text: 'Old'},
       {key: 1, value: 'new', text: 'New'},
@@ -61,8 +69,13 @@ class PostDetails extends Component {
     ];
 
     this.state = {
-      sortBy: 'old',
+      sortBy: 'payout',
     }
+  }
+
+  componentWillUnmount() {
+    const { clearPostDetails } = this.props;
+    clearPostDetails();
   }
 
   //Needed to `dangerouslySetInnerHTML`
@@ -82,23 +95,29 @@ class PostDetails extends Component {
       });
    }
 
+   handleEditPost = e => {
+     e.preventDefault();
+     const { showEditPost, post } = this.props;
+     showEditPost(post);
+   }
+
   /**
    *  Lifted from busy.org source code to play d.tube videos on-site.
    */
   renderDtubeEmbedPlayer(post) {
-    const parsedJsonMetaData = _.attempt(JSON.parse, post.json_metadata);
+    const parsedJsonMetaData = attempt(JSON.parse, post.json_metadata);
 
-    if (_.isError(parsedJsonMetaData)) {
+    if (isError(parsedJsonMetaData)) {
       return null;
     }
 
     const video = getFromMetadata(post.json_metadata, 'video');
-    const isDtubeVideo = _.has(video, 'content.videohash') && _.has(video, 'info.snaphash');
+    const isDtubeVideo = has(video, 'content.videohash') && has(video, 'info.snaphash');
 
     if (isDtubeVideo) {
-      const videoTitle = _.get(video, 'info.title', '');
-      const author = _.get(video, 'info.author', '');
-      const permlink = _.get(video, 'info.permlink', '');
+      const videoTitle = get(video, 'info.title', '');
+      const author = get(video, 'info.author', '');
+      const permlink = get(video, 'info.permlink', '');
       const dTubeEmbedUrl = `https://emb.d.tube/#!/${author}/${permlink}/true`;
       const dTubeIFrame = `<iframe width="100%" height="340" src="${dTubeEmbedUrl}" title="${videoTitle}" allowFullScreen></iframe>`;
       const embed = {
@@ -126,6 +145,7 @@ class PostDetails extends Component {
       isCommenting,
       commentedId,
       commentPayload,
+      isUpdating,
     } = this.props;
 
     const {
@@ -160,14 +180,15 @@ class PostDetails extends Component {
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
     const body = post.body || '';
-    //const parsedBody = getHtml(body, {}, 'text');
-    //this.images = extractImageTags(parsedBody);
 
     let tags = getFromMetadata(post.json_metadata, 'tags');
     if (tags === null) tags = [post.category];
 
     const comments = replies;
     const pid = post.id;
+
+    // if editing post, set wider column width
+    const columns = isUpdating ? 13 : 11;
 
     return (
       <HelmetProvider>
@@ -188,32 +209,39 @@ class PostDetails extends Component {
           </Helmet>
           <Grid verticalAlign='middle' columns={1} centered>
             <Grid.Row>
-              <Grid.Column width={11}>
+              <Grid.Column width={columns}>
                 <React.Fragment>
                   {
                     isFetching ? <Loading />
                     : (
                       <React.Fragment>
                         <div className='PostContent'>
-                          <h1>
-                            {title}
-
-                          </h1>
-                          <AuthorCatgoryTime
-                            author={author}
-                            authorReputation={authorReputation}
-                            category={category}
-                            created={created}
-                            permlink={permlink}
-                          />
-                          <hr />
-                          {this.renderDtubeEmbedPlayer(post)}
-                          <PostBody
-                            full
-                            rewriteLinks={false}
-                            body={body}
-                            jsonMetadata={post.json_metadata}
-                          />
+                          {
+                            isUpdating
+                            ? <Editor />
+                            : (
+                              <React.Fragment>
+                                <h1>
+                                  {title}
+                                </h1>
+                                <AuthorCatgoryTime
+                                  author={author}
+                                  authorReputation={authorReputation}
+                                  category={category}
+                                  created={created}
+                                  permlink={permlink}
+                                />
+                                <hr />
+                                {this.renderDtubeEmbedPlayer(post)}
+                                <PostBody
+                                  full
+                                  rewriteLinks={false}
+                                  body={body}
+                                  jsonMetadata={post.json_metadata}
+                                />
+                              </React.Fragment>
+                            )
+                          }
                           <br />
                           <div className='footer'>
                             <div className='left'>
@@ -254,6 +282,8 @@ class PostDetails extends Component {
                                 ratio={ratio}
                                 pid={pid}
                                 image={image}
+                                isPost
+                                onEditPost={this.handleEditPost}
                               />
                             </div>
                             <hr />
@@ -285,7 +315,7 @@ class PostDetails extends Component {
                               <Form.Group>
                                 <Form.Field
                                   control={Select}
-                                  defaultValue={this.sortOptions[0].value}
+                                  defaultValue={this.sortOptions[3].value}
                                   options={this.sortOptions}
                                   onChange={this.handleSortChange}
                                 />
@@ -319,4 +349,39 @@ class PostDetails extends Component {
   }
 }
 
-export default PostDetails;
+/**
+ *  Map redux state to component props.
+ *
+ *  @param {object} state - Redux state
+ *  @returns {object} - Object with recent activity data
+ */
+ const mapStateToProps = state => {
+   const {
+     sendPost: {
+       isUpdating,
+     }
+   } = state;
+
+   return {
+     isUpdating,
+   }
+ }
+
+/**
+ *  Map redux dispatch functions to component props.
+ *
+ *  @param {object} dispatch - Redux dispatch
+ *  @returns {object} - Object with recent activity data
+ */
+const mapDispatchToProps = dispatch => (
+ {
+   showEditPost: (post) => (
+     dispatch(editPost(post))
+   ),
+   clearPostDetails: () => {
+     dispatch(clearPost())
+   }
+ }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostDetails);
