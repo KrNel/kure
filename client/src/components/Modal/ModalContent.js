@@ -1,5 +1,6 @@
-import React from 'react'
-import { Button, Header, Icon, Image, Modal } from 'semantic-ui-react'
+import React from 'react';
+import { Button, Header, Icon, Image, Modal } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 
 const ModalContent = ({modalOpen, onModalClose}) => (
   <Modal open={modalOpen} onClose={onModalClose}>
@@ -8,7 +9,9 @@ const ModalContent = ({modalOpen, onModalClose}) => (
       <Image wrapped size='medium' src='https://react.semantic-ui.com/images/wireframe/image.png' />
       <Modal.Description>
         <Header>Modal Header</Header>
-        <p>This is an example of expanded content that will cause the modal's dimmer to scroll</p>
+        <p>
+          {`This is an example of expanded content that will cause the modal's dimmer to scroll`}
+        </p>
         <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
@@ -21,12 +24,21 @@ const ModalContent = ({modalOpen, onModalClose}) => (
     </Modal.Content>
     <Modal.Actions>
       <Button primary>
-        Proceed 
-        {' '}
+        {'Proceed '}
         <Icon name='right chevron' />
       </Button>
     </Modal.Actions>
   </Modal>
 )
+
+ModalContent.propTypes = {
+  modalOpen: PropTypes.bool,
+  onModalClose: PropTypes.func,
+};
+
+ModalContent.defaultProps = {
+  modalOpen: false,
+  onModalClose: () => {},
+};
 
 export default ModalContent

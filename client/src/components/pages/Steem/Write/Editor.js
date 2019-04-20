@@ -25,6 +25,7 @@ class Write extends Component {
     isUpdating: PropTypes.bool,
     draft: PropTypes.shape(PropTypes.object.isRequired),
     cancelEdit: PropTypes.func.isRequired,
+    reset: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -34,6 +35,7 @@ class Write extends Component {
     error: '',
     isUpdating: false,
     draft: {},
+    reset: false,
   }
 
   constructor(props) {
@@ -65,19 +67,6 @@ class Write extends Component {
     window.scrollTo(0, 0);
 
     const { newPost, clearPost, isUpdating, draft, reset } = this.props;
-    if (newPost) {
-      this.redirect = '';
-      clearPost();
-    }
-
-    if (isUpdating && draft) {
-      this.permlink = draft.permlink;
-      this.setState({
-        title: draft.title,
-        body: draft.body,
-        tags: draft.jsonMetadata.tags.join(' '),
-      });
-    }
 
     if (reset) {
       clearPost();
@@ -85,6 +74,16 @@ class Write extends Component {
         title: '',
         body: '',
         tags: '',
+      });
+    }else if (newPost) {
+      this.redirect = '';
+      clearPost();
+    }else if (isUpdating && draft) {
+      this.permlink = draft.permlink;
+      this.setState({
+        title: draft.title,
+        body: draft.body,
+        tags: draft.jsonMetadata.tags.join(' '),
       });
     }
   }
@@ -121,7 +120,6 @@ class Write extends Component {
    */
   handleSubmit = (e) => {
     e.preventDefault();
-
 
     const { title, body, tags, reward } = this.state;
     const { createPost } = this.props;
@@ -236,6 +234,7 @@ class Write extends Component {
         newPost,
         error,
         isUpdating,
+        reset,
       }
     } = this;
 
@@ -244,7 +243,7 @@ class Write extends Component {
     }
 
     return (
-      (newPost)
+      (newPost && !reset)
       ? <Redirect to={newPost} />
       : (
         <div id='write'>

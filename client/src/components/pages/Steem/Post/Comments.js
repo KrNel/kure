@@ -147,6 +147,10 @@ Comments.propTypes = {
   commentPayload: PropTypes.shape(PropTypes.object.isRequired),
   pid: PropTypes.number.isRequired,
   sortBy: PropTypes.string.isRequired,
+  editingComment: PropTypes.number,
+  isUpdating: PropTypes.bool,
+  updatedComment: PropTypes.shape(PropTypes.object.isRequired),
+  updatedId: PropTypes.number,
 };
 
 Comments.defaultProps = {
@@ -154,6 +158,10 @@ Comments.defaultProps = {
   commentPayload: {},
   commentedId: 0,
   comments: [],
+  editingComment: 0,
+  isUpdating: false,
+  updatedComment: {},
+  updatedId: 0,
 }
 
 /**

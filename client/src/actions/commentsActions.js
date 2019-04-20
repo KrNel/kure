@@ -27,7 +27,7 @@ export const commentsSuccess = (comments) => ({
 });
 
 /**
- *  Action creator for successful retrieval of comments data.
+ *  Action creator for clearning comments data.
  *
  *  @param {object} comments Post to display
  *  @return {object} The action data

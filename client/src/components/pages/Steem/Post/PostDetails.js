@@ -19,7 +19,7 @@ import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
 import { editPost } from '../../../../actions/sendPostActions';
-import { commentsClear } from '../../../../actions/commentsActions';
+import { clearPost } from '../../../../actions/detailsPostActions';
 import './PostDetails.css'
 
 /**
@@ -42,6 +42,7 @@ class PostDetails extends Component {
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
     isUpdating: PropTypes.bool,
     showEditPost: PropTypes.func,
+    clearPostDetails: PropTypes.func,
   };
 
   static defaultProps = {
@@ -53,6 +54,7 @@ class PostDetails extends Component {
     replies: [],
     isUpdating: false,
     showEditPost: () => {},
+    clearPostDetails: () => {},
   }
 
   constructor(props) {
@@ -72,8 +74,8 @@ class PostDetails extends Component {
   }
 
   componentWillUnmount() {
-    const { clearComments } = this.props;
-    clearComments();
+    const { clearPostDetails } = this.props;
+    clearPostDetails();
   }
 
   //Needed to `dangerouslySetInnerHTML`
@@ -376,8 +378,8 @@ const mapDispatchToProps = dispatch => (
    showEditPost: (post) => (
      dispatch(editPost(post))
    ),
-   clearComments: () => {
-     commentsClear()
+   clearPostDetails: () => {
+     dispatch(clearPost())
    }
  }
 );

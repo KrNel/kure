@@ -83,7 +83,7 @@ export const getGroupData = (group, limit, nextId) => (dispatch, getState) => {
 
   let { auth: { user } } = getState();
   if (!user) user = cookieUser() || 'x';
-console.log('user',user)
+
   return getGroupDetails(group, user, limit, nextId)
     .then(result => {
       if (!hasLength(result.data)) {

@@ -35,7 +35,6 @@ class Home extends Component {
   static propTypes = {
     selected: PropTypes.string.isRequired,
     getContent: PropTypes.func.isRequired,
-    user: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object).isRequired,
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -46,7 +45,6 @@ class Home extends Component {
   };
 
   static defaultProps = {
-    user: 'x',
     hasMore: true,
   };
 
@@ -225,8 +223,6 @@ const mapStateToProps = state => {
     isFetching,
     lastUpdated,
     isAuth: auth.isAuth,
-    user: auth.user,
-    csrf: auth.csrf,
     hasMore,
   }
 }

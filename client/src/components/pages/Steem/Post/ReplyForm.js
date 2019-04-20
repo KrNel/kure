@@ -18,6 +18,12 @@ class ReplyForm extends Component {
     isCommenting: PropTypes.bool,
     commentedId: PropTypes.number,
     toggleReplyForm: PropTypes.func,
+    isUpdating: PropTypes.bool,
+    editingComment: PropTypes.number,
+    editCommentRedux: PropTypes.func,
+    comment: PropTypes.shape(PropTypes.object.isRequired),
+    handleCancelEdit: PropTypes.func,
+    commentBody: PropTypes.string,
   };
 
   static defaultProps = {
@@ -26,6 +32,12 @@ class ReplyForm extends Component {
     toggleReplyForm: () => {},
     sendComment: () => {},
     isCommenting: false,
+    isUpdating: false,
+    editingComment: 0,
+    editCommentRedux: () => {},
+    comment: {},
+    handleCancelEdit: () => {},
+    commentBody: '',
   }
 
   state = {

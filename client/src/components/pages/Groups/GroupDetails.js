@@ -24,17 +24,25 @@ import ToggleView from '../../kure/ToggleView';
 class GroupDetails extends Component {
 
   static propTypes = {
-    user: PropTypes.string,
-    csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
     isAuth: PropTypes.bool,
+    clearContent: PropTypes.func,
+    isFetching: PropTypes.bool,
+    groupData: PropTypes.shape(PropTypes.object.isRequired),
+    getContent: PropTypes.func,
+    joinGroupRequest: PropTypes.func,
+    groupRequested: PropTypes.string,
   };
 
   static defaultProps = {
-    user: 'x',
-    csrf: '',
     isAuth: false,
     match: {},
+    clearContent: () => {},
+    isFetching: false,
+    groupData: {},
+    getContent: () => {},
+    joinGroupRequest: () => {},
+    groupRequested: '',
   };
 
   constructor(props) {
@@ -277,8 +285,6 @@ class GroupDetails extends Component {
 const mapStateToProps = state => {
   const {
     auth: {
-      user,
-      csrf,
       isAuth,
     },
     communities: {
@@ -288,8 +294,6 @@ const mapStateToProps = state => {
   } = state;
 
   return {
-    user,
-    csrf,
     isAuth,
     isFetching,
     groupData,

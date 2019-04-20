@@ -51,6 +51,7 @@ export const sendPost = (
         isPosting: false,
         newPost: '',
         error: '',
+        draft: {},
       });
     case SHOW_EDIT_POST:
       return ({

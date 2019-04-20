@@ -1,6 +1,7 @@
 import {
   GET_DETAILS_START,
   GET_DETAILS_SUCCESS,
+  CLEAR_POST,
 } from '../actions/detailsPostActions';
 
 /**
@@ -28,6 +29,12 @@ export const detailsPost = (
         ...state,
         isFetchingDetails: false,
         post: action.post,
+      });
+    case CLEAR_POST:
+      return ({
+        ...state,
+        isFetchingDetails: false,
+        post: {},
       });
     default:
       return state
