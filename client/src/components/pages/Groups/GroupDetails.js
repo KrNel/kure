@@ -222,7 +222,7 @@ class GroupDetails extends Component {
 
     return (
       !groupData.notExists
-      ? groupData.kposts.length
+      ? groupData.display
         ? (
           <ErrorBoundary>
             <div className='community'>

@@ -64,6 +64,7 @@ export const sendPost = (
         ...state,
         isUpdating: false,
         draft: {},
+        newPost: '',
       });
     default:
       return state

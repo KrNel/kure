@@ -49,7 +49,6 @@ class Write extends Component {
       tagErrors: '',
     }
 
-    this.redirect = '';
     this.permlink = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
@@ -68,24 +67,23 @@ class Write extends Component {
 
     const { newPost, clearPost, isUpdating, draft, reset } = this.props;
 
-    if (reset) {
-      clearPost();
-      this.setState({
-        title: '',
-        body: '',
-        tags: '',
-      });
-    }else if (newPost) {
-      this.redirect = '';
-      clearPost();
-    }else if (isUpdating && draft) {
+    if (isUpdating && draft) {
       this.permlink = draft.permlink;
       this.setState({
         title: draft.title,
         body: draft.body,
         tags: draft.jsonMetadata.tags.join(' '),
       });
-    }
+    }else if (reset) {
+      clearPost();
+      this.setState({
+        title: '',
+        body: '',
+        tags: '',
+      });
+    }/*else if (newPost) {
+      clearPost();
+    }*/
   }
 
   componentWillUnmount() {
@@ -237,11 +235,8 @@ class Write extends Component {
         reset,
       }
     } = this;
-
-    if (newPost) {
-      this.redirect = newPost;
-    }
-
+console.log('state',this.state)
+console.log('props',this.props)
     return (
       (newPost && !reset)
       ? <Redirect to={newPost} />

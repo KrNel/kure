@@ -157,7 +157,7 @@ class Posts extends Component {
   handleSubmitFilter = (selectedFilter, tag) => {
     this.selectedFilter = selectedFilter;
     this.tag = tag;
-    this.getPosts('init');
+    this.getPosts('');
   }
 
   render() {
