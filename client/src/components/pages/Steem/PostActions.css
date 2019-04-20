@@ -79,3 +79,10 @@
   margin-left:2rem;
   border-left: none;
 }
+
+.ui.animated.button {
+  padding: 6px 11px;
+}
+.ui.animated.button .visible.content {
+  margin-right: 5px;
+}

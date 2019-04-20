@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Icon } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 
 import Vote from './Vote';
 
@@ -140,17 +140,31 @@ class PostActions extends Component {
               <React.Fragment>
                 {
                   isPost && author === user && (
-                    <span>
-                      <a href="/post/edit" onClick={e => onEditPost(e)} title="Edit post">
-                        <Icon name='compose' size='large' />
-                      </a>
-                      {` `}
-                    </span>
+                    <Button
+                      animated='vertical'
+                      color='blue'
+                      onClick={e => onEditPost(e)}
+                      title="Edit post"
+                    >
+                      <Button.Content hidden>Edit</Button.Content>
+                      <Button.Content visible>
+                        <Icon name='edit' />
+                      </Button.Content>
+                    </Button>
+
                   )
                 }
-                <a href="/group/add" onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})} title="Add to a community">
-                  <Icon name='plus circle' size='large' />
-                </a>
+                <Button
+                  animated='vertical'
+                  color='blue'
+                  onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})}
+                  title="Add to a community"
+                >
+                  <Button.Content hidden>Add</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='plus circle' />
+                  </Button.Content>
+                </Button>
               </React.Fragment>
             )
           }

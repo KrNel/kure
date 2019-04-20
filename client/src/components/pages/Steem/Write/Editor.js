@@ -235,8 +235,7 @@ class Write extends Component {
         reset,
       }
     } = this;
-console.log('state',this.state)
-console.log('props',this.props)
+
     return (
       (newPost && !reset)
       ? <Redirect to={newPost} />
