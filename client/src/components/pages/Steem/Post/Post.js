@@ -10,7 +10,7 @@ import { getDetailsContent } from '../../../../actions/detailsPostActions';
 import * as addPostActions from '../../../../actions/addPostActions';
 import { upvotePost } from '../../../../actions/upvoteActions';
 import { sendComment } from '../../../../actions/sendCommentActions';
-import {hasLength} from '../../../../utils/helpers';
+import { hasLength } from '../../../../utils/helpers';
 import Loading from '../../../Loading/Loading';
 
 /**
@@ -43,6 +43,9 @@ class Post extends Component {
     onModalCloseAddPost: PropTypes.func.isRequired,
     handleGroupSelect: PropTypes.func.isRequired,
     isFetchingDetails: PropTypes.bool.isRequired,
+    isUpdating: PropTypes.bool,
+    draft: PropTypes.shape(PropTypes.object.isRequired),
+    updatedId: PropTypes.number,
   };
 
   static defaultProps = {
@@ -54,6 +57,9 @@ class Post extends Component {
     match: {},
     csrf: '',
     replies: [],
+    isUpdating: false,
+    draft: {},
+    updatedId: 0,
   }
 
   constructor(props) {
@@ -80,6 +86,29 @@ class Post extends Component {
     getContent(author, permlink);
   }
 
+  /**
+   *  This is needed to pull new data from a post after an update is done.
+   *  Rather than simpy upadte the title, body and tags alone from the draft
+   *  update, the time elapsed could contain new comments or upvotes that
+   *  are usefult o see after an update, and one might expect to see.
+   */
+  componentDidUpdate(prevProps) {
+    const {
+      getContent,
+      draft,
+      match: {
+        params: {
+          author,
+          permlink
+        }
+      }
+    } = this.props;
+
+    if (!hasLength(draft) && draft !== prevProps.draft) {
+      getContent(author, permlink);
+    }
+  }
+
   render() {
     const {
       user,
@@ -104,6 +133,7 @@ class Post extends Component {
       isCommenting,
       commentedId,
       commentPayload,
+      isUpdating,
     } = this.props;
 
     let addErrorPost = '';
@@ -142,6 +172,7 @@ class Post extends Component {
                   commentedId={commentedId}
                   isFetching={isFetchingDetails}
                   commentPayload={commentPayload}
+                  isUpdating={isUpdating}
                 />
               )
               :  <Loading />
@@ -191,8 +222,11 @@ class Post extends Component {
        commentedId,
        commentPayload,
        editingComment,
-       isUpdating,
      },
+     sendPost: {
+       isUpdating,
+       draft,
+     }
    } = state;
 
    return {
@@ -214,6 +248,7 @@ class Post extends Component {
      commentPayload,
      editingComment,
      isUpdating,
+     draft,
    }
  }
 

@@ -20,6 +20,7 @@ import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
 import { editPost, deletePost } from '../../../../actions/sendPostActions';
 import { clearPost } from '../../../../actions/detailsPostActions';
+import { commentsClear } from '../../../../actions/commentsActions';
 
 import './PostDetails.css'
 
@@ -45,6 +46,7 @@ class PostDetails extends Component {
     showEditPost: PropTypes.func,
     clearPostDetails: PropTypes.func,
     sendDeletePost: PropTypes.func,
+    clearComments: PropTypes.func,
   };
 
   static defaultProps = {
@@ -58,6 +60,7 @@ class PostDetails extends Component {
     showEditPost: () => {},
     clearPostDetails: () => {},
     sendDeletePost: () => {},
+    clearComments: () => {},
   }
 
   constructor(props) {
@@ -77,13 +80,9 @@ class PostDetails extends Component {
   }
 
   componentWillUnmount() {
-    const { clearPostDetails } = this.props;
+    const { clearPostDetails, clearComments } = this.props;
     clearPostDetails();
-  }
-
-  //Needed to `dangerouslySetInnerHTML`
-  createMarkup = (html) => {
-    return {__html: html};
+    clearComments();
   }
 
   /**
@@ -98,12 +97,24 @@ class PostDetails extends Component {
       });
    }
 
+   /**
+    *  Dispatch to Redux to show the edit post form.
+    *
+    *  @param {event} e Event triggered by element to handle
+    */
    handleEditPost = e => {
      e.preventDefault();
      const { showEditPost, post } = this.props;
      showEditPost(post);
    }
 
+   /**
+    *  Dispatch to Redux to delete the post by author and permlink.
+    *
+    *  @param {event} e Event triggered by element to handle
+    *  @param {string} author Author of post
+    *  @param {string} permlink Permlink of post
+    */
    handleDeletePost = (e, author, permlink) => {
      e.preventDefault();
      const { sendDeletePost } = this.props;
@@ -360,24 +371,6 @@ class PostDetails extends Component {
 }
 
 /**
- *  Map redux state to component props.
- *
- *  @param {object} state - Redux state
- *  @returns {object} - Object with recent activity data
- */
- const mapStateToProps = state => {
-   const {
-     sendPost: {
-       isUpdating,
-     }
-   } = state;
-
-   return {
-     isUpdating,
-   }
- }
-
-/**
  *  Map redux dispatch functions to component props.
  *
  *  @param {object} dispatch - Redux dispatch
@@ -394,7 +387,10 @@ const mapDispatchToProps = dispatch => (
    sendDeletePost: (author, permlink) => (
      dispatch(deletePost(author, permlink))
    ),
+   clearComments: () => (
+     dispatch(commentsClear())
+   ),
  }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostDetails);
+export default connect(null, mapDispatchToProps)(PostDetails);

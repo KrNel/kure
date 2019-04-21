@@ -7,7 +7,6 @@ export const SEND_POST_SUCCESS = 'SEND_POST_SUCCESS';
 export const SEND_POST_ERROR = 'SEND_POST_ERROR';
 export const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 export const SHOW_EDIT_POST = 'SHOW_EDIT_POST';
-export const CANCEL_EDIT_POST = 'CANCEL_EDIT_POST';
 export const DELETE_POST_START = 'DELETE_POST_START';
 
 /**
@@ -24,9 +23,9 @@ const sendPostStart = () => ({
  *
  *  @return {object} The action data
  */
-const sendPostSuccess = newPost => ({
+const sendPostSuccess = redirect => ({
   type: SEND_POST_SUCCESS,
-  newPost,
+  redirect,
 });
 
 /**
@@ -45,7 +44,7 @@ const sendPostError = error => ({
  *
  *  @return {object} The action data
  */
-export const clearNewPost = () => ({
+export const clearSendPost = () => ({
   type: CLEAR_NEW_POST,
 });
 
@@ -57,15 +56,6 @@ export const clearNewPost = () => ({
 const showEditPost = (draft) => ({
   type: SHOW_EDIT_POST,
   draft,
-});
-
-/**
- *  Action creator for clearing a new post after the page is loaded.
- *
- *  @return {object} The action data
- */
-export const cancelEditPost = () => ({
-  type: CANCEL_EDIT_POST,
 });
 
 /**
@@ -147,6 +137,8 @@ export const sendPost = post => (dispatch, getState) => {
     ];
     operations.push(commentOp);
 
+    const redirect = `/${parentPermlink}/@${author}/${permlink}`;
+
     if (isUpdating) {
       return SteemConnect.broadcast(operations)
         .then(res => {
@@ -175,19 +167,16 @@ export const sendPost = post => (dispatch, getState) => {
     const now = Date.now();
     const lastPosted = localStorage.getItem('lastPostedAt-' + user);
 
-    const redirect = `/${parentPermlink}/@${author}/${permlink}`;
-console.log('redirect',redirect)
-
     //Check if last post was less than 5 minuts ago.
     //Send error message or send post to Steem if under or over 5 minutes.
-    /*if (lastPosted && (now - lastPosted) < 300000)
+    if (lastPosted && (now - lastPosted) < 300000)
       return dispatch(sendPostError('Must wait 5 minutes between posts.'));
     else
       return SteemConnect.broadcast(operations)
         .then(res => {
           localStorage.setItem('lastPostedAt-' + user, now);
           setTimeout(() => dispatch(sendPostSuccess(redirect)), 1500);
-      });*/
+      });
   })
 
 }

@@ -4,7 +4,6 @@ import {
   SEND_POST_ERROR,
   CLEAR_NEW_POST,
   SHOW_EDIT_POST,
-  CANCEL_EDIT_POST,
   DELETE_POST_START,
 } from '../actions/sendPostActions';
 
@@ -18,10 +17,11 @@ import {
 export const sendPost = (
   state = {
     isPosting: false,
-    newPost: '',
+    newPostRedirect: '',
     error: '',
     isUpdating: false,
     draft: {},
+    updatedId: 0,
   },
   action) => {
 
@@ -30,7 +30,7 @@ export const sendPost = (
       return ({
         ...state,
         isPosting: true,
-        newPost: '',
+        newPostRedirect: '',
         error: '',
       });
     case SEND_POST_ERROR:
@@ -44,13 +44,14 @@ export const sendPost = (
         ...state,
         isPosting: false,
         isUpdating: false,
-        newPost: action.newPost,
+        newPostRedirect: action.redirect,
       });
     case CLEAR_NEW_POST:
       return ({
         ...state,
         isPosting: false,
-        newPost: '',
+        isUpdating: false,
+        newPostRedirect: '',
         error: '',
         draft: {},
       });
@@ -59,13 +60,6 @@ export const sendPost = (
         ...state,
         isUpdating: true,
         draft: action.draft,
-      });
-    case CANCEL_EDIT_POST:
-      return ({
-        ...state,
-        isUpdating: false,
-        draft: {},
-        newPost: '',
       });
     case DELETE_POST_START:
       return ({

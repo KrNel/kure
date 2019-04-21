@@ -7,7 +7,7 @@ const Write = () => (
   <Grid verticalAlign='middle' columns={1} centered>
     <Grid.Row>
       <Grid.Column width={13}>
-        <Editor reset />
+        <Editor isNewPost />
       </Grid.Column>
     </Grid.Row>
   </Grid>

@@ -200,8 +200,7 @@ class Comment extends Component {
         />
       )
       : null;
-console.log('props',this.props)
-console.log('state',this.state)
+
     return (
       <React.Fragment>
         <div id={`comment-${id}`} className={`comment depth-${depth}`}>

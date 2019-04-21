@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Header, Label} from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
-//
 
 import PostsSummary from './PostsSummary';
 import ModalGroup from '../../Modal/ModalGroup';
@@ -185,7 +184,7 @@ class Posts extends Component {
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
-    
+
     return (
       <React.Fragment>
         <ModalGroup
