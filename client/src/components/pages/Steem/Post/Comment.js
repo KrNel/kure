@@ -35,6 +35,7 @@ class Comment extends Component {
     isUpdating: PropTypes.bool,
     updatedComment: PropTypes.shape(PropTypes.object.isRequired),
     updatedId: PropTypes.number,
+    sendDeleteComment: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -85,7 +86,8 @@ class Comment extends Component {
   }
 
   /**
-   *  TODO: Show the edit form and allow a post to be edited and saved.
+   *  When the 'Edit' link is clicked for a comment, this runs to change the
+   * state of the 'showEditForm' var to toogle showing/hiding the edit form.
    */
   onShowEditForm = (e) => {
     e.preventDefault();
@@ -133,6 +135,7 @@ class Comment extends Component {
         isUpdating,
         updatedComment,
         updatedId,
+        sendDeleteComment,
       }
     } = this;
 
@@ -197,7 +200,8 @@ class Comment extends Component {
         />
       )
       : null;
-
+console.log('props',this.props)
+console.log('state',this.state)
     return (
       <React.Fragment>
         <div id={`comment-${id}`} className={`comment depth-${depth}`}>
@@ -250,9 +254,14 @@ class Comment extends Component {
                         }
                         {
                           isAuth && user === author && (
-                            <li className='item'>
-                              <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
-                            </li>
+                            <React.Fragment>
+                              <li className='item'>
+                                <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
+                              </li>
+                              <li className='item'>
+                                <a href='/delete' onClick={e => sendDeleteComment(e, author, permlink)}>Delete</a>
+                              </li>
+                            </React.Fragment>
                           )
                         }
                       </ul>
@@ -289,6 +298,7 @@ class Comment extends Component {
                     isUpdating={isUpdating}
                     updatedComment={updatedComment}
                     updatedId={updatedId}
+                    sendDeleteComment={sendDeleteComment}
                   />
                 </li>
               ))
@@ -319,6 +329,7 @@ class Comment extends Component {
                       isUpdating={isUpdating}
                       updatedComment={updatedComment}
                       updatedId={updatedId}
+                      sendDeleteComment={sendDeleteComment}
                     />
                   </li>
                 ))

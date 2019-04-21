@@ -1,6 +1,7 @@
 import {
   GET_SUMMARY_START,
   GET_SUMMARY_SUCCESS,
+  SUMMARY_CANCEL,
 } from '../actions/summaryPostActions';
 
 /**
@@ -12,7 +13,7 @@ import {
  */
 export const summaryPost = (
   state = {
-    isFetchingSummary: false,
+    isFetching: false,
     prevPage: '',
     posts: [],
     hasMore: true,
@@ -25,17 +26,23 @@ export const summaryPost = (
     case GET_SUMMARY_START:
       return ({
         ...state,
-        isFetchingSummary: true,
+        isFetching: true,
       });
     case GET_SUMMARY_SUCCESS:
       return ({
         ...state,
-        isFetchingSummary: false,
+        isFetching: false,
         posts: action.posts,
         hasMore: action.hasMore,
         prevPage: action.prevPage,
         startAuthor: action.startAuthor,
         startPermlink: action.startPermlink,
+      });
+    case SUMMARY_CANCEL:
+      return ({
+        ...state,
+        isFetching: false,
+        prevPage: action.prevPage,
       });
     default:
       return state

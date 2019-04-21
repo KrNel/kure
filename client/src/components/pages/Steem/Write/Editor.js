@@ -49,6 +49,7 @@ class Write extends Component {
       tagErrors: '',
     }
 
+    this.redirect = '';
     this.permlink = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
@@ -65,7 +66,7 @@ class Write extends Component {
   componentDidMount() {
     window.scrollTo(0, 0);
 
-    const { newPost, clearPost, isUpdating, draft, reset } = this.props;
+    const { clearPost, isUpdating, draft, reset } = this.props;
 
     if (isUpdating && draft) {
       this.permlink = draft.permlink;
@@ -81,9 +82,18 @@ class Write extends Component {
         body: '',
         tags: '',
       });
-    }/*else if (newPost) {
-      clearPost();
-    }*/
+    }
+  }
+
+  /**
+   *  If a post has been posted, redirect to the post.
+   */
+  componentDidUpdate(prevProps) {
+    const { isPosting, newPost } = this.props;
+    if (!isPosting && isPosting !== prevProps.isPosting) {
+      console.log('componentDidUpdate',newPost)
+      this.redirect = (<Redirect to={newPost} />);
+    }
   }
 
   componentWillUnmount() {
@@ -235,10 +245,11 @@ class Write extends Component {
         reset,
       }
     } = this;
-
+console.log('props',this.props)
+console.log('this.redirect',this.redirect)
     return (
-      (newPost && !reset)
-      ? <Redirect to={newPost} />
+      this.redirect
+      ? this.redirect
       : (
         <div id='write'>
           <Form onSubmit={this.handleSubmit} loading={isPosting}>

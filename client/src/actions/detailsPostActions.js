@@ -2,7 +2,6 @@ import { Client } from 'dsteem';
 
 import { getUserGroupsFetch } from './userGroupsActions';
 import { getPostComments } from './commentsActions';
-import { clearNewPost } from './sendPostActions';
 
 const client = new Client('https://hive.anyx.io/');
 

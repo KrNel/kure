@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { hasLength, getUpvotes, sumPayout } from '../../../../utils/helpers';
+import { deleteComment } from '../../../../actions/sendCommentActions';
 import Comment from './Comment';
 import './Comments.css';
 
@@ -50,6 +51,12 @@ const sortComments = (comments, sortBy) => {
     default:
       return comments;
   }
+}
+
+const handleDeleteComment = (e, author, permlink) => {
+  e.preventDefault();
+  const { sendDeleteComment } = this.props;
+  sendDeleteComment(author, permlink);
 }
 
 /**
@@ -102,6 +109,7 @@ const Comments = (props) => {
                 isUpdating={isUpdating}
                 updatedComment={updatedComment}
                 updatedId={updatedId}
+                sendDeleteComment={handleDeleteComment}
               />
             </li>
           ))
@@ -126,6 +134,7 @@ const Comments = (props) => {
                 isUpdating={isUpdating}
                 updatedComment={updatedComment}
                 updatedId={updatedId}
+                sendDeleteComment={handleDeleteComment}
               />
             </li>
           ))
@@ -151,6 +160,7 @@ Comments.propTypes = {
   isUpdating: PropTypes.bool,
   updatedComment: PropTypes.shape(PropTypes.object.isRequired),
   updatedId: PropTypes.number,
+  sendDeleteComment: PropTypes.func.isRequired,
 };
 
 Comments.defaultProps = {
@@ -188,5 +198,18 @@ Comments.defaultProps = {
    }
  }
 
-export default connect(mapStateToProps)(Comments);
-//export default Comments;
+ /**
+  *  Map redux dispatch functions to component props.
+  *
+  *  @param {object} dispatch - Redux dispatch
+  *  @returns {object} - Object with recent activity data
+  */
+ const mapDispatchToProps = dispatch => (
+  {
+    sendDeleteComment: (author, permlink) => (
+      dispatch(deleteComment(author, permlink))
+    ),
+  }
+ );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Comments);

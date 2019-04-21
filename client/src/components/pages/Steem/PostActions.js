@@ -38,6 +38,7 @@ class PostActions extends Component {
     image: PropTypes.string,
     isPost: PropTypes.bool,
     onEditPost: PropTypes.func,
+    onDeletePost: PropTypes.func,
   };
 
   static defaultProps = {
@@ -57,6 +58,7 @@ class PostActions extends Component {
     image: '',
     isPost: false,
     onEditPost: () => {},
+    onDeletePost: () => {},
   };
 
 
@@ -87,6 +89,7 @@ class PostActions extends Component {
         image,
         isPost,
         onEditPost,
+        onDeletePost
       },
     } = this;
 
@@ -140,18 +143,30 @@ class PostActions extends Component {
               <React.Fragment>
                 {
                   isPost && author === user && (
-                    <Button
-                      animated='vertical'
-                      color='blue'
-                      onClick={e => onEditPost(e)}
-                      title="Edit post"
-                    >
-                      <Button.Content hidden>Edit</Button.Content>
-                      <Button.Content visible>
-                        <Icon name='edit' />
-                      </Button.Content>
-                    </Button>
-
+                    <React.Fragment>
+                      <Button
+                        animated='vertical'
+                        color='blue'
+                        onClick={e => onEditPost(e)}
+                        title="Edit post"
+                      >
+                        <Button.Content hidden>Edit</Button.Content>
+                        <Button.Content visible>
+                          <Icon name='edit' />
+                        </Button.Content>
+                      </Button>
+                      <Button
+                        animated='vertical'
+                        color='blue'
+                        onClick={e => onDeletePost(e, author, permlink)}
+                        title="Delete post"
+                      >
+                        <Button.Content hidden>Del</Button.Content>
+                        <Button.Content visible>
+                          <Icon name='remove' />
+                        </Button.Content>
+                      </Button>
+                    </React.Fragment>
                   )
                 }
                 <Button

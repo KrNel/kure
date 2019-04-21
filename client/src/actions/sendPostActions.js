@@ -8,6 +8,7 @@ export const SEND_POST_ERROR = 'SEND_POST_ERROR';
 export const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 export const SHOW_EDIT_POST = 'SHOW_EDIT_POST';
 export const CANCEL_EDIT_POST = 'CANCEL_EDIT_POST';
+export const DELETE_POST_START = 'DELETE_POST_START';
 
 /**
  *  Action creator for starting to send a post.
@@ -65,6 +66,16 @@ const showEditPost = (draft) => ({
  */
 export const cancelEditPost = () => ({
   type: CANCEL_EDIT_POST,
+});
+
+/**
+ *  Action creator for starting to delete a comment.
+ *
+ *  @param {string} parentId Id of parent post being commented on
+ *  @return {object} The action data
+ */
+export const deletePostStart = () => ({
+  type: DELETE_POST_START,
 });
 
 const rewardsValues = {
@@ -164,18 +175,39 @@ export const sendPost = post => (dispatch, getState) => {
     const now = Date.now();
     const lastPosted = localStorage.getItem('lastPostedAt-' + user);
 
+    const redirect = `/${parentPermlink}/@${author}/${permlink}`;
+console.log('redirect',redirect)
+
     //Check if last post was less than 5 minuts ago.
     //Send error message or send post to Steem if under or over 5 minutes.
-    if (lastPosted && (now - lastPosted) < 300000)
+    /*if (lastPosted && (now - lastPosted) < 300000)
       return dispatch(sendPostError('Must wait 5 minutes between posts.'));
     else
       return SteemConnect.broadcast(operations)
         .then(res => {
           localStorage.setItem('lastPostedAt-' + user, now);
-          setTimeout(() => dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`)), 1500);
-      });
+          setTimeout(() => dispatch(sendPostSuccess(redirect)), 1500);
+      });*/
   })
 
+}
+
+export const deletePost = (author, permlink) => dispatch => {
+  dispatch(deletePostStart());
+
+  return SteemConnect
+    .deleteComment(author, permlink)
+    .then(res => {
+console.log('res',res)
+      //dispatch(deleteCommentSuccess());
+
+      /*if (res.result.block_num) {
+        getComment(author, permlink)
+          .then(comment => {
+            dispatch(editCommentSuccess(comment));
+          })
+      }*/
+    });
 }
 
 export default sendPost;

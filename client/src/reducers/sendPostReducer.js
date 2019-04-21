@@ -5,6 +5,7 @@ import {
   CLEAR_NEW_POST,
   SHOW_EDIT_POST,
   CANCEL_EDIT_POST,
+  DELETE_POST_START,
 } from '../actions/sendPostActions';
 
 /**
@@ -65,6 +66,11 @@ export const sendPost = (
         isUpdating: false,
         draft: {},
         newPost: '',
+      });
+    case DELETE_POST_START:
+      return ({
+        ...state,
+        isDeleting: true,
       });
     default:
       return state

@@ -18,8 +18,9 @@ import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
-import { editPost } from '../../../../actions/sendPostActions';
+import { editPost, deletePost } from '../../../../actions/sendPostActions';
 import { clearPost } from '../../../../actions/detailsPostActions';
+
 import './PostDetails.css'
 
 /**
@@ -43,6 +44,7 @@ class PostDetails extends Component {
     isUpdating: PropTypes.bool,
     showEditPost: PropTypes.func,
     clearPostDetails: PropTypes.func,
+    sendDeletePost: PropTypes.func,
   };
 
   static defaultProps = {
@@ -55,6 +57,7 @@ class PostDetails extends Component {
     isUpdating: false,
     showEditPost: () => {},
     clearPostDetails: () => {},
+    sendDeletePost: () => {},
   }
 
   constructor(props) {
@@ -99,6 +102,12 @@ class PostDetails extends Component {
      e.preventDefault();
      const { showEditPost, post } = this.props;
      showEditPost(post);
+   }
+
+   handleDeletePost = (e, author, permlink) => {
+     e.preventDefault();
+     const { sendDeletePost } = this.props;
+     sendDeletePost(author, permlink);
    }
 
   /**
@@ -284,6 +293,7 @@ class PostDetails extends Component {
                                 image={image}
                                 isPost
                                 onEditPost={this.handleEditPost}
+                                onDeletePost={this.handleDeletePost}
                               />
                             </div>
                             <hr />
@@ -378,9 +388,12 @@ const mapDispatchToProps = dispatch => (
    showEditPost: (post) => (
      dispatch(editPost(post))
    ),
-   clearPostDetails: () => {
+   clearPostDetails: () => (
      dispatch(clearPost())
-   }
+   ),
+   sendDeletePost: (author, permlink) => (
+     dispatch(deletePost(author, permlink))
+   ),
  }
 );
 

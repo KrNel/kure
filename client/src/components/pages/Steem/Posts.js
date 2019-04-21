@@ -27,7 +27,7 @@ class Posts extends Component {
     user: PropTypes.string,
     csrf: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
-    isFetchingSummary: PropTypes.bool,
+    isFetching: PropTypes.bool,
     hasMore: PropTypes.bool,
     prevPage: PropTypes.string,
     groups: PropTypes.arrayOf(PropTypes.object),
@@ -48,7 +48,7 @@ class Posts extends Component {
   static defaultProps = {
     user: '',
     csrf: '',
-    isFetchingSummary: false,
+    isFetching: false,
     hasMore: true,
     match: {},
     prevPage: '',
@@ -107,8 +107,8 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = (e) => {
-    const {isFetchingSummary, hasMore} = this.props;
-    if (!isFetchingSummary && hasMore) {
+    const {isFetching, hasMore} = this.props;
+    if (!isFetching && hasMore) {
       var lastLi = document.querySelector("#postList > div.postSummary:last-child");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
@@ -166,7 +166,7 @@ class Posts extends Component {
         user,
         csrf,
         posts,
-        isFetchingSummary,
+        isFetching,
         prevPage,
         match,
         groups,
@@ -185,7 +185,7 @@ class Posts extends Component {
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
-
+    
     return (
       <React.Fragment>
         <ModalGroup
@@ -232,7 +232,7 @@ class Posts extends Component {
                       csrf={csrf}
                       handleUpvote={handleUpvote}
                       upvotePayload={upvotePayload}
-                      isFetchingSummary={isFetchingSummary}
+                      isFetching={isFetching}
                     />
                   )
                   : (
@@ -243,7 +243,7 @@ class Posts extends Component {
               </div>
             </div>
             {
-              isFetchingSummary && page === prevPage && <Loading />
+              isFetching && page === prevPage && <Loading />
             }
           </React.Fragment>
         </ErrorBoundary>
@@ -265,7 +265,7 @@ const mapStateToProps = state => {
       csrf,
     },
     summaryPost: {
-      isFetchingSummary,
+      isFetching,
       prevPage,
       hasMore,
       posts,
@@ -288,7 +288,7 @@ const mapStateToProps = state => {
     user,
     csrf,
     posts,
-    isFetchingSummary,
+    isFetching,
     prevPage,
     hasMore,
     groups,

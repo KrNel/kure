@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -24,15 +25,14 @@ const PostsSummary = (props) => {
     user,
     handleUpvote,
     upvotePayload,
-    isFetchingSummary,
-    isFetchingScroll
+    isFetching,
   } = props;
 
   let {
     nextPost,
   } = props;
 
-  if (!posts.length && !isFetchingSummary && !isFetchingScroll) {
+  if (!posts.length && !isFetching) {
     return "No Posts";
   }else {
     return (
@@ -136,5 +136,24 @@ const PostsSummary = (props) => {
     )
   }
 }
+
+PostsSummary.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.object),
+  showModal: PropTypes.func,
+  user: PropTypes.string,
+  handleUpvote: PropTypes.func,
+  upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
+  isFetching: PropTypes.bool,
+};
+
+PostsSummary.defaultProps = {
+  posts: [],
+  showModal: () => {},
+  user: '',
+  handleUpvote: () => {},
+  upvotePayload: {},
+  isFetching: false,
+};
+
 
 export default PostsSummary;

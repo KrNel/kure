@@ -44,18 +44,17 @@ class ReplyForm extends Component {
     body: '',
   }
 
+  //clearBody = false;
+
   /**
    *  If a comment has been posted, clear the form by clearing the body state.
    */
-  static getDerivedStateFromProps(props, state) {
-    if (props.parentPost.id === props.commentedId && !props.isCommenting) {
-      props.toggleReplyForm();
-      return {
-        body: '',
-      };
+  componentDidUpdate(prevProps) {
+    const { isCommenting, parentPost, commentedId, toggleReplyForm } = this.props;
+    if (!isCommenting && isCommenting !== prevProps.isCommenting && parentPost.id === commentedId) {
+      toggleReplyForm();
+      this.handleClearReply();
     }
-
-    return null;
   }
 
   /**
@@ -151,7 +150,7 @@ class ReplyForm extends Component {
                 onChange={this.handleChange}
                 name='body'
                 value={body || commentBody}
-                disabled={disabled}
+                disabled={isCommenting}
               />
               <div>
                 <Button

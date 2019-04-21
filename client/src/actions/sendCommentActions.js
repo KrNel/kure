@@ -11,6 +11,7 @@ export const GET_COMMENT_START = 'GET_COMMENT_START';
 export const GET_COMMENT_SUCCESS = 'GET_COMMENT_START';
 export const EDIT_COMMENT_START = 'EDIT_COMMENT_START';
 export const EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS';
+export const DELETE_COMMENT_START = 'DELETE_COMMENT_START';
 
 /**
  *  Action creator for starting to send a comment.
@@ -18,8 +19,9 @@ export const EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS';
  *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const sendCommentStart = () => ({
+export const sendCommentStart = (parentId) => ({
   type: SEND_COMMENT_START,
+  parentId,
 });
 
 /**
@@ -59,6 +61,16 @@ export const editCommentSuccess = comment => ({
 });
 
 /**
+ *  Action creator for starting to delete a comment.
+ *
+ *  @param {string} parentId Id of parent post being commented on
+ *  @return {object} The action data
+ */
+export const deleteCommentStart = () => ({
+  type: DELETE_COMMENT_START,
+});
+
+/**
  *  Uses SteemConnect to send a comment to the Steem blockchain.
  *
  *  @param {string} parentPost Parent being commented on
@@ -66,14 +78,15 @@ export const editCommentSuccess = comment => ({
  *  @returns {function} Dispatches returned action object
  */
 export const sendComment = (body, parentPost) => (dispatch, getState) => {
-  dispatch(sendCommentStart());
+  const { category, id, permlink: parentPermlink, author: parentAuthor } = parentPost;
+
   const {
     auth: {
       user
     },
   } = getState();
 
-  const { category, id, permlink: parentPermlink, author: parentAuthor } = parentPost;
+  dispatch(sendCommentStart(id));
 
   const author = user;
   const permlink = createCommentPermlink(parentAuthor, parentPermlink)
@@ -128,6 +141,24 @@ export const getComment = (author, permlink) => {
       resolve(comment);
     });
   });
+}
+
+export const deleteComment = (author, permlink) => dispatch => {
+  dispatch(deleteCommentStart());
+
+  return SteemConnect
+    .deleteComment(author, permlink)
+    .then(res => {
+console.log('res',res)
+      //dispatch(deleteCommentSuccess());
+
+      /*if (res.result.block_num) {
+        getComment(author, permlink)
+          .then(comment => {
+            dispatch(editCommentSuccess(comment));
+          })
+      }*/
+    });
 }
 
 export default sendComment;

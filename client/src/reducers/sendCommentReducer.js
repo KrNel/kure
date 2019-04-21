@@ -3,6 +3,7 @@ import {
   SEND_COMMENT_SUCCESS,
   EDIT_COMMENT_START,
   EDIT_COMMENT_SUCCESS,
+  DELETE_COMMENT_START,
 } from '../actions/sendCommentActions';
 
 /**
@@ -28,6 +29,7 @@ export const sendComment = (
       return ({
         ...state,
         isCommenting: true,
+        commentedId: action.parentId,
       });
     case SEND_COMMENT_SUCCESS:
       return ({
@@ -54,6 +56,11 @@ export const sendComment = (
         editingComment: 0,
         updatedComment: action.comment,
         updatedId: action.comment.id,
+      });
+    case DELETE_COMMENT_START:
+      return ({
+        ...state,
+        isDeleting: true,
       });
     default:
       return state
