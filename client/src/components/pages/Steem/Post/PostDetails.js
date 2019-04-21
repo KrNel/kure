@@ -21,6 +21,7 @@ import { sumPayout } from '../../../../utils/helpers';
 import { editPost, deletePost } from '../../../../actions/sendPostActions';
 import { clearPost } from '../../../../actions/detailsPostActions';
 import { commentsClear } from '../../../../actions/commentsActions';
+import { sendCommentClear } from '../../../../actions/sendCommentActions';
 
 import './PostDetails.css'
 
@@ -80,9 +81,10 @@ class PostDetails extends Component {
   }
 
   componentWillUnmount() {
-    const { clearPostDetails, clearComments } = this.props;
+    const { clearPostDetails, clearComments, clearNewComments } = this.props;
     clearPostDetails();
     clearComments();
+    clearNewComments();
   }
 
   /**
@@ -389,6 +391,9 @@ const mapDispatchToProps = dispatch => (
    ),
    clearComments: () => (
      dispatch(commentsClear())
+   ),
+   clearNewComments: () => (
+     dispatch(sendCommentClear())
    ),
  }
 );

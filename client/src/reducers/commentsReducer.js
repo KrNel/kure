@@ -2,6 +2,8 @@ import {
   GET_COMMENTS_START,
   GET_COMMENTS_SUCCESS,
   CLEAR_COMMENTS,
+  DELETE_COMMENT_START,
+  DELETE_COMMENT_SUCCESS,
 } from '../actions/commentsActions';
 
 /**
@@ -15,6 +17,8 @@ export const comments = (
   state = {
     isFetchingComments: false,
     replies: [],
+    isDeleting: false,
+    commentDeleting: {},
   },
   action) => {
 
@@ -34,6 +38,22 @@ export const comments = (
       return ({
         ...state,
         replies: [],
+      });
+    case DELETE_COMMENT_START:
+      return ({
+        ...state,
+        isDeleting: true,
+        commentDeleting: {
+          author: action.author,
+          permlink: action.permlink,
+        }
+      });
+    case DELETE_COMMENT_SUCCESS:
+      return ({
+        ...state,
+        isDeleting: false,
+        replies: action.newReplies,
+
       });
     default:
       return state

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { hasLength, getUpvotes, sumPayout } from '../../../../utils/helpers';
-import { deleteComment } from '../../../../actions/sendCommentActions';
+import { deleteComment } from '../../../../actions/commentsActions';
 import Comment from './Comment';
 import './Comments.css';
 
@@ -53,12 +53,6 @@ const sortComments = (comments, sortBy) => {
   }
 }
 
-const handleDeleteComment = (e, author, permlink) => {
-  e.preventDefault();
-  const { sendDeleteComment } = this.props;
-  sendDeleteComment(author, permlink);
-}
-
 /**
  *  Comments container to process the first root level of comments of a post.
  *  Additionally, any new comments in `commentPayload` at the root level of
@@ -85,7 +79,15 @@ const Comments = (props) => {
     isUpdating,
     updatedComment,
     updatedId,
+    commentDeleting,
+    isDeleting,
   } = props;
+
+  const handleDeleteComment = (e, author, permlink, commentPayload) => {
+    e.preventDefault();
+    const { sendDeleteComment } = props;
+    sendDeleteComment(author, permlink, commentPayload);
+  }
 
   return (
     <React.Fragment>
@@ -110,6 +112,8 @@ const Comments = (props) => {
                 updatedComment={updatedComment}
                 updatedId={updatedId}
                 sendDeleteComment={handleDeleteComment}
+                commentDeleting={commentDeleting}
+                isDeleting={isDeleting}
               />
             </li>
           ))
@@ -135,6 +139,8 @@ const Comments = (props) => {
                 updatedComment={updatedComment}
                 updatedId={updatedId}
                 sendDeleteComment={handleDeleteComment}
+                commentDeleting={commentDeleting}
+                isDeleting={isDeleting}
               />
             </li>
           ))
@@ -187,6 +193,8 @@ Comments.defaultProps = {
        isUpdating,
        updatedComment,
        updatedId,
+       isDeleting,
+       commentDeleting,
      },
    } = state;
 
@@ -195,6 +203,8 @@ Comments.defaultProps = {
      isUpdating,
      updatedComment,
      updatedId,
+     isDeleting,
+     commentDeleting,
    }
  }
 
@@ -206,8 +216,8 @@ Comments.defaultProps = {
   */
  const mapDispatchToProps = dispatch => (
   {
-    sendDeleteComment: (author, permlink) => (
-      dispatch(deleteComment(author, permlink))
+    sendDeleteComment: (author, permlink, commentPayload) => (
+      dispatch(deleteComment(author, permlink, commentPayload))
     ),
   }
  );

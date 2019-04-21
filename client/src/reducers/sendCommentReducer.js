@@ -3,7 +3,8 @@ import {
   SEND_COMMENT_SUCCESS,
   EDIT_COMMENT_START,
   EDIT_COMMENT_SUCCESS,
-  DELETE_COMMENT_START,
+  SEND_COMMENT_CLEAR,
+  DELETE_PAYLOAD_SUCCESS,
 } from '../actions/sendCommentActions';
 
 /**
@@ -21,6 +22,7 @@ export const sendComment = (
     editingComment: 0,
     isUpdating: false,
     updatedId: 0,
+    updatedComment: {},
   },
   action) => {
 
@@ -57,10 +59,21 @@ export const sendComment = (
         updatedComment: action.comment,
         updatedId: action.comment.id,
       });
-    case DELETE_COMMENT_START:
+    case SEND_COMMENT_CLEAR:
       return ({
         ...state,
-        isDeleting: true,
+        isCommenting: false,
+        commentedId: 0,
+        commentPayload: {},
+        isUpdating: false,
+        editingComment: 0,
+        updatedComment: {},
+        updatedId: 0,
+      });
+    case DELETE_PAYLOAD_SUCCESS:
+      return ({
+        ...state,
+        commentPayload: action.newCommentPayload,
       });
     default:
       return state

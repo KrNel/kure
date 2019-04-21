@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import { Dimmer, Loader } from "semantic-ui-react";
 
 import ReplyForm from './ReplyForm';
 import Body from './PostBody';
@@ -36,6 +37,7 @@ class Comment extends Component {
     updatedComment: PropTypes.shape(PropTypes.object.isRequired),
     updatedId: PropTypes.number,
     sendDeleteComment: PropTypes.func.isRequired,
+    commentDeleting: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -48,6 +50,7 @@ class Comment extends Component {
     isUpdating: false,
     updatedComment: {},
     updatedId: 0,
+    commentDeleting: {},
   }
 
   state = {
@@ -136,6 +139,8 @@ class Comment extends Component {
         updatedComment,
         updatedId,
         sendDeleteComment,
+        commentDeleting,
+        isDeleting,
       }
     } = this;
 
@@ -204,6 +209,9 @@ class Comment extends Component {
     return (
       <React.Fragment>
         <div id={`comment-${id}`} className={`comment depth-${depth}`}>
+          {
+            isDeleting && hasLength(commentDeleting) && commentDeleting.author === author && commentDeleting.permlink === permlink && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
+          }
           <ul className='commentList'>
             <li className='commentAvatar'>
               <Avatar author={author} height='40px' width='40px' />
@@ -257,9 +265,13 @@ class Comment extends Component {
                               <li className='item'>
                                 <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
                               </li>
-                              <li className='item'>
-                                <a href='/delete' onClick={e => sendDeleteComment(e, author, permlink)}>Delete</a>
-                              </li>
+                              {
+                                comment.children < 1 && (
+                                  <li className='item'>
+                                    <a href='/delete' onClick={e => sendDeleteComment(e, author, permlink, commentPayload)}>Delete</a>
+                                  </li>
+                                )
+                              }
                             </React.Fragment>
                           )
                         }
@@ -298,6 +310,8 @@ class Comment extends Component {
                     updatedComment={updatedComment}
                     updatedId={updatedId}
                     sendDeleteComment={sendDeleteComment}
+                    commentDeleting={commentDeleting}
+                    isDeleting={isDeleting}
                   />
                 </li>
               ))
@@ -310,7 +324,7 @@ class Comment extends Component {
           && (
             <ul className={replyClass}>
               {
-                sortComments(commentPayload[id], 'new').map(reply => (
+                sortComments(commentPayload[id], sortBy).map(reply => (
                   <li className='commentReply' key={reply.id}>
                     <Comment
                       comment={reply}
@@ -329,6 +343,8 @@ class Comment extends Component {
                       updatedComment={updatedComment}
                       updatedId={updatedId}
                       sendDeleteComment={sendDeleteComment}
+                      commentDeleting={commentDeleting}
+                      isDeleting={isDeleting}
                     />
                   </li>
                 ))

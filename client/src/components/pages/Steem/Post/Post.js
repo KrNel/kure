@@ -88,7 +88,7 @@ class Post extends Component {
 
   /**
    *  This is needed to pull new data from a post after an update is done.
-   *  Rather than simpy upadte the title, body and tags alone from the draft
+   *  Rather than simpy update the title, body and tags alone from the draft
    *  update, the time elapsed could contain new comments or upvotes that
    *  are usefult o see after an update, and one might expect to see.
    */

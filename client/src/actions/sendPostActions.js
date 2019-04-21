@@ -74,7 +74,13 @@ const rewardsValues = {
   none: '0',
 };
 
-
+/**
+ *  Extract some data from the post, and send it back as a post draft for the
+ *  edit form to display and allow the user to edit.
+ *
+ *  @param {string} post Post object to edited
+ *  @returns {function} Dispatches returned action object
+ */
 export const editPost = post => dispatch => {
   const jsonMetadata = jsonParse(post.json_metadata);
 
@@ -89,10 +95,10 @@ export const editPost = post => dispatch => {
 }
 
 /**
- *  Uses SteemConnect to send a comment to the Steem blockchain.
+ *  Uses SteemConnect to send a post to the Steem blockchain. This is either a
+ *  new post, or to edit a post.
  *
- *  @param {string} parentPost Parent being commented on
- *  @param {string} body Comment body
+ *  @param {string} post Post object to be sent or updated
  *  @returns {function} Dispatches returned action object
  */
 export const sendPost = post => (dispatch, getState) => {
@@ -178,9 +184,15 @@ export const sendPost = post => (dispatch, getState) => {
           setTimeout(() => dispatch(sendPostSuccess(redirect)), 1500);
       });
   })
-
 }
 
+/**
+ *  Delete a post by using author and permlink to refrence it.
+ *
+ *  @param {string} author Author of comment
+ *  @param {string} permlink Permlink of comment
+ *  @returns {function} Dispatches returned action object
+ */
 export const deletePost = (author, permlink) => dispatch => {
   dispatch(deletePostStart());
 
