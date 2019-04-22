@@ -49,6 +49,7 @@ class PostDetails extends Component {
     sendDeletePost: PropTypes.func,
     clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
+    clearNewComments: PropTypes.func,
   };
 
   static defaultProps = {
@@ -64,6 +65,7 @@ class PostDetails extends Component {
     sendDeletePost: () => {},
     clearComments: () => {},
     isDeleting: false,
+    clearNewComments: () => {},
   }
 
   constructor(props) {

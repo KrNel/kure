@@ -164,12 +164,17 @@ class ReplyForm extends Component {
                     <Icon name='reply' />
                   </Button.Content>
                 </Button>
+
                 <Button
-                  color="grey"
-                  content={cancelButtonClick[0]}
+                  animated='vertical'
                   disabled={disabled}
                   onClick={cancelButtonClick[1]}
-                />
+                >
+                  <Button.Content hidden>{cancelButtonClick[0]}</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='eraser' />
+                  </Button.Content>
+                </Button>
               </Button.Group>
 
             </Form>

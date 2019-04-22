@@ -48,6 +48,7 @@ class Post extends Component {
     draft: PropTypes.shape(PropTypes.object.isRequired),
     isDeleting: PropTypes.bool,
     redirect: PropTypes.string,
+    clearPostData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -63,6 +64,7 @@ class Post extends Component {
     draft: {},
     isDeleting: false,
     redirect: '',
+    clearPostData: () => {},
   }
 
   constructor(props) {

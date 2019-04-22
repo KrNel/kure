@@ -92,7 +92,6 @@ ul.commentList > li {
 
 .commentFooter .item a {
   color: var(--charcoal-grey);
-  font-weight: bold;
 }
 
 .commentFooter .item a:hover {

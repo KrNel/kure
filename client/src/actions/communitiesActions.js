@@ -107,10 +107,10 @@ export const getGroupData = (group, limit, nextId) => (dispatch, getState) => {
  *  @param {string} group Group to request join for
  *  @returns {function} Dispatches returned action object
  */
-export const joinGroup = async group => (dispatch, getState) => {
-  dispatch(joinGroupStart());
+export const joinGroup = group => (dispatch, getState) => {
+  dispatch(joinGroupStart(group));
 
-  const { state } = getState();
+  const state = getState();
   const {
     auth: {
       user,
@@ -120,10 +120,12 @@ export const joinGroup = async group => (dispatch, getState) => {
 
   return requestToJoinGroup({group, user}, csrf)
   .then(result => {
-    const { groupData } = state;
+
+    const { groupData } = state.communities;
+
     let kaccess = groupData.kaccess;
 
-    if (result.data.group) {
+    if (result.data) {
       kaccess[0] = { access: 100 };
     }
 
