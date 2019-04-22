@@ -39,6 +39,8 @@ export const detailsPost = (
         ...state,
         isFetchingDetails: false,
         post: {},
+        redirect: '',
+        isDeleting: false,
       });
     case DELETE_POST_START:
       return ({

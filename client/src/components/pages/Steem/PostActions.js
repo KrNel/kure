@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Icon, Button } from "semantic-ui-react";
+import { Icon, Button, Popup } from "semantic-ui-react";
 
 import Vote from './Vote';
 
@@ -140,7 +140,7 @@ class PostActions extends Component {
           {
             user
             && (
-              <Button.Group>
+              <div>
                 {
                   isPost && author === user && (
                     <React.Fragment>
@@ -159,18 +159,31 @@ class PostActions extends Component {
 
                       {
                         !activeVotes.length && !commentCount && (
-                          <Button
-                            animated='vertical'
-                            color='blue'
-                            onClick={e => onDeletePost(e, author, permlink)}
-                            title="Delete post"
-                            className='actionDelete'
+                          <Popup
+                            trigger={(
+                              <Button
+                                animated='vertical'
+                                color='blue'
+                                title="Delete post"
+                                className='actionDelete'
+                              >
+                                <Button.Content hidden>Del</Button.Content>
+                                <Button.Content visible>
+                                  <Icon name='remove' />
+                                </Button.Content>
+                              </Button>
+                            )}
+                            position='top left'
+                            flowing
+                            hoverable
+                            on='click'
                           >
-                            <Button.Content hidden>Del</Button.Content>
-                            <Button.Content visible>
-                              <Icon name='remove' />
-                            </Button.Content>
-                          </Button>
+                            <Button
+                              color='red'
+                              content='Confirm delete.'
+                              onClick={e => onDeletePost(e, author, permlink)}
+                            />
+                          </Popup>
                         )
                       }
                     </React.Fragment>
@@ -188,7 +201,7 @@ class PostActions extends Component {
                     <Icon name='plus circle' />
                   </Button.Content>
                 </Button>
-              </Button.Group>
+              </div>
             )
           }
         </div>

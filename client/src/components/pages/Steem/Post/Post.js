@@ -7,7 +7,7 @@ import PostDetails from './PostDetails';
 import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
-import { getDetailsContent } from '../../../../actions/detailsPostActions';
+import { getDetailsContent, clearPost } from '../../../../actions/detailsPostActions';
 import * as addPostActions from '../../../../actions/addPostActions';
 import { upvotePost } from '../../../../actions/upvoteActions';
 import { sendComment } from '../../../../actions/sendCommentActions';
@@ -69,6 +69,7 @@ class Post extends Component {
     super(props);
 
     this.existPost = "Post already in group.";
+    this.redirect = '';
   }
 
   /**
@@ -99,6 +100,8 @@ class Post extends Component {
     const {
       getContent,
       draft,
+      redirect,
+      clearPostData,
       match: {
         params: {
           author,
@@ -107,8 +110,15 @@ class Post extends Component {
       }
     } = this.props;
 
+    this.redirect = '';
+
     if (!hasLength(draft) && draft !== prevProps.draft) {
       getContent(author, permlink);
+    }
+
+    if (redirect && redirect !== prevProps.redirect) {
+      this.redirect = redirect;
+      clearPostData();
     }
   }
 
@@ -138,15 +148,14 @@ class Post extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
-      redirect,
     } = this.props;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
     return (
-      redirect
-      ? <Redirect to={redirect} />
+      this.redirect
+      ? <Redirect to={this.redirect} />
       : (
         <ErrorBoundary>
           <React.Fragment>
@@ -295,6 +304,9 @@ const mapDispatchToProps = dispatch => (
     sendComment: (body, parentPost) => (
       dispatch(sendComment(body, parentPost))
     ),
+    clearPostData: () => (
+      dispatch(clearPost())
+    ),clearPost
   }
 );
 

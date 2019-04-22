@@ -80,11 +80,18 @@
   border-left: none;
 }
 
-.ui.animated.button {
+.post-actions .ui.animated.button {
   padding: 6px 11px;
 }
-.ui.animated.button .visible.content {
+.post-actions .ui.animated.button .visible.content {
   margin-right: 5px;
+}
+
+.ui.blue.button.actionAdd .visible.content {
+  margin-right: 0.5rem;
+}
+.ui.blue.button.actionEdit .visible.content {
+  margin-right: 0.5rem;
 }
 
 .ui.blue.button.actionAdd:hover {

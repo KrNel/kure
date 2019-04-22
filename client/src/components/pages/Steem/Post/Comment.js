@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Dimmer, Loader } from "semantic-ui-react";
+import { Dimmer, Loader, Popup, Button } from "semantic-ui-react";
 
 import ReplyForm from './ReplyForm';
 import Body from './PostBody';
@@ -269,9 +269,23 @@ class Comment extends Component {
                               </li>
                               {
                                 comment.children < 1 && (
-                                  <li className='item'>
-                                    <a href='/delete' onClick={e => sendDeleteComment(e, author, permlink, commentPayload)}>Delete</a>
-                                  </li>
+                                  <Popup
+                                    trigger={(
+                                      <li className='item'>
+                                        <a href='/delete' onClick={e => e.preventDefault()}>Delete</a>
+                                      </li>
+                                    )}
+                                    position='top left'
+                                    flowing
+                                    hoverable
+                                    on='click'
+                                  >
+                                    <Button
+                                      color='red'
+                                      content='Confirm delete.'
+                                      onClick={e => sendDeleteComment(e, author, permlink, commentPayload)}
+                                    />
+                                  </Popup>
                                 )
                               }
                             </React.Fragment>

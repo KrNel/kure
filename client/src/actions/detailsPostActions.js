@@ -98,7 +98,6 @@ export const deletePost = (author, permlink) => (dispatch, getState) => {
   return SteemConnect
     .deleteComment(author, permlink)
     .then(res => {
-console.log('res',res)
       if (res.result.block_num) {
         const { user } = getState().auth;
         const redirect = `/@${user}/`;
