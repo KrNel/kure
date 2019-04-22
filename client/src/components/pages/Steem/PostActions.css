@@ -86,3 +86,15 @@
 .ui.animated.button .visible.content {
   margin-right: 5px;
 }
+
+.ui.blue.button.actionAdd:hover {
+  background-color: #21ba45 !important;
+}
+
+.ui.blue.button.actionEdit:hover {
+  background-color: orange !important;
+}
+
+.ui.blue.button.actionDelete:hover {
+  background-color: #db2828 !important;
+}

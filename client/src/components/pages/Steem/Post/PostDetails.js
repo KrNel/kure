@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Form, Select } from "semantic-ui-react";
+import { Grid, Form, Select, Dimmer, Loader } from "semantic-ui-react";
 import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { connect } from 'react-redux';
@@ -18,8 +18,8 @@ import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
-import { editPost, deletePost } from '../../../../actions/sendPostActions';
-import { clearPost } from '../../../../actions/detailsPostActions';
+import { editPost } from '../../../../actions/sendPostActions';
+import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
 import { commentsClear } from '../../../../actions/commentsActions';
 import { sendCommentClear } from '../../../../actions/sendCommentActions';
 
@@ -48,6 +48,7 @@ class PostDetails extends Component {
     clearPostDetails: PropTypes.func,
     sendDeletePost: PropTypes.func,
     clearComments: PropTypes.func,
+    isDeleting: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -62,6 +63,7 @@ class PostDetails extends Component {
     clearPostDetails: () => {},
     sendDeletePost: () => {},
     clearComments: () => {},
+    isDeleting: false,
   }
 
   constructor(props) {
@@ -168,6 +170,7 @@ class PostDetails extends Component {
       commentedId,
       commentPayload,
       isUpdating,
+      isDeleting,
     } = this.props;
 
     const {
@@ -230,6 +233,9 @@ class PostDetails extends Component {
             <meta property="article:published_time" content={new Date(created).toDateString()} />
           </Helmet>
           <Grid verticalAlign='middle' columns={1} centered>
+            {
+              isDeleting && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
+            }
             <Grid.Row>
               <Grid.Column width={columns}>
                 <React.Fragment>

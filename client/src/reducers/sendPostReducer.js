@@ -4,7 +4,6 @@ import {
   SEND_POST_ERROR,
   CLEAR_NEW_POST,
   SHOW_EDIT_POST,
-  DELETE_POST_START,
 } from '../actions/sendPostActions';
 
 /**
@@ -60,11 +59,6 @@ export const sendPost = (
         ...state,
         isUpdating: true,
         draft: action.draft,
-      });
-    case DELETE_POST_START:
-      return ({
-        ...state,
-        isDeleting: true,
       });
     default:
       return state

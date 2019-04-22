@@ -38,6 +38,7 @@ class Comment extends Component {
     updatedId: PropTypes.number,
     sendDeleteComment: PropTypes.func.isRequired,
     commentDeleting: PropTypes.shape(PropTypes.object.isRequired),
+    isDeleting: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -51,6 +52,7 @@ class Comment extends Component {
     updatedComment: {},
     updatedId: 0,
     commentDeleting: {},
+    isDeleting: false,
   }
 
   state = {

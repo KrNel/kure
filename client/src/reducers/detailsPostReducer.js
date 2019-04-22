@@ -2,6 +2,8 @@ import {
   GET_DETAILS_START,
   GET_DETAILS_SUCCESS,
   CLEAR_POST,
+  DELETE_POST_START,
+  DELETE_POST_SUCCESS,
 } from '../actions/detailsPostActions';
 
 /**
@@ -15,6 +17,8 @@ export const detailsPost = (
   state = {
     isFetchingDetails: false,
     post: {},
+    isDeleting: false,
+    redirect: '',
   },
   action) => {
 
@@ -35,6 +39,17 @@ export const detailsPost = (
         ...state,
         isFetchingDetails: false,
         post: {},
+      });
+    case DELETE_POST_START:
+      return ({
+        ...state,
+        isDeleting: true,
+      });
+    case DELETE_POST_SUCCESS:
+      return ({
+        ...state,
+        isDeleting: false,
+        redirect: action.redirect,
       });
     default:
       return state

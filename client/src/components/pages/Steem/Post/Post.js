@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import PostDetails from './PostDetails';
 import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
@@ -45,7 +46,8 @@ class Post extends Component {
     isFetchingDetails: PropTypes.bool.isRequired,
     isUpdating: PropTypes.bool,
     draft: PropTypes.shape(PropTypes.object.isRequired),
-    updatedId: PropTypes.number,
+    isDeleting: PropTypes.bool,
+    redirect: PropTypes.string,
   };
 
   static defaultProps = {
@@ -59,7 +61,8 @@ class Post extends Component {
     replies: [],
     isUpdating: false,
     draft: {},
-    updatedId: 0,
+    isDeleting: false,
+    redirect: '',
   }
 
   constructor(props) {
@@ -134,52 +137,59 @@ class Post extends Component {
       commentedId,
       commentPayload,
       isUpdating,
+      isDeleting,
+      redirect,
     } = this.props;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
     return (
-      <ErrorBoundary>
-        <React.Fragment>
-          <ModalGroup
-            modalOpen={modalOpenAddPost}
-            onModalClose={onModalCloseAddPost}
-            handleModalClick={handleModalClickAddPost}
-            handleGroupSelect={handleGroupSelect}
-            groups={groups}
-            addErrorPost={addErrorPost}
-            addPostLoading={addPostLoading}
-          />
-          {
-            !isFetchingDetails && !hasLength(post)
-            ? <div>That post does not exist.</div>
-            : !isFetchingDetails && hasLength(post)
-              ? (
-                <PostDetails
-                  match={match}
-                  showModal={showModal}
-                  user={user}
-                  csrf={csrf}
-                  isAuth={isAuth}
-                  getContent={getContent}
-                  post={post}
-                  handleUpvote={handleUpvote}
-                  upvotePayload={upvotePayload}
-                  replies={replies}
-                  sendComment={sendComment}
-                  isCommenting={isCommenting}
-                  commentedId={commentedId}
-                  isFetching={isFetchingDetails}
-                  commentPayload={commentPayload}
-                  isUpdating={isUpdating}
-                />
-              )
-              :  <Loading />
+      redirect
+      ? <Redirect to={redirect} />
+      : (
+        <ErrorBoundary>
+          <React.Fragment>
+            <ModalGroup
+              modalOpen={modalOpenAddPost}
+              onModalClose={onModalCloseAddPost}
+              handleModalClick={handleModalClickAddPost}
+              handleGroupSelect={handleGroupSelect}
+              groups={groups}
+              addErrorPost={addErrorPost}
+              addPostLoading={addPostLoading}
+            />
+            {
+              !isFetchingDetails && !hasLength(post)
+              ? <div>That post does not exist.</div>
+              : !isFetchingDetails && hasLength(post)
+                ? (
+                  <PostDetails
+                    match={match}
+                    showModal={showModal}
+                    user={user}
+                    csrf={csrf}
+                    isAuth={isAuth}
+                    getContent={getContent}
+                    post={post}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                    replies={replies}
+                    sendComment={sendComment}
+                    isCommenting={isCommenting}
+                    commentedId={commentedId}
+                    isFetching={isFetchingDetails}
+                    commentPayload={commentPayload}
+                    isUpdating={isUpdating}
+                    isDeleting={isDeleting}
+                  />
+                )
+                :  <Loading />
 
-          }
-        </React.Fragment>
-      </ErrorBoundary>
+            }
+          </React.Fragment>
+        </ErrorBoundary>
+      )
     )
   }
 }
@@ -200,6 +210,8 @@ class Post extends Component {
      detailsPost: {
        isFetchingDetails,
        post,
+       isDeleting,
+       redirect,
      },
      userGroups: {
        groups,
@@ -249,6 +261,8 @@ class Post extends Component {
      editingComment,
      isUpdating,
      draft,
+     isDeleting,
+     redirect,
    }
  }
 

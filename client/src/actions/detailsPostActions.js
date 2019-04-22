@@ -1,5 +1,6 @@
 import { Client } from 'dsteem';
 
+import SteemConnect from '../utils/auth/scAPI';
 import { getUserGroupsFetch } from './userGroupsActions';
 import { getPostComments } from './commentsActions';
 
@@ -8,6 +9,8 @@ const client = new Client('https://hive.anyx.io/');
 export const GET_DETAILS_START = 'GET_DETAILS_START';
 export const GET_DETAILS_SUCCESS = 'GET_DETAILS_SUCCESS';
 export const CLEAR_POST = 'CLEAR_POST';
+export const DELETE_POST_START = 'DELETE_POST_START';
+export const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
 
 /**
  *  Action creator for starting retrieval of post detail data.
@@ -39,6 +42,25 @@ export const clearPost = () => ({
 });
 
 /**
+ *  Action creator for starting to delete a post.
+ *
+ *  @return {object} The action data
+ */
+export const deletePostStart = () => ({
+  type: DELETE_POST_START,
+});
+
+/**
+ *  Action creator for successfully deleting a post.
+ *
+ *  @return {object} The action data
+ */
+export const deletePostSuccess = (redirect) => ({
+  type: DELETE_POST_SUCCESS,
+  redirect,
+});
+
+/**
  *  Fetch the post details from Steem.
  *
  *  @param {string} author Author of post
@@ -61,6 +83,28 @@ export const getDetailsContent = (author, permlink) => (dispatch, getState) => {
         dispatch(getPostComments(post.author, post.permlink));
       }
     })
+}
+
+/**
+ *  Delete a post by using author and permlink to refrence it.
+ *
+ *  @param {string} author Author of comment
+ *  @param {string} permlink Permlink of comment
+ *  @returns {function} Dispatches returned action object
+ */
+export const deletePost = (author, permlink) => (dispatch, getState) => {
+  dispatch(deletePostStart());
+
+  return SteemConnect
+    .deleteComment(author, permlink)
+    .then(res => {
+console.log('res',res)
+      if (res.result.block_num) {
+        const { user } = getState().auth;
+        const redirect = `/@${user}/`;
+        dispatch(deletePostSuccess(redirect));
+      }
+    });
 }
 
 export default getDetailsContent;

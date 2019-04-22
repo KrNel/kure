@@ -89,7 +89,7 @@ class PostActions extends Component {
         image,
         isPost,
         onEditPost,
-        onDeletePost
+        onDeletePost,
       },
     } = this;
 
@@ -140,7 +140,7 @@ class PostActions extends Component {
           {
             user
             && (
-              <React.Fragment>
+              <Button.Group>
                 {
                   isPost && author === user && (
                     <React.Fragment>
@@ -149,23 +149,30 @@ class PostActions extends Component {
                         color='blue'
                         onClick={e => onEditPost(e)}
                         title="Edit post"
+                        className='actionEdit'
                       >
                         <Button.Content hidden>Edit</Button.Content>
                         <Button.Content visible>
                           <Icon name='edit' />
                         </Button.Content>
                       </Button>
-                      <Button
-                        animated='vertical'
-                        color='blue'
-                        onClick={e => onDeletePost(e, author, permlink)}
-                        title="Delete post"
-                      >
-                        <Button.Content hidden>Del</Button.Content>
-                        <Button.Content visible>
-                          <Icon name='remove' />
-                        </Button.Content>
-                      </Button>
+
+                      {
+                        !activeVotes.length && !commentCount && (
+                          <Button
+                            animated='vertical'
+                            color='blue'
+                            onClick={e => onDeletePost(e, author, permlink)}
+                            title="Delete post"
+                            className='actionDelete'
+                          >
+                            <Button.Content hidden>Del</Button.Content>
+                            <Button.Content visible>
+                              <Icon name='remove' />
+                            </Button.Content>
+                          </Button>
+                        )
+                      }
                     </React.Fragment>
                   )
                 }
@@ -174,13 +181,14 @@ class PostActions extends Component {
                   color='blue'
                   onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})}
                   title="Add to a community"
+                  className='actionAdd'
                 >
                   <Button.Content hidden>Add</Button.Content>
                   <Button.Content visible>
                     <Icon name='plus circle' />
                   </Button.Content>
                 </Button>
-              </React.Fragment>
+              </Button.Group>
             )
           }
         </div>

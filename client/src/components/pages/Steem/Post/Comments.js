@@ -167,6 +167,8 @@ Comments.propTypes = {
   updatedComment: PropTypes.shape(PropTypes.object.isRequired),
   updatedId: PropTypes.number,
   sendDeleteComment: PropTypes.func.isRequired,
+  commentDeleting: PropTypes.shape(PropTypes.object.isRequired),
+  isDeleting: PropTypes.bool,
 };
 
 Comments.defaultProps = {
@@ -178,6 +180,8 @@ Comments.defaultProps = {
   isUpdating: false,
   updatedComment: {},
   updatedId: 0,
+  commentDeleting: {},
+  isDeleting: false,
 }
 
 /**

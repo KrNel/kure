@@ -7,7 +7,6 @@ export const SEND_POST_SUCCESS = 'SEND_POST_SUCCESS';
 export const SEND_POST_ERROR = 'SEND_POST_ERROR';
 export const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 export const SHOW_EDIT_POST = 'SHOW_EDIT_POST';
-export const DELETE_POST_START = 'DELETE_POST_START';
 
 /**
  *  Action creator for starting to send a post.
@@ -58,15 +57,7 @@ const showEditPost = (draft) => ({
   draft,
 });
 
-/**
- *  Action creator for starting to delete a comment.
- *
- *  @param {string} parentId Id of parent post being commented on
- *  @return {object} The action data
- */
-export const deletePostStart = () => ({
-  type: DELETE_POST_START,
-});
+
 
 const rewardsValues = {
   all: '100',
@@ -184,31 +175,6 @@ export const sendPost = post => (dispatch, getState) => {
           setTimeout(() => dispatch(sendPostSuccess(redirect)), 1500);
       });
   })
-}
-
-/**
- *  Delete a post by using author and permlink to refrence it.
- *
- *  @param {string} author Author of comment
- *  @param {string} permlink Permlink of comment
- *  @returns {function} Dispatches returned action object
- */
-export const deletePost = (author, permlink) => dispatch => {
-  dispatch(deletePostStart());
-
-  return SteemConnect
-    .deleteComment(author, permlink)
-    .then(res => {
-console.log('res',res)
-      //dispatch(deleteCommentSuccess());
-
-      /*if (res.result.block_num) {
-        getComment(author, permlink)
-          .then(comment => {
-            dispatch(editCommentSuccess(comment));
-          })
-      }*/
-    });
 }
 
 export default sendPost;
