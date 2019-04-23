@@ -161,17 +161,27 @@ export const denyUser = (params, csrf) => {
 }
 
 /**
+ *  Call/fetch to change ownership of a community group.
+ *
+ *  @param {object} params Data to pass to server fetch
+ *  @param {string} csrf CSRF token
+ */
+export const changeOwner = (params, csrf) => {
+  return postData('/manage/users/ownership', params, csrf);
+}
+
+/**
  *  Call/fetch for logging.
  *
  *  @param {object} params Data to pass to server fetch
  */
-export const logger = (type, msg) => {
+export const logger = (type, msg, customMsg) => {
   const params = (type === 'error')
     ? ({
         level: 'error',
         message: {
           name: msg.name,
-          message: msg.message,
+          message: customMsg,
           stack: msg.stack
         }
       })

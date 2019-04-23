@@ -68,18 +68,8 @@ class GroupDetails extends Component {
   }
 
   /**
-   *  Fetch post detail from Steem blockchain on component update.
+   *  Remove scoll window listener and clear the group redux content.
    */
-  /*componentDidUpdate(prevProps) {
-    const {
-      user,
-    } = this.props;
-
-    if (prevProps.user !== user) {
-      this.getPosts();
-    }
-  }*/
-
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
 
@@ -186,9 +176,15 @@ class GroupDetails extends Component {
         ? <GroupPostsGrid posts={groupData.kposts} />
         : <GroupPostsList posts={groupData.kposts} />
       : (
-        <Segment>
-          {'No posts.'}
-        </Segment>
+        <Grid>
+          <Grid.Column>
+            <div>
+              <Segment floated='left'>
+                {'No posts.'}
+              </Segment>
+            </div>
+          </Grid.Column>
+        </Grid>
       );
 
 

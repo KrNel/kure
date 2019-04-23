@@ -95,9 +95,9 @@
 }
 
 .ui.blue.button.actionAdd:hover {
-  background-color: #21ba45 !important;
+  background-color: var(--green) !important;
 }
 
 .ui.blue.button.actionDelete:hover {
-  background-color: #db2828 !important;
+  background-color: var(--red) !important;
 }
