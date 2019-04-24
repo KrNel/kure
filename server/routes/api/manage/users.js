@@ -307,7 +307,7 @@ const denyJoinGroup = (db, next, group, newUser) => {
  */
 router.post('/ownership', async (req, res, next) => {
   const db = req.app.locals.db;
-  let { group, newOwner, user } = req.body;
+  const { group, newOwner, user } = req.body;
 
   //Modify owner of group in DB
   const changedOwnership = await verifyAccess(db, next, group, user, 'ownership', 'modify') && await changeOwnership(db, next, group, newOwner, user);
@@ -362,7 +362,7 @@ const changeOwnership = async (db, next, group, newOwner, user) => {
       db.collection('users').updateOne(
         { user: newOwner },
         {
-          inc:
+          $inc:
           {
             owned_kgroups: 1
           }

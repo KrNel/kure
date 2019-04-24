@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
 
 import ManageGroups from './ManageGroups';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import { getUserGroups, logger } from '../../../utils/fetchFunctions';
 import './Manage.css';
 
 
@@ -19,42 +20,121 @@ import './Manage.css';
  *  @param {string} props.csrf CSRF token to prevent CSRF attacks
  *  @returns {Component} Loads various components to manage community groups
  */
-const Manage = ({user, csrf, match}) => (
-  <ErrorBoundary>
-    <div className="manage">
-      <Grid columns={1} stackable>
+class Manage extends Component {
 
-        <Grid.Column width={16} className="main">
-          <Grid>
+  static propTypes = {
+    user: PropTypes.string.isRequired,
+    csrf: PropTypes.string.isRequired,
+    match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
+  };
 
-            <ManageGroups
-              user={user}
-              csrf={csrf}
-              type='owned'
-              headerText='Communities You Own'
-              match={match}
-            />
+  constructor(props) {
+    super(props);
 
-            <ManageGroups
-              user={user}
-              csrf={csrf}
-              type='joined'
-              headerText='Communities You Joined'
-              match={match}
-            />
+    this.state = {
+      groupsOwned: [],
+      groupsJoined: [],
+      areGroupsLoading: true,
+    }
+  }
 
+  /**
+   *  Fetch the group data for the user.
+   */
+  componentDidMount() {
+    const { user } = this.props;
+    this.getGroupsFetch(user);
+  }
+
+  /**
+   *  Get the groups from the database and split into owned or joined groups.
+   *  Set groups state, and reset loading flag.
+   *
+   *  @param {string} user logged in user name
+   */
+  getGroupsFetch = (user) => {
+    getUserGroups(user, 'all')
+    .then(res => {
+      let groupsOwned = [];
+      let groupsJoined = [];
+
+      res.data.groups.map(g => {
+        if (g.access === 0) {
+          groupsOwned.push(g);
+        }else {
+          groupsJoined.push(g);
+        }
+      })
+
+      this.setState({
+        groupsOwned,
+        groupsJoined,
+        areGroupsLoading: false,
+     });
+    }).catch(err => {
+      logger('error', err);
+    });
+  }
+
+  /**
+   *  When a community is trasnfer to a new owner, get the data again to
+   *  display the community in the proper section (from owned to joined).
+   */
+  onChangeOwnership = () => {
+    const { user } = this.props;
+    this.getGroupsFetch(user);
+  }
+
+  render() {
+    const {
+      user,
+      csrf,
+      match
+    } = this.props;
+
+    const {
+      groupsOwned,
+      groupsJoined,
+      areGroupsLoading
+    } = this.state;
+
+    return (
+      <ErrorBoundary>
+        <div className="manage">
+          <Grid columns={1} stackable>
+            <Grid.Column width={16} className="main">
+              <Grid>
+
+                <ManageGroups
+                  user={user}
+                  csrf={csrf}
+                  section='owned'
+                  headerText='Communities You Own'
+                  match={match}
+                  areGroupsLoading={areGroupsLoading}
+                  groups={groupsOwned}
+                  onChangeOwnership={this.onChangeOwnership}
+                />
+
+                <ManageGroups
+                  user={user}
+                  csrf={csrf}
+                  section='joined'
+                  headerText='Communities You Joined'
+                  match={match}
+                  areGroupsLoading={areGroupsLoading}
+                  groups={groupsJoined}
+                  onChangeOwnership={this.onChangeOwnership}
+                />
+
+              </Grid>
+            </Grid.Column>
           </Grid>
-        </Grid.Column>
-      </Grid>
-    </div>
-  </ErrorBoundary>
-)
-
-Manage.propTypes = {
-  user: PropTypes.string.isRequired,
-  csrf: PropTypes.string.isRequired,
-  match: PropTypes.shape(PropTypes.object.isRequired).isRequired,
-};
+        </div>
+      </ErrorBoundary>
+    )
+  }
+}
 
 /**
  *  Map redux state to component props.

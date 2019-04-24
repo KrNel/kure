@@ -37,7 +37,7 @@ class GroupManage extends Component {
     onPostUpdate: PropTypes.func.isRequired,
     onUserUpdate: PropTypes.func.isRequired,
     onJoinRequestUpdate: PropTypes.func.isRequired,
-
+    handleChangeOwner: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -53,6 +53,8 @@ class GroupManage extends Component {
       pending: [],
       approvingUser: '',
       group: '',
+      access: 4, //guest access
+      groupName: '',
       modalOpen: false,
       modalData: {},
       newUser: '',
@@ -81,13 +83,16 @@ class GroupManage extends Component {
    *  @param {object} state Current state object
    */
   static getDerivedStateFromProps(props, state) {
-    const group = props.manageGroup.group['name'];
+    const { manageGroup } = props;
+    const group = manageGroup.group['name'];
     if (group !== state.group) {
       return {
         group: group,
-        posts: props.manageGroup.posts,
-        users: props.manageGroup.users,
-        pending: props.manageGroup.pending
+        access: manageGroup.group.access.access,
+        groupName: manageGroup.group.display,
+        posts: manageGroup.posts,
+        users: manageGroup.users,
+        pending: manageGroup.pending
       };
     }
     return null;
@@ -499,27 +504,8 @@ class GroupManage extends Component {
     .then(res => {
       if (!res.data.invalidCSRF) {
         if (res.data) {
-          const { users } = this.state;
-
-          const newUsers = users.map(u => {
-            if (newOwner === u.user) {
-              u = {
-                ...u,
-                access: 0,
-              };
-            }else if (this.user === u.user) {
-              u = {
-                ...u,
-                access: 3,
-              };
-            }
-            return u;
-          });
-
-          this.setState({
-            users: newUsers,
-            newOwnerLoading: false,
-          });
+          const { handleChangeOwner } = this.props;
+          handleChangeOwner();
         }
       }
     }).catch(err => {
@@ -546,14 +532,9 @@ class GroupManage extends Component {
       deletingUser,
       newOwner,
       newOwnerLoading,
+      access,
+      groupName,
     } = this.state;
-
-    const {
-      manageGroup,
-    } = this.props;
-
-    const access = manageGroup.group.access.access;
-    const groupName = manageGroup.group.display;
 
     let addErrorPost = '';
     let addErrorUser = '';
