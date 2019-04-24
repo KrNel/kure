@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Form, TextArea, Button, Dimmer, Loader } from "semantic-ui-react";
+import { Form, TextArea, Button, Dimmer, Loader, Icon } from "semantic-ui-react";
 
 import { editComment } from '../../../../actions/sendCommentActions';
 
@@ -44,18 +44,17 @@ class ReplyForm extends Component {
     body: '',
   }
 
+  //clearBody = false;
+
   /**
    *  If a comment has been posted, clear the form by clearing the body state.
    */
-  static getDerivedStateFromProps(props, state) {
-    if (props.parentPost.id === props.commentedId && !props.isCommenting) {
-      props.toggleReplyForm();
-      return {
-        body: '',
-      };
+  componentDidUpdate(prevProps) {
+    const { isCommenting, parentPost, commentedId, toggleReplyForm } = this.props;
+    if (!isCommenting && isCommenting !== prevProps.isCommenting && parentPost.id === commentedId) {
+      toggleReplyForm();
+      this.handleClearReply();
     }
-
-    return null;
   }
 
   /**
@@ -125,7 +124,7 @@ class ReplyForm extends Component {
     } = this;
 
     let cancelButtonClick = ['Clear', this.handleClearReply];
-    let submitButtonClick = ['Post', this.handleSendComment];
+    let submitButtonClick = ['Reply', this.handleSendComment];
     let disabled = body === '' || isCommenting;
     if (commentBody) {
       submitButtonClick = ['Update', this.handleEditComment];
@@ -151,24 +150,32 @@ class ReplyForm extends Component {
                 onChange={this.handleChange}
                 name='body'
                 value={body || commentBody}
-                disabled={disabled}
+                disabled={isCommenting}
               />
-              <div>
+              <Button.Group>
                 <Button
-                  size="large"
-                  color="blue"
-                  content={submitButtonClick[0]}
+                  animated='vertical'
+                  color='blue'
                   disabled={disabled}
                   onClick={submitButtonClick[1]}
-                />
+                >
+                  <Button.Content hidden>{submitButtonClick[0]}</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='reply' />
+                  </Button.Content>
+                </Button>
+
                 <Button
-                  size="large"
-                  color="grey"
-                  content={cancelButtonClick[0]}
+                  animated='vertical'
                   disabled={disabled}
                   onClick={cancelButtonClick[1]}
-                />
-              </div>
+                >
+                  <Button.Content hidden>{cancelButtonClick[0]}</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='eraser' />
+                  </Button.Content>
+                </Button>
+              </Button.Group>
 
             </Form>
             {

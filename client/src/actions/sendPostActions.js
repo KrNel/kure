@@ -7,7 +7,6 @@ export const SEND_POST_SUCCESS = 'SEND_POST_SUCCESS';
 export const SEND_POST_ERROR = 'SEND_POST_ERROR';
 export const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 export const SHOW_EDIT_POST = 'SHOW_EDIT_POST';
-export const CANCEL_EDIT_POST = 'CANCEL_EDIT_POST';
 
 /**
  *  Action creator for starting to send a post.
@@ -23,9 +22,9 @@ const sendPostStart = () => ({
  *
  *  @return {object} The action data
  */
-const sendPostSuccess = newPost => ({
+const sendPostSuccess = redirect => ({
   type: SEND_POST_SUCCESS,
-  newPost,
+  redirect,
 });
 
 /**
@@ -44,7 +43,7 @@ const sendPostError = error => ({
  *
  *  @return {object} The action data
  */
-export const clearNewPost = () => ({
+export const clearSendPost = () => ({
   type: CLEAR_NEW_POST,
 });
 
@@ -58,14 +57,7 @@ const showEditPost = (draft) => ({
   draft,
 });
 
-/**
- *  Action creator for clearing a new post after the page is loaded.
- *
- *  @return {object} The action data
- */
-export const cancelEditPost = () => ({
-  type: CANCEL_EDIT_POST,
-});
+
 
 const rewardsValues = {
   all: '100',
@@ -73,7 +65,13 @@ const rewardsValues = {
   none: '0',
 };
 
-
+/**
+ *  Extract some data from the post, and send it back as a post draft for the
+ *  edit form to display and allow the user to edit.
+ *
+ *  @param {string} post Post object to edited
+ *  @returns {function} Dispatches returned action object
+ */
 export const editPost = post => dispatch => {
   const jsonMetadata = jsonParse(post.json_metadata);
 
@@ -88,10 +86,10 @@ export const editPost = post => dispatch => {
 }
 
 /**
- *  Uses SteemConnect to send a comment to the Steem blockchain.
+ *  Uses SteemConnect to send a post to the Steem blockchain. This is either a
+ *  new post, or to edit a post.
  *
- *  @param {string} parentPost Parent being commented on
- *  @param {string} body Comment body
+ *  @param {string} post Post object to be sent or updated
  *  @returns {function} Dispatches returned action object
  */
 export const sendPost = post => (dispatch, getState) => {
@@ -136,6 +134,8 @@ export const sendPost = post => (dispatch, getState) => {
     ];
     operations.push(commentOp);
 
+    const redirect = `/${parentPermlink}/@${author}/${permlink}`;
+
     if (isUpdating) {
       return SteemConnect.broadcast(operations)
         .then(res => {
@@ -172,10 +172,9 @@ export const sendPost = post => (dispatch, getState) => {
       return SteemConnect.broadcast(operations)
         .then(res => {
           localStorage.setItem('lastPostedAt-' + user, now);
-          setTimeout(() => dispatch(sendPostSuccess(`/${parentPermlink}/@${author}/${permlink}`)), 1500);
+          setTimeout(() => dispatch(sendPostSuccess(redirect)), 1500);
       });
   })
-
 }
 
 export default sendPost;

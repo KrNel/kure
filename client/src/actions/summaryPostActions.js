@@ -7,6 +7,7 @@ const client = new Client('https://hive.anyx.io/');
 
 export const GET_SUMMARY_START = 'GET_SUMMARY_START';
 export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
+export const SUMMARY_CANCEL = 'SUMMARY_CANCEL';
 
 /**
  *  Action creator for starting retrieval of post summary data.
@@ -32,6 +33,15 @@ export const summarySuccess = (posts, hasMore, prevPage, startAuthor, startPerml
   startPermlink,
 });
 
+/**
+ *  Action creator for starting retrieval of post summary data.
+ *
+ *  @return {object} The action data
+ */
+export const summaryCancel = (prevPage) => ({
+  type: SUMMARY_CANCEL,
+  prevPage,
+});
 
 /**
  *  Fetch the post details from Steem.
@@ -74,6 +84,10 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
     .then(result => {
       let hasMore = true;
       let newPosts = null;
+
+      if (!result.length && !posts.length) {
+        return dispatch(summaryCancel(page));
+      }
 
       if (result) {
         if (nextPost) {

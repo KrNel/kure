@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header, Icon, Form, Label, Divider } from "semantic-ui-react";
+import { Grid, Header, Icon, Form, Label, Divider, Segment } from "semantic-ui-react";
 
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import GroupManagePosts from './GroupManagePosts';
@@ -8,7 +8,7 @@ import GroupManageUsers from './GroupManageUsers';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import Picker from '../../Picker/Picker';
 import {roles} from '../../../settings';
-import { addPost, deletePost, addUser, deleteUser, approveUser, denyUser } from '../../../utils/fetchFunctions';
+import { addPost, deletePost, addUser, deleteUser, approveUser, denyUser, changeOwner, logger } from '../../../utils/fetchFunctions';
 import { postValidation, userValidation } from '../../../utils/validationFunctions';
 
 /**
@@ -37,7 +37,7 @@ class GroupManage extends Component {
     onPostUpdate: PropTypes.func.isRequired,
     onUserUpdate: PropTypes.func.isRequired,
     onJoinRequestUpdate: PropTypes.func.isRequired,
-
+    handleChangeOwner: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -53,6 +53,8 @@ class GroupManage extends Component {
       pending: [],
       approvingUser: '',
       group: '',
+      access: 4, //guest access
+      groupName: '',
       modalOpen: false,
       modalData: {},
       newUser: '',
@@ -60,8 +62,9 @@ class GroupManage extends Component {
       addUserLoading: false,
       deletingPost: '',
       deletingUser: '',
-      selectedAccess: Object.keys(roles.kGroupsAccess).find(key => roles.kGroupsAccess[key] === 'Member')
-
+      selectedAccess: Object.keys(roles.kGroupsAccess).find(key => roles.kGroupsAccess[key] === 'Member'),
+      newOwner: '',
+      newOwnerLoading: false,
     };
 
     this.existPost = "Post already in group.";
@@ -80,13 +83,16 @@ class GroupManage extends Component {
    *  @param {object} state Current state object
    */
   static getDerivedStateFromProps(props, state) {
-    const group = props.manageGroup.group['name'];
+    const { manageGroup } = props;
+    const group = manageGroup.group['name'];
     if (group !== state.group) {
       return {
         group: group,
-        posts: props.manageGroup.posts,
-        users: props.manageGroup.users,
-        pending: props.manageGroup.pending
+        access: manageGroup.group.access.access,
+        groupName: manageGroup.group.display,
+        posts: manageGroup.posts,
+        users: manageGroup.users,
+        pending: manageGroup.pending
       };
     }
     return null;
@@ -463,6 +469,50 @@ class GroupManage extends Component {
     });
   }
 
+  /**
+   *  Validate then add new user to database.
+   *  Trim user name, validate it's structure, set loading flag.
+   */
+  handleSubmitChangeOwner = () => {
+
+    let { newOwner } = this.state;
+    newOwner = newOwner.trim();
+
+    if (this.handleOwnerValidation(newOwner)) {
+      this.setState({ newOwnerLoading: true });
+      const { group } = this.state;
+
+      this.changeOwnerFetch(newOwner, group);
+    }
+  }
+
+  handleOwnerValidation = (newOwner) => {
+    let errors = {};
+    const { users } = this.state;
+
+    const valid = users.some(u => u.user === newOwner);
+
+    if (!valid) errors['newOwner'] = 'New owner must be a member.'
+
+    this.setState({ errors: errors });
+
+    return valid;
+  }
+
+  changeOwnerFetch = (newOwner, group) => {
+    changeOwner({group, user: this.user, newOwner}, this.csrf)
+    .then(res => {
+      if (!res.data.invalidCSRF) {
+        if (res.data) {
+          const { handleChangeOwner } = this.props;
+          handleChangeOwner();
+        }
+      }
+    }).catch(err => {
+      logger('error', err, 'Error modifying ownership.');
+    });
+  }
+
   render() {
     const {
       newPost,
@@ -480,16 +530,15 @@ class GroupManage extends Component {
       addUserLoading,
       deletingPost,
       deletingUser,
+      newOwner,
+      newOwnerLoading,
+      access,
+      groupName,
     } = this.state;
-
-    const {
-      manageGroup,
-    } = this.props;
-
-    const access = manageGroup.group.access.access;
 
     let addErrorPost = '';
     let addErrorUser = '';
+    let addErrorOwner = '';
 
     if (postExists) addErrorPost = <ErrorLabel text={this.existPost} />;
     if (errors["newPost"] !== undefined) addErrorPost = <ErrorLabel text={errors["newPost"]} />;
@@ -497,20 +546,22 @@ class GroupManage extends Component {
     if (userExists) addErrorUser = <ErrorLabel text={this.existUser} />;
     if (errors["newUser"] !== undefined) addErrorUser = <ErrorLabel text={errors["newUser"]} />;
 
+    if (errors["newOwner"] !== undefined) addErrorOwner = <ErrorLabel text={errors["newOwner"]} />;
+
     return (
       <React.Fragment>
         <Divider />
         <Grid.Row className="header-row">
           <Grid.Column floated='left' width={8}>
             <Header as='h2'>
-              <Label size='big' color='blue'>Managing Group:</Label>
+              <Label size='big' color='blue'>Managing:</Label>
               {'   '}
-              {manageGroup.group.display}
+              {groupName}
             </Header>
           </Grid.Column>
           <Grid.Column floated='right' width={8}>
-            <div className='left'><Header>Posts</Header></div>
-            <div className="">
+            <div className='left'><Label size='big' basic>Posts</Label></div>
+            <div>
               <Form size="tiny" onSubmit={this.handleSubmitNewPost}>
                 <Form.Group className='right'>
                   <Form.Field>
@@ -553,59 +604,103 @@ class GroupManage extends Component {
         <Divider />
         <Grid.Row centered className='noPadBottom'>
           <Grid.Column width={8} floated='right'>
-            <Header>Users</Header>
+            <Label size='big' basic>Users</Label>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row className="content">
-
-          <GroupManageUsers
-            users={users}
-            showModal={this.showModal}
-            deletingUser={deletingUser}
-            access={access}
-            pending={pending}
-            handleApproval={this.handleApproval}
-            approvingUser={approvingUser}
-          />
-
-          {
-            //if logged in user is mod or above, allow adding users to group
-            access < 3 &&
-            (
-              <Grid.Column floated='right' width={6}>
-                <Form size="tiny" onSubmit={this.handleSubmitNewUser}>
-                  <Form.Group className='right'>
-                    <Form.Field>
-                      <Form.Input
-                        placeholder='Add a user'
-                        name='newUser'
-                        value={newUser}
-                        onChange={this.handleChange}
-                        errors={errors["newUser"]}
-                        loading={addUserLoading}
-                      />
-                      {addErrorUser}
-                    </Form.Field>
-                    <Form.Button icon size="tiny" color="blue">
-                      <Icon name="plus" />
-                    </Form.Button>
-                  </Form.Group>
-                  <Form.Group className='right user-access'>
-                    <Picker
-                      onChange={this.handleNewUserRoleChange}
-                      options={[
-                        {key: 0, text: 'Member', value: '3'},
-                        {key: 1, text: 'Moderator', value: '2'},
-                        {key: 2, text: 'Admin', value: '1'}
-                      ]}
-                      label='Role: '
-                      type='role'
-                    />
-                  </Form.Group>
-                </Form>
-              </Grid.Column>
-            )
-          }
+          <Grid stackable>
+            <GroupManageUsers
+              users={users}
+              showModal={this.showModal}
+              deletingUser={deletingUser}
+              access={access}
+              pending={pending}
+              handleApproval={this.handleApproval}
+              approvingUser={approvingUser}
+            />
+            {
+              //if logged in user is mod or above, allow adding users to group
+              access < 3 && (
+                <Grid.Column width={6}>
+                  <Grid.Row>
+                    <Grid.Column>
+                      <Segment.Group>
+                        <Segment>
+                          <Form size="tiny" onSubmit={this.handleSubmitNewUser}>
+                            <Form.Group>
+                              <Form.Field>
+                                <Form.Input
+                                  placeholder='Add a user'
+                                  name='newUser'
+                                  value={newUser}
+                                  onChange={this.handleChange}
+                                  errors={errors["newUser"]}
+                                  loading={addUserLoading}
+                                />
+                                {addErrorUser}
+                              </Form.Field>
+                              <Form.Button icon size="tiny" color="blue">
+                                <Icon name="plus" />
+                              </Form.Button>
+                            </Form.Group>
+                            <Form.Group className='user-access'>
+                              <Picker
+                                onChange={this.handleNewUserRoleChange}
+                                options={[
+                                  {key: 0, text: 'Member', value: '3'},
+                                  {key: 1, text: 'Moderator', value: '2'},
+                                  {key: 2, text: 'Admin', value: '1'}
+                                ]}
+                                label='Role: '
+                                type='role'
+                              />
+                            </Form.Group>
+                          </Form>
+                        </Segment>
+                        {
+                          access < 1 && (
+                          <Segment>
+                            <Label size='large' basic color='orange'>
+                              {'Transfer Ownership'}
+                            </Label>
+                            <p />
+                            <p>
+                              {`WARNING: By transfering the ownership of community group`}
+                              {' '}
+                              <strong>
+                                {`'${groupName}'`}
+                              </strong>
+                              {' '}
+                              {`to someone else, you will no longer be the owner.`}
+                            </p>
+                            <Form size="tiny" onSubmit={this.handleSubmitChangeOwner}>
+                              <Form.Group>
+                                <Form.Field>
+                                  <Form.Input
+                                    placeholder='New owner'
+                                    name='newOwner'
+                                    value={newOwner}
+                                    onChange={this.handleChange}
+                                    errors={errors['newOwner']}
+                                    loading={newOwnerLoading}
+                                  />
+                                  {addErrorOwner}
+                                </Form.Field>
+                                <Form.Button icon size="tiny" color="orange">
+                                  {'Transfer'}
+                                </Form.Button>
+                              </Form.Group>
+                            </Form>
+                          </Segment>
+                          )
+                        }
+                      </Segment.Group>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid.Column>
+              )
+            }
+          </Grid>
         </Grid.Row>
 
         <Divider className='section' />

@@ -51,9 +51,9 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
                           ? <Dimmer inverted active><Loader /></Dimmer>
                           : ''
                       }
-                      <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='blue' /></a>
+                      <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='green' /></a>
                       {' / '}
-                      <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='blue' /></a>
+                      <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='red' /></a>
                     </Table.Cell>
                   </Table.Row>
                   )

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import { Dimmer, Loader, Popup, Button } from "semantic-ui-react";
 
 import ReplyForm from './ReplyForm';
 import Body from './PostBody';
@@ -35,6 +36,9 @@ class Comment extends Component {
     isUpdating: PropTypes.bool,
     updatedComment: PropTypes.shape(PropTypes.object.isRequired),
     updatedId: PropTypes.number,
+    sendDeleteComment: PropTypes.func.isRequired,
+    commentDeleting: PropTypes.shape(PropTypes.object.isRequired),
+    isDeleting: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -47,6 +51,8 @@ class Comment extends Component {
     isUpdating: false,
     updatedComment: {},
     updatedId: 0,
+    commentDeleting: {},
+    isDeleting: false,
   }
 
   state = {
@@ -85,7 +91,8 @@ class Comment extends Component {
   }
 
   /**
-   *  TODO: Show the edit form and allow a post to be edited and saved.
+   *  When the 'Edit' link is clicked for a comment, this runs to change the
+   * state of the 'showEditForm' var to toogle showing/hiding the edit form.
    */
   onShowEditForm = (e) => {
     e.preventDefault();
@@ -133,6 +140,9 @@ class Comment extends Component {
         isUpdating,
         updatedComment,
         updatedId,
+        sendDeleteComment,
+        commentDeleting,
+        isDeleting,
       }
     } = this;
 
@@ -201,6 +211,9 @@ class Comment extends Component {
     return (
       <React.Fragment>
         <div id={`comment-${id}`} className={`comment depth-${depth}`}>
+          {
+            isDeleting && hasLength(commentDeleting) && commentDeleting.author === author && commentDeleting.permlink === permlink && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
+          }
           <ul className='commentList'>
             <li className='commentAvatar'>
               <Avatar author={author} height='40px' width='40px' />
@@ -250,9 +263,32 @@ class Comment extends Component {
                         }
                         {
                           isAuth && user === author && (
-                            <li className='item'>
-                              <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
-                            </li>
+                            <React.Fragment>
+                              <li className='item'>
+                                <a href='/edit' onClick={this.onShowEditForm}>Edit</a>
+                              </li>
+                              {
+                                comment.children < 1 && (
+                                  <Popup
+                                    trigger={(
+                                      <li className='item'>
+                                        <a href='/delete' onClick={e => e.preventDefault()}>Delete</a>
+                                      </li>
+                                    )}
+                                    position='top left'
+                                    flowing
+                                    hoverable
+                                    on='click'
+                                  >
+                                    <Button
+                                      color='red'
+                                      content='Confirm delete.'
+                                      onClick={e => sendDeleteComment(e, author, permlink, commentPayload)}
+                                    />
+                                  </Popup>
+                                )
+                              }
+                            </React.Fragment>
                           )
                         }
                       </ul>
@@ -289,6 +325,9 @@ class Comment extends Component {
                     isUpdating={isUpdating}
                     updatedComment={updatedComment}
                     updatedId={updatedId}
+                    sendDeleteComment={sendDeleteComment}
+                    commentDeleting={commentDeleting}
+                    isDeleting={isDeleting}
                   />
                 </li>
               ))
@@ -301,7 +340,7 @@ class Comment extends Component {
           && (
             <ul className={replyClass}>
               {
-                sortComments(commentPayload[id], 'new').map(reply => (
+                sortComments(commentPayload[id], sortBy).map(reply => (
                   <li className='commentReply' key={reply.id}>
                     <Comment
                       comment={reply}
@@ -319,6 +358,9 @@ class Comment extends Component {
                       isUpdating={isUpdating}
                       updatedComment={updatedComment}
                       updatedId={updatedId}
+                      sendDeleteComment={sendDeleteComment}
+                      commentDeleting={commentDeleting}
+                      isDeleting={isDeleting}
                     />
                   </li>
                 ))

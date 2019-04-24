@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom';
 
 import Preview from '../Post/Preview';
 import { createPostMetadata } from '../helpers/postHelpers';
-import { sendPost, clearNewPost, cancelEditPost } from '../../../../actions/sendPostActions';
+import { sendPost, clearSendPost } from '../../../../actions/sendPostActions';
 import './Write.css'
 
 /**
@@ -14,28 +14,27 @@ import './Write.css'
  *  A title field, text area for the post, and tag field are used to generate
  *  the posts for the Steem blockchain.
  */
-class Write extends Component {
+class Editor extends Component {
   static propTypes = {
     user: PropTypes.string,
     createPost: PropTypes.func.isRequired,
-    newPost: PropTypes.string,
+    newPostRedirect: PropTypes.string,
     clearPost: PropTypes.func.isRequired,
     isPosting: PropTypes.bool,
     error: PropTypes.string,
     isUpdating: PropTypes.bool,
     draft: PropTypes.shape(PropTypes.object.isRequired),
-    cancelEdit: PropTypes.func.isRequired,
-    reset: PropTypes.bool,
+    isNewPost: PropTypes.bool,
   };
 
   static defaultProps = {
     user: '',
-    newPost: '',
+    newPostRedirect: '',
     isPosting: false,
     error: '',
     isUpdating: false,
     draft: {},
-    reset: false,
+    isNewPost: false,
   }
 
   constructor(props) {
@@ -49,7 +48,6 @@ class Write extends Component {
       tagErrors: '',
     }
 
-    this.redirect = '';
     this.permlink = '';
     this.rewardOptions = [
       {key: 0, value: '50', text: '50% SBD / 50% STEEM'},
@@ -66,31 +64,28 @@ class Write extends Component {
   componentDidMount() {
     window.scrollTo(0, 0);
 
-    const { newPost, clearPost, isUpdating, draft, reset } = this.props;
+    const { clearPost, isUpdating, draft, isNewPost } = this.props;
 
-    if (reset) {
-      clearPost();
-      this.setState({
-        title: '',
-        body: '',
-        tags: '',
-      });
-    }else if (newPost) {
-      this.redirect = '';
-      clearPost();
-    }else if (isUpdating && draft) {
+    if (isUpdating && draft) {
       this.permlink = draft.permlink;
       this.setState({
         title: draft.title,
         body: draft.body,
         tags: draft.jsonMetadata.tags.join(' '),
       });
+    }else if (isNewPost) {
+      clearPost();
+      this.setState({
+        title: '',
+        body: '',
+        tags: '',
+      });
     }
   }
 
   componentWillUnmount() {
-    const { isUpdating, cancelEdit } = this.props;
-    if (isUpdating) cancelEdit();
+    const { clearPost } = this.props;
+    clearPost();
   }
 
   /**
@@ -144,8 +139,8 @@ class Write extends Component {
 
     this.permlink = '';
 
-    const { isUpdating, cancelEdit } = this.props;
-    if (isUpdating) cancelEdit();
+    const { isUpdating, clearPost } = this.props;
+    if (isUpdating) clearPost();
   }
 
   /**
@@ -231,20 +226,16 @@ class Write extends Component {
       },
       props: {
         isPosting,
-        newPost,
+        isNewPost,
         error,
         isUpdating,
-        reset,
+        newPostRedirect,
       }
     } = this;
 
-    if (newPost) {
-      this.redirect = newPost;
-    }
-
     return (
-      (newPost && !reset)
-      ? <Redirect to={newPost} />
+      (newPostRedirect && isNewPost)
+      ? <Redirect to={newPostRedirect} />
       : (
         <div id='write'>
           <Form onSubmit={this.handleSubmit} loading={isPosting}>
@@ -339,7 +330,7 @@ class Write extends Component {
      },
      sendPost: {
        isPosting,
-       newPost,
+       newPostRedirect,
        error,
        isUpdating,
        draft,
@@ -349,7 +340,7 @@ class Write extends Component {
    return {
      user,
      isPosting,
-     newPost,
+     newPostRedirect,
      error,
      isUpdating,
      draft,
@@ -368,12 +359,9 @@ const mapDispatchToProps = dispatch => (
       dispatch(sendPost(post))
     ),
     clearPost: () => (
-      dispatch(clearNewPost())
-    ),
-    cancelEdit: () => (
-      dispatch(cancelEditPost())
+      dispatch(clearSendPost())
     ),
   }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Write);
+export default connect(mapStateToProps, mapDispatchToProps)(Editor);

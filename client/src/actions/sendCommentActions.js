@@ -11,6 +11,8 @@ export const GET_COMMENT_START = 'GET_COMMENT_START';
 export const GET_COMMENT_SUCCESS = 'GET_COMMENT_START';
 export const EDIT_COMMENT_START = 'EDIT_COMMENT_START';
 export const EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS';
+export const SEND_COMMENT_CLEAR = 'SEND_COMMENT_CLEAR';
+export const DELETE_PAYLOAD_SUCCESS = 'DELETE_PAYLOAD_SUCCESS';
 
 /**
  *  Action creator for starting to send a comment.
@@ -18,8 +20,9 @@ export const EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS';
  *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const sendCommentStart = () => ({
+const sendCommentStart = (parentId) => ({
   type: SEND_COMMENT_START,
+  parentId,
 });
 
 /**
@@ -29,7 +32,7 @@ export const sendCommentStart = () => ({
  *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const sendCommentSuccess = (comment, parentId) => ({
+const sendCommentSuccess = (comment, parentId) => ({
   type: SEND_COMMENT_SUCCESS,
   comment,
   parentId,
@@ -41,7 +44,7 @@ export const sendCommentSuccess = (comment, parentId) => ({
  *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const editCommentStart = id => ({
+const editCommentStart = id => ({
   type: EDIT_COMMENT_START,
   id,
 });
@@ -53,9 +56,29 @@ export const editCommentStart = id => ({
  *  @param {string} parentId Id of parent post being commented on
  *  @return {object} The action data
  */
-export const editCommentSuccess = comment => ({
+const editCommentSuccess = comment => ({
   type: EDIT_COMMENT_SUCCESS,
   comment,
+});
+
+/**
+ *  Action creator for clearing the send comment variables.
+ *
+ *  @return {object} The action data
+ */
+export const sendCommentClear = () => ({
+  type: SEND_COMMENT_CLEAR,
+});
+
+/**
+ *  Action creator for successfully deleting a comment recently submitted.
+ *
+ *  @param {string} newReplies New replies object filtered
+ *  @return {object} The action data
+ */
+export const deletePayloadSuccess = newCommentPayload => ({
+  type: DELETE_PAYLOAD_SUCCESS,
+  newCommentPayload,
 });
 
 /**
@@ -66,14 +89,15 @@ export const editCommentSuccess = comment => ({
  *  @returns {function} Dispatches returned action object
  */
 export const sendComment = (body, parentPost) => (dispatch, getState) => {
-  dispatch(sendCommentStart());
+  const { category, id, permlink: parentPermlink, author: parentAuthor } = parentPost;
+
   const {
     auth: {
       user
     },
   } = getState();
 
-  const { category, id, permlink: parentPermlink, author: parentAuthor } = parentPost;
+  dispatch(sendCommentStart(id));
 
   const author = user;
   const permlink = createCommentPermlink(parentAuthor, parentPermlink)
@@ -95,6 +119,16 @@ export const sendComment = (body, parentPost) => (dispatch, getState) => {
     });
 }
 
+/**
+ *  Editing a comment is done with the body from the form which will replace
+ *  the previous comment body. The data from the comment is extracted and
+ *  used to upadte the comment in question, and also to fetch it anew once
+ *  the comment is updated.
+ *
+ *  @param {string} body Body of comment to update
+ *  @param {string} comment Comment being updated
+ *  @returns {function} Dispatches returned action object
+ */
 export const editComment = (body, comment) => dispatch => {
   dispatch(editCommentStart(comment.id));
 

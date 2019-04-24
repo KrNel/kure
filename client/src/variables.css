@@ -6,6 +6,10 @@
     --dark-blue: #06578e;
     --main-border: rgba(77, 162, 242, 0.4);
     --main-border-light: rgba(77, 162, 242, 0.1);
+    --green: #21ba45;
+    --dark-green: #198f35;
+    --red: #db2828;
+    --dark-red: #b21e1e;
 
     --soft-black: #202020;
     --charcoal-grey: #363636;
@@ -13,9 +17,9 @@
     --soft-grey: #cacaca;
     --action-grey: rgba(202, 202, 202, 0.8);
     --font-content: "Roboto", "Lato", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-body: "Roboto", "Lato", Georgia, "PT Sans / PT Serif";
-    /*font-family: 'Source Serif Pro', serif;*/
+    --font-body: "Roboto", "Lato", "Source Sans Pro";
+    /*font-family: Georgia, Helvetica, 'Source Serif Pro', serif;*/
     /*
-    Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"
+    "minion pro", Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"
     */
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Icon } from "semantic-ui-react";
+import { Icon, Button, Popup } from "semantic-ui-react";
 
 import Vote from './Vote';
 
@@ -38,6 +38,7 @@ class PostActions extends Component {
     image: PropTypes.string,
     isPost: PropTypes.bool,
     onEditPost: PropTypes.func,
+    onDeletePost: PropTypes.func,
   };
 
   static defaultProps = {
@@ -57,6 +58,7 @@ class PostActions extends Component {
     image: '',
     isPost: false,
     onEditPost: () => {},
+    onDeletePost: () => {},
   };
 
 
@@ -87,6 +89,7 @@ class PostActions extends Component {
         image,
         isPost,
         onEditPost,
+        onDeletePost,
       },
     } = this;
 
@@ -137,21 +140,68 @@ class PostActions extends Component {
           {
             user
             && (
-              <React.Fragment>
+              <div>
                 {
                   isPost && author === user && (
-                    <span>
-                      <a href="/post/edit" onClick={e => onEditPost(e)} title="Edit post">
-                        <Icon name='compose' size='large' />
-                      </a>
-                      {` `}
-                    </span>
+                    <React.Fragment>
+                      <Button
+                        animated='vertical'
+                        color='blue'
+                        onClick={e => onEditPost(e)}
+                        title="Edit post"
+                        className='actionEdit'
+                      >
+                        <Button.Content hidden>Edit</Button.Content>
+                        <Button.Content visible>
+                          <Icon name='edit' />
+                        </Button.Content>
+                      </Button>
+
+                      {
+                        !activeVotes.length && !commentCount && (
+                          <Popup
+                            trigger={(
+                              <Button
+                                animated='vertical'
+                                color='blue'
+                                title="Delete post"
+                                className='actionDelete'
+                              >
+                                <Button.Content hidden>Del</Button.Content>
+                                <Button.Content visible>
+                                  <Icon name='remove' />
+                                </Button.Content>
+                              </Button>
+                            )}
+                            position='top left'
+                            flowing
+                            hoverable
+                            on='click'
+                          >
+                            <Button
+                              color='red'
+                              content='Confirm delete.'
+                              onClick={e => onDeletePost(e, author, permlink)}
+                            />
+                          </Popup>
+                        )
+                      }
+                    </React.Fragment>
                   )
                 }
-                <a href="/group/add" onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})} title="Add to a community">
-                  <Icon name='plus circle' size='large' />
-                </a>
-              </React.Fragment>
+                <Button
+                  animated='vertical'
+                  color='blue'
+                  onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})}
+                  title="Add to a community"
+                  className='actionAdd'
+                >
+                  <Button.Content hidden>Add</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='plus circle' />
+                  </Button.Content>
+                </Button>
+              </div>
             )
           }
         </div>

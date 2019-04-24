@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { hasLength, getUpvotes, sumPayout } from '../../../../utils/helpers';
+import { deleteComment } from '../../../../actions/commentsActions';
 import Comment from './Comment';
 import './Comments.css';
 
@@ -78,7 +79,15 @@ const Comments = (props) => {
     isUpdating,
     updatedComment,
     updatedId,
+    commentDeleting,
+    isDeleting,
   } = props;
+
+  const handleDeleteComment = (e, author, permlink, commentPayload) => {
+    e.preventDefault();
+    const { sendDeleteComment } = props;
+    sendDeleteComment(author, permlink, commentPayload);
+  }
 
   return (
     <React.Fragment>
@@ -102,6 +111,9 @@ const Comments = (props) => {
                 isUpdating={isUpdating}
                 updatedComment={updatedComment}
                 updatedId={updatedId}
+                sendDeleteComment={handleDeleteComment}
+                commentDeleting={commentDeleting}
+                isDeleting={isDeleting}
               />
             </li>
           ))
@@ -126,6 +138,9 @@ const Comments = (props) => {
                 isUpdating={isUpdating}
                 updatedComment={updatedComment}
                 updatedId={updatedId}
+                sendDeleteComment={handleDeleteComment}
+                commentDeleting={commentDeleting}
+                isDeleting={isDeleting}
               />
             </li>
           ))
@@ -151,6 +166,9 @@ Comments.propTypes = {
   isUpdating: PropTypes.bool,
   updatedComment: PropTypes.shape(PropTypes.object.isRequired),
   updatedId: PropTypes.number,
+  sendDeleteComment: PropTypes.func.isRequired,
+  commentDeleting: PropTypes.shape(PropTypes.object.isRequired),
+  isDeleting: PropTypes.bool,
 };
 
 Comments.defaultProps = {
@@ -162,6 +180,8 @@ Comments.defaultProps = {
   isUpdating: false,
   updatedComment: {},
   updatedId: 0,
+  commentDeleting: {},
+  isDeleting: false,
 }
 
 /**
@@ -177,6 +197,8 @@ Comments.defaultProps = {
        isUpdating,
        updatedComment,
        updatedId,
+       isDeleting,
+       commentDeleting,
      },
    } = state;
 
@@ -185,8 +207,23 @@ Comments.defaultProps = {
      isUpdating,
      updatedComment,
      updatedId,
+     isDeleting,
+     commentDeleting,
    }
  }
 
-export default connect(mapStateToProps)(Comments);
-//export default Comments;
+ /**
+  *  Map redux dispatch functions to component props.
+  *
+  *  @param {object} dispatch - Redux dispatch
+  *  @returns {object} - Object with recent activity data
+  */
+ const mapDispatchToProps = dispatch => (
+  {
+    sendDeleteComment: (author, permlink, commentPayload) => (
+      dispatch(deleteComment(author, permlink, commentPayload))
+    ),
+  }
+ );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Comments);

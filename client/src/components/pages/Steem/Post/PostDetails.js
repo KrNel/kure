@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Form, Select } from "semantic-ui-react";
+import { Grid, Form, Select, Dimmer, Loader } from "semantic-ui-react";
 import { attempt, isError, has, get } from 'lodash';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { connect } from 'react-redux';
@@ -19,7 +19,10 @@ import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
 import { editPost } from '../../../../actions/sendPostActions';
-import { clearPost } from '../../../../actions/detailsPostActions';
+import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
+import { commentsClear } from '../../../../actions/commentsActions';
+import { sendCommentClear } from '../../../../actions/sendCommentActions';
+
 import './PostDetails.css'
 
 /**
@@ -43,6 +46,10 @@ class PostDetails extends Component {
     isUpdating: PropTypes.bool,
     showEditPost: PropTypes.func,
     clearPostDetails: PropTypes.func,
+    sendDeletePost: PropTypes.func,
+    clearComments: PropTypes.func,
+    isDeleting: PropTypes.bool,
+    clearNewComments: PropTypes.func,
   };
 
   static defaultProps = {
@@ -55,6 +62,10 @@ class PostDetails extends Component {
     isUpdating: false,
     showEditPost: () => {},
     clearPostDetails: () => {},
+    sendDeletePost: () => {},
+    clearComments: () => {},
+    isDeleting: false,
+    clearNewComments: () => {},
   }
 
   constructor(props) {
@@ -74,13 +85,10 @@ class PostDetails extends Component {
   }
 
   componentWillUnmount() {
-    const { clearPostDetails } = this.props;
+    const { clearPostDetails, clearComments, clearNewComments } = this.props;
     clearPostDetails();
-  }
-
-  //Needed to `dangerouslySetInnerHTML`
-  createMarkup = (html) => {
-    return {__html: html};
+    clearComments();
+    clearNewComments();
   }
 
   /**
@@ -95,10 +103,28 @@ class PostDetails extends Component {
       });
    }
 
+   /**
+    *  Dispatch to Redux to show the edit post form.
+    *
+    *  @param {event} e Event triggered by element to handle
+    */
    handleEditPost = e => {
      e.preventDefault();
      const { showEditPost, post } = this.props;
      showEditPost(post);
+   }
+
+   /**
+    *  Dispatch to Redux to delete the post by author and permlink.
+    *
+    *  @param {event} e Event triggered by element to handle
+    *  @param {string} author Author of post
+    *  @param {string} permlink Permlink of post
+    */
+   handleDeletePost = (e, author, permlink) => {
+     e.preventDefault();
+     const { sendDeletePost } = this.props;
+     sendDeletePost(author, permlink);
    }
 
   /**
@@ -146,6 +172,7 @@ class PostDetails extends Component {
       commentedId,
       commentPayload,
       isUpdating,
+      isDeleting,
     } = this.props;
 
     const {
@@ -208,6 +235,9 @@ class PostDetails extends Component {
             <meta property="article:published_time" content={new Date(created).toDateString()} />
           </Helmet>
           <Grid verticalAlign='middle' columns={1} centered>
+            {
+              isDeleting && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
+            }
             <Grid.Row>
               <Grid.Column width={columns}>
                 <React.Fragment>
@@ -284,6 +314,7 @@ class PostDetails extends Component {
                                 image={image}
                                 isPost
                                 onEditPost={this.handleEditPost}
+                                onDeletePost={this.handleDeletePost}
                               />
                             </div>
                             <hr />
@@ -350,24 +381,6 @@ class PostDetails extends Component {
 }
 
 /**
- *  Map redux state to component props.
- *
- *  @param {object} state - Redux state
- *  @returns {object} - Object with recent activity data
- */
- const mapStateToProps = state => {
-   const {
-     sendPost: {
-       isUpdating,
-     }
-   } = state;
-
-   return {
-     isUpdating,
-   }
- }
-
-/**
  *  Map redux dispatch functions to component props.
  *
  *  @param {object} dispatch - Redux dispatch
@@ -378,10 +391,19 @@ const mapDispatchToProps = dispatch => (
    showEditPost: (post) => (
      dispatch(editPost(post))
    ),
-   clearPostDetails: () => {
+   clearPostDetails: () => (
      dispatch(clearPost())
-   }
+   ),
+   sendDeletePost: (author, permlink) => (
+     dispatch(deletePost(author, permlink))
+   ),
+   clearComments: () => (
+     dispatch(commentsClear())
+   ),
+   clearNewComments: () => (
+     dispatch(sendCommentClear())
+   ),
  }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostDetails);
+export default connect(null, mapDispatchToProps)(PostDetails);

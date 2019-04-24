@@ -70,7 +70,7 @@ const GroupPostsList = (props) => {
                     access < roles.kGroupsRolesRev['Member']
                     && (
                       <a href={'/post/delete/'+p.st_author+'/'+p.st_permlink} onClick={e => showModal(e, {author: p.st_author, post: p.st_permlink})}>
-                        <Icon name='delete' color='blue' />
+                        <Icon name='delete' color='red' />
                       </a>
                     )
                   }

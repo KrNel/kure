@@ -17,3 +17,12 @@
 .newlyCreated .ui.label {
   margin-bottom: 1rem;
 }
+
+.community .ui.label a {
+  color: #21ba45;
+  opacity: 1;
+}
+
+.community .ui.label a:hover {
+  color: #198f35;
+}

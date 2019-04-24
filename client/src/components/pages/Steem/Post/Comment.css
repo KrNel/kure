@@ -94,6 +94,10 @@ ul.commentList > li {
   color: var(--charcoal-grey);
 }
 
+.commentFooter .item a:hover {
+  color: var(--bright-medium-blue);
+}
+
 .commentFooter .large.icon {
   color: var(--action-grey);
   font-size: 1.2em;
@@ -104,6 +108,10 @@ ul.commentList > li {
 
 .replyForm {
   font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.replyForm .ui.buttons {
   margin-top: 1rem;
 }
 

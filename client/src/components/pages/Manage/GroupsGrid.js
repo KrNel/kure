@@ -16,7 +16,6 @@ import { long, standard } from '../../../utils/dateFormatting';
  *  @param {array} props.groups Array of obejcts for each group to view
  *  @param {bool} props.areGroupsLoading Determines if loading spinner shown
  *  @param {function} props.handleManageGroup Parent function to manage group
- *  @param {bool} props.noOwned Determines if there are no Owned groups
  *  @param {bool} props.isGroupLoading Determines if to show loading spinner
  *  @param {bool} props.selectedGroup Selected group will have spinner
  *  @param {function} props.showModal Sets the modal to be shown or hidden
@@ -28,17 +27,16 @@ const GroupsGrid = (props) => {
     groups,
     handleManageGroup,
     areGroupsLoading,
-    noOwned,
     isGroupLoading,
     selectedGroup,
     showModal,
-    type,
+    section,
     match,
   } = props;
 
   if (areGroupsLoading) {
     return <Loading />;
-  }else if (groups && groups.length && !noOwned) {
+  }else if (groups && groups.length) {
     return (
       <Grid.Row className="content">
         <Grid.Column>
@@ -69,7 +67,7 @@ const GroupsGrid = (props) => {
                             <Icon name='edit' color='blue' />
                           </a>
                           {
-                            type === 'owned' &&
+                            section === 'owned' &&
                             (
                               <a
                                 href={'/group/delete/'+g.name}
@@ -121,8 +119,8 @@ const GroupsGrid = (props) => {
         </Grid.Column>
       </Grid.Row>
     )
-  }else if (noOwned) {
-    const message = (type === 'owned')
+  }else {
+    const message = (section === 'owned')
       ? ("You don't own any community groups. You can create up to 4 community groups.")
       : ("You don't belong to any other communities.")
     return (
@@ -134,16 +132,6 @@ const GroupsGrid = (props) => {
         </Segment>
       </Grid.Column>
     )
-  }else {
-    return (
-      <Grid.Column width={8}>
-        <Segment>
-          <p>
-            {'No community groups exist.'}
-          </p>
-        </Segment>
-      </Grid.Column>
-    )
   }
 }
 
@@ -151,22 +139,20 @@ GroupsGrid.propTypes = {
   groups: PropTypes.arrayOf(PropTypes.object.isRequired),
   areGroupsLoading: PropTypes.bool,
   handleManageGroup: PropTypes.func,
-  noOwned: PropTypes.bool,
   isGroupLoading: PropTypes.bool,
   selectedGroup: PropTypes.string,
   showModal: PropTypes.func,
-  type: PropTypes.string,
+  section: PropTypes.string,
 };
 
 GroupsGrid.defaultProps = {
   groups: [],
   areGroupsLoading: false,
   handleManageGroup: () => {},
-  noOwned: false,
   isGroupLoading: false,
   selectedGroup: '',
   showModal: () => {},
-  type: '',
+  section: '',
 };
 
 export default GroupsGrid;

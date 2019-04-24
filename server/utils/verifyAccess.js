@@ -28,6 +28,8 @@ export const verifyAccess = async (db, next, group, user, section, action) => {
     if (section === 'post' && access.access < 3) return true;
     if (section === 'user' && access.access < 2) return true;
     if (section === 'pending' && access.access < 3) return true;
+  }else if (action === 'modify') {
+    if (section === 'ownership' && access.access === 0) return true;
   }
 
   return false;

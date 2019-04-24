@@ -79,3 +79,25 @@
   margin-left:2rem;
   border-left: none;
 }
+
+.post-actions .ui.animated.button {
+  padding: 6px 11px;
+}
+.post-actions .ui.animated.button .visible.content {
+  margin-right: 5px;
+}
+
+.ui.blue.button.actionAdd .visible.content {
+  margin-right: 0.5rem;
+}
+.ui.blue.button.actionEdit .visible.content {
+  margin-right: 0.5rem;
+}
+
+.ui.blue.button.actionAdd:hover {
+  background-color: var(--green) !important;
+}
+
+.ui.blue.button.actionDelete:hover {
+  background-color: var(--red) !important;
+}

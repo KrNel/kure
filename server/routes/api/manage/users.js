@@ -291,11 +291,100 @@ const denyJoinGroup = (db, next, group, newUser) => {
         }
       }
     )
-
     return true;
   }catch (err) {
     next(err);
   }
 }
+
+/**
+ *  POST route to change the owner of a community group.
+ *  Route: /manage/users/ownership
+ *
+ *  Gets the local DB object, deconstructs the logged in user,
+ *  user to change ownership to, and group.
+ *  Access for user is verified, and then ownership is changed.
+ */
+router.post('/ownership', async (req, res, next) => {
+  const db = req.app.locals.db;
+  const { group, newOwner, user } = req.body;
+
+  //Modify owner of group in DB
+  const changedOwnership = await verifyAccess(db, next, group, user, 'ownership', 'modify') && await changeOwnership(db, next, group, newOwner, user);
+  res.json(changedOwnership || false);
+})
+
+
+/**
+ *  Modify the ownership of a community group.
+ *
+ *  Update the collections that have releveant data for managing the
+ *  community group data. This is the groups (kgroups), access (kgroups_access)
+ *  and users collections.
+ *
+ *  @param {object} db MongoDB Connection
+ *  @param {function} next Express middleware
+ *  @param {string} group Group name to add to
+ *  @param {string} newOwner New owner to give ownership to
+ *  @returns {object} Send inserted object back to frontend for use
+ */
+const changeOwnership = async (db, next, group, newOwner, user) => {
+  try {
+    return new Promise((resolve) => {
+      db.collection('kgroups').updateOne(
+        { name: group },
+        {
+          $set:
+          {
+            owner: newOwner
+          }
+        }
+      )
+
+      db.collection('kgroups_access').updateOne(
+        { group: group, user: newOwner },
+        {
+          $set: {
+            access: 0,
+          }
+        }
+      )
+
+      db.collection('kgroups_access').updateOne(
+        { group: group, user: user },
+        {
+          $set: {
+            access: 3,
+          }
+        }
+      )
+
+      db.collection('users').updateOne(
+        { user: newOwner },
+        {
+          $inc:
+          {
+            owned_kgroups: 1
+          }
+        }
+      )
+
+      db.collection('users').updateOne(
+        { user: user },
+        {
+          $inc:
+          {
+            owned_kgroups: -1
+          }
+        }
+      )
+
+      resolve(true);
+    })
+  }catch (err) {
+    next(err);
+  }
+}
+
 
 export default router;

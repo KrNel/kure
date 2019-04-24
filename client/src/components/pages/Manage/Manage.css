@@ -23,3 +23,15 @@
 .manage div.meta {
   line-height: 1.5rem;
 }
+
+.manage .blue.delete.icon:hover {
+  color: var(--red) !important;
+}
+
+.manage .green.plus.icon:hover {
+  color: var(--dark-green) !important;
+}
+
+.manage .red.delete.icon:hover {
+  color: var(--dark-red) !important;
+}

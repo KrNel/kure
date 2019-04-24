@@ -229,7 +229,7 @@ export const cookieUser = () => {
  *  @returns {function} Dispatches returned action object
  */
 export const handleReturning = () => (dispatch, getState) => {
-  const {isAuth, isAuthorizing} = getState().auth;
+  const { isAuth, isAuthorizing } = getState().auth;
   if (!isAuth && !isAuthorizing)
     return dispatch(fetchReturning());
 }

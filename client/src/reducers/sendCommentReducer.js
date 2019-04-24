@@ -3,6 +3,8 @@ import {
   SEND_COMMENT_SUCCESS,
   EDIT_COMMENT_START,
   EDIT_COMMENT_SUCCESS,
+  SEND_COMMENT_CLEAR,
+  DELETE_PAYLOAD_SUCCESS,
 } from '../actions/sendCommentActions';
 
 /**
@@ -20,6 +22,7 @@ export const sendComment = (
     editingComment: 0,
     isUpdating: false,
     updatedId: 0,
+    updatedComment: {},
   },
   action) => {
 
@@ -28,6 +31,7 @@ export const sendComment = (
       return ({
         ...state,
         isCommenting: true,
+        commentedId: action.parentId,
       });
     case SEND_COMMENT_SUCCESS:
       return ({
@@ -54,6 +58,22 @@ export const sendComment = (
         editingComment: 0,
         updatedComment: action.comment,
         updatedId: action.comment.id,
+      });
+    case SEND_COMMENT_CLEAR:
+      return ({
+        ...state,
+        isCommenting: false,
+        commentedId: 0,
+        commentPayload: {},
+        isUpdating: false,
+        editingComment: 0,
+        updatedComment: {},
+        updatedId: 0,
+      });
+    case DELETE_PAYLOAD_SUCCESS:
+      return ({
+        ...state,
+        commentPayload: action.newCommentPayload,
       });
     default:
       return state

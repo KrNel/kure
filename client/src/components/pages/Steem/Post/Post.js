@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import PostDetails from './PostDetails';
 import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
-import { getDetailsContent } from '../../../../actions/detailsPostActions';
+import { getDetailsContent, clearPost } from '../../../../actions/detailsPostActions';
 import * as addPostActions from '../../../../actions/addPostActions';
 import { upvotePost } from '../../../../actions/upvoteActions';
 import { sendComment } from '../../../../actions/sendCommentActions';
-import {hasLength} from '../../../../utils/helpers';
+import { hasLength } from '../../../../utils/helpers';
 import Loading from '../../../Loading/Loading';
 
 /**
@@ -43,6 +44,11 @@ class Post extends Component {
     onModalCloseAddPost: PropTypes.func.isRequired,
     handleGroupSelect: PropTypes.func.isRequired,
     isFetchingDetails: PropTypes.bool.isRequired,
+    isUpdating: PropTypes.bool,
+    draft: PropTypes.shape(PropTypes.object.isRequired),
+    isDeleting: PropTypes.bool,
+    redirect: PropTypes.string,
+    clearPostData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -54,12 +60,18 @@ class Post extends Component {
     match: {},
     csrf: '',
     replies: [],
+    isUpdating: false,
+    draft: {},
+    isDeleting: false,
+    redirect: '',
+    clearPostData: () => {},
   }
 
   constructor(props) {
     super(props);
 
     this.existPost = "Post already in group.";
+    this.redirect = '';
   }
 
   /**
@@ -78,6 +90,38 @@ class Post extends Component {
     } = this.props;
 
     getContent(author, permlink);
+  }
+
+  /**
+   *  This is needed to pull new data from a post after an update is done.
+   *  Rather than simpy update the title, body and tags alone from the draft
+   *  update, the time elapsed could contain new comments or upvotes that
+   *  are usefult o see after an update, and one might expect to see.
+   */
+  componentDidUpdate(prevProps) {
+    const {
+      getContent,
+      draft,
+      redirect,
+      clearPostData,
+      match: {
+        params: {
+          author,
+          permlink
+        }
+      }
+    } = this.props;
+
+    this.redirect = '';
+
+    if (!hasLength(draft) && draft !== prevProps.draft) {
+      getContent(author, permlink);
+    }
+
+    if (redirect && redirect !== prevProps.redirect) {
+      this.redirect = redirect;
+      clearPostData();
+    }
   }
 
   render() {
@@ -104,51 +148,59 @@ class Post extends Component {
       isCommenting,
       commentedId,
       commentPayload,
+      isUpdating,
+      isDeleting,
     } = this.props;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
     return (
-      <ErrorBoundary>
-        <React.Fragment>
-          <ModalGroup
-            modalOpen={modalOpenAddPost}
-            onModalClose={onModalCloseAddPost}
-            handleModalClick={handleModalClickAddPost}
-            handleGroupSelect={handleGroupSelect}
-            groups={groups}
-            addErrorPost={addErrorPost}
-            addPostLoading={addPostLoading}
-          />
-          {
-            !isFetchingDetails && !hasLength(post)
-            ? <div>That post does not exist.</div>
-            : !isFetchingDetails && hasLength(post)
-              ? (
-                <PostDetails
-                  match={match}
-                  showModal={showModal}
-                  user={user}
-                  csrf={csrf}
-                  isAuth={isAuth}
-                  getContent={getContent}
-                  post={post}
-                  handleUpvote={handleUpvote}
-                  upvotePayload={upvotePayload}
-                  replies={replies}
-                  sendComment={sendComment}
-                  isCommenting={isCommenting}
-                  commentedId={commentedId}
-                  isFetching={isFetchingDetails}
-                  commentPayload={commentPayload}
-                />
-              )
-              :  <Loading />
+      this.redirect
+      ? <Redirect to={this.redirect} />
+      : (
+        <ErrorBoundary>
+          <React.Fragment>
+            <ModalGroup
+              modalOpen={modalOpenAddPost}
+              onModalClose={onModalCloseAddPost}
+              handleModalClick={handleModalClickAddPost}
+              handleGroupSelect={handleGroupSelect}
+              groups={groups}
+              addErrorPost={addErrorPost}
+              addPostLoading={addPostLoading}
+            />
+            {
+              !isFetchingDetails && !hasLength(post)
+              ? <div>That post does not exist.</div>
+              : !isFetchingDetails && hasLength(post)
+                ? (
+                  <PostDetails
+                    match={match}
+                    showModal={showModal}
+                    user={user}
+                    csrf={csrf}
+                    isAuth={isAuth}
+                    getContent={getContent}
+                    post={post}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                    replies={replies}
+                    sendComment={sendComment}
+                    isCommenting={isCommenting}
+                    commentedId={commentedId}
+                    isFetching={isFetchingDetails}
+                    commentPayload={commentPayload}
+                    isUpdating={isUpdating}
+                    isDeleting={isDeleting}
+                  />
+                )
+                :  <Loading />
 
-          }
-        </React.Fragment>
-      </ErrorBoundary>
+            }
+          </React.Fragment>
+        </ErrorBoundary>
+      )
     )
   }
 }
@@ -169,6 +221,8 @@ class Post extends Component {
      detailsPost: {
        isFetchingDetails,
        post,
+       isDeleting,
+       redirect,
      },
      userGroups: {
        groups,
@@ -191,8 +245,11 @@ class Post extends Component {
        commentedId,
        commentPayload,
        editingComment,
-       isUpdating,
      },
+     sendPost: {
+       isUpdating,
+       draft,
+     }
    } = state;
 
    return {
@@ -214,6 +271,9 @@ class Post extends Component {
      commentPayload,
      editingComment,
      isUpdating,
+     draft,
+     isDeleting,
+     redirect,
    }
  }
 
@@ -246,6 +306,9 @@ const mapDispatchToProps = dispatch => (
     sendComment: (body, parentPost) => (
       dispatch(sendComment(body, parentPost))
     ),
+    clearPostData: () => (
+      dispatch(clearPost())
+    ),clearPost
   }
 );
 

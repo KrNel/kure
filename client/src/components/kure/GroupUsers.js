@@ -56,7 +56,7 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
                         access < roles.kGroupsRolesRev['Moderator']
                         ? (u.access !== 0 && access < u.access)
                           ?
-                            <a href={`/users/delete/${u.user}/`} onClick={e => showModal(e, {user: u.user})}><Icon name='delete' color='blue' /></a>
+                            <a href={`/users/delete/${u.user}/`} onClick={e => showModal(e, {user: u.user})}><Icon name='delete' color='red' /></a>
                           : ''
                         : ''
                       }

@@ -6,7 +6,7 @@ import GroupsGrid from './GroupsGrid';
 import GroupManage from './GroupManage';
 import ModalConfirm from '../../Modal/ModalConfirm';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
-import { addGroup, deleteGroup, getUserGroups, getManageGroup, logger } from '../../../utils/fetchFunctions';
+import { addGroup, deleteGroup, getManageGroup, logger } from '../../../utils/fetchFunctions';
 import { groupValidation } from '../../../utils/validationFunctions';
 
 /**
@@ -23,21 +23,26 @@ import { groupValidation } from '../../../utils/validationFunctions';
  *  @param {object} props Component props
  *  @param {string} props.user User name to use in Manage page
  *  @param {string} props.csrf CSRF token to prevent CSRF attacks
- *  @param {string} props.type Type of group list ['owned'|'joined']
- *  @param {string} props.headerText Text to show for group type
+ *  @param {string} props.section Section of group list ['owned'|'joined']
+ *  @param {string} props.headerText Text to show for group section
  *  @returns {Component} Loads various components to manage community groups
  */
 class ManageGroups extends Component {
   static propTypes = {
     user: PropTypes.string.isRequired,
     csrf: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    section: PropTypes.string.isRequired,
     headerText: PropTypes.string.isRequired,
     match: PropTypes.shape(PropTypes.object.isRequired),
+    groups: PropTypes.shape(PropTypes.object.isRequired),
+    areGroupsLoading: PropTypes.bool,
+    onChangeOwnership: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     match: {},
+    groups: [],
+    areGroupsLoading: true,
   };
 
   constructor(props) {
@@ -52,24 +57,40 @@ class ManageGroups extends Component {
       isGroupLoading: false,
       addGroupLoading: false,
       manageGroup: {},
-      noOwned: true,
       errors: {},
       selectedGroup: '',
       modalOpen: false,
       modalData: {},
+      prevGroups: [],
     }
 
     this.existText = "Group name taken. Try another.";
     this.exceededGrouplimit = "Limit of 4 groups reached.";
-    const {user, csrf, type} = this.props;
+    const {user, csrf, section} = this.props;
     this.user = user;
     this.csrf = csrf;
-    this.type = type;
+    this.section = section;
   }
 
-  componentDidMount() {
-    this.setState({areGroupsLoading: true});
-    this.getGroupsFetch(this.user);
+  /**
+   *  Need to populate state from props updates passed down from parents comp.
+   *  If the parent modifies the groups data, then grab it and set it as new
+   *  state data.
+   *
+   *  @param {object} props Current props object
+   *  @param {object} state Current state object
+   */
+  static getDerivedStateFromProps(props, state) {
+    const { groups, areGroupsLoading } = props;
+    if (state.prevGroups !== groups) {
+      return {
+        init: false,
+        groups,
+        prevGroups: groups,
+        areGroupsLoading,
+      };
+    }
+    return null;
   }
 
   /**
@@ -103,26 +124,6 @@ class ManageGroups extends Component {
       this.handleDeleteGroup(group)
     }else this.onModalClose();
 
-  }
-
-  /**
-   *  Get the groups from the database.
-   *  Set groups state, reset loading and owned flag, clear manageGroup.
-   *
-   *  @param {string} user logged in user name
-   */
-  getGroupsFetch = (user) => {
-    getUserGroups(user, this.type)
-    .then(res => {
-      this.setState({
-        groups: res.data.groups,
-        areGroupsLoading: false,
-        noOwned: false,
-        manageGroup: {}
-     });
-    }).catch(err => {
-      logger('error', err);
-    });
   }
 
   /**
@@ -184,14 +185,12 @@ class ManageGroups extends Component {
             groupExists: true,
             exceededGrouplimit: false,
             addGroupLoading: false,
-            noOwned: false
           });
         }else if (res.data.exceeded) {
           this.setState({
             exceededGrouplimit: true,
             groupExists: false,
             addGroupLoading: false,
-            noOwned: false
           });
         } else {
           const {groups} = this.state;
@@ -202,7 +201,6 @@ class ManageGroups extends Component {
             ],
             newGroup: '',
             groupExists: false,
-            noOwned: false,
             addGroupLoading: false,
           });
         }
@@ -342,7 +340,17 @@ class ManageGroups extends Component {
       }
       return g;
     });
-    this.setState({groups: newGroups});
+    this.setState({ groups: newGroups });
+  }
+
+  handleChangeOwner = () => {
+    const { onChangeOwnership } = this.props;
+
+    this.setState({
+      manageGroup: {},
+     });
+
+    onChangeOwnership();
   }
 
   render() {
@@ -354,7 +362,6 @@ class ManageGroups extends Component {
       areGroupsLoading,
       addGroupLoading,
       manageGroup,
-      noOwned,
       errors,
       isGroupLoading,
       selectedGroup,
@@ -365,7 +372,7 @@ class ManageGroups extends Component {
     const {
       user,
       csrf,
-      type,
+      section,
       headerText,
       match,
     } = this.props;
@@ -387,7 +394,7 @@ class ManageGroups extends Component {
               <Header as="h2">{headerText}</Header>
             </Label>
           </Grid.Column>
-          {type === 'owned' &&
+          {section === 'owned' &&
             (
               <Grid.Column floated='right' width={6}>
                 <div className="">
@@ -426,11 +433,10 @@ class ManageGroups extends Component {
           groups={groups}
           areGroupsLoading={areGroupsLoading}
           handleManageGroup={this.handleManageGroup}
-          noOwned={noOwned}
           isGroupLoading={isGroupLoading}
           selectedGroup={selectedGroup}
           showModal={this.showModal}
-          type={type}
+          section={section}
           match={match}
         />
 
@@ -445,6 +451,7 @@ class ManageGroups extends Component {
               onPostUpdate={this.onPostUpdate}
               onUserUpdate={this.onUserUpdate}
               onJoinRequestUpdate={this.onJoinRequestUpdate}
+              handleChangeOwner={this.handleChangeOwner}
             />
           )
         }

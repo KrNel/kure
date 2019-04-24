@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { Grid, Label, Header, Segment } from "semantic-ui-react";
+import { Grid, Label, Header, Segment, Dimmer, Loader } from "semantic-ui-react";
 import PropTypes from 'prop-types';
 
 import Loading from '../../Loading/Loading';
@@ -32,6 +32,7 @@ class GroupDetails extends Component {
     getContent: PropTypes.func,
     joinGroupRequest: PropTypes.func,
     groupRequested: PropTypes.string,
+    isJoining: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -43,6 +44,7 @@ class GroupDetails extends Component {
     getContent: () => {},
     joinGroupRequest: () => {},
     groupRequested: '',
+    isJoining: false,
   };
 
   constructor(props) {
@@ -66,18 +68,8 @@ class GroupDetails extends Component {
   }
 
   /**
-   *  Fetch post detail from Steem blockchain on component update.
+   *  Remove scoll window listener and clear the group redux content.
    */
-  /*componentDidUpdate(prevProps) {
-    const {
-      user,
-    } = this.props;
-
-    if (prevProps.user !== user) {
-      this.getPosts();
-    }
-  }*/
-
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
 
@@ -174,6 +166,7 @@ class GroupDetails extends Component {
         groupData,
         isFetching,
         groupRequested,
+        isJoining,
       }
     } = this;
 
@@ -183,9 +176,15 @@ class GroupDetails extends Component {
         ? <GroupPostsGrid posts={groupData.kposts} />
         : <GroupPostsList posts={groupData.kposts} />
       : (
-        <Segment>
-          {'No posts.'}
-        </Segment>
+        <Grid>
+          <Grid.Column>
+            <div>
+              <Segment floated='left'>
+                {'No posts.'}
+              </Segment>
+            </div>
+          </Grid.Column>
+        </Grid>
       );
 
 
@@ -222,7 +221,7 @@ class GroupDetails extends Component {
 
     return (
       !groupData.notExists
-      ? groupData.kposts.length
+      ? groupData.display
         ? (
           <ErrorBoundary>
             <div className='community'>
@@ -244,6 +243,7 @@ class GroupDetails extends Component {
                           {tabViews}
                           { isAuth && (
                             <Label size='large'>
+                              { isJoining && <Dimmer inverted active={isJoining}><Loader size='tiny' inline /></Dimmer> }
                               {'Membership: '}
                               {
                                 joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
@@ -290,6 +290,7 @@ const mapStateToProps = state => {
     communities: {
       isFetching,
       groupData,
+      isJoining,
     }
   } = state;
 
@@ -297,6 +298,7 @@ const mapStateToProps = state => {
     isAuth,
     isFetching,
     groupData,
+    isJoining,
   }
 }
 
@@ -314,8 +316,8 @@ const mapDispatchToProps = dispatch => (
     clearContent: () => (
       dispatch(groupClear())
     ),
-    joinGroupRequest: () => (
-      dispatch(joinGroup())
+    joinGroupRequest: (group) => (
+      dispatch(joinGroup(group))
     ),
   }
 );
