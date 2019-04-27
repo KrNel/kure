@@ -1,9 +1,6 @@
-import { Client } from 'dsteem';
-
 import { logger } from '../utils/fetchFunctions';
 import { getUserGroupsFetch } from './userGroupsActions';
-
-const client = new Client('https://hive.anyx.io/');
+import steemAPI from '../utils/steemAPI';
 
 export const GET_SUMMARY_START = 'GET_SUMMARY_START';
 export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
@@ -80,8 +77,9 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
   query.start_author = startAuthor;
   query.start_permlink =  startPermlink;
 
-  return client.database.getDiscussions(selectedFilter, query)
+  return steemAPI.sendAsync(`get_discussions_by_${selectedFilter}`, [query])
     .then(result => {
+
       let hasMore = true;
       let newPosts = null;
 

@@ -212,7 +212,7 @@ class PostDetails extends Component {
     if (tags === null) tags = [post.category];
 
     const comments = replies;
-    const pid = post.id;
+    const pid = parseInt(post.id);
 
     // if editing post, set wider column width
     const columns = isUpdating ? 13 : 11;

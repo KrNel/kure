@@ -9,6 +9,7 @@ import { extractContent } from './helpers/extractContent';
 import TitleLink from './TitleLink';
 import PostLink from './PostLink';
 import { sumPayout } from '../../../utils/helpers';
+import Resteemers from './Resteemers';
 
 /**
  *  Root container for post summaries.
@@ -64,9 +65,16 @@ const PostsSummary = (props) => {
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
+        const pid = parseInt(post.id);
+
+        const reblogged_by = post.reblogged_by;
 
         return (
           <div key={p.id} className='postSummary'>
+            {
+              !!reblogged_by.length
+              && <Resteemers rebloggedBy={reblogged_by} />
+            }
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -123,7 +131,7 @@ const PostsSummary = (props) => {
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     ratio={ratio}
-                    pid={post.id}
+                    pid={pid}
                     image={thumb}
                   />
                 </div>

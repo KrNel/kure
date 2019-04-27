@@ -39,13 +39,14 @@ class Home extends Component {
     groups: PropTypes.arrayOf(PropTypes.object).isRequired,
     myComms: PropTypes.arrayOf(PropTypes.object).isRequired,
     mySubs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    isFetching: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool,
     isAuth: PropTypes.bool.isRequired,
     hasMore: PropTypes.bool,
   };
 
   static defaultProps = {
     hasMore: true,
+    isFetching: true,
   };
 
   state = {

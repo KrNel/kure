@@ -1,0 +1,14 @@
+@import '../../../variables.css';
+
+.resteemers {
+  margin-bottom: 0.5rem;
+  color: var(--medium-grey);
+}
+
+.resteemers a {
+  color: var(--medium-grey);
+}
+
+.resteemers a:hover {
+  color: var(--bright-medium-blue);
+}

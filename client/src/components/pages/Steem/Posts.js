@@ -143,7 +143,7 @@ class Posts extends Component {
     const query = {
       tag: tag,
       limit: 20,
-      truncate_body: 0,
+      /*truncate_body: 0,*/
     };
 
     getContent(filter, query, page, action)
