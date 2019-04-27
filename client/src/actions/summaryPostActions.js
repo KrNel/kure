@@ -2,9 +2,6 @@ import { api } from 'steem';
 
 import { logger } from '../utils/fetchFunctions';
 import { getUserGroupsFetch } from './userGroupsActions';
-//import steemAPI from '../utils/steemAPI';
-
-
 
 export const GET_SUMMARY_START = 'GET_SUMMARY_START';
 export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
@@ -81,8 +78,7 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
   query.start_author = startAuthor;
   query.start_permlink =  startPermlink;
 
-  //return steemAPI.sendAsync(`get_discussions_by_${selectedFilter}`, [query])
-  return api.getDiscussionsByFeedAsync(query)
+  return api[steemCall(selectedFilter)](query)
     .then(result => {
 
       let hasMore = true;
@@ -113,6 +109,25 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
     }).catch(err => {
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
+}
+
+const steemCall = (selectedFilter) => {
+  switch (selectedFilter) {
+    case 'blog':
+      return 'getDiscussionsByBlogAsync';
+    case 'feed':
+      return 'getDiscussionsByFeedAsync';
+    case 'created':
+      return 'getDiscussionsByCreatedAsync';
+    case 'hot':
+      return 'getDiscussionsByHotAsync';
+    case 'promoted':
+      return 'getDiscussionsByPromotedAsync';
+    case 'trending':
+      return 'getDiscussionsByTrendingAsync';
+    default:
+      return 'getDiscussionsByCreatedAsync';
+  }
 }
 
 export default getSummaryContent;
