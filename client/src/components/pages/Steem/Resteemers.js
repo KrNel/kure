@@ -11,7 +11,14 @@ const Resteemers = ({rebloggedBy}) => {
   return (
     <div className='resteemers'>
       <Icon name='retweet' />
-      { users }
+      {
+        users.map((u, i) => (
+          <span key={u.key}>
+            { (i ? ', ' : '') }
+            { u }
+          </span>
+        ))
+      }
       {' resteemed'}
     </div>
   )

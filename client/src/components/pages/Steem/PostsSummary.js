@@ -69,10 +69,12 @@ const PostsSummary = (props) => {
 
         const reblogged_by = post.reblogged_by;
 
+        const key = p+i;
+
         return (
-          <div key={p.id} className='postSummary'>
+          <div key={key} className='postSummary'>
             {
-              !!reblogged_by.length
+              reblogged_by && !!reblogged_by.length
               && <Resteemers rebloggedBy={reblogged_by} />
             }
             <AuthorCatgoryTime

@@ -1,6 +1,10 @@
+import { api } from 'steem';
+
 import { logger } from '../utils/fetchFunctions';
 import { getUserGroupsFetch } from './userGroupsActions';
-import steemAPI from '../utils/steemAPI';
+//import steemAPI from '../utils/steemAPI';
+
+
 
 export const GET_SUMMARY_START = 'GET_SUMMARY_START';
 export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
@@ -77,7 +81,8 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
   query.start_author = startAuthor;
   query.start_permlink =  startPermlink;
 
-  return steemAPI.sendAsync(`get_discussions_by_${selectedFilter}`, [query])
+  //return steemAPI.sendAsync(`get_discussions_by_${selectedFilter}`, [query])
+  return api.getDiscussionsByFeedAsync(query)
     .then(result => {
 
       let hasMore = true;
