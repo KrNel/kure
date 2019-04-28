@@ -15,7 +15,6 @@ export const kurated = (state = {
         isFetching: true,
       }
     case RECEIVE_KURATED: {
-
       return {
         ...state,
         isFetching: false,

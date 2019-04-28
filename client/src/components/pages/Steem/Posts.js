@@ -13,6 +13,7 @@ import FilterPosts from './FilterPosts';
 import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
+import { resteem } from '../../../actions/resteemActions';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -42,6 +43,7 @@ class Posts extends Component {
     page: PropTypes.string,
     posts: PropTypes.arrayOf(PropTypes.object),
     getContent: PropTypes.func,
+    handleResteem: PropTypes.func,
   };
 
   static defaultProps = {
@@ -64,6 +66,7 @@ class Posts extends Component {
     page: '',
     posts: [{}],
     getContent: () => {},
+    handleResteem: () => {},
   };
 
   constructor(props) {
@@ -179,11 +182,15 @@ class Posts extends Component {
         handleUpvote,
         upvotePayload,
         page,
+        handleResteem,
+        resteemedPayload,
       },
     } = this;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
+
+    const author = match.params.author;
 
     return (
       <React.Fragment>
@@ -209,13 +216,13 @@ class Posts extends Component {
             {
               page === 'feed'
               && (
-                <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Feed`}</Header></Label>
+                <Label size='big' color='blue'><Header as='h3'>{`${author}'s Feed`}</Header></Label>
               )
             }
             {
               page === 'blog'
               && (
-                <Label size='big' color='blue'><Header as='h3'>{`${match.params.author}'s Blog`}</Header></Label>
+                <Label size='big' color='blue'><Header as='h3'>{`${author}'s Blog`}</Header></Label>
               )
             }
             <hr />
@@ -232,6 +239,10 @@ class Posts extends Component {
                       handleUpvote={handleUpvote}
                       upvotePayload={upvotePayload}
                       isFetching={isFetching}
+                      handleResteem={handleResteem}
+                      page={page}
+                      pageOwner={author}
+                      resteemedPayload={resteemedPayload}
                     />
                   )
                   : (
@@ -281,6 +292,9 @@ const mapStateToProps = state => {
     upvote: {
       upvotePayload,
     },
+    resteem: {
+      resteemedPayload
+    },
   } = state;
 
   return {
@@ -296,6 +310,7 @@ const mapStateToProps = state => {
     modalOpenAddPost,
     selectedGroup,
     upvotePayload,
+    resteemedPayload,
   }
 }
 
@@ -324,6 +339,9 @@ const mapDispatchToProps = dispatch => (
     ),
     handleUpvote: (author, permlink, weight) => (
       dispatch(upvotePost(author, permlink, weight))
+    ),
+    handleResteem: (pid, author, permlink) => (
+      dispatch(resteem(pid, author, permlink))
     ),
   }
 );

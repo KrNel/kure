@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from "semantic-ui-react";
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -27,11 +28,17 @@ const PostsSummary = (props) => {
     handleUpvote,
     upvotePayload,
     isFetching,
+    handleResteem,
+    page,
+    pageOwner,
+    resteemedPayload,
   } = props;
 
   let {
     nextPost,
   } = props;
+
+
 
   if (!posts.length && !isFetching) {
     return "No Posts";
@@ -65,18 +72,35 @@ const PostsSummary = (props) => {
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-        const pid = parseInt(post.id);
+
+        const pid = parseInt(post.post_id);
 
         const reblogged_by = post.reblogged_by;
+
+        let isResteemed = false;
+        let isResteemedByUser = false;
+
+        if (page === 'blog') {
+          isResteemed = pageOwner !== author
+        }
+
+        let resteemed = reblogged_by && !!reblogged_by.length
+        ? <Resteemers rebloggedBy={reblogged_by} /> : null;
+
+        if (isResteemed) {
+          resteemed = (
+            <div className='resteemers'>
+              <Icon name='retweet' />
+              {' resteemed'}
+            </div>
+          )
+        }
 
         const key = p+i;
 
         return (
           <div key={key} className='postSummary'>
-            {
-              reblogged_by && !!reblogged_by.length
-              && <Resteemers rebloggedBy={reblogged_by} />
-            }
+            { resteemed }
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -135,11 +159,16 @@ const PostsSummary = (props) => {
                     ratio={ratio}
                     pid={pid}
                     image={thumb}
+                    handleResteem={handleResteem}
+                    isResteemedByUser={isResteemedByUser}
+                    resteemedPayload={resteemedPayload}
+                    pageOwner={pageOwner}
                   />
                 </div>
               </div>
             </div>
             <hr className='summaryDivider' />
+
           </div>
         )
       })
@@ -154,6 +183,7 @@ PostsSummary.propTypes = {
   handleUpvote: PropTypes.func,
   upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
   isFetching: PropTypes.bool,
+  handleResteem: PropTypes.func,
 };
 
 PostsSummary.defaultProps = {
@@ -163,6 +193,7 @@ PostsSummary.defaultProps = {
   handleUpvote: () => {},
   upvotePayload: {},
   isFetching: false,
+  handleResteem: () => {},
 };
 
 

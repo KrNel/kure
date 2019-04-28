@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Icon, Button, Popup } from "semantic-ui-react";
+import { Icon, Button, Popup, Loader, Dimmer } from "semantic-ui-react";
 
 import Vote from './Vote';
 
@@ -39,6 +39,8 @@ class PostActions extends Component {
     isPost: PropTypes.bool,
     onEditPost: PropTypes.func,
     onDeletePost: PropTypes.func,
+    handleResteem: PropTypes.func,
+    isResteemed: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -59,11 +61,15 @@ class PostActions extends Component {
     isPost: false,
     onEditPost: () => {},
     onDeletePost: () => {},
+    handleResteem: () => {},
+    isResteemed: false,
   };
 
 
   resteem = (e) => {
     e.preventDefault();
+    const { pid, author, permlink, handleResteem } = this.props;
+    handleResteem(pid, author, permlink);
   }
 
   flag = (e) => {
@@ -90,13 +96,25 @@ class PostActions extends Component {
         isPost,
         onEditPost,
         onDeletePost,
+        resteemedPayload,
+        pageOwner,
       },
     } = this;
+
+    let isResteemedByUser = null;
+    if (resteemedPayload.pids.length && resteemedPayload.pids.indexOf(pid) > -1) {
+      isResteemedByUser = true;
+    }
+
+    if (pageOwner === user && author !== user) {
+      isResteemedByUser = true;
+    }
+
+    const disable = resteemedPayload.resteeming === pid;
 
     return (
       <React.Fragment>
         <ul className="meta">
-
           <Vote
             activeVotes={activeVotes}
             author={author}
@@ -117,23 +135,46 @@ class PostActions extends Component {
               </a>
             </span>
           </li>
+          {
+            user && user !== author && !isResteemedByUser && (
+              <li className="item">
+                <Popup
+                  trigger={(
+                    <span>
+                      <a href="/resteem" onClick={e => e.preventDefault()} title="Resteem">
+                        <Icon name='retweet' size='large' />
+                      </a>
+                    </span>
+                  )}
+                  position='top left'
+                  flowing
+                  hoverable
+                  on='click'
+                  disabled={disable}
+                >
+                  <Button
+                    color='green'
+                    content={`Confirm resteem. It can't be undone.`}
+                    onClick={this.resteem}
+                    disabled={disable}
+                  />
+                </Popup>
+              </li>
 
-          <li className="item disabled">
-            <span>
-              <a href="/resteem" onClick={(e) => this.resteem(e)} title="Resteem">
-                <Icon name='retweet' size='large' />
-              </a>
-            </span>
-          </li>
 
-          <li className="item disabled">
-            <span>
-              <a href="/flag" onClick={(e) => this.flag(e)} title="Flag this post on Steem">
-                <Icon name='flag outline' size='large' />
-              </a>
-            </span>
-          </li>
-
+            )
+          }
+          {
+            user && (
+              <li className="item disabled">
+                <span>
+                  <a href="/flag" onClick={(e) => this.flag(e)} title="Flag this post on Steem">
+                    <Icon name='flag outline' size='large' />
+                  </a>
+                </span>
+              </li>
+            )
+          }
         </ul>
 
         <div className='right'>
