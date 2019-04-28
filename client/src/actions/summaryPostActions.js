@@ -94,7 +94,8 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
         }else {
           newPosts = result;
         }
-        
+        if (result.length < query.limit)
+          hasMore = false;
       }else {
         hasMore = false;
         newPosts = posts;
