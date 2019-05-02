@@ -65,7 +65,7 @@ const PostsSummary = (props) => {
         const permlink = post.permlink;
         const category = post.category;
         const thumb = post.image_link;
-        const created = post.created;
+        const created = `${post.created}Z`;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
@@ -73,7 +73,7 @@ const PostsSummary = (props) => {
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
-        const pid = parseInt(post.post_id);
+        const pid = parseInt(post.id);
 
         const reblogged_by = post.reblogged_by;
 

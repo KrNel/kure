@@ -150,6 +150,7 @@ class Post extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      resteemedPayload,
     } = this.props;
 
     let addErrorPost = '';
@@ -193,6 +194,7 @@ class Post extends Component {
                     commentPayload={commentPayload}
                     isUpdating={isUpdating}
                     isDeleting={isDeleting}
+                    resteemedPayload={resteemedPayload}
                   />
                 )
                 :  <Loading />
@@ -249,7 +251,10 @@ class Post extends Component {
      sendPost: {
        isUpdating,
        draft,
-     }
+     },
+     resteem: {
+       resteemedPayload,
+     },
    } = state;
 
    return {
@@ -274,6 +279,7 @@ class Post extends Component {
      draft,
      isDeleting,
      redirect,
+     resteemedPayload,
    }
  }
 
@@ -308,7 +314,7 @@ const mapDispatchToProps = dispatch => (
     ),
     clearPostData: () => (
       dispatch(clearPost())
-    ),clearPost
+    ),
   }
 );
 

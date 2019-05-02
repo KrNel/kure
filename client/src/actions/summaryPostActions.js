@@ -1,7 +1,9 @@
-import { api } from 'steem';
+import { Client } from 'dsteem';
 
 import { logger } from '../utils/fetchFunctions';
 import { getUserGroupsFetch } from './userGroupsActions';
+
+const client = new Client('https://hive.anyx.io/');
 
 export const GET_SUMMARY_START = 'GET_SUMMARY_START';
 export const GET_SUMMARY_SUCCESS = 'GET_SUMMARY_SUCCESS';
@@ -78,7 +80,7 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
   query.start_author = startAuthor;
   query.start_permlink =  startPermlink;
 
-  return api[steemCall(selectedFilter)](query)
+  return client.database.getDiscussions(selectedFilter, query)
     .then(result => {
 
       let hasMore = true;
@@ -113,23 +115,5 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
     });
 }
 
-const steemCall = (selectedFilter) => {
-  switch (selectedFilter) {
-    case 'blog':
-      return 'getDiscussionsByBlogAsync';
-    case 'feed':
-      return 'getDiscussionsByFeedAsync';
-    case 'created':
-      return 'getDiscussionsByCreatedAsync';
-    case 'hot':
-      return 'getDiscussionsByHotAsync';
-    case 'promoted':
-      return 'getDiscussionsByPromotedAsync';
-    case 'trending':
-      return 'getDiscussionsByTrendingAsync';
-    default:
-      return 'getDiscussionsByCreatedAsync';
-  }
-}
 
 export default getSummaryContent;

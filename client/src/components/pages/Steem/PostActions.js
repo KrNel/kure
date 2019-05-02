@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Icon, Button, Popup, Loader, Dimmer } from "semantic-ui-react";
+import { Icon, Button, Popup } from "semantic-ui-react";
 
 import Vote from './Vote';
 
@@ -40,7 +40,8 @@ class PostActions extends Component {
     onEditPost: PropTypes.func,
     onDeletePost: PropTypes.func,
     handleResteem: PropTypes.func,
-    isResteemed: PropTypes.bool,
+    pageOwner: PropTypes.string,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -62,7 +63,8 @@ class PostActions extends Component {
     onEditPost: () => {},
     onDeletePost: () => {},
     handleResteem: () => {},
-    isResteemed: false,
+    pageOwner: '',
+    resteemedPayload: {},
   };
 
 

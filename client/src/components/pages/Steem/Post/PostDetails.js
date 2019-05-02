@@ -22,6 +22,7 @@ import { editPost } from '../../../../actions/sendPostActions';
 import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
 import { commentsClear } from '../../../../actions/commentsActions';
 import { sendCommentClear } from '../../../../actions/sendCommentActions';
+import { resteem } from '../../../../actions/resteemActions';
 
 import './PostDetails.css'
 
@@ -173,6 +174,7 @@ class PostDetails extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      resteemedPayload,
     } = this.props;
 
     const {
@@ -189,7 +191,7 @@ class PostDetails extends Component {
     const authorReputation = post.author_reputation;
     const permlink = post.permlink;
     const category = post.category;
-    const created = post.created;
+    const created = `${post.created}Z`;
     const activeVotes = post.active_votes;
 
     const totalPayout = sumPayout(post);
@@ -315,6 +317,7 @@ class PostDetails extends Component {
                                 isPost
                                 onEditPost={this.handleEditPost}
                                 onDeletePost={this.handleDeletePost}
+                                resteemedPayload={resteemedPayload}
                               />
                             </div>
                             <hr />
@@ -402,6 +405,9 @@ const mapDispatchToProps = dispatch => (
    ),
    clearNewComments: () => (
      dispatch(sendCommentClear())
+   ),
+   handleResteem: (pid, author, permlink) => (
+     dispatch(resteem(pid, author, permlink))
    ),
  }
 );

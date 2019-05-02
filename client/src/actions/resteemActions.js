@@ -6,6 +6,7 @@ export const RESTEEM_SUCCESS = 'RESTEEM_SUCCESS';
 /**
  *  Action creator to request recent post activity.
  *
+ *  @param {number} pid Post id
  *  @returns {object} The action data
  */
 const resteemStart = pid => ({
@@ -16,8 +17,7 @@ const resteemStart = pid => ({
 /**
  *  Action creator to receive recent post activity.
  *
- *  @param {string} posts Data returned from database
- *  @param {object} hasMore If there are more posts to grab
+ *  @param {number} pid Post id
  *  @returns {object} The action data
  */
 const resteemSuccess = pid => ({
@@ -26,10 +26,11 @@ const resteemSuccess = pid => ({
 });
 
 /**
- *  Function to fetch the recent activity from the database.
+ *  Sends a resteem to Steem based on the author and permlink.
  *
- *  @param {string} limit Limit of posts to return
- *  @param {function} nextId The next Id to use for querying posts
+ *  @param {number} pid Post id
+ *  @param {string} author Author of post
+ *  @param {string} permlink Permlink of post
  *  @returns {function} Dispatches returned action object
  */
 export const resteem = (pid, author, permlink) => (dispatch, getState) => {

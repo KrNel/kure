@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import { Grid, Image } from "semantic-ui-react";
 
-import {long} from '../../../utils/dateFormatting';
+import { LongNowDate } from '../../../utils/dateFormatting';
 import GroupLink from '../../kure/GroupLink';
 import TitleLink from '../Steem/TitleLink';
 import UserLink from '../Steem/UserLink';
@@ -45,7 +45,7 @@ const PostGrid = ({post}) => {
             </div>
             <div className='right'>
               <div><GroupLink display={post.display} name={post.group} /></div>
-              <div>{long(post.created)}</div>
+              <div>{<LongNowDate date={post.created} />}</div>
             </div>
           </div>
         </div>

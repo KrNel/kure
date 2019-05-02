@@ -7,7 +7,7 @@ import Body from './PostBody';
 import Avatar from '../Avatar';
 import AuthorReputation from '../AuthorReputation';
 import PostLink from '../PostLink';
-import {long} from '../../../../utils/dateFormatting';
+import { LongNowDate } from '../../../../utils/dateFormatting';
 import {hasLength} from '../../../../utils/helpers';
 import Vote from '../Vote';
 import './Comment.css';
@@ -225,7 +225,7 @@ class Comment extends Component {
                 <PostLink
                   link={anchorLink}
                   title={created}
-                  text={long(created)}
+                  text={<LongNowDate date={created} />}
                 />
               </div>
               {

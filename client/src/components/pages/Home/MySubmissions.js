@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
-import { short, standard } from '../../../utils/dateFormatting';
+import { ShortNowDate, standard } from '../../../utils/dateFormatting';
 import TitleLink from '../Steem/TitleLink';
 
 const MySubmissions = ({ isAuth, mySubs }) => (
@@ -29,7 +29,7 @@ const MySubmissions = ({ isAuth, mySubs }) => (
                   />
                 </div>
                 <div className='rightSidebarList meta' title={standard(p.created)}>
-                  {short(p.created)}
+                  <ShortNowDate date={p.created} />
                 </div>
                 <div className='clear' />
               </li>

@@ -4,7 +4,7 @@ import { Header, Segment, Label } from "semantic-ui-react";
 import { Link } from 'react-router-dom';
 
 import GroupLink from '../../kure/GroupLink';
-import { short, standard } from '../../../utils/dateFormatting';
+import { ShortNowDate, standard } from '../../../utils/dateFormatting';
 
 const MyCommunities = ({ isAuth, myComms }) => (
   <Segment.Group className='box'>
@@ -23,8 +23,8 @@ const MyCommunities = ({ isAuth, myComms }) => (
                 <div className='leftSidebarList'>
                   <GroupLink display={c.display} name={c.group} />
                 </div>
-                <div className='rightSidebarList meta' title={standard(c.created)}>
-                  {short(c.updated)}
+                <div className='rightSidebarList meta' title={standard(c.updated)}>
+                  <ShortNowDate date={c.updated} />
                 </div>
                 <div className='clear' />
               </li>

@@ -4,7 +4,7 @@ import { Grid, Segment, Icon, Loader, Dimmer, Divider } from "semantic-ui-react"
 
 import Loading from '../../Loading/Loading';
 import GroupLink from '../../kure/GroupLink';
-import { long, standard } from '../../../utils/dateFormatting';
+import { LongNowDate, standard } from '../../../utils/dateFormatting';
 
 /**
  *  Display the community groups for a user to manage or delete.
@@ -103,11 +103,13 @@ const GroupsGrid = (props) => {
                       <br />
                       <div title={date} className='meta'>
                         <Icon name='sync alternate' color='blue' />
-                        {`Updated ${long(g.updated)}`}
+                        {'Updated '}
+                        <LongNowDate date={g.updated} />
                       </div>
                       <div title={date} className='meta'>
                         <Icon name='calendar alternate outline' color='blue' />
-                        {`Created ${long(g.created)}`}
+                        {'Created '}
+                        <LongNowDate date={g.created} />
                       </div>
                     </div>
                   </Segment>

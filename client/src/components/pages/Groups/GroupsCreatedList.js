@@ -3,7 +3,7 @@ import { Table } from "semantic-ui-react";
 
 import GroupLink from '../../kure/GroupLink';
 import UserLink from '../Steem/UserLink';
-import { short } from '../../../utils/dateFormatting';
+import { ShortNowDate } from '../../../utils/dateFormatting';
 
 /**
  *  Show the newly created groups as a table list.
@@ -33,7 +33,7 @@ const GroupsCreated = ({ groups}) => {
                   </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.posts}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'>{g.users}</Table.Cell>
-                  <Table.Cell collapsing textAlign='center'>{short(g.created)}</Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{<ShortNowDate date={g.created} />}</Table.Cell>
                   <Table.Cell collapsing textAlign='center'><UserLink user={g.owner} /></Table.Cell>
                 </Table.Row>
               ))
