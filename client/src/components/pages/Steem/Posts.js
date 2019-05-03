@@ -1,10 +1,11 @@
 import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Header, Label} from 'semantic-ui-react';
+import { Header, Label, Grid, Icon } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 
-import PostsSummary from './PostsSummary';
+import PostsSummaryGrid from './PostsSummaryGrid';
+import PostsSummaryList from './PostsSummaryList';
 import ModalGroup from '../../Modal/ModalGroup';
 import ErrorLabel from '../../ErrorLabel/ErrorLabel';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
@@ -14,6 +15,7 @@ import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
+import ToggleView from '../../kure/ToggleView';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -74,6 +76,11 @@ class Posts extends Component {
 
     this.selectedFilter = 'created';
     this.tag = '';
+
+    this.state = {
+      showGrid: true,
+      showDesc: false,
+    };
   }
 
   componentDidMount() {
@@ -111,7 +118,7 @@ class Posts extends Component {
   handleScroll = (e) => {
     const {isFetching, hasMore} = this.props;
     if (!isFetching && hasMore) {
-      var lastLi = document.querySelector("#postList > div.postSummary:last-child");
+      var lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
       var pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
@@ -162,6 +169,24 @@ class Posts extends Component {
     this.getPosts('');
   }
 
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
+  toggleView = (e) => {
+    e.preventDefault();
+    const { showGrid } = this.state;
+    this.setState({ showGrid: !showGrid });
+  }
+
+  /**
+   *  Toggle state showGrid to show a grid or list view from being displayed.
+   */
+  toggleDescriptions = (e) => {
+    e.preventDefault();
+    const { showDesc } = this.state;
+    this.setState({ showDesc: !showDesc });
+  }
+
   render() {
     const {
       props: {
@@ -185,12 +210,32 @@ class Posts extends Component {
         handleResteem,
         resteemedPayload,
       },
+      state: {
+        showGrid,
+        showDesc,
+      },
     } = this;
 
     let addErrorPost = '';
     if (postExists) addErrorPost = <ErrorLabel position='left' text={this.existPost} />;
 
     const author = match.params.author;
+
+    let pageheader = null;
+
+    if (page !== 'blog' && page !== 'feed') {
+      pageheader = (
+        <FilterPosts handleSubmitFilter={this.handleSubmitFilter} />
+      );
+    }else if (page === 'feed') {
+      pageheader = (
+        <Label size='big' color='blue'><Header as='h3'>{`${author}'s Feed`}</Header></Label>
+      );
+    }else if (page === 'blog') {
+      pageheader = (
+        <Label size='big' color='blue'><Header as='h3'>{`${author}'s Blog`}</Header></Label>
+      );
+    }
 
     return (
       <React.Fragment>
@@ -205,56 +250,91 @@ class Posts extends Component {
         />
         <ErrorBoundary>
           <React.Fragment>
-            {
-              page !== 'blog' && page !== 'feed'
-              && (
-                <FilterPosts
-                  handleSubmitFilter={this.handleSubmitFilter}
-                />
-              )
-            }
-            {
-              page === 'feed'
-              && (
-                <Label size='big' color='blue'><Header as='h3'>{`${author}'s Feed`}</Header></Label>
-              )
-            }
-            {
-              page === 'blog'
-              && (
-                <Label size='big' color='blue'><Header as='h3'>{`${author}'s Blog`}</Header></Label>
-              )
-            }
-            <hr />
-            <div>
-              <div id="postList">
-                {
-                  page === prevPage
-                  ? (
-                    <PostsSummary
-                      posts={posts}
-                      showModal={showModal}
-                      user={user}
-                      csrf={csrf}
-                      handleUpvote={handleUpvote}
-                      upvotePayload={upvotePayload}
-                      isFetching={isFetching}
-                      handleResteem={handleResteem}
-                      page={page}
-                      pageOwner={author}
-                      resteemedPayload={resteemedPayload}
+            <div id="postList">
+              {
+                !showGrid
+                ? (
+                  <div>
+                    {pageheader}
+                    <ToggleView
+                      toggleView={this.toggleView}
+                      showGrid={showGrid}
                     />
-                  )
-                  : (
-                    <Loading />
-                  )
-                }
+                    <hr />
+                    {
+                      page === prevPage
+                      ? (
+                        <PostsSummaryList
+                          posts={posts}
+                          showModal={showModal}
+                          user={user}
+                          csrf={csrf}
+                          handleUpvote={handleUpvote}
+                          upvotePayload={upvotePayload}
+                          isFetching={isFetching}
+                          handleResteem={handleResteem}
+                          page={page}
+                          pageOwner={author}
+                          resteemedPayload={resteemedPayload}
+                        />
+                      ) : (
+                        <Loading />
+                      )
+                    }
+                  </div>
+                ) : (
+                  <Grid columns={1} stackable>
+                    <Grid.Column width={16} className="main">
+                      <Grid stackable>
+                        <Grid.Row>
+                          <Grid.Column>
+                            { pageheader }
+                            <ToggleView
+                              toggleView={this.toggleView}
+                              showGrid={showGrid}
+                            />
+                            <hr />
+                            {'Show Descriptions: '}
+                            <a href='/description' onClick={this.toggleDescriptions}>
+                              {
+                                showDesc
+                                ? <Icon name='toggle on' size='large' />
+                                : <Icon name='toggle off' size='large' />
+                              }
+                            </a>
+                          </Grid.Column>
+                        </Grid.Row>
 
-              </div>
+                        {
+                          page === prevPage
+                          ? (
+                            <PostsSummaryGrid
+                              posts={posts}
+                              showModal={showModal}
+                              user={user}
+                              csrf={csrf}
+                              handleUpvote={handleUpvote}
+                              upvotePayload={upvotePayload}
+                              isFetching={isFetching}
+                              handleResteem={handleResteem}
+                              page={page}
+                              pageOwner={author}
+                              resteemedPayload={resteemedPayload}
+                              showDesc={showDesc}
+                            />
+                          ) : (
+                            <Loading />
+                          )
+                        }
+                      </Grid>
+                    </Grid.Column>
+                  </Grid>
+                )
+              }
+              {
+                isFetching && page === prevPage && <Loading />
+              }
             </div>
-            {
-              isFetching && page === prevPage && <Loading />
-            }
           </React.Fragment>
         </ErrorBoundary>
       </React.Fragment>

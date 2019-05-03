@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Grid, Image } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -32,7 +32,6 @@ const PostsSummary = (props) => {
     page,
     pageOwner,
     resteemedPayload,
-    showGrid,
   } = props;
 
   let {
@@ -48,7 +47,6 @@ const PostsSummary = (props) => {
       posts.map((p, i) => {
 
         if (nextPost) {
-					//nextPost = false;
 					return false;
 				}
 
@@ -100,7 +98,76 @@ const PostsSummary = (props) => {
         const key = p+i;
 
         return (
+          <div key={key} className='infSummary postSummary'>
+            { resteemed }
+            <AuthorCatgoryTime
+              author={author}
+              authorReputation={authorReputation}
+              category={category}
+              created={created}
+              permlink={permlink}
+            />
 
+            <div className="block">
+              {
+                (thumb)
+                  ? (
+                    <div className="thumbnail">
+                      <PostLink
+                        author={author}
+                        category={category}
+                        permlink={permlink}
+                        text={<Thumbnail thumb={thumb} />}
+                      />
+                    </div>
+                    )
+                  : ''
+              }
+              <div className="summary-content" data-permlink={permlink}>
+                <h4>
+                  <TitleLink
+                    title={title}
+                    category={category}
+                    author={author}
+                    permlink={permlink}
+                  />
+                </h4>
+                <div className='description'>
+                  <p className='ellipsis'>
+                    <PostLink
+                      author={author}
+                      category={category}
+                      permlink={permlink}
+                      text={desc}
+                    />
+                  </p>
+                </div>
+                <div className='post-actions'>
+                  <PostActions
+                    activeVotes={activeVotes}
+                    commentCount={commentCount}
+                    author={author}
+                    category={category}
+                    payoutValue={totalPayout}
+                    permlink={permlink}
+                    title={title}
+                    showModal={showModal}
+                    user={user}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                    ratio={ratio}
+                    pid={pid}
+                    image={thumb}
+                    handleResteem={handleResteem}
+                    isResteemedByUser={isResteemedByUser}
+                    resteemedPayload={resteemedPayload}
+                    pageOwner={pageOwner}
+                  />
+                </div>
+              </div>
+            </div>
+            <hr className='summaryDivider' />
+          </div>
         )
       })
     )
