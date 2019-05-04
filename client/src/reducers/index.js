@@ -12,6 +12,7 @@ import { sendComment } from './sendCommentReducer';
 import { sendPost } from './sendPostReducer';
 import { kurated } from './kuratedReducer';
 import { communities } from './communitiesReducer';
+import { resteem } from './resteemReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   sendPost,
   kurated,
   communities,
+  resteem,
 });
 
 export default rootReducer;

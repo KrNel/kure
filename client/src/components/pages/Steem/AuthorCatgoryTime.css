@@ -17,6 +17,10 @@
   color: var(--charcoal-grey);
 }
 
+.item.author a:hover {
+  color: var(--bright-medium-blue);
+}
+
 ul.info li {
   color: var(--medium-grey);
   font-size: 1.1em;

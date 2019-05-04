@@ -5,7 +5,7 @@ import Avatar from './Avatar';
 import AuthorReputation from './AuthorReputation';
 import Category from './Category';
 import PostLink from './PostLink';
-import { long, standard } from '../../../utils/dateFormatting';
+import { LongNowDate, standard } from '../../../utils/dateFormatting';
 import './AuthorCatgoryTime.css';
 
 /**
@@ -36,7 +36,7 @@ const AuthorCatgoryTime = ({author, authorReputation, category, created, permlin
         category={category}
         permlink={permlink}
         title={standard(created)}
-        text={long(created)}
+        text={<LongNowDate date={created} />}
       />
     </li>
   </ul>

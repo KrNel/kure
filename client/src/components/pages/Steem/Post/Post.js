@@ -49,6 +49,7 @@ class Post extends Component {
     isDeleting: PropTypes.bool,
     redirect: PropTypes.string,
     clearPostData: PropTypes.func,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -65,6 +66,7 @@ class Post extends Component {
     isDeleting: false,
     redirect: '',
     clearPostData: () => {},
+    resteemedPayload: {},
   }
 
   constructor(props) {
@@ -150,6 +152,7 @@ class Post extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      resteemedPayload,
     } = this.props;
 
     let addErrorPost = '';
@@ -193,6 +196,7 @@ class Post extends Component {
                     commentPayload={commentPayload}
                     isUpdating={isUpdating}
                     isDeleting={isDeleting}
+                    resteemedPayload={resteemedPayload}
                   />
                 )
                 :  <Loading />
@@ -249,7 +253,10 @@ class Post extends Component {
      sendPost: {
        isUpdating,
        draft,
-     }
+     },
+     resteem: {
+       resteemedPayload,
+     },
    } = state;
 
    return {
@@ -274,6 +281,7 @@ class Post extends Component {
      draft,
      isDeleting,
      redirect,
+     resteemedPayload,
    }
  }
 
@@ -308,7 +316,7 @@ const mapDispatchToProps = dispatch => (
     ),
     clearPostData: () => (
       dispatch(clearPost())
-    ),clearPost
+    ),
   }
 );
 

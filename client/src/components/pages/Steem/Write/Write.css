@@ -3,3 +3,7 @@
   min-height: 10em;
   height: 20em;
 }
+
+#write .writingPreview .Body {
+  font-family: var(--font-body);
+}

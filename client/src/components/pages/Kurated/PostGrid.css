@@ -1,14 +1,14 @@
-.postBox {
+.infiniteEl .postBox {
   position: relative;
   width: 100%;
 }
 
-.cropImage {
+.infiniteEl .cropImage {
   max-height: 250px;
   overflow: hidden;
 }
 
-.overlayImage {
+.infiniteEl .overlayImage {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -26,7 +26,7 @@
   max-height: 100%;
 }
 
-.overlayImage .recentTitle {
+.infiniteEl .overlayImage .recentTitle {
   font-size: 1.5rem;
   line-height: 1.5rem;
   position: relative;
@@ -40,16 +40,16 @@
   white-space: normal;
 }
 
-.overlayImage .recentTitle .titleContent {
+.infiniteEl .overlayImage .recentTitle .titleContent {
   position: relative;
   display: block;
   max-height: 6.2rem;
 }
 
-.overlayImage a {
+.infiniteEl .overlayImage a {
   color: #f1f1f1;
 }
 
-.overlayImage a:hover {
+.infiniteEl .overlayImage a:hover {
   color: #d1d1d1;
 }

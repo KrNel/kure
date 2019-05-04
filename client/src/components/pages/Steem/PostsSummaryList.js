@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from "semantic-ui-react";
 
 import './PostsSummary.css';
 import AuthorCatgoryTime from './AuthorCatgoryTime';
@@ -9,9 +10,11 @@ import { extractContent } from './helpers/extractContent';
 import TitleLink from './TitleLink';
 import PostLink from './PostLink';
 import { sumPayout } from '../../../utils/helpers';
+import Resteemers from './Resteemers';
 
 /**
- *  Root container for post summaries.
+ *  Taking post data and extracting what is required to display post summaries
+ *  in a list  format.
  *
  *  @param {array} posts All the posts fetched
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
@@ -26,11 +29,17 @@ const PostsSummary = (props) => {
     handleUpvote,
     upvotePayload,
     isFetching,
+    handleResteem,
+    page,
+    pageOwner,
+    resteemedPayload,
   } = props;
 
   let {
     nextPost,
   } = props;
+
+
 
   if (!posts.length && !isFetching) {
     return "No Posts";
@@ -39,7 +48,6 @@ const PostsSummary = (props) => {
       posts.map((p, i) => {
 
         if (nextPost) {
-					nextPost = false;
 					return false;
 				}
 
@@ -57,7 +65,7 @@ const PostsSummary = (props) => {
         const permlink = post.permlink;
         const category = post.category;
         const thumb = post.image_link;
-        const created = post.created;
+        const created = `${post.created}Z`;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
 
@@ -65,8 +73,34 @@ const PostsSummary = (props) => {
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
 
+        const pid = parseInt(post.id);
+
+        const reblogged_by = post.reblogged_by;
+
+        let isResteemed = false;
+        let isResteemedByUser = false;
+
+        if (page === 'blog') {
+          isResteemed = pageOwner !== author
+        }
+
+        let resteemed = reblogged_by && !!reblogged_by.length
+        ? <Resteemers rebloggedBy={reblogged_by} /> : null;
+
+        if (isResteemed) {
+          resteemed = (
+            <div className='resteemers'>
+              <Icon name='retweet' />
+              {' resteemed'}
+            </div>
+          )
+        }
+
+        const key = p+i;
+
         return (
-          <div key={p.id} className='postSummary'>
+          <div key={key} className='infSummary postSummary'>
+            { resteemed }
             <AuthorCatgoryTime
               author={author}
               authorReputation={authorReputation}
@@ -123,8 +157,12 @@ const PostsSummary = (props) => {
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     ratio={ratio}
-                    pid={post.id}
+                    pid={pid}
                     image={thumb}
+                    handleResteem={handleResteem}
+                    isResteemedByUser={isResteemedByUser}
+                    resteemedPayload={resteemedPayload}
+                    pageOwner={pageOwner}
                   />
                 </div>
               </div>
@@ -144,6 +182,7 @@ PostsSummary.propTypes = {
   handleUpvote: PropTypes.func,
   upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
   isFetching: PropTypes.bool,
+  handleResteem: PropTypes.func,
 };
 
 PostsSummary.defaultProps = {
@@ -153,6 +192,7 @@ PostsSummary.defaultProps = {
   handleUpvote: () => {},
   upvotePayload: {},
   isFetching: false,
+  handleResteem: () => {},
 };
 
 

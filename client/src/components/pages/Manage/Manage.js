@@ -64,6 +64,7 @@ class Manage extends Component {
         }else {
           groupsJoined.push(g);
         }
+        return g;
       })
 
       this.setState({
@@ -77,7 +78,7 @@ class Manage extends Component {
   }
 
   /**
-   *  When a community is trasnfer to a new owner, get the data again to
+   *  When a community is transfered to a new owner, get the data again to
    *  display the community in the proper section (from owned to joined).
    */
   onChangeOwnership = () => {

@@ -64,6 +64,7 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
   if (posts.length && action === 'more') {
     startAuthor = summaryPost.startAuthor;
     startPermlink = summaryPost.startPermlink;
+    query.limit = query.limit+1;
   }
 
   let nextPost = false;
@@ -82,6 +83,7 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
 
   return client.database.getDiscussions(selectedFilter, query)
     .then(result => {
+
       let hasMore = true;
       let newPosts = null;
 
@@ -95,6 +97,8 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
         }else {
           newPosts = result;
         }
+        if (result.length < query.limit)
+          hasMore = false;
       }else {
         hasMore = false;
         newPosts = posts;
@@ -111,5 +115,6 @@ export const getSummaryContent = (selectedFilter, query, page, action) => (dispa
       logger({level: 'error', message: {name: err.name, message: err.message, stack: err.stack}});
     });
 }
+
 
 export default getSummaryContent;

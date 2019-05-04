@@ -22,6 +22,7 @@ import { editPost } from '../../../../actions/sendPostActions';
 import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
 import { commentsClear } from '../../../../actions/commentsActions';
 import { sendCommentClear } from '../../../../actions/sendCommentActions';
+import { resteem } from '../../../../actions/resteemActions';
 
 import './PostDetails.css'
 
@@ -50,6 +51,7 @@ class PostDetails extends Component {
     clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
     clearNewComments: PropTypes.func,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -66,6 +68,7 @@ class PostDetails extends Component {
     clearComments: () => {},
     isDeleting: false,
     clearNewComments: () => {},
+    resteemedPayload: {},
   }
 
   constructor(props) {
@@ -173,6 +176,7 @@ class PostDetails extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      resteemedPayload,
     } = this.props;
 
     const {
@@ -189,7 +193,7 @@ class PostDetails extends Component {
     const authorReputation = post.author_reputation;
     const permlink = post.permlink;
     const category = post.category;
-    const created = post.created;
+    const created = `${post.created}Z`;
     const activeVotes = post.active_votes;
 
     const totalPayout = sumPayout(post);
@@ -212,7 +216,7 @@ class PostDetails extends Component {
     if (tags === null) tags = [post.category];
 
     const comments = replies;
-    const pid = post.id;
+    const pid = parseInt(post.id);
 
     // if editing post, set wider column width
     const columns = isUpdating ? 13 : 11;
@@ -315,6 +319,7 @@ class PostDetails extends Component {
                                 isPost
                                 onEditPost={this.handleEditPost}
                                 onDeletePost={this.handleDeletePost}
+                                resteemedPayload={resteemedPayload}
                               />
                             </div>
                             <hr />
@@ -402,6 +407,9 @@ const mapDispatchToProps = dispatch => (
    ),
    clearNewComments: () => (
      dispatch(sendCommentClear())
+   ),
+   handleResteem: (pid, author, permlink) => (
+     dispatch(resteem(pid, author, permlink))
    ),
  }
 );

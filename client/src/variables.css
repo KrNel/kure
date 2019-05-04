@@ -16,8 +16,8 @@
     --medium-grey: #57636e;
     --soft-grey: #cacaca;
     --action-grey: rgba(202, 202, 202, 0.8);
-    --font-content: "Roboto", "Lato", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-body: "Roboto", "Lato", "Source Sans Pro";
+    --font-content: Helvetica, "Lato", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body: 'Source Serif Pro', 'Lora', serif, "Open Sans", "Lato", "Source Sans Pro";
     /*font-family: Georgia, Helvetica, 'Source Serif Pro', serif;*/
     /*
     "minion pro", Garamond, Georgia, Avenir, Raleway, Lato, Verdana, "Open Sans", "PT Sans / PT Serif"

@@ -20,7 +20,7 @@ const PostLink = (props) => {
   if (!link) {
     return (
       <Link
-        to={'/'+category+'/@'+author+'/'+permlink}
+        to={`/${category}/@${author}/${permlink}`}
         title={title}
         className={className}
       >
@@ -44,7 +44,7 @@ PostLink.propTypes = {
   author: PropTypes.string,
   category: PropTypes.string,
   permlink: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   text: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   link: PropTypes.string,
 };
