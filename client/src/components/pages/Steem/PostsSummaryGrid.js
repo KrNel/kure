@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Icon, Grid, Image } from "semantic-ui-react";
 
 import './PostsSummary.css';
-import AuthorCatgoryTime from './AuthorCatgoryTime';
 import PostActions from './PostActions';
 import { extractContent } from './helpers/extractContent';
 import TitleLink from './TitleLink';
@@ -16,7 +15,8 @@ import Category from './Category';
 import { LongNowDate, standard } from '../../../utils/dateFormatting';
 
 /**
- *  Root container for post summaries.
+ *  Taking post data and extracting what is required to display post summaries
+ *  in a grid format.
  *
  *  @param {array} posts All the posts fetched
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
@@ -91,8 +91,8 @@ const PostsSummary = (props) => {
 
         let descClass = 'descriptionBox';
         let description = null;
+
         if (showDesc) {
-          descClass = 'descriptionBox';
           description = (
             <div className='description'>
               <PostLink
@@ -116,17 +116,17 @@ const PostsSummary = (props) => {
                 <div className='cropImage'>
                   {
                     (thumb)
-                      ? (
-                        <div className="thumbnail">
-                          <PostLink
-                            author={author}
-                            category={category}
-                            permlink={permlink}
-                            text={<Image src={`https://steemitimages.com/640x480/${thumb}`} alt="image" />}
-                          />
-                        </div>
-                        )
-                      : ''
+                    ? (
+                      <div className="thumbnail">
+                        <PostLink
+                          author={author}
+                          category={category}
+                          permlink={permlink}
+                          text={<Image src={`https://steemitimages.com/640x480/${thumb}`} alt="image" />}
+                        />
+                      </div>
+                      )
+                    : ''
                   }
                 </div>
                 <div className='overlayImage'>
@@ -188,14 +188,6 @@ const PostsSummary = (props) => {
                       pageOwner={pageOwner}
                     />
                   </div>
-                  {/*}<div className='left'>
-                    {'by '}
-                    <UserLink user={post.st_author} />
-                  </div>
-                  <div className='right'>
-                    <div><GroupLink display={post.display} name={post.group} /></div>
-                    <div>{<LongNowDate date={post.created} />}</div>
-                  </div>*/}
                 </div>
               </div>
               { description }

@@ -13,7 +13,8 @@ import { sumPayout } from '../../../utils/helpers';
 import Resteemers from './Resteemers';
 
 /**
- *  Root container for post summaries.
+ *  Taking post data and extracting what is required to display post summaries
+ *  in a list  format.
  *
  *  @param {array} posts All the posts fetched
  *  @param {array} nextPost Whether to skip the first post, dupe of prev last post

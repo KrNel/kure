@@ -46,6 +46,7 @@ class Posts extends Component {
     posts: PropTypes.arrayOf(PropTypes.object),
     getContent: PropTypes.func,
     handleResteem: PropTypes.func,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -69,6 +70,7 @@ class Posts extends Component {
     posts: [{}],
     getContent: () => {},
     handleResteem: () => {},
+    resteemedPayload: {},
   };
 
   constructor(props) {
@@ -153,7 +155,7 @@ class Posts extends Component {
     const query = {
       tag: tag,
       limit: 20,
-      /*truncate_body: 0,*/
+      truncate_body: 0,
     };
 
     getContent(filter, query, page, action)
@@ -179,7 +181,7 @@ class Posts extends Component {
   }
 
   /**
-   *  Toggle state showGrid to show a grid or list view from being displayed.
+   *  Toggle state showDesc to show the description on the page.
    */
   toggleDescriptions = (e) => {
     e.preventDefault();

@@ -49,6 +49,7 @@ class Post extends Component {
     isDeleting: PropTypes.bool,
     redirect: PropTypes.string,
     clearPostData: PropTypes.func,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -65,6 +66,7 @@ class Post extends Component {
     isDeleting: false,
     redirect: '',
     clearPostData: () => {},
+    resteemedPayload: {},
   }
 
   constructor(props) {

@@ -51,6 +51,7 @@ class PostDetails extends Component {
     clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
     clearNewComments: PropTypes.func,
+    resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
   static defaultProps = {
@@ -67,6 +68,7 @@ class PostDetails extends Component {
     clearComments: () => {},
     isDeleting: false,
     clearNewComments: () => {},
+    resteemedPayload: {},
   }
 
   constructor(props) {
