@@ -4,6 +4,7 @@ import Slider from 'react-rangeslider';
 import PropTypes from 'prop-types';
 
 import DollarDisplay from './DollarDisplay';
+import PercentDisplay from './PercentDisplay';
 import UserLink from './UserLink';
 import { getUpvotes, sortVotes } from '../../../utils/helpers';
 
@@ -202,14 +203,21 @@ class Vote extends Component {
     if (votesCount) {
       votersPopup = voters.slice(0, 14).map(vote => (
         <div key={vote.voter}>
-          {<UserLink user={vote.voter} />}
+          { <UserLink user={vote.voter} /> }
 
-          {vote.rshares * ratio > 0.01 && (
-            <span style={{ opacity: '0.5' }}>
-              {' '}
+          { vote.rshares * ratio > 0.001 && (
+            <span>
+              {`\u00A0\u00A0`}
               <DollarDisplay value={vote.rshares * ratio} />
             </span>
           )}
+
+          {
+            <span style={{ opacity: '0.7' }}>
+              {`\u00A0\u2022\u00A0`}
+              <PercentDisplay value={vote.percent / 10000} />
+            </span>
+          }
         </div>
       ));
     }else {

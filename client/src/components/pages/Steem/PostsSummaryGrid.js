@@ -71,7 +71,6 @@ const PostsSummary = (props) => {
         const reblogged_by = post.reblogged_by;
 
         let isResteemed = false;
-        let isResteemedByUser = false;
 
         if (page === 'blog') {
           isResteemed = pageOwner !== author
@@ -183,7 +182,6 @@ const PostsSummary = (props) => {
                       pid={pid}
                       image={thumb}
                       handleResteem={handleResteem}
-                      isResteemedByUser={isResteemedByUser}
                       resteemedPayload={resteemedPayload}
                       pageOwner={pageOwner}
                     />

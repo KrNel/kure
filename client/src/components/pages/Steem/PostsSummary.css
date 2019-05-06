@@ -69,7 +69,7 @@
   right: 0;
   left: 0;
   background: rgb(0, 0, 0);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   color: #f1f1f1;
   opacity:1;
   font-size: 1.1rem;
@@ -100,6 +100,7 @@
   position: relative;
   display: block;
   max-height: 6.2rem;
+  line-height: 1.7rem;
 }
 
 .infSummary .overlayImage a {
@@ -119,6 +120,10 @@
 
 .postBox .post-actions, .postBox .info {
   margin-top: 0.5rem;
+}
+
+.postBox .item {
+  line-height: inherit;
 }
 
 .postBox .timeago {

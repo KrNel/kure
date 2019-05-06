@@ -34,7 +34,7 @@ class ManageGroups extends Component {
     section: PropTypes.string.isRequired,
     headerText: PropTypes.string.isRequired,
     match: PropTypes.shape(PropTypes.object.isRequired),
-    groups: PropTypes.shape(PropTypes.object.isRequired),
+    groups: PropTypes.arrayOf(PropTypes.object.isRequired),
     areGroupsLoading: PropTypes.bool,
     onChangeOwnership: PropTypes.func.isRequired,
   };
