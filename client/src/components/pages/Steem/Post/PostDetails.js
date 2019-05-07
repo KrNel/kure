@@ -210,6 +210,8 @@ class PostDetails extends Component {
     const postMetaImage = postMetaData && postMetaData.image && postMetaData.image[0];
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
 
+    const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
+
     const body = post.body || '';
 
     let tags = getFromMetadata(post.json_metadata, 'tags');
@@ -264,6 +266,7 @@ class PostDetails extends Component {
                                   category={category}
                                   created={created}
                                   permlink={permlink}
+                                  percentSD={post.percent_steem_dollars}
                                 />
                                 <hr />
                                 {this.renderDtubeEmbedPlayer(post)}
@@ -320,6 +323,7 @@ class PostDetails extends Component {
                                 onEditPost={this.handleEditPost}
                                 onDeletePost={this.handleDeletePost}
                                 resteemedPayload={resteemedPayload}
+                                payoutDeclined={payoutDeclined}
                               />
                             </div>
                             <hr />

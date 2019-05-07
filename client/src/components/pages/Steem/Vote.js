@@ -165,7 +165,8 @@ class Vote extends Component {
         user,
         upvotePayload,
         ratio,
-        pid
+        pid,
+        payoutDeclined,
       },
       state: {
         unvote,
@@ -213,7 +214,7 @@ class Vote extends Component {
           )}
 
           {
-            <span style={{ opacity: '0.7' }}>
+            <span>
               {`\u00A0\u2022\u00A0`}
               <PercentDisplay value={vote.percent / 10000} />
             </span>
@@ -277,6 +278,7 @@ class Vote extends Component {
           <span>
             <DollarDisplay
               value={payoutValue}
+              payoutDeclined={payoutDeclined}
             />
           </span>
         </li>

@@ -36,6 +36,7 @@ const PostsSummary = (props) => {
     pageOwner,
     resteemedPayload,
     showDesc,
+    percentSD,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -61,13 +62,11 @@ const PostsSummary = (props) => {
         const created = `${post.created}Z`;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
-
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-
         const pid = parseInt(post.id);
-
+        const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
         const reblogged_by = post.reblogged_by;
 
         let isResteemed = false;
@@ -184,6 +183,7 @@ const PostsSummary = (props) => {
                       handleResteem={handleResteem}
                       resteemedPayload={resteemedPayload}
                       pageOwner={pageOwner}
+                      payoutDeclined={payoutDeclined}
                     />
                   </div>
                 </div>

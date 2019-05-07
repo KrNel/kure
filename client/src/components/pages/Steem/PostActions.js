@@ -100,6 +100,7 @@ class PostActions extends Component {
         onDeletePost,
         resteemedPayload,
         pageOwner,
+        payoutDeclined,
       },
     } = this;
 
@@ -127,6 +128,7 @@ class PostActions extends Component {
             upvotePayload={upvotePayload}
             ratio={ratio}
             pid={pid}
+            payoutDeclined={payoutDeclined}
           />
 
           <li className="item">
