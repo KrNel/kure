@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import GroupsGrid from '../Manage/GroupsGrid';
 
 /**
- *  Show the newly created groups as a table list.
+ *  Show the newly created groups as a grid.
  *
  *  @param {array} groups Data for newly created groups
  */

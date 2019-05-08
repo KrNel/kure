@@ -7,7 +7,9 @@ import {
 } from '../actions/commentsActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for comment Steem data for a particular post. Will store
+ *  comment data, determine if comment data is being fetched, if a comment is
+ *  being deleted and which comment is being deleted.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

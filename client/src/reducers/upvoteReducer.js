@@ -4,7 +4,9 @@ import {
 } from '../actions/upvoteActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for upvoting posts and comments on Steem. Determines if
+ *  a post is being upvoted, which author and permlink is voted, which post or
+ *   comment is currently voted on, and the list of recent upvotes.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

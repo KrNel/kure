@@ -55,108 +55,42 @@
 .infSummary .postBox {
   position: relative;
   width: 100%;
-}
-
-.infSummary .cropImage {
-  min-height: 200px;
-  max-height: 250px;
-  overflow: hidden;
-}
-
-.infSummary .overlayImage {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background: rgb(0, 0, 0);
-  background: rgba(0, 0, 0, 0.8);
-  color: #f1f1f1;
-  opacity:1;
-  font-size: 1.1rem;
-  padding: 0.8rem;
-  text-overflow: hidden;
-  white-space: wrap;
-  overflow: hidden;
-  min-height: 0%;
-  max-height: 100%;
-}
-
-.infSummary .overlayImage .recentTitle {
-  font-size: 1.5rem;
-  line-height: 1.6rem;
-  position: relative;
-  display: block;
-  color: #838485;
-  max-width: 32rem;
-  min-width: 0rem;
-  min-height: 0%;
-  max-height: 100%;
-  overflow: hidden;
-  white-space: normal;
-  margin-bottom:0.5rem;
-}
-
-.infSummary .overlayImage .recentTitle .titleContent {
-  position: relative;
-  display: block;
-  max-height: 6.2rem;
-  line-height: 1.7rem;
-}
-
-.infSummary .overlayImage a {
-  color: #f1f1f1;
-}
-
-.infSummary .overlayImage a:hover {
-  color: var(--bright-medium-blue);
-}
-
-.postBox .info .author,
-.postBox .info .tag,
-.postBox .info .timeago,
-.postBox .post-actions .payout {
-  color: #d1d1d1;
-}
-
-.postBox .post-actions, .postBox .info {
-  margin-top: 0.5rem;
-}
-
-.postBox .item {
-  line-height: inherit;
-}
-
-.postBox .timeago {
-  text-align: right;
-}
-
-.postBox ul.info {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.descriptionBox {
-  border-radius: 10px !important;
+  border-radius: 6px !important;
   -webkit-box-shadow: 0px 1px 2px 0 var(--main-border) !important;
   box-shadow: 0px 1px 2px 0 var(--main-border) !important;
   border: 1px solid var(--main-border) !important;
   overflow: hidden;
+  padding: 0 0.8rem 0.8rem 0.8rem;
+}
+
+.infSummary .cropImage {
+  margin: 0 -0.8rem 0.5rem -0.8rem;
+}
+
+.infSummary .title {
+  font-size: 1.3rem;
+  line-height: 1.5rem;
+  margin: 0.5rem 0;
+  font-weight: bold;
+}
+
+.infSummary .post-actions {
+  margin-top: 1rem;
 }
 
 .infSummary .description {
   font-size: 1.2rem;
-  padding: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
-.infSummary .description a {
+.infSummary .title a, .infSummary .description a {
   color: var(--charcoal-black);
 }
-.infSummary .description a:hover {
+
+.infSummary .title a:hover, .infSummary .description a:hover {
   color: var(--bright-medium-blue);
 }
 
-.descriptionBox .resteemers {
-  padding: 0.8rem 0.8rem 0 0.8rem;
+.postBox .resteemers {
+  padding: 0.8rem 0;
 }

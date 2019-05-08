@@ -101,6 +101,7 @@ class PostActions extends Component {
         resteemedPayload,
         pageOwner,
         payoutDeclined,
+        percentSD,
       },
     } = this;
 
@@ -118,6 +119,7 @@ class PostActions extends Component {
     return (
       <React.Fragment>
         <ul className="meta">
+
           <Vote
             activeVotes={activeVotes}
             author={author}
@@ -129,6 +131,7 @@ class PostActions extends Component {
             ratio={ratio}
             pid={pid}
             payoutDeclined={payoutDeclined}
+            percentSD={percentSD}
           />
 
           <li className="item">
@@ -164,8 +167,6 @@ class PostActions extends Component {
                   />
                 </Popup>
               </li>
-
-
             )
           }
           {

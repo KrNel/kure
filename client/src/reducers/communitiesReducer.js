@@ -6,6 +6,15 @@ import {
   JOIN_GROUP_SUCCESS,
 } from '../actions/communitiesActions';
 
+/**
+ *  Reducer function for communities Redux state data. Determines if a fetch
+ *  request for groups/communities has more data to fetch and which group is being
+ *  requested to join.
+ *
+ *  @param {object} state Redux state, default values set
+ *  @param {object} action Action dispatched
+ *  @returns {object} The authentication data, or default state
+ */
 export const communities = (state = {
   isFetching: false,
   groups: [],

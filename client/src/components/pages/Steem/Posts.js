@@ -81,7 +81,7 @@ class Posts extends Component {
 
     this.state = {
       showGrid: true,
-      showDesc: false,
+      showDesc: true,
     };
   }
 
@@ -176,8 +176,7 @@ class Posts extends Component {
    */
   toggleView = (e) => {
     e.preventDefault();
-    const { showGrid } = this.state;
-    this.setState({ showGrid: !showGrid });
+    this.setState(prevState => ({ showGrid: !prevState.showGrid }));
   }
 
   /**
@@ -185,8 +184,7 @@ class Posts extends Component {
    */
   toggleDescriptions = (e) => {
     e.preventDefault();
-    const { showDesc } = this.state;
-    this.setState({ showDesc: !showDesc });
+    this.setState(prevState => ({ showDesc: !prevState.showDesc }));
   }
 
   render() {
@@ -296,12 +294,12 @@ class Posts extends Component {
                               showGrid={showGrid}
                             />
                             <hr />
-                            {'Show Descriptions: '}
+                            {'Hide Descriptions: '}
                             <a href='/description' onClick={this.toggleDescriptions}>
                               {
                                 showDesc
-                                ? <Icon name='toggle on' size='large' />
-                                : <Icon name='toggle off' size='large' />
+                                ? <Icon name='toggle off' size='large' />
+                                : <Icon name='toggle on' size='large' />
                               }
                             </a>
                           </Grid.Column>

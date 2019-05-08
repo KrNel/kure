@@ -8,7 +8,7 @@ import {
 } from '../actions/sendCommentActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for sending a comment to Steem.  Determines if a comment is being sent, which comment it is, if a comment is being edited/updated, which comment it is, and the payload for all comments added during the session.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

@@ -2,6 +2,14 @@ import {
   REQUEST_KURATED, RECEIVE_KURATED
 } from '../actions/kuratedActions';
 
+/**
+ *  Reducer function for kurated Redux state data. Determines if a fetch
+ *  request for posts has more data to fetch.
+ *
+ *  @param {object} state Redux state, default values set
+ *  @param {object} action Action dispatched
+ *  @returns {object} The authentication data, or default state
+ */
 export const kurated = (state = {
   isFetching: false,
   posts: [],

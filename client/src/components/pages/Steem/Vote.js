@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Icon, Popup } from "semantic-ui-react";
+import { Icon, Popup, Button } from "semantic-ui-react";
 import Slider from 'react-rangeslider';
 import PropTypes from 'prop-types';
 
 import DollarDisplay from './DollarDisplay';
 import PercentDisplay from './PercentDisplay';
 import UserLink from './UserLink';
+import FullPower from './FullPower';
 import { getUpvotes, sortVotes } from '../../../utils/helpers';
 
 import 'react-rangeslider/lib/index.css';
@@ -115,6 +116,14 @@ class Vote extends Component {
     handleUpvote(author, permlink, weight);
   }
 
+  handleUnvote = (e, author, permlink) => {
+    e.preventDefault();
+
+    const { handleUpvote, user } = this.props;
+
+    handleUpvote(author, permlink, 0);
+  }
+
   /**
    *  Exit out of unvote when already voted.
    */
@@ -167,6 +176,7 @@ class Vote extends Component {
         ratio,
         pid,
         payoutDeclined,
+        percentSD,
       },
       state: {
         unvote,
@@ -275,6 +285,9 @@ class Vote extends Component {
     return (
       <React.Fragment>
         <li className="item payout">
+          {
+            percentSD === 0 && <FullPower />
+          }
           <span>
             <DollarDisplay
               value={payoutValue}
@@ -292,7 +305,7 @@ class Vote extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`${votesCount} upvotes on Steem`}>
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`Remove vote`}>
                   <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}
@@ -302,7 +315,16 @@ class Vote extends Component {
               flowing
               hoverable
             >
-              {'Unvoting in the works.'}
+              <p>
+                {'Are you sure you want to remove'}
+                <br />
+                {'the vote and curation rewards?'}
+              </p>
+              <Button
+                color='green'
+                content={`Confirm unvote.`}
+                onClick={e => this.handleUnvote(e, author, permlink)}
+              />
             </Popup>
             <Popup
               trigger={<span>{` ${votesCount}`}</span>}

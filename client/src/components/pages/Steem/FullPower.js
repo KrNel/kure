@@ -5,7 +5,10 @@ import { Image } from "semantic-ui-react";
 import logo from '../../../images/steemLogo.svg';
 
 const FullPower = () => (
-  <li className="item">{`\u00A0\u2022\u00A0`}<Image inline src={logo} height={18} width={18} title='Payout 100% Steem Power' /></li>
+  <span className='fullPower'>
+    <Image inline src={logo} height={17} width={17} title='Payout 100% Steem Power' />
+    {`\u00A0`}
+  </span>
 )
 
 export default FullPower;

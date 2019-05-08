@@ -8,9 +8,6 @@ import GroupSummary from './GroupSummary';
 import './Groups.css';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
-//TODO: Show list of recent communities added. Option to sort by:
-//New, Popular (Likes), Activity (Recent submissions), Rating
-
 /**
  *  Community page component that displays a variety of data tailored around
  *  the community activity. From recently active, to popular, to newly created.
