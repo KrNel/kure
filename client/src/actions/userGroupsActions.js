@@ -55,9 +55,9 @@ export const getUserGroupsFetch = () => (dispatch, getState) => {
   if (!groups.length || groups[0].text !== "No Groups") return;
 
   return getUserGroups(user, 'all')
-    .then(res => {   
-      const groups = res.data.groups.map((g, i) => {
-        return {key: i, value: g.name, text: g.display}
+    .then(result => {
+      const groups = result.data.groups.map((group, index) => {
+        return {key: index, value: group.name, text: group.display}
       })
       dispatch(userGroupsSuccess(groups));
     }).catch(err => {

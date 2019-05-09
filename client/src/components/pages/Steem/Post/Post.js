@@ -116,10 +116,12 @@ class Post extends Component {
 
     this.redirect = '';
 
+    //if no draft present, get content data from Redux
     if (!hasLength(draft) && draft !== prevProps.draft) {
       getContent(author, permlink);
     }
 
+    //if redirect requested, clear previous post data in Redux
     if (redirect && redirect !== prevProps.redirect) {
       this.redirect = redirect;
       clearPostData();

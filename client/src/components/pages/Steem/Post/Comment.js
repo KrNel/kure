@@ -181,7 +181,7 @@ class Comment extends Component {
       parseFloat(comment.curator_payout_value);
     const totalRShares = comment.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
     const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-
+    
     const replyForm =
       isAuth && showReplyForm
       ? (

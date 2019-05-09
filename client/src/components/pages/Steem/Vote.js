@@ -193,21 +193,12 @@ class Vote extends Component {
       }
     } = this;
 
+    const error = upvotePayload.error;
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
     const votedVoters = upvotePayload.post.active_votes;
-    const isVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(vp => vp.id === pid) : false;
 
     const isThisPost = votedAuthor === author && votedPermlink === permlink;
-
-    let upvoteClasses = '';
-    if (upvotePayload.isUpvoting && isThisPost) {
-      upvoteClasses = 'loading';
-    }else if (isVoted) {
-      upvoteClasses = 'votedOn';
-    }else if (activeVotes.some(v => v.voter === user)) {
-      upvoteClasses = 'votedOn';
-    }
 
     let votesCount = getUpvotes(activeVotes).length;
     let voters = activeVotes;
@@ -218,6 +209,24 @@ class Vote extends Component {
 
     voters = sortVotes(voters, 'rshares').reverse();
 
+    //determine if the Redux state voted posts is the current post, and if the
+    //the voters list contains the current user and is not an unvote (0%)
+    const isNewlyVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(votedPost => votedPost.id === pid) &&  voters.some(vote => vote.voter === user && vote.percent !== 0) : false;
+
+    //determine if post/comment is being or is voted on
+    let voteTitle = 'Upvote post';
+    let upvoteClasses = '';
+    if (upvotePayload.isUpvoting && isThisPost) {
+      upvoteClasses = 'loading';
+    }else if (isNewlyVoted) {
+      upvoteClasses = 'votedOn';
+      voteTitle = 'Unvote post';
+    }else if (voters.some(vote => vote.voter === user && vote.percent !== 0)) {
+      upvoteClasses = 'votedOn';
+      voteTitle = 'Unvote post';
+    }
+
+    //vote count popup to show who voted, the vote value and percentage applied
     let votersPopup = '';
     if (votesCount) {
       votersPopup = voters.slice(0, 14).map(vote => (
@@ -238,11 +247,12 @@ class Vote extends Component {
             </span>
           }
         </div>
-      ));
+      ))
     }else {
       votersPopup = 'No voters yet.';
     }
 
+    //construct the vote slider
     let sliderClass = 'vslider-show';
     let voteSlider = null;
     if (showSlider) {
@@ -313,7 +323,7 @@ class Vote extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={`Remove vote`}>
+                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={voteTitle}>
                   <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}

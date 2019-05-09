@@ -85,6 +85,13 @@ class Posts extends Component {
     };
   }
 
+  /**
+   *  Get the tags from the page URL if they are sent and add them to the
+   *  object's variable `this.tag` for use.
+   *  Set the infinite scroll on the window object.
+   *  Get the posts for the page from redux.
+   *  Get the inital view settings from Redux.
+   */
   componentDidMount() {
     const { initViewSettings, match: { params: { tag } } } = this.props;
     if (tag) {
@@ -96,8 +103,6 @@ class Posts extends Component {
     this.getPosts();
     initViewSettings();
   }
-
-
 
   /**
    *  Need to check if different request for data being done through
@@ -123,7 +128,7 @@ class Posts extends Component {
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = (e) => {
+  handleScroll = () => {
     const {isFetching, hasMore} = this.props;
     if (!isFetching && hasMore) {
       var lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
@@ -180,8 +185,8 @@ class Posts extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
+  toggleView = event => {
+    event.preventDefault();
 
     const { toggleViewSettings } = this.props;
 
@@ -191,8 +196,8 @@ class Posts extends Component {
   /**
    *  Toggle state showDesc to show the description on the page.
    */
-  toggleDescriptions = (e) => {
-    e.preventDefault();
+  toggleDescriptions = event => {
+    event.preventDefault();
     this.setState(prevState => ({ showDesc: !prevState.showDesc }));
   }
 

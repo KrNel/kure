@@ -40,17 +40,15 @@ const PostsSummaryList = (props) => {
     nextPost,
   } = props;
 
-
-
   if (!posts.length && !isFetching) {
     return "No Posts";
   }else {
     return (
       posts.map((postData, index) => {
 
-        const vp = upvotePayload.votedPosts.find(vp => vp.id === (postData.id));
-        if (vp)
-          postData = vp;
+        const votedPost = upvotePayload.votedPosts.find(votedPost => votedPost.id === (postData.id));
+        if (votedPost)
+          postData = votedPost;
 
         const extract = extractContent(postData);
         const post = {...postData, ...extract};

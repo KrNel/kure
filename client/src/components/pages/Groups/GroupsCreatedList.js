@@ -10,7 +10,7 @@ import { ShortNowDate } from '../../../utils/dateFormatting';
  *
  *  @param {array} groups Data for newly created groups
  */
-const GroupsCreated = ({ groups}) => {
+const GroupsCreated = ({ groups }) => {
   if (groups.length) {
     return (
       <React.Fragment>
@@ -26,15 +26,15 @@ const GroupsCreated = ({ groups}) => {
           </Table.Header>
           <Table.Body>
             {
-              groups.map((g, i) => (
-                <Table.Row key={g._id}>
+              groups.map(group => (
+                <Table.Row key={group._id}>
                   <Table.Cell>
-                    <GroupLink display={g.display} name={g.name} />
+                    <GroupLink display={group.display} name={group.name} />
                   </Table.Cell>
-                  <Table.Cell collapsing textAlign='center'>{g.posts}</Table.Cell>
-                  <Table.Cell collapsing textAlign='center'>{g.users}</Table.Cell>
-                  <Table.Cell collapsing textAlign='center'>{<ShortNowDate date={g.created} />}</Table.Cell>
-                  <Table.Cell collapsing textAlign='center'><UserLink user={g.owner} /></Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{group.posts}</Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{group.users}</Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{<ShortNowDate date={group.created} />}</Table.Cell>
+                  <Table.Cell collapsing textAlign='center'><UserLink user={group.owner} /></Table.Cell>
                 </Table.Row>
               ))
             }

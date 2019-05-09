@@ -46,7 +46,6 @@ const GroupSummary = (props) => {
       <GroupsRecent
         groupsActivity={groups.groupsActivity}
       />
-
     );
   }
 
@@ -55,16 +54,16 @@ const GroupSummary = (props) => {
     {name: 'Recently Active', view: 'activity'}
   ];
 
-  const tabViews = tabs.map((t,i) => {
+  const tabViews = tabs.map(tab => {
     let classes = 'tabSelect';
 
-    if (tabSelected === t.view)
+    if (tabSelected === tab.view)
       classes += ' activeTab'
 
     return (
-      <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => tabView(e, t.view)}>
+      <a key={tab.view} href={`/${tab.view}`} className={classes} onClick={event => tabView(event, tab.view)}>
         <Label size='big'>
-          <Header as="h3">{t.name}</Header>
+          <Header as="h3">{tab.name}</Header>
         </Label>
       </a>
     )
@@ -87,8 +86,6 @@ const GroupSummary = (props) => {
             </Grid.Row>
             {selectedTab}
           </div>
-
-
         </Grid.Column>
       </Grid>
     )
