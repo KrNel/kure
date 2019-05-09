@@ -176,6 +176,7 @@ class PostDetails extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      handleResteem,
       resteemedPayload,
     } = this.props;
 
@@ -322,6 +323,7 @@ class PostDetails extends Component {
                                 isPost
                                 onEditPost={this.handleEditPost}
                                 onDeletePost={this.handleDeletePost}
+                                handleResteem={handleResteem}
                                 resteemedPayload={resteemedPayload}
                                 payoutDeclined={payoutDeclined}
                               />

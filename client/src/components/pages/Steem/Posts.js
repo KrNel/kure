@@ -16,6 +16,7 @@ import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
 import ToggleView from '../../kure/ToggleView';
+import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -80,26 +81,31 @@ class Posts extends Component {
     this.tag = '';
 
     this.state = {
-      showGrid: true,
       showDesc: true,
     };
   }
 
   componentDidMount() {
-    const {match: {params: {tag}}} = this.props;
+    const { initViewSettings, match: { params: { tag } } } = this.props;
     if (tag) {
       this.tag = tag;
     }
+
     window.addEventListener("scroll", this.handleScroll);
+
     this.getPosts();
+    initViewSettings();
   }
+
+
 
   /**
    *  Need to check if different request for data being done through
    *  url route. If so, getPosts(), otherwise the page data stays the same.
    */
   componentDidUpdate(prevProps) {
-    const {match} = this.props;
+    const { match } = this.props;
+
     if (match.url !== prevProps.match.url) {
       if (match.params.tag)
         this.tag = match.params.tag;
@@ -137,7 +143,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {getContent, match, page} = this.props;
+    const { getContent, match, page, initViewSettings } = this.props;
 
     let tag = this.tag;
     let filter = this.selectedFilter;
@@ -158,7 +164,7 @@ class Posts extends Component {
       truncate_body: 0,
     };
 
-    getContent(filter, query, page, action)
+    getContent(filter, query, page, action);
   }
 
   /**
@@ -176,7 +182,10 @@ class Posts extends Component {
    */
   toggleView = (e) => {
     e.preventDefault();
-    this.setState(prevState => ({ showGrid: !prevState.showGrid }));
+
+    const { toggleViewSettings } = this.props;
+
+    toggleViewSettings();
   }
 
   /**
@@ -209,9 +218,9 @@ class Posts extends Component {
         page,
         handleResteem,
         resteemedPayload,
+        showGrid,
       },
       state: {
-        showGrid,
         showDesc,
       },
     } = this;
@@ -373,7 +382,10 @@ const mapStateToProps = state => {
       upvotePayload,
     },
     resteem: {
-      resteemedPayload
+      resteemedPayload,
+    },
+    settings: {
+      showGrid,
     },
   } = state;
 
@@ -391,6 +403,7 @@ const mapStateToProps = state => {
     selectedGroup,
     upvotePayload,
     resteemedPayload,
+    showGrid,
   }
 }
 
@@ -423,6 +436,12 @@ const mapDispatchToProps = dispatch => (
     handleResteem: (pid, author, permlink) => (
       dispatch(resteem(pid, author, permlink))
     ),
+    toggleViewSettings: () => (
+      dispatch(changeViewSettings())
+    ),
+    initViewSettings: () => {
+      dispatch(initViewStorage())
+    }
   }
 );
 

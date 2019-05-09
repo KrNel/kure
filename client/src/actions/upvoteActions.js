@@ -54,11 +54,7 @@ export const upvoteSuccess = (author, permlink, post) => ({
  */
 export const upvotePost = (author, permlink, weight) => (dispatch, getState) => {
   dispatch(upvoteStart(author, permlink));
-  const {
-    auth: {
-      user
-    },
-  } = getState();
+  const { user } = getState().auth;
 
   return SteemConnect.vote(user, author, permlink, weight)
     .then(res => {

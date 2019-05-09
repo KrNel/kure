@@ -116,10 +116,18 @@ class Vote extends Component {
     handleUpvote(author, permlink, weight);
   }
 
+  /**
+   *  The unvoting is  handled here with the author and permlink being used to
+   *  send the upvote with the vote weight of 0 to remove the previous vote.
+   *
+   *  @param {element} e Element triggering the event
+   *  @param {string} author Post author
+   *  @param {string} permlink Post permlink
+   */
   handleUnvote = (e, author, permlink) => {
     e.preventDefault();
 
-    const { handleUpvote, user } = this.props;
+    const { handleUpvote } = this.props;
 
     handleUpvote(author, permlink, 0);
   }
@@ -160,7 +168,7 @@ class Vote extends Component {
    *
    *  @param {string} user Voting user
    */
-  getSavedVoteWeight = (user) => (
+  getSavedVoteWeight = user => (
     localStorage.getItem('voteWeight-' + user)
   )
 
