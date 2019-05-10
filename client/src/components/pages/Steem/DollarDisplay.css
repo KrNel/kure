@@ -1,0 +1,6 @@
+@import '../../../variables.css';
+
+.declined {
+  color: var(--soft-grey);
+  text-decoration: line-through;
+}

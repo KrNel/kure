@@ -18,13 +18,13 @@ const MyCommunities = ({ isAuth, myComms }) => (
           ? <li>Must be logged in.</li>
           : myComms.length
             ?
-            myComms.map(c => (
-              <li key={c._id}>
+            myComms.map(comment => (
+              <li key={comment._id}>
                 <div className='leftSidebarList'>
-                  <GroupLink display={c.display} name={c.group} />
+                  <GroupLink display={comment.display} name={comment.group} />
                 </div>
-                <div className='rightSidebarList meta' title={standard(c.updated)}>
-                  <ShortNowDate date={c.updated} />
+                <div className='rightSidebarList meta' title={standard(comment.updated)}>
+                  <ShortNowDate date={comment.updated} />
                 </div>
                 <div className='clear' />
               </li>

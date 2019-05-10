@@ -30,23 +30,23 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
       </Table.Header>
       <Table.Body>
         {
-          users.map((u, i) => {
-            const role = roles.kGroupsRoles[u.access];
+          users.map(user => {
+            const role = roles.kGroupsRoles[user.access];
             return (
-              <Table.Row key={u._id}>
+              <Table.Row key={user._id}>
                 <Table.Cell>
-                  <UserLink user={u.user} />
+                  <UserLink user={user.user} />
                 </Table.Cell>
                 <Table.Cell collapsing textAlign='center'>{role}</Table.Cell>
                 <Table.Cell collapsing textAlign='center'>
-                  {moment.utc(u.added_on).fromNow()}
+                  {moment.utc(user.added_on).fromNow()}
                 </Table.Cell>
                 {
                   (access <= 0)
                   && (
                     <Table.Cell collapsing textAlign='center'>
                       {
-                        (deletingUser === u.user)
+                        (deletingUser === user.user)
                           ? <Dimmer inverted active><Loader /></Dimmer>
                           : ''
                       }
@@ -54,9 +54,9 @@ const GroupUsers = ({users, showModal, deletingUser, user, access}) => (
                         //if user listed is owner, deny deleted
                         //if user logged in is admin, allow delete
                         access < roles.kGroupsRolesRev['Moderator']
-                        ? (u.access !== 0 && access < u.access)
+                        ? (user.access !== 0 && access < user.access)
                           ?
-                            <a href={`/users/delete/${u.user}/`} onClick={e => showModal(e, {user: u.user})}><Icon name='delete' color='red' /></a>
+                            <a href={`/users/delete/${user.user}/`} onClick={event => showModal(event, {user: user.user})}><Icon name='delete' color='red' /></a>
                           : ''
                         : ''
                       }

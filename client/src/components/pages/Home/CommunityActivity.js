@@ -15,26 +15,26 @@ const CommunityActivity = ({groups}) => (
     {
       groups.length
       ?
-        groups.map(g => (
-          <Grid.Column key={g.name} width={8}>
+        groups.map(group => (
+          <Grid.Column key={group.name} width={8}>
             <Segment.Group className='box'>
               <Segment>
                 <Label attached='top' className='head'>
                   <Header as='h3'>
-                    <GroupLink display={g.display} name={g.name} />
+                    <GroupLink display={group.display} name={group.name} />
                   </Header>
                 </Label>
                 <ul className='custom-list'>
                   {
-                    g.kposts.length
-                    ? g.kposts.map(p => (
-                      <li key={p._id} className='ellipsis'>
+                    group.kposts.length
+                    ? group.kposts.map(post => (
+                      <li key={post._id} className='ellipsis'>
                         {`\u2022\u00A0`}
                         <TitleLink
-                          title={p.st_title}
-                          category={p.st_category}
-                          author={p.st_author}
-                          permlink={p.st_permlink}
+                          title={post.st_title}
+                          category={post.st_category}
+                          author={post.st_author}
+                          permlink={post.st_permlink}
                         />
                       </li>
                     )) : 'No posts.'

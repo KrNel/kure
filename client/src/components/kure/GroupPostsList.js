@@ -8,7 +8,7 @@ import TitleLink from '../pages/Steem/TitleLink';
 import UserLink from '../pages/Steem/UserLink';
 
 /**
- *  Displays the post data that belong to a commmunity group. Access rank/role
+ *  Displays the post data that belong to a commmunity groupost. Access rank/role
  *  is also displayed as a string based on the access number. The access
  *  determines if the Delete option appears to allow deleting a post.
  */
@@ -38,38 +38,38 @@ const GroupPostsList = (props) => {
       </Table.Header>
       <Table.Body>
         {
-        posts.map((p, i) => (
-          <Table.Row key={p._id}>
+        posts.map(post => (
+          <Table.Row key={post._id}>
             <Table.Cell>
               <TitleLink
-                title={p.st_title}
-                category={p.st_category}
-                author={p.st_author}
-                permlink={p.st_permlink}
+                title={post.st_title}
+                category={post.st_category}
+                author={post.st_author}
+                permlink={post.st_permlink}
               />
             </Table.Cell>
-            <Table.Cell collapsing textAlign='center'>{p.likes}</Table.Cell>
-            <Table.Cell collapsing textAlign='center'>{p.views}</Table.Cell>
-            <Table.Cell collapsing textAlign='center'>{p.rating}</Table.Cell>
-            <Table.Cell collapsing textAlign='center'><UserLink user={p.added_by} /></Table.Cell>
-            <Table.Cell collapsing textAlign='center'>{moment.utc(p.created).fromNow()}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'>{post.likes}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'>{post.views}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'>{post.rating}</Table.Cell>
+            <Table.Cell collapsing textAlign='center'><UserLink user={post.added_by} /></Table.Cell>
+            <Table.Cell collapsing textAlign='center'>{moment.utc(post.created).fromNow()}</Table.Cell>
             {
               (access <= 0)
               && (
                 <Table.Cell collapsing textAlign='center'>
                   {
-                    (deletingPost === p.st_permlink)
+                    (deletingPost === post.st_permlink)
                       ? <Dimmer inverted active><Loader /></Dimmer>
                       : ''
                   }
                   {
                     //if logged in user added post, or is mod or above
                     //can delete the post
-                    //(user === p.added_by)
+                    //(user === post.added_by)
                     //?
                     access < roles.kGroupsRolesRev['Member']
                     && (
-                      <a href={'/post/delete/'+p.st_author+'/'+p.st_permlink} onClick={e => showModal(e, {author: p.st_author, post: p.st_permlink})}>
+                      <a href={'/post/delete/'+post.st_author+'/'+post.st_permlink} onClick={event => showModal(event, {author: post.st_author, post: post.st_permlink})}>
                         <Icon name='delete' color='red' />
                       </a>
                     )

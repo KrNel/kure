@@ -36,8 +36,8 @@ export const addPostExists = (postExists) => ({
  *  @param {object} modalData Post and user data for the modal
  *  @return {object} The action data
  */
-export const showModal = (e, type, data) => {
-  e.preventDefault();
+export const showModal = (event, type, data) => {
+  event.preventDefault();
   return ({
     type: MODAL_SHOW,
     addPostData: data,
@@ -58,7 +58,7 @@ export const onModalCloseAddPost = () => ({
  *  @param {string} value Value of the element triggering the event
  *  @return {object} The action data
  */
-export const handleGroupSelect = (value) => ({
+export const handleGroupSelect = value => ({
   type: GROUP_SELECT,
   selectedGroup: value,
 });
@@ -70,8 +70,8 @@ export const handleGroupSelect = (value) => ({
  *  @param {event} e Event triggered by element to handle
  *  @returns {function} Dispatches returned action object
  */
-export const handleModalClickAddPost = (e) => dispatch => {
-  const confirm = e.target.dataset.confirm;
+export const handleModalClickAddPost = event => dispatch => {
+  const confirm = event.target.dataset.confirm;
   if (confirm === 'true')
     dispatch(addPostFetch());
   else

@@ -5,7 +5,7 @@ import {
 } from '../actions/userGroupsActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for getting a user's group data from KURE.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

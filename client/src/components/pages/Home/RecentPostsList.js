@@ -30,18 +30,18 @@ const RecentPostsTable = ({posts, isAuth}) => {
             </Table.Header>
             <Table.Body>
               {
-              posts.map((p, i) => (
-                <Table.Row key={p._id} className='infiniteEl'>
+              posts.map(post => (
+                <Table.Row key={post._id} className='infiniteEl'>
                   <Table.Cell>
                     <TitleLink
-                      title={p.st_title}
-                      category={p.st_category}
-                      author={p.st_author}
-                      permlink={p.st_permlink}
+                      title={post.st_title}
+                      category={post.st_category}
+                      author={post.st_author}
+                      permlink={post.st_permlink}
                     />
                   </Table.Cell>
                   <Table.Cell collapsing textAlign='center'>
-                    <GroupLink display={p.display} name={p.group} />
+                    <GroupLink display={post.display} name={post.group} />
                   </Table.Cell>
                 </Table.Row>
               ))

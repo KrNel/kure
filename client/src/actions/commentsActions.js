@@ -93,21 +93,21 @@ export const getPostComments = (author, permlink) => (dispatch, getState) => {
  */
 const postCommentsRecursive = (author, permlink) => {
   return client.database.call('get_content_replies', [author, permlink])
-    .then(replies => Promise.all(replies.map(r => {
+    .then(replies => Promise.all(replies.map(reply => {
       client.database
-        .call('get_active_votes', [r.author, r.permlink])
-        .then(av => {
-          r.active_votes = av;
-          return r;
+        .call('get_active_votes', [reply.author, reply.permlink])
+        .then(votes => {
+          reply.active_votes = votes;
+          return reply;
         });
-      if (r.children > 0) {
-        return postCommentsRecursive(r.author, r.permlink)
+      if (reply.children > 0) {
+        return postCommentsRecursive(reply.author, reply.permlink)
           .then(children => {
-            r.replies = children;
-            return r;
+            reply.replies = children;
+            return reply;
           })
       }else {
-        return r;
+        return reply;
       }
     })))
 }
@@ -135,7 +135,7 @@ export const deleteComment = (author, permlink, commentPayload = {}) => (dispatc
         // first, if new comments were added, check those for the comment
         // to delete
         for (let key in commentPayload) {
-          newCommentPayload[key] = commentPayload[key].filter(c => c.permlink !== permlink);
+          newCommentPayload[key] = commentPayload[key].filter(comment => comment.permlink !== permlink);
         }
 
         // if no new comment was deleted, then interate over the existing
@@ -159,15 +159,15 @@ export const deleteComment = (author, permlink, commentPayload = {}) => (dispatc
  *  @returns {function} Dispatches returned action object
  */
 const deleteRecursive = (permlink, replies = {}) => {
-  return Promise.all(replies.filter(r => {
-    if (r.children > 0) {
-      return deleteRecursive(permlink, r.replies)
+  return Promise.all(replies.filter(reply => {
+    if (reply.children > 0) {
+      return deleteRecursive(permlink, reply.replies)
         .then(children => {
-          r.replies = children;
-          return r;
+          reply.replies = children;
+          return reply;
         })
     }else {
-      return r.permlink !== permlink;
+      return reply.permlink !== permlink;
     }
   }))
 }

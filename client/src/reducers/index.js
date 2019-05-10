@@ -13,6 +13,7 @@ import { sendPost } from './sendPostReducer';
 import { kurated } from './kuratedReducer';
 import { communities } from './communitiesReducer';
 import { resteem } from './resteemReducer';
+import { settings } from './settingsReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   kurated,
   communities,
   resteem,
+  settings,
 });
 
 export default rootReducer;

@@ -7,7 +7,9 @@ import {
 } from '../actions/sendPostActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for sending a post to Steem. Determines if a post is being
+ *  sent, updated, and which one it is. A draft object is kept for writing or
+ *  updating a post.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

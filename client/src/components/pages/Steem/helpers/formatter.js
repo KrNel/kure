@@ -6,7 +6,7 @@
 export function jsonParse(input) {
   try {
     return JSON.parse(input);
-  } catch (e) {
+  } catch (err) {
     return null;
   }
 }

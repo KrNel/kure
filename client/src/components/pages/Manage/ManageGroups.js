@@ -34,7 +34,7 @@ class ManageGroups extends Component {
     section: PropTypes.string.isRequired,
     headerText: PropTypes.string.isRequired,
     match: PropTypes.shape(PropTypes.object.isRequired),
-    groups: PropTypes.shape(PropTypes.object.isRequired),
+    groups: PropTypes.arrayOf(PropTypes.object.isRequired),
     areGroupsLoading: PropTypes.bool,
     onChangeOwnership: PropTypes.func.isRequired,
   };
@@ -99,8 +99,8 @@ class ManageGroups extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {object} modalData Group data for the modal
    */
-  showModal = (e, modalData) => {
-    e.preventDefault()
+  showModal = (event, modalData) => {
+    event.preventDefault()
     this.setState({ modalOpen: true, modalData });
   }
 
@@ -115,8 +115,8 @@ class ManageGroups extends Component {
    *
    *  @param {event} e Event triggered by element to handle
    */
-  handleModalClick = (e) => {
-    const confirm = e.target.dataset.confirm;
+  handleModalClick = (event) => {
+    const confirm = event.target.dataset.confirm;
     if (confirm === 'true') {
       this.onModalClose();
       const {modalData} = this.state;
@@ -134,7 +134,7 @@ class ManageGroups extends Component {
    *  @param {string} name Name of the element triggering the event
    *  @param {string} value Value of the element triggering the event
    */
-  handleChange = (e, { name, value }) => {
+  handleChange = (event, { name, value }) => {
     this.setState({
       [name]: value,
       groupExists: false,
@@ -237,7 +237,7 @@ class ManageGroups extends Component {
     .then((res) => {
       if (res.data) {
         const {groups} = this.state;
-        const newGroup = groups.filter(g => g.name !== group);
+        const newGroup = groups.filter(group => group.name !== group);
         this.setState({
           groups: newGroup,
           manageGroup: {},
@@ -256,8 +256,8 @@ class ManageGroups extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} group Group name to get data Form
    */
-  handleManageGroup = (e, group) => {
-    e.preventDefault();
+  handleManageGroup = (event, group) => {
+    event.preventDefault();
     this.setState({
       isGroupLoading: true,
       selectedGroup: group
@@ -291,14 +291,14 @@ class ManageGroups extends Component {
    */
   onPostUpdate = (groupToUpdate, action) => {
     const { groups } = this.state;
-    const newGroups = groups.map(g => {
-      if (groupToUpdate === g.name) {
-        g = {
-          ...g,
-          posts: g.posts+(action === 'inc' ? 1 : -1)
+    const newGroups = groups.map(group => {
+      if (groupToUpdate === group.name) {
+        group = {
+          ...group,
+          posts: group.posts+(action === 'inc' ? 1 : -1)
         };
       }
-      return g;
+      return group;
     });
     this.setState({groups: newGroups});
   }
@@ -311,14 +311,14 @@ class ManageGroups extends Component {
    */
   onUserUpdate = (groupToUpdate, action) => {
     const { groups } = this.state;
-    const newGroups = groups.map(g => {
-      if (groupToUpdate === g.name) {
-        g = {
-          ...g,
-          users: g.users+(action === 'inc' ? 1 : -1)
+    const newGroups = groups.map(group => {
+      if (groupToUpdate === group.name) {
+        group = {
+          ...group,
+          users: group.users+(action === 'inc' ? 1 : -1)
         };
       }
-      return g;
+      return group;
     });
     this.setState({groups: newGroups});
   }
@@ -331,14 +331,14 @@ class ManageGroups extends Component {
    */
   onJoinRequestUpdate = (groupToUpdate, action) => {
     const { groups } = this.state;
-    const newGroups = groups.map(g => {
-      if (groupToUpdate === g.name) {
-        g = {
-          ...g,
-          joinRequests: g.joinRequests+(action === 'inc' ? 1 : -1)
+    const newGroups = groups.map(group => {
+      if (groupToUpdate === group.name) {
+        group = {
+          ...group,
+          joinRequests: group.joinRequests+(action === 'inc' ? 1 : -1)
         };
       }
-      return g;
+      return group;
     });
     this.setState({ groups: newGroups });
   }

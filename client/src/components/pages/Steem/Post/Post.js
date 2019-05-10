@@ -116,10 +116,12 @@ class Post extends Component {
 
     this.redirect = '';
 
+    //if no draft present, get content data from Redux
     if (!hasLength(draft) && draft !== prevProps.draft) {
       getContent(author, permlink);
     }
 
+    //if redirect requested, clear previous post data in Redux
     if (redirect && redirect !== prevProps.redirect) {
       this.redirect = redirect;
       clearPostData();
@@ -296,11 +298,11 @@ const mapDispatchToProps = dispatch => (
     getContent: (author, permlink) => (
       dispatch(getDetailsContent(author, permlink))
     ),
-    showModal: (e, type, data) => (
-      dispatch(addPostActions.showModal(e, type, data))
+    showModal: (event, type, data) => (
+      dispatch(addPostActions.showModal(event, type, data))
     ),
-    handleModalClickAddPost: (e) => (
-      dispatch(addPostActions.handleModalClickAddPost(e))
+    handleModalClickAddPost: event => (
+      dispatch(addPostActions.handleModalClickAddPost(event))
     ),
     onModalCloseAddPost: () => (
       dispatch(addPostActions.onModalCloseAddPost())

@@ -18,18 +18,18 @@ const MySubmissions = ({ isAuth, mySubs }) => (
           ? <li>Must be logged in.</li>
           : mySubs.length
             ?
-            mySubs.map(p => (
-              <li key={p._id}>
+            mySubs.map(post => (
+              <li key={post._id}>
                 <div className='leftSidebarList ellipsis'>
                   <TitleLink
-                    title={p.st_title}
-                    category={p.st_category}
-                    author={p.st_author}
-                    permlink={p.st_permlink}
+                    title={post.st_title}
+                    category={post.st_category}
+                    author={post.st_author}
+                    permlink={post.st_permlink}
                   />
                 </div>
-                <div className='rightSidebarList meta' title={standard(p.created)}>
-                  <ShortNowDate date={p.created} />
+                <div className='rightSidebarList meta' title={standard(post.created)}>
+                  <ShortNowDate date={post.created} />
                 </div>
                 <div className='clear' />
               </li>

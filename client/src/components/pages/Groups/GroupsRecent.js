@@ -17,29 +17,29 @@ const GroupsRecent = ({ groupsActivity }) => {
       <React.Fragment>
         <Grid columns={1} stackable id='GroupPageRecent'>
           {
-            groupsActivity.map((g,i) => (
-              <Grid.Column key={g._id} width={8}>
+            groupsActivity.map((group,i) => (
+              <Grid.Column key={group._id} width={8}>
                 <Segment.Group className='box'>
                   <Segment>
                     <Label attached='top' className='head'>
                       <div className='left'>
                         <Header as='h3'>
-                          <GroupLink display={g.display} name={g.name} />
+                          <GroupLink display={group.display} name={group.name} />
                         </Header>
                       </div>
                       <div className='clear' />
                     </Label>
                     <ul className='custom-list'>
                       {
-                        g.kposts.length
-                        ? g.kposts.map(p => (
-                          <li key={p._id} className='ellipsis'>
+                        group.kposts.length
+                        ? group.kposts.map(post => (
+                          <li key={post._id} className='ellipsis'>
                             {`\u2022\u00A0`}
                             <TitleLink
-                              title={p.st_title}
-                              category={p.st_category}
-                              author={p.st_author}
-                              permlink={p.st_permlink}
+                              title={post.st_title}
+                              category={post.st_category}
+                              author={post.st_author}
+                              permlink={post.st_permlink}
                             />
                           </li>
                         )) : 'No posts.'

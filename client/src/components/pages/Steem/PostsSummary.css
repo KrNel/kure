@@ -55,103 +55,42 @@
 .infSummary .postBox {
   position: relative;
   width: 100%;
-}
-
-.infSummary .cropImage {
-  min-height: 200px;
-  max-height: 250px;
+  border-radius: 6px !important;
+  -webkit-box-shadow: 0px 1px 2px 0 var(--soft-grey) !important;
+  box-shadow: 0px 2px 5px 1px var(--soft-grey) !important;
+  border: 1px solid var(--main-border-light) !important;
   overflow: hidden;
+  padding: 0 0.8rem 0.8rem 0.8rem;
 }
 
-.infSummary .overlayImage {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background: rgb(0, 0, 0);
-  background: rgba(0, 0, 0, 0.7);
-  color: #f1f1f1;
-  opacity:1;
-  font-size: 1.1rem;
-  padding: 0.8rem;
-  text-overflow: hidden;
-  white-space: wrap;
-  overflow: hidden;
-  min-height: 0%;
-  max-height: 100%;
+.infSummary .postBox .cropImage {
+  margin: 0 -0.8rem 0.5rem -0.8rem;
 }
 
-.infSummary .overlayImage .recentTitle {
-  font-size: 1.5rem;
-  line-height: 1.6rem;
-  position: relative;
-  display: block;
-  color: #838485;
-  max-width: 32rem;
-  min-width: 0rem;
-  min-height: 0%;
-  max-height: 100%;
-  overflow: hidden;
-  white-space: normal;
-  margin-bottom:0.5rem;
+.infSummary .postBox .title {
+  font-size: 1.3rem;
+  line-height: 1.5rem;
+  margin: 0.5rem 0;
+  font-weight: bold;
 }
 
-.infSummary .overlayImage .recentTitle .titleContent {
-  position: relative;
-  display: block;
-  max-height: 6.2rem;
+.infSummary .postBox .post-actions {
+  margin-top: 1rem;
 }
 
-.infSummary .overlayImage a {
-  color: #f1f1f1;
-}
-
-.infSummary .overlayImage a:hover {
-  color: var(--bright-medium-blue);
-}
-
-.postBox .info .author,
-.postBox .info .tag,
-.postBox .info .timeago,
-.postBox .post-actions .payout {
-  color: #d1d1d1;
-}
-
-.postBox .post-actions, .postBox .info {
-  margin-top: 0.5rem;
-}
-
-.postBox .timeago {
-  text-align: right;
-}
-
-.postBox ul.info {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.descriptionBox {
-  border-radius: 10px !important;
-  -webkit-box-shadow: 0px 1px 2px 0 var(--main-border) !important;
-  box-shadow: 0px 1px 2px 0 var(--main-border) !important;
-  border: 1px solid var(--main-border) !important;
-  overflow: hidden;
-}
-
-.infSummary .description {
+.infSummary .postBox .description {
   font-size: 1.2rem;
-  padding: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
-.infSummary .description a {
+.infSummary .postBox .title a, .infSummary .postBox .description a {
   color: var(--charcoal-black);
 }
-.infSummary .description a:hover {
+
+.infSummary .postBox .title a:hover, .infSummary .postBox .description a:hover {
   color: var(--bright-medium-blue);
 }
 
-.descriptionBox .resteemers {
-  padding: 0.8rem 0.8rem 0 0.8rem;
+.postBox .resteemers {
+  padding: 0.8rem 0;
 }

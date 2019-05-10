@@ -19,7 +19,7 @@ import ToggleView from '../../kure/ToggleView';
  *
  *  Data is fetched from the DB then processed to be added to specific views.
  *  The Posts and Members are toggled for view selection, and the Posts can
- *  further be toggled to show as a grid or list.
+ *  further be toggled to show as a grid or listab.
  */
 class GroupDetails extends Component {
 
@@ -58,7 +58,7 @@ class GroupDetails extends Component {
   }
 
   /**
-   *  Fetch post detail from Steem blockchain on component mount.
+   *  Fetch post detail from Steem blockchain on component mountab.
    */
   componentDidMount() {
 
@@ -68,7 +68,7 @@ class GroupDetails extends Component {
   }
 
   /**
-   *  Remove scoll window listener and clear the group redux content.
+   *  Remove scoll window listener and clear the group redux contentab.
    */
   componentWillUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -81,7 +81,7 @@ class GroupDetails extends Component {
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = (e) => {
+  handleScroll = () => {
     const {
       isFetching,
       groupData: {
@@ -128,11 +128,11 @@ class GroupDetails extends Component {
    *  When user requests to join a community, send the request to DB
    *  for processing.
    *
-   *  @param {element} e Element onClick comes from
+   *  @param {element} event Element onClick comes from
    *  @param {string} group Group being requested to join
    */
-  onJoinGroup = (e, group) => {
-    e.preventDefault();
+  onJoinGroup = (event, group) => {
+    event.preventDefault();
 
     const { joinGroupRequest } = this.props;
     joinGroupRequest(group);
@@ -141,8 +141,8 @@ class GroupDetails extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
+  toggleView = event => {
+    event.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }
@@ -150,8 +150,8 @@ class GroupDetails extends Component {
   /**
    *  Update state with the selected page section to view.
    */
-  tabView = (e, selected) => {
-    e.preventDefault();
+  tabView = (event, selected) => {
+    event.preventDefault();
     this.setState({ tabSelected: selected });
   }
 
@@ -204,16 +204,16 @@ class GroupDetails extends Component {
       {name: 'Members', view: 'users'}
     ];
 
-    const tabViews = tabs.map((t,i) => {
+    const tabViews = tabs.map(tab => {
       let classes = 'tabSelect';
 
-      if (tabSelected === t.view)
+      if (tabSelected === tab.view)
         classes += ' activeTab'
 
       return (
-        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+        <a key={tab.view} href={`/${tab.view}`} className={classes} onClick={event => this.tabView(event, tab.view)}>
           <Label size='big'>
-            <Header as="h3">{t.name}</Header>
+            <Header as="h3">{tab.name}</Header>
           </Label>
         </a>
       )
@@ -269,7 +269,7 @@ class GroupDetails extends Component {
         : <Loading />
       : (
         <Segment>
-          {`That group doesn't exist.`}
+          {`That group doesn't existab.`}
         </Segment>
       )
     )

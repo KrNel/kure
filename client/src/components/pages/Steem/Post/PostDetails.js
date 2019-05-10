@@ -51,6 +51,7 @@ class PostDetails extends Component {
     clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
     clearNewComments: PropTypes.func,
+    handleResteem: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
@@ -68,6 +69,7 @@ class PostDetails extends Component {
     clearComments: () => {},
     isDeleting: false,
     clearNewComments: () => {},
+    handleResteem: () => {},
     resteemedPayload: {},
   }
 
@@ -100,7 +102,7 @@ class PostDetails extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} value Value of the element triggering the event
    */
-   handleSortChange = (e, {value}) => {
+   handleSortChange = (event, {value}) => {
      this.setState({
        sortBy: value,
       });
@@ -124,8 +126,8 @@ class PostDetails extends Component {
     *  @param {string} author Author of post
     *  @param {string} permlink Permlink of post
     */
-   handleDeletePost = (e, author, permlink) => {
-     e.preventDefault();
+   handleDeletePost = (event, author, permlink) => {
+     event.preventDefault();
      const { sendDeletePost } = this.props;
      sendDeletePost(author, permlink);
    }
@@ -176,6 +178,7 @@ class PostDetails extends Component {
       commentPayload,
       isUpdating,
       isDeleting,
+      handleResteem,
       resteemedPayload,
     } = this.props;
 
@@ -209,6 +212,8 @@ class PostDetails extends Component {
     const postMetaData = jsonParse(post.json_metadata);
     const postMetaImage = postMetaData && postMetaData.image && postMetaData.image[0];
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
+
+    const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
 
     const body = post.body || '';
 
@@ -264,6 +269,7 @@ class PostDetails extends Component {
                                   category={category}
                                   created={created}
                                   permlink={permlink}
+                                  percentSD={post.percent_steem_dollars}
                                 />
                                 <hr />
                                 {this.renderDtubeEmbedPlayer(post)}
@@ -319,7 +325,9 @@ class PostDetails extends Component {
                                 isPost
                                 onEditPost={this.handleEditPost}
                                 onDeletePost={this.handleDeletePost}
+                                handleResteem={handleResteem}
                                 resteemedPayload={resteemedPayload}
+                                payoutDeclined={payoutDeclined}
                               />
                             </div>
                             <hr />

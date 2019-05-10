@@ -75,7 +75,7 @@ class Home extends Component {
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = (e) => {
+  handleScroll = () => {
     const { isFetching, hasMore } = this.props;
     const { tabSelected } = this.state;
 
@@ -107,8 +107,8 @@ class Home extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
+  toggleView = event => {
+    event.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }
@@ -116,8 +116,8 @@ class Home extends Component {
   /**
    *  Update state with the selected page section to view.
    */
-  tabView = (e, selected) => {
-    e.preventDefault();
+  tabView = (event, selected) => {
+    event.preventDefault();
     this.setState({ tabSelected: selected });
   }
 
@@ -143,16 +143,16 @@ class Home extends Component {
       {name: 'Community Activity', view: 'activity'}
     ];
 
-    const tabViews = tabs.map((t,i) => {
+    const tabViews = tabs.map(tab => {
       let classes = 'tabSelect';
 
-      if (tabSelected === t.view)
+      if (tabSelected === tab.view)
         classes += ' activeTab'
 
       return (
-        <a key={t.view} href={`/${t.view}`} className={classes} onClick={(e) => this.tabView(e, t.view)}>
+        <a key={tab.view} href={`/${tab.view}`} className={classes} onClick={event => this.tabView(event, tab.view)}>
           <Label size='big'>
-            <Header as="h3">{t.name}</Header>
+            <Header as="h3">{tab.name}</Header>
           </Label>
         </a>
       )

@@ -7,7 +7,8 @@ import {
 } from '../actions/detailsPostActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for single post details Steem data. Determines if a post
+ *  is being fetched, or deleted, and stores the post in Redux state.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

@@ -12,10 +12,14 @@
 
 .post-actions .item {
   line-height: 1rem;
-  margin: 0.2rem 0.8rem 0 0;
+  margin: 0.2rem 0.7rem 0 0;
   list-style-position: inside;
   border-left: 1px solid var(--main-border-light);
   padding-left: 0.7rem;
+}
+
+.post-actions .item.payout > span > span {
+  line-height: 1.2rem;
 }
 
 .post-actions .item:first-child {
@@ -73,6 +77,10 @@
 
 .chevron.up.circle.votedOn {
   color: var(--light-blue);
+}
+
+.chevron.up.circle.voteRemoved {
+  color: var(--soft-black);
 }
 
 .item.reply {

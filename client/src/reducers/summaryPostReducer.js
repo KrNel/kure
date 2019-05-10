@@ -5,7 +5,9 @@ import {
 } from '../actions/summaryPostActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for post summaries from Steem. Determinse if posts are
+ *  being fetched, what the previous page was, is there are more posts to get,
+ *  and the last authors and permlink to start to fetch new data from.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched

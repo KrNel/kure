@@ -83,8 +83,8 @@ const Comments = (props) => {
     isDeleting,
   } = props;
 
-  const handleDeleteComment = (e, author, permlink, commentPayload) => {
-    e.preventDefault();
+  const handleDeleteComment = (event, author, permlink, commentPayload) => {
+    event.preventDefault();
     const { sendDeleteComment } = props;
     sendDeleteComment(author, permlink, commentPayload);
   }

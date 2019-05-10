@@ -42,6 +42,8 @@ class PostActions extends Component {
     handleResteem: PropTypes.func,
     pageOwner: PropTypes.string,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
+    payoutDeclined: PropTypes.bool,
+    percentSD: PropTypes.number,
   };
 
   static defaultProps = {
@@ -65,17 +67,19 @@ class PostActions extends Component {
     handleResteem: () => {},
     pageOwner: '',
     resteemedPayload: {},
+    payoutDeclined: false,
+    percentSD: 10000,
   };
 
 
-  resteem = (e) => {
-    e.preventDefault();
+  resteem = event => {
+    event.preventDefault();
     const { pid, author, permlink, handleResteem } = this.props;
     handleResteem(pid, author, permlink);
   }
 
-  flag = (e) => {
-    e.preventDefault();
+  flag = event => {
+    event.preventDefault();
   }
 
   render() {
@@ -100,6 +104,8 @@ class PostActions extends Component {
         onDeletePost,
         resteemedPayload,
         pageOwner,
+        payoutDeclined,
+        percentSD,
       },
     } = this;
 
@@ -117,6 +123,7 @@ class PostActions extends Component {
     return (
       <React.Fragment>
         <ul className="meta">
+
           <Vote
             activeVotes={activeVotes}
             author={author}
@@ -127,6 +134,8 @@ class PostActions extends Component {
             upvotePayload={upvotePayload}
             ratio={ratio}
             pid={pid}
+            payoutDeclined={payoutDeclined}
+            percentSD={percentSD}
           />
 
           <li className="item">
@@ -143,7 +152,7 @@ class PostActions extends Component {
                 <Popup
                   trigger={(
                     <span>
-                      <a href="/resteem" onClick={e => e.preventDefault()} title="Resteem">
+                      <a href="/resteem" onClick={event => event.preventDefault()} title="Resteem">
                         <Icon name='retweet' size='large' />
                       </a>
                     </span>
@@ -162,15 +171,13 @@ class PostActions extends Component {
                   />
                 </Popup>
               </li>
-
-
             )
           }
           {
             user && (
               <li className="item disabled">
                 <span>
-                  <a href="/flag" onClick={(e) => this.flag(e)} title="Flag this post on Steem">
+                  <a href="/flag" onClick={event => this.flag(event)} title="Flag this post on Steem">
                     <Icon name='flag outline' size='large' />
                   </a>
                 </span>
@@ -190,7 +197,7 @@ class PostActions extends Component {
                       <Button
                         animated='vertical'
                         color='blue'
-                        onClick={e => onEditPost(e)}
+                        onClick={event => onEditPost(event)}
                         title="Edit post"
                         className='actionEdit'
                       >
@@ -224,7 +231,7 @@ class PostActions extends Component {
                             <Button
                               color='red'
                               content='Confirm delete.'
-                              onClick={e => onDeletePost(e, author, permlink)}
+                              onClick={event => onDeletePost(event, author, permlink)}
                             />
                           </Popup>
                         )
@@ -235,7 +242,7 @@ class PostActions extends Component {
                 <Button
                   animated='vertical'
                   color='blue'
-                  onClick={e => showModal(e, 'addPost', {author, category, permlink, title, image})}
+                  onClick={event => showModal(event, 'addPost', {author, category, permlink, title, image})}
                   title="Add to a community"
                   className='actionAdd'
                 >

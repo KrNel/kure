@@ -13,14 +13,23 @@ import { sumPayout } from '../../../utils/helpers';
 import Resteemers from './Resteemers';
 
 /**
- *  Taking post data and extracting what is required to display post summaries
- *  in a list  format.
+*  Post data is received from Steem for display in a list style like Steemit.
+*  Each post has data extracted from it to dispaly on the page view. Redux
+*  state data is also used for upvote and resteem actions.
  *
  *  @param {array} posts All the posts fetched
- *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
- *  @param {function} showModal Parent function to show the add post modal
+ *  @param {function} showModal To show the add post modal
+ *  @param {string} user Logged in user
+ *  @param {function} handleUpvote Send upvotes to Steem
+ *  @param {object} upvotePayload Results of upvote containing vote data
+ *  @param {boolean} isFetching Determines if data is being fetched
+ *  @param {function} handleResteem Send a resteem to Steem
+ *  @param {string} page The current page
+ *  @param {string} pageOwner The user name of blog or feed page
+ *  @param {object} resteemedPayload Results of resteem with resteem post data
+ *  @param {boolean} showDesc If the description if to be shown
  */
-const PostsSummary = (props) => {
+const PostsSummaryList = (props) => {
 
   const {
     posts,
@@ -35,28 +44,18 @@ const PostsSummary = (props) => {
     resteemedPayload,
   } = props;
 
-  let {
-    nextPost,
-  } = props;
-
-
-
   if (!posts.length && !isFetching) {
     return "No Posts";
   }else {
     return (
-      posts.map((p, i) => {
+      posts.map((postData, index) => {
 
-        if (nextPost) {
-					return false;
-				}
+        const votedPost = upvotePayload.votedPosts.find(votedPost => votedPost.id === (postData.id));
+        if (votedPost)
+          postData = votedPost;
 
-        const vp = upvotePayload.votedPosts.find(vp => vp.id === p.id);
-        if (vp)
-          p = vp;
-
-        const extract = extractContent(p);
-        const post = {...p, ...extract};
+        const extract = extractContent(postData);
+        const post = {...postData, ...extract};
 
         const title = post.title;
         const author = post.author;
@@ -68,13 +67,11 @@ const PostsSummary = (props) => {
         const created = `${post.created}Z`;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
-
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-
         const pid = parseInt(post.id);
-
+        const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
         const reblogged_by = post.reblogged_by;
 
         let isResteemed = false;
@@ -96,7 +93,7 @@ const PostsSummary = (props) => {
           )
         }
 
-        const key = p+i;
+        const key = pid+index;
 
         return (
           <div key={key} className='infSummary postSummary'>
@@ -163,6 +160,8 @@ const PostsSummary = (props) => {
                     isResteemedByUser={isResteemedByUser}
                     resteemedPayload={resteemedPayload}
                     pageOwner={pageOwner}
+                    payoutDeclined={payoutDeclined}
+                    percentSD={post.percent_steem_dollars}
                   />
                 </div>
               </div>
@@ -175,7 +174,7 @@ const PostsSummary = (props) => {
   }
 }
 
-PostsSummary.propTypes = {
+PostsSummaryList.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   showModal: PropTypes.func,
   user: PropTypes.string,
@@ -185,7 +184,7 @@ PostsSummary.propTypes = {
   handleResteem: PropTypes.func,
 };
 
-PostsSummary.defaultProps = {
+PostsSummaryList.defaultProps = {
   posts: [],
   showModal: () => {},
   user: '',
@@ -196,4 +195,4 @@ PostsSummary.defaultProps = {
 };
 
 
-export default PostsSummary;
+export default PostsSummaryList;

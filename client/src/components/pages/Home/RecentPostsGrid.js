@@ -13,8 +13,8 @@ import PostGrid from '../Kurated/PostGrid';
  */
 const RecentPostsGrid = ({posts}) => {
   if (posts.length) {
-    return posts.map((p, i) => (
-      <PostGrid key={p._id} post={p} />
+    return posts.map(post => (
+      <PostGrid key={post._id} post={post} />
     ))
   }else {
     return 'No posts'

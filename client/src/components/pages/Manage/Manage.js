@@ -58,13 +58,13 @@ class Manage extends Component {
       let groupsOwned = [];
       let groupsJoined = [];
 
-      res.data.groups.map(g => {
-        if (g.access === 0) {
-          groupsOwned.push(g);
+      res.data.groups.map(group => {
+        if (group.access === 0) {
+          groupsOwned.push(group);
         }else {
-          groupsJoined.push(g);
+          groupsJoined.push(group);
         }
-        return g;
+        return group;
       })
 
       this.setState({

@@ -32,7 +32,7 @@ class FitlerPosts extends Component {
    *  @param {string} name Name of the element triggering the event
    *  @param {string} value Value of the element triggering the event
    */
-  handleChange = (e, { name, value }) => {
+  handleChange = (event, { name, value }) => {
     this.setState({
       [name]: value,
      });
@@ -44,7 +44,7 @@ class FitlerPosts extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} value Value of the role selected
    */
-  handleFilterSelect = (e, {value}) => {
+  handleFilterSelect = (event, {value}) => {
     this.setState({
       selectedFilter: value
      });

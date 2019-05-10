@@ -104,8 +104,8 @@ class GroupManage extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {object} modalData Post and user data for the modal
    */
-  showModal = (e, modalData) => {
-    e.preventDefault();
+  showModal = (event, modalData) => {
+    event.preventDefault();
     this.setState({ modalOpen: true, modalData });
   }
 
@@ -120,8 +120,8 @@ class GroupManage extends Component {
    *
    *  @param {event} e Event triggered by element to handle
    */
-  handleModalClick = (e) => {
-    const confirm = e.target.dataset.confirm;
+  handleModalClick = event => {
+    const confirm = event.target.dataset.confirm;
     if (confirm === 'true') {
       this.onModalClose();
       const {modalData, group} = this.state;
@@ -142,7 +142,7 @@ class GroupManage extends Component {
    *  @param {string} name Name of the element triggering the event
    *  @param {string} value Value of the element triggering the event
    */
-  handleChange = (e, { name, value }) => {
+  handleChange = (event, { name, value }) => {
     this.setState({
       [name]: value,
       postExists: false,
@@ -249,7 +249,7 @@ class GroupManage extends Component {
     .then(res => {
       if (res.data) {
         const {posts} = this.state;
-        const newPosts = posts.filter(p => p.st_permlink !== post)
+        const newPosts = posts.filter(post => post.st_permlink !== post)
         this.setState({
           posts: newPosts,
           deletingPost: '',
@@ -268,7 +268,7 @@ class GroupManage extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} value Value of the role selected
    */
-  handleNewUserRoleChange = (e, {value}) => {
+  handleNewUserRoleChange = (event, {value}) => {
     this.setState({
       selectedAccess: value
      });
@@ -390,8 +390,8 @@ class GroupManage extends Component {
    *  @param {string} newUser User name to approve
    *  @param {string} type Type of approval action (approve/deny)
    */
-  handleApproval = (e, newUser, type) => {
-    e.preventDefault();
+  handleApproval = (event, newUser, type) => {
+    event.preventDefault();
     const {group} = this.state;
     this.setState({approvingUser: newUser});
     if (type === 'approve') this.approveUserFetch(group, newUser);

@@ -1,27 +1,27 @@
 @import '../../../variables.css';
 
-.info {
+.authorCatTime .info {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.item {
+.authorCatTime .item {
   line-height: 1.7em;
   margin: 0;
   padding: 0;
 }
 
-.item.author a {
+.authorCatTime .item.author a {
   color: var(--charcoal-grey);
 }
 
-.item.author a:hover {
+.authorCatTime .item.author a:hover {
   color: var(--bright-medium-blue);
 }
 
-ul.info li {
+.authorCatTime ul.info li {
   color: var(--medium-grey);
   font-size: 1.1em;
 

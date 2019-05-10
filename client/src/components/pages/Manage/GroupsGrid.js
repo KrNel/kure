@@ -42,26 +42,38 @@ const GroupsGrid = (props) => {
         <Grid.Column>
           <Grid stackable>
             {
-            groups.map((g, i) => {
-              const key = g._id || i;
-              const date = standard(g.created);
+            groups.map((group, index) => {
+              const key = group._id || index;
+
+              const {
+                users,
+                posts,
+                name,
+                display,
+                joinRequests,
+                updated,
+                created,
+              } = group;
+
+              const date = standard(created);
+
               return (
                 <Grid.Column key={key+1} width={4}>
                   <Segment key={key+2} className='groupList'>
                     {
-                      (selectedGroup === g.name)
+                      (selectedGroup === name)
                       && <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
                     }
                     <div key={key+3}>
                       <h3 className='left'>
-                        <GroupLink display={g.display} name={g.name} />
+                        <GroupLink display={display} name={name} />
                       </h3>
                       {
                         match.path === '/manage' && (
                         <div className='right'>
                           <a
-                            href={'edit/'+g.name}
-                            onClick={e => handleManageGroup(e, g.name)}
+                            href={'edit/'+name}
+                            onClick={event => handleManageGroup(event, name)}
                             title="Manage group"
                           >
                             <Icon name='edit' color='blue' />
@@ -70,8 +82,8 @@ const GroupsGrid = (props) => {
                             section === 'owned' &&
                             (
                               <a
-                                href={'/group/delete/'+g.name}
-                                onClick={e => showModal(e, {group: g.name})}
+                                href={'/group/delete/'+name}
+                                onClick={event => showModal(event, {group: name})}
                                 title="Delete group"
                               >
                                 <Icon name='delete' color='blue' />
@@ -87,29 +99,29 @@ const GroupsGrid = (props) => {
 
                       <div className='meta'>
                         <Icon name='newspaper outline' color='blue' />
-                        {g.posts}
-                        {g.posts === 0 || g.posts > 1 ? ' posts' : ' post'}
+                        {posts}
+                        {posts === 0 || posts > 1 ? ' posts' : ' post'}
                       </div>
                       <div className='meta'>
                         <Icon name='user outline' color='blue' />
-                        {g.users}
-                        {g.users === 0 || g.users > 1 ? ' users' : ' user'}
+                        {users}
+                        {users === 0 || users > 1 ? ' users' : ' user'}
                       </div>
                       <div className='meta'>
                         <Icon name='street view' color='blue' />
-                        {g.joinRequests}
-                        {g.joinRequests === 0 || g.joinRequests > 1 ? ' join requests' : ' join request'}
+                        {joinRequests}
+                        {joinRequests === 0 || joinRequests > 1 ? ' join requests' : ' join request'}
                       </div>
                       <br />
                       <div title={date} className='meta'>
                         <Icon name='sync alternate' color='blue' />
                         {'Updated '}
-                        <LongNowDate date={g.updated} />
+                        <LongNowDate date={updated} />
                       </div>
                       <div title={date} className='meta'>
                         <Icon name='calendar alternate outline' color='blue' />
                         {'Created '}
-                        <LongNowDate date={g.created} />
+                        <LongNowDate date={created} />
                       </div>
                     </div>
                   </Segment>

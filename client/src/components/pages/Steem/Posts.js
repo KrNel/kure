@@ -16,6 +16,7 @@ import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
 import ToggleView from '../../kure/ToggleView';
+import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -47,6 +48,9 @@ class Posts extends Component {
     getContent: PropTypes.func,
     handleResteem: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
+    initViewSettings: PropTypes.func,
+    toggleViewSettings: PropTypes.func,
+    showGrid: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -71,6 +75,9 @@ class Posts extends Component {
     getContent: () => {},
     handleResteem: () => {},
     resteemedPayload: {},
+    initViewSettings: () => {},
+    toggleViewSettings: () => {},
+    showGrid: true,
   };
 
   constructor(props) {
@@ -80,18 +87,27 @@ class Posts extends Component {
     this.tag = '';
 
     this.state = {
-      showGrid: true,
-      showDesc: false,
+      showDesc: true,
     };
   }
 
+  /**
+   *  Get the tags from the page URL if they are sent and add them to the
+   *  object's variable `this.tag` for use.
+   *  Set the infinite scroll on the window object.
+   *  Get the posts for the page from redux.
+   *  Get the inital view settings from Redux.
+   */
   componentDidMount() {
-    const {match: {params: {tag}}} = this.props;
+    const { initViewSettings, match: { params: { tag } } } = this.props;
     if (tag) {
       this.tag = tag;
     }
+
     window.addEventListener("scroll", this.handleScroll);
+
     this.getPosts();
+    initViewSettings();
   }
 
   /**
@@ -99,7 +115,8 @@ class Posts extends Component {
    *  url route. If so, getPosts(), otherwise the page data stays the same.
    */
   componentDidUpdate(prevProps) {
-    const {match} = this.props;
+    const { match } = this.props;
+
     if (match.url !== prevProps.match.url) {
       if (match.params.tag)
         this.tag = match.params.tag;
@@ -117,7 +134,7 @@ class Posts extends Component {
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = (e) => {
+  handleScroll = () => {
     const {isFetching, hasMore} = this.props;
     if (!isFetching && hasMore) {
       var lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
@@ -137,7 +154,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const {getContent, match, page} = this.props;
+    const { getContent, match, page } = this.props;
 
     let tag = this.tag;
     let filter = this.selectedFilter;
@@ -158,7 +175,7 @@ class Posts extends Component {
       truncate_body: 0,
     };
 
-    getContent(filter, query, page, action)
+    getContent(filter, query, page, action);
   }
 
   /**
@@ -174,19 +191,20 @@ class Posts extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
-    const { showGrid } = this.state;
-    this.setState({ showGrid: !showGrid });
+  toggleView = event => {
+    event.preventDefault();
+
+    const { toggleViewSettings } = this.props;
+
+    toggleViewSettings();
   }
 
   /**
    *  Toggle state showDesc to show the description on the page.
    */
-  toggleDescriptions = (e) => {
-    e.preventDefault();
-    const { showDesc } = this.state;
-    this.setState({ showDesc: !showDesc });
+  toggleDescriptions = event => {
+    event.preventDefault();
+    this.setState(prevState => ({ showDesc: !prevState.showDesc }));
   }
 
   render() {
@@ -211,9 +229,9 @@ class Posts extends Component {
         page,
         handleResteem,
         resteemedPayload,
+        showGrid,
       },
       state: {
-        showGrid,
         showDesc,
       },
     } = this;
@@ -296,12 +314,12 @@ class Posts extends Component {
                               showGrid={showGrid}
                             />
                             <hr />
-                            {'Show Descriptions: '}
+                            {'Hide Descriptions: '}
                             <a href='/description' onClick={this.toggleDescriptions}>
                               {
                                 showDesc
-                                ? <Icon name='toggle on' size='large' />
-                                : <Icon name='toggle off' size='large' />
+                                ? <Icon name='toggle off' size='large' />
+                                : <Icon name='toggle on' size='large' />
                               }
                             </a>
                           </Grid.Column>
@@ -375,7 +393,10 @@ const mapStateToProps = state => {
       upvotePayload,
     },
     resteem: {
-      resteemedPayload
+      resteemedPayload,
+    },
+    settings: {
+      showGrid,
     },
   } = state;
 
@@ -393,6 +414,7 @@ const mapStateToProps = state => {
     selectedGroup,
     upvotePayload,
     resteemedPayload,
+    showGrid,
   }
 }
 
@@ -407,11 +429,11 @@ const mapDispatchToProps = dispatch => (
     getContent: (selectedFilter, query, page, action) => (
       dispatch(getSummaryContent(selectedFilter, query, page, action))
     ),
-    showModal: (e, type, data) => (
-      dispatch(addPostActions.showModal(e, type, data))
+    showModal: (event, type, data) => (
+      dispatch(addPostActions.showModal(event, type, data))
     ),
-    handleModalClickAddPost: (e) => (
-      dispatch(addPostActions.handleModalClickAddPost(e))
+    handleModalClickAddPost: event => (
+      dispatch(addPostActions.handleModalClickAddPost(event))
     ),
     onModalCloseAddPost: () => (
       dispatch(addPostActions.onModalCloseAddPost())
@@ -425,6 +447,12 @@ const mapDispatchToProps = dispatch => (
     handleResteem: (pid, author, permlink) => (
       dispatch(resteem(pid, author, permlink))
     ),
+    toggleViewSettings: () => (
+      dispatch(changeViewSettings())
+    ),
+    initViewSettings: () => {
+      dispatch(initViewStorage())
+    }
   }
 );
 

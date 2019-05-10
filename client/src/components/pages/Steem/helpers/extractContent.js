@@ -84,9 +84,9 @@ export function extractContent(post) {
   // Grab only the first line (not working as expected. does rendering/sanitizing strip newlines?)
   desc = desc.trim().split('\n')[0];
 
-  if (desc.length > 140) {
+  if (desc.length > 240) {
     desc = desc
-      .substring(0, 140)
+      .substring(0, 240)
       .trim()
       .replace(/[,!\?]?\s+[^\s]+$/, '…'); // eslint-disable-line no-useless-escape
   }

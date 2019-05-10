@@ -1,10 +1,13 @@
 import {
   UPVOTE_START,
   UPVOTE_SUCCESS,
+  UPVOTE_FAILED,
 } from '../actions/upvoteActions';
 
 /**
- *  Reducer function for Steem data.
+ *  Reducer function for upvoting posts and comments on Steem. Determines if
+ *  a post is being upvoted, which author and permlink is voted, which post or
+ *  comment is currently voted on, and the list of recent upvotes.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched
@@ -12,15 +15,16 @@ import {
  */
 export const upvote = (
   state = {
-    isUpvoting: false,
     upvotePayload: {
+      isUpvoting: false,
       author: '',
       permlink: '',
       votedPosts: [],
       post: {
         id: 0,
         active_votes: []
-      }
+      },
+      error: '',
     },
   },
   action) => {
@@ -34,8 +38,10 @@ export const upvote = (
           isUpvoting: true,
           votedPosts: [...state.upvotePayload.votedPosts],
           ...action.payload,
+          error: '',
         }
       });
+    case UPVOTE_FAILED:
     case UPVOTE_SUCCESS:
       return ({
         ...state,

@@ -9,20 +9,26 @@ import TitleLink from './TitleLink';
 import PostLink from './PostLink';
 import { sumPayout } from '../../../utils/helpers';
 import Resteemers from './Resteemers';
-import Avatar from './Avatar';
-import AuthorReputation from './AuthorReputation';
-import Category from './Category';
-import { LongNowDate, standard } from '../../../utils/dateFormatting';
+import AuthorCatgoryTime from './AuthorCatgoryTime';
 
 /**
- *  Taking post data and extracting what is required to display post summaries
- *  in a grid format.
+ *  Post data is received from Steem for display in a grid of boxes.
+ *  Each post has data extracted from it to dispaly on the page view. Redux
+ *  state data is also used for upvote and resteem actions.
  *
  *  @param {array} posts All the posts fetched
- *  @param {array} nextPost Whether to skip the first post, dupe of prev last post
- *  @param {function} showModal Parent function to show the add post modal
+ *  @param {function} showModal To show the add post modal
+ *  @param {string} user Logged in user
+ *  @param {function} handleUpvote Send upvotes to Steem
+ *  @param {object} upvotePayload Results of upvote containing vote data
+ *  @param {boolean} isFetching Determines if data is being fetched
+ *  @param {function} handleResteem Send a resteem to Steem
+ *  @param {string} page The current page
+ *  @param {string} pageOwner The user name of blog or feed page
+ *  @param {object} resteemedPayload Results of resteem with resteem post data
+ *  @param {boolean} showDesc If the description if to be shown
  */
-const PostsSummary = (props) => {
+const PostsSummaryGrid = (props) => {
 
   const {
     posts,
@@ -42,14 +48,14 @@ const PostsSummary = (props) => {
     return "No Posts";
   }else {
     return (
-      posts.map((p, i) => {
+      posts.map((postData, index) => {
 
-        const vp = upvotePayload.votedPosts.find(vp => vp.id === p.id);
-        if (vp)
-          p = vp;
+        const votedPost = upvotePayload.votedPosts.find(votedPost => votedPost.id === (postData.id));
+        if (votedPost)
+          postData = votedPost;
 
-        const extract = extractContent(p);
-        const post = {...p, ...extract};
+        const extract = extractContent(postData);
+        const post = {...postData, ...extract};
 
         const title = post.title;
         const author = post.author;
@@ -61,17 +67,14 @@ const PostsSummary = (props) => {
         const created = `${post.created}Z`;
         const commentCount = post.children;
         const activeVotes = post.active_votes;
-
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-
         const pid = parseInt(post.id);
-
+        const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
         const reblogged_by = post.reblogged_by;
 
         let isResteemed = false;
-        let isResteemedByUser = false;
 
         if (page === 'blog') {
           isResteemed = pageOwner !== author
@@ -89,108 +92,83 @@ const PostsSummary = (props) => {
           )
         }
 
-        let descClass = 'descriptionBox';
-        let description = null;
-
-        if (showDesc) {
-          description = (
-            <div className='description'>
-              <PostLink
-                author={author}
-                category={category}
-                permlink={permlink}
-                text={desc}
-              />
-            </div>
-          );
-        }
-
-        const key = p+i;
+        const key = pid+index;
 
         return (
 
           <Grid.Column key={key} width={8} className='infSummary'>
-            <div className={descClass}>
-              {resteemed}
-              <div className='postBox'>
-                <div className='cropImage'>
-                  {
-                    (thumb)
-                    ? (
-                      <div className="thumbnail">
-                        <PostLink
-                          author={author}
-                          category={category}
-                          permlink={permlink}
-                          text={<Image src={`https://steemitimages.com/640x480/${thumb}`} alt="image" />}
-                        />
-                      </div>
-                      )
-                    : ''
-                  }
-                </div>
-                <div className='overlayImage'>
-                  <div className='recentTitle'>
-                    <div className='titleContent'>
-                      <TitleLink
-                        title={title}
-                        category={category}
-                        author={author}
-                        permlink={permlink}
-                      />
-                    </div>
-                  </div>
-                  <div className='left'>
-                    <ul className="info">
-                      <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
-                      <li className="item author" data-author={author}>
-                        {'\u00A0'}
-                        <AuthorReputation author={author} reputation={authorReputation} />
-                      </li>
-                    </ul>
 
-                  </div>
-                  <div className='right'>
-                    <div className="item tag">
-                      {'Posted in '}
-                      <strong><Category category={category} /></strong>
-                    </div>
-                    <div className="item timeago">
+            <div className='postBox'>
+              {resteemed}
+              <div className='cropImage'>
+                {
+                  (thumb)
+                  ? (
+                    <div className="thumbnail">
                       <PostLink
                         author={author}
                         category={category}
                         permlink={permlink}
-                        title={standard(created)}
-                        text={<LongNowDate date={created} />}
+                        text={<Image src={`https://steemitimages.com/640x480/${thumb}`} alt="image" />}
                       />
                     </div>
-                  </div>
-                  <div className='clear' />
-                  <div className='post-actions'>
-                    <PostActions
-                      activeVotes={activeVotes}
-                      commentCount={commentCount}
+                    )
+                  : ''
+                }
+              </div>
+              <AuthorCatgoryTime
+                author={author}
+                authorReputation={authorReputation}
+                category={category}
+                created={created}
+                permlink={permlink}
+              />
+              <div className='title'>
+                <TitleLink
+                  title={title}
+                  category={category}
+                  author={author}
+                  permlink={permlink}
+                />
+              </div>
+              {
+                showDesc && (
+                  <div className='description'>
+                    <PostLink
                       author={author}
                       category={category}
-                      payoutValue={totalPayout}
                       permlink={permlink}
-                      title={title}
-                      showModal={showModal}
-                      user={user}
-                      handleUpvote={handleUpvote}
-                      upvotePayload={upvotePayload}
-                      ratio={ratio}
-                      pid={pid}
-                      image={thumb}
-                      handleResteem={handleResteem}
-                      isResteemedByUser={isResteemedByUser}
-                      resteemedPayload={resteemedPayload}
-                      pageOwner={pageOwner}
+                      text={desc}
                     />
                   </div>
+                )
+              }
+              <div>
+
+                <div className='post-actions'>
+                  <PostActions
+                    activeVotes={activeVotes}
+                    commentCount={commentCount}
+                    author={author}
+                    category={category}
+                    payoutValue={totalPayout}
+                    permlink={permlink}
+                    title={title}
+                    showModal={showModal}
+                    user={user}
+                    handleUpvote={handleUpvote}
+                    upvotePayload={upvotePayload}
+                    ratio={ratio}
+                    pid={pid}
+                    image={thumb}
+                    handleResteem={handleResteem}
+                    resteemedPayload={resteemedPayload}
+                    pageOwner={pageOwner}
+                    payoutDeclined={payoutDeclined}
+                    percentSD={post.percent_steem_dollars}
+                  />
                 </div>
               </div>
-              { description }
             </div>
           </Grid.Column>
 
@@ -200,7 +178,7 @@ const PostsSummary = (props) => {
   }
 }
 
-PostsSummary.propTypes = {
+PostsSummaryGrid.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   showModal: PropTypes.func,
   user: PropTypes.string,
@@ -210,7 +188,7 @@ PostsSummary.propTypes = {
   handleResteem: PropTypes.func,
 };
 
-PostsSummary.defaultProps = {
+PostsSummaryGrid.defaultProps = {
   posts: [],
   showModal: () => {},
   user: '',
@@ -221,4 +199,4 @@ PostsSummary.defaultProps = {
 };
 
 
-export default PostsSummary;
+export default PostsSummaryGrid;

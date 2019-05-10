@@ -35,25 +35,25 @@ const GroupManagePending = ({pending, handleApproval, approvingUser}) => (
             </Table.Header>
             <Table.Body>
               {
-                pending.map(u => (
-                  <Table.Row key={u._id}>
+                pending.map(user => (
+                  <Table.Row key={user._id}>
                     <Table.Cell>
                       <Link
-                        to={'@'+u.user}
+                        to={'@'+user.user}
                       >
-                        {u.user}
+                        {user.user}
                       </Link>
                     </Table.Cell>
-                    <Table.Cell collapsing textAlign='center'>{moment.utc(u.added_on).fromNow()}</Table.Cell>
+                    <Table.Cell collapsing textAlign='center'>{moment.utc(user.added_on).fromNow()}</Table.Cell>
                     <Table.Cell collapsing textAlign='center'>
                       {
-                        (approvingUser === u.user)
+                        (approvingUser === user.user)
                           ? <Dimmer inverted active><Loader /></Dimmer>
                           : ''
                       }
-                      <a href={`/approve/${u.user}/`} onClick={e => handleApproval(e, u.user, 'approve')}><Icon name='plus' color='green' /></a>
+                      <a href={`/approve/${user.user}/`} onClick={event => handleApproval(event, user.user, 'approve')}><Icon name='plus' color='green' /></a>
                       {' / '}
-                      <a href={`/deny/${u.user}/`} onClick={e => handleApproval(e, u.user, 'deny')}><Icon name='delete' color='red' /></a>
+                      <a href={`/deny/${user.user}/`} onClick={event => handleApproval(event, user.user, 'deny')}><Icon name='delete' color='red' /></a>
                     </Table.Cell>
                   </Table.Row>
                   )
