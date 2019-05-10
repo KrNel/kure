@@ -49,8 +49,8 @@ const ModalConfirm = ({modalOpen, onModalClose, handleModalClick, modalData}) =>
         </p>
       </Modal.Content>
       <Modal.Actions>
-        <Button data-confirm='false' onClick={e => handleModalClick(e)} negative content='No' />
-        <Button data-confirm='true' onClick={e => handleModalClick(e)} positive icon='checkmark' labelPosition='right' content='Yes' />
+        <Button data-confirm='false' onClick={event => handleModalClick(event)} negative content='No' />
+        <Button data-confirm='true' onClick={event => handleModalClick(event)} positive icon='checkmark' labelPosition='right' content='Yes' />
       </Modal.Actions>
     </Modal>
   )

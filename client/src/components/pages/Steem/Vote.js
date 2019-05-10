@@ -13,6 +13,8 @@ import 'react-rangeslider/lib/index.css';
 import './VoteSlider.css';
 import './PostActions.css';
 
+/* eslint-disable react/jsx-one-expression-per-line */
+
 /**
  *  Component to show the payout amount, vote button and vote count.
  *
@@ -34,11 +36,15 @@ class Vote extends Component {
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
     ratio: PropTypes.number.isRequired,
     pid: PropTypes.number.isRequired,
+    payoutDeclined: PropTypes.bool,
+    percentSD: PropTypes.number,
   };
 
   static defaultProps = {
     activeVotes: [],
     upvotePayload: {},
+    payoutDeclined: false,
+    percentSD: 10000,
   }
 
   state = {
@@ -54,13 +60,13 @@ class Vote extends Component {
    *  signal that the click is for an unvote, not an upvote.
    *  If there is no 'votedOn' class, then it's an upvote, and show the slider.
    *
-   *  @param {element} e Element triggering the event
+   *  @param {element} event Element triggering the event
    *  @param {string} user Username performing action
    *  @param {string} pid Post ID
    *  @return {null}
    */
-  vote = (e, user, pid) => {
-    e.preventDefault();
+  vote = (event, user, pid) => {
+    event.preventDefault();
 
     //Don't upvote if not logged in
     if (!user) {
@@ -99,13 +105,13 @@ class Vote extends Component {
    *  The real upvote is sent here after the confimation to vote is done via
    *  the slider.
    *
-   *  @param {element} e Element triggering the event
+   *  @param {element} event Element triggering the event
    *  @param {string} author Post author
    *  @param {string} permlink Post permlink
    *  @param {number} weight Weight value received from slider
    */
-  handleVote = (e, author, permlink, weight) => {
-    e.preventDefault();
+  handleVote = (event, author, permlink, weight) => {
+    event.preventDefault();
 
     const { handleUpvote, user } = this.props;
 
@@ -120,12 +126,12 @@ class Vote extends Component {
    *  The unvoting is  handled here with the author and permlink being used to
    *  send the upvote with the vote weight of 0 to remove the previous vote.
    *
-   *  @param {element} e Element triggering the event
+   *  @param {element} event Element triggering the event
    *  @param {string} author Post author
    *  @param {string} permlink Post permlink
    */
-  handleUnvote = (e, author, permlink) => {
-    e.preventDefault();
+  handleUnvote = (event, author, permlink) => {
+    event.preventDefault();
 
     const { handleUpvote } = this.props;
 
@@ -143,12 +149,12 @@ class Vote extends Component {
    *  When the upvote slider is closed, the vote weight is saved in
    *  localStorage for future use of that user.
    *
-   *  @param {element} e Element triggering the event
+   *  @param {element} event Element triggering the event
    *  @param {string} user Voting user
    *  @param {number} weight Weight value received from slider
    */
-  closeVoteSlider = (e, user, weight) => {
-    e.preventDefault();
+  closeVoteSlider = (event, user, weight) => {
+    event.preventDefault();
     this.setSavedVoteWeight(weight, user);
     this.setState({ showSlider: false });
   }
@@ -193,7 +199,6 @@ class Vote extends Component {
       }
     } = this;
 
-    const error = upvotePayload.error;
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
     const votedVoters = upvotePayload.post.active_votes;
@@ -209,9 +214,11 @@ class Vote extends Component {
 
     voters = sortVotes(voters, 'rshares').reverse();
 
+    const isVotedOn = voters.some(vote => vote.voter === user && vote.percent !== 0);
+
     //determine if the Redux state voted posts is the current post, and if the
     //the voters list contains the current user and is not an unvote (0%)
-    const isNewlyVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(votedPost => votedPost.id === pid) &&  voters.some(vote => vote.voter === user && vote.percent !== 0) : false;
+    const isNewlyVoted = upvotePayload.votedPosts.length ? upvotePayload.votedPosts.some(votedPost => votedPost.id === pid) && isVotedOn : false;
 
     //determine if post/comment is being or is voted on
     let voteTitle = 'Upvote post';
@@ -221,9 +228,11 @@ class Vote extends Component {
     }else if (isNewlyVoted) {
       upvoteClasses = 'votedOn';
       voteTitle = 'Unvote post';
-    }else if (voters.some(vote => vote.voter === user && vote.percent !== 0)) {
+    }else if (isVotedOn) {
       upvoteClasses = 'votedOn';
       voteTitle = 'Unvote post';
+    }else if (voters.some(vote => vote.percent === 0)) {
+      upvoteClasses = 'voteRemoved';
     }
 
     //vote count popup to show who voted, the vote value and percentage applied
@@ -264,7 +273,7 @@ class Vote extends Component {
               <a
                 href='/upvote'
                 className='accept-weight'
-                onClick={e => this.handleVote(e, author, permlink, sliderWeight)}
+                onClick={event => this.handleVote(event, author, permlink, sliderWeight)}
               >
                 <Icon name='chevron up circle' size='big' color='green' />
               </a>
@@ -288,8 +297,8 @@ class Vote extends Component {
               <a
                 href='/close'
                 className='close-weight'
-                onClick={e => {
-                  this.closeVoteSlider(e, user, sliderWeight)
+                onClick={event => {
+                  this.closeVoteSlider(event, user, sliderWeight)
                 }}
               >
                 <Icon name='window close outline' size='big' color='red' />
@@ -323,7 +332,7 @@ class Vote extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={e => this.vote(e, user, pid)} title={voteTitle}>
+                <a ref={this.contextRef} href="/vote" onClick={event => this.vote(event, user, pid)} title={voteTitle}>
                   <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}
@@ -334,14 +343,14 @@ class Vote extends Component {
               hoverable
             >
               <p>
-                {'Are you sure you want to remove'}
+                Are you sure you want to remove
                 <br />
-                {'the vote and curation rewards?'}
+                the vote and curation rewards?
               </p>
               <Button
                 color='green'
-                content={`Confirm unvote.`}
-                onClick={e => this.handleUnvote(e, author, permlink)}
+                content='Confirm unvote.'
+                onClick={event => this.handleUnvote(event, author, permlink)}
               />
             </Popup>
             <Popup

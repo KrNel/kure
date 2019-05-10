@@ -12,7 +12,7 @@ const ToggleView = ({toggleView, showGrid}) => (
   <div className='right'>
     <span className='viewToggle'>
       {'View: '}
-      <a href="/view" onClick={(e) => toggleView(e)}>
+      <a href="/view" onClick={event => toggleView(event)}>
         {
           showGrid
           ? <Icon size='large' name='list layout' />

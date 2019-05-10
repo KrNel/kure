@@ -60,7 +60,7 @@ class ReplyForm extends Component {
   /**
    *  Set state for the reply form.
    */
-  handleChange = (e, { name, value }) => {
+  handleChange = (event, { name, value }) => {
     this.setState({
       [name]: value
     });

@@ -135,7 +135,7 @@ export const deleteComment = (author, permlink, commentPayload = {}) => (dispatc
         // first, if new comments were added, check those for the comment
         // to delete
         for (let key in commentPayload) {
-          newCommentPayload[key] = commentPayload[key].filter(c => c.permlink !== permlink);
+          newCommentPayload[key] = commentPayload[key].filter(comment => comment.permlink !== permlink);
         }
 
         // if no new comment was deleted, then interate over the existing

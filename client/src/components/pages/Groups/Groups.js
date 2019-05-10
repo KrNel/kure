@@ -64,8 +64,8 @@ class Groups extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
+  toggleView = event => {
+    event.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }
@@ -73,8 +73,8 @@ class Groups extends Component {
   /**
    *  Update state with the selected page section to view.
    */
-  tabView = (e, selected) => {
-    e.preventDefault();
+  tabView = (event, selected) => {
+    event.preventDefault();
     this.setState({ tabSelected: selected });
   }
 

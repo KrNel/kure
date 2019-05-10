@@ -19,7 +19,7 @@ import './AuthorCatgoryTime.css';
  *  @param {number} payoutValue Post payout value
  *  @param {string} createdFromNow Time since post was created
  */
-const AuthorCatgoryTime = ({author, authorReputation, category, created, permlink, percentSD}) => {
+const AuthorCatgoryTime = ({ author, authorReputation, category, created, permlink }) => {
   return (
     <div className='authorCatTime'>
       <ul className="info">

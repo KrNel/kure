@@ -18,7 +18,16 @@ import Resteemers from './Resteemers';
 *  state data is also used for upvote and resteem actions.
  *
  *  @param {array} posts All the posts fetched
- *  @param {function} showModal Parent function to show the add post modal
+ *  @param {function} showModal To show the add post modal
+ *  @param {string} user Logged in user
+ *  @param {function} handleUpvote Send upvotes to Steem
+ *  @param {object} upvotePayload Results of upvote containing vote data
+ *  @param {boolean} isFetching Determines if data is being fetched
+ *  @param {function} handleResteem Send a resteem to Steem
+ *  @param {string} page The current page
+ *  @param {string} pageOwner The user name of blog or feed page
+ *  @param {object} resteemedPayload Results of resteem with resteem post data
+ *  @param {boolean} showDesc If the description if to be shown
  */
 const PostsSummaryList = (props) => {
 
@@ -33,11 +42,6 @@ const PostsSummaryList = (props) => {
     page,
     pageOwner,
     resteemedPayload,
-    percentSD,
-  } = props;
-
-  let {
-    nextPost,
   } = props;
 
   if (!posts.length && !isFetching) {

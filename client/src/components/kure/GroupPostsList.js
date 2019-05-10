@@ -38,7 +38,7 @@ const GroupPostsList = (props) => {
       </Table.Header>
       <Table.Body>
         {
-        posts.map((post, i) => (
+        posts.map(post => (
           <Table.Row key={post._id}>
             <Table.Cell>
               <TitleLink

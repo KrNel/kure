@@ -3,8 +3,7 @@ export const SEND_SETTINGS = 'SEND_SETTINGS';
 /**
  *  Action creator to set the layout for the grid or list view.
  *
- *  @param {string} posts Data returned from database
- *  @param {object} hasMore If there are more posts to grab
+ *  @param {boolean} showGrid To show grid layout or not
  *  @returns {object} The action data
  */
 const setView = showGrid => ({
@@ -31,8 +30,7 @@ export const changeViewSettings = () => (dispatch, getState) => {
 /**
  *  Sets the view type into localStorage for the user's future use.
  *
- *  @param {string} user Logged in user
- *  @param {string} view View type (grid, layout, etc)
+ *  @param {boolean} showGrid To show grid layout or not
  */
 const setViewStorage = showGrid => {
   localStorage.setItem('showGrid', showGrid);
@@ -41,7 +39,6 @@ const setViewStorage = showGrid => {
 /**
  *  Gets the view type from localStorage.
  *
- *  @param {string} user Logged in user
  */
 const getViewStorage = () => (
   localStorage.getItem('showGrid')

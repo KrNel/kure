@@ -13,11 +13,20 @@ import AuthorCatgoryTime from './AuthorCatgoryTime';
 
 /**
  *  Post data is received from Steem for display in a grid of boxes.
- *  Each post has data extracted from it to  dispaly on the page view. Redux
+ *  Each post has data extracted from it to dispaly on the page view. Redux
  *  state data is also used for upvote and resteem actions.
  *
  *  @param {array} posts All the posts fetched
- *  @param {function} showModal Parent function to show the add post modal
+ *  @param {function} showModal To show the add post modal
+ *  @param {string} user Logged in user
+ *  @param {function} handleUpvote Send upvotes to Steem
+ *  @param {object} upvotePayload Results of upvote containing vote data
+ *  @param {boolean} isFetching Determines if data is being fetched
+ *  @param {function} handleResteem Send a resteem to Steem
+ *  @param {string} page The current page
+ *  @param {string} pageOwner The user name of blog or feed page
+ *  @param {object} resteemedPayload Results of resteem with resteem post data
+ *  @param {boolean} showDesc If the description if to be shown
  */
 const PostsSummaryGrid = (props) => {
 
@@ -33,7 +42,6 @@ const PostsSummaryGrid = (props) => {
     pageOwner,
     resteemedPayload,
     showDesc,
-    percentSD,
   } = props;
 
   if (!posts.length && !isFetching) {

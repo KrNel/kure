@@ -15,7 +15,7 @@ const joinCommunities = (isAuth, groupRequested, gname, gaccess, onJoinGroup) =>
       return (
         <a
           href={`/join/${gname}`}
-          onClick={e => onJoinGroup(e, gname)}
+          onClick={event => onJoinGroup(event, gname)}
         >
           {'Join'}
         </a>

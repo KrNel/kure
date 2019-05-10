@@ -48,6 +48,9 @@ class Posts extends Component {
     getContent: PropTypes.func,
     handleResteem: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
+    initViewSettings: PropTypes.func,
+    toggleViewSettings: PropTypes.func,
+    showGrid: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -72,6 +75,9 @@ class Posts extends Component {
     getContent: () => {},
     handleResteem: () => {},
     resteemedPayload: {},
+    initViewSettings: () => {},
+    toggleViewSettings: () => {},
+    showGrid: true,
   };
 
   constructor(props) {
@@ -148,7 +154,7 @@ class Posts extends Component {
    *  @param {string} action Get initial posts, or more after.
    */
   getPosts = (action = 'init') => {
-    const { getContent, match, page, initViewSettings } = this.props;
+    const { getContent, match, page } = this.props;
 
     let tag = this.tag;
     let filter = this.selectedFilter;
@@ -423,11 +429,11 @@ const mapDispatchToProps = dispatch => (
     getContent: (selectedFilter, query, page, action) => (
       dispatch(getSummaryContent(selectedFilter, query, page, action))
     ),
-    showModal: (e, type, data) => (
-      dispatch(addPostActions.showModal(e, type, data))
+    showModal: (event, type, data) => (
+      dispatch(addPostActions.showModal(event, type, data))
     ),
-    handleModalClickAddPost: (e) => (
-      dispatch(addPostActions.handleModalClickAddPost(e))
+    handleModalClickAddPost: event => (
+      dispatch(addPostActions.handleModalClickAddPost(event))
     ),
     onModalCloseAddPost: () => (
       dispatch(addPostActions.onModalCloseAddPost())

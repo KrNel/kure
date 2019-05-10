@@ -128,7 +128,7 @@ class GroupDetails extends Component {
    *  When user requests to join a community, send the request to DB
    *  for processing.
    *
-   *  @param {element} e Element onClick comes from
+   *  @param {element} event Element onClick comes from
    *  @param {string} group Group being requested to join
    */
   onJoinGroup = (event, group) => {

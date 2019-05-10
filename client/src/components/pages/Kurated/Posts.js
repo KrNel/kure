@@ -59,7 +59,7 @@ class Posts extends Component {
    *  Infinite scroll. Checks to see if the last post in the list is reached,
    *  then calls fetch to get new posts.
    */
-  handleScroll = (e) => {
+  handleScroll = () => {
     const { isFetching, hasMore } = this.props;
 
     if (!isFetching && hasMore) {
@@ -91,8 +91,8 @@ class Posts extends Component {
   /**
    *  Toggle state showGrid to show a grid or list view from being displayed.
    */
-  toggleView = (e) => {
-    e.preventDefault();
+  toggleView = event => {
+    event.preventDefault();
     const { showGrid } = this.state;
     this.setState({ showGrid: !showGrid });
   }

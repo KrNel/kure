@@ -74,8 +74,8 @@ class Comment extends Component {
    *  When the 'Reply' link is clicked for a comment, this runs to change the
    * state of the 'showReplyForm' var to toogle showing/hiding the reply form.
    */
-  onShowReplyForm = (e) => {
-    e.preventDefault();
+  onShowReplyForm = event => {
+    event.preventDefault();
     this.toggleReplyForm();
   }
 
@@ -94,8 +94,8 @@ class Comment extends Component {
    *  When the 'Edit' link is clicked for a comment, this runs to change the
    * state of the 'showEditForm' var to toogle showing/hiding the edit form.
    */
-  onShowEditForm = (e) => {
-    e.preventDefault();
+  onShowEditForm = event => {
+    event.preventDefault();
     this.toggleEditForm();
   }
 
@@ -181,7 +181,7 @@ class Comment extends Component {
       parseFloat(comment.curator_payout_value);
     const totalRShares = comment.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
     const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-    
+
     const replyForm =
       isAuth && showReplyForm
       ? (
@@ -272,7 +272,7 @@ class Comment extends Component {
                                   <Popup
                                     trigger={(
                                       <li className='item'>
-                                        <a href='/delete' onClick={e => e.preventDefault()}>Delete</a>
+                                        <a href='/delete' onClick={event => event.preventDefault()}>Delete</a>
                                       </li>
                                     )}
                                     position='top left'
@@ -283,7 +283,7 @@ class Comment extends Component {
                                     <Button
                                       color='red'
                                       content='Confirm delete.'
-                                      onClick={e => sendDeleteComment(e, author, permlink, commentPayload)}
+                                      onClick={event => sendDeleteComment(event, author, permlink, commentPayload)}
                                     />
                                   </Popup>
                                 )

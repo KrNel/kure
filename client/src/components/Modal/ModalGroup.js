@@ -30,12 +30,12 @@ class ModalGroup extends Component {
     return null;
   }
 
-  onGroupSelect = (e, {value}) => {
+  onGroupSelect = (event, {value}) => {
     const { handleGroupSelect } = this.props;
     handleGroupSelect(value);
   }
 
-  onClick = (e) => {
+  onClick = () => {
     this.setState({addErrorPost: ''})
   }
 
@@ -72,8 +72,8 @@ class ModalGroup extends Component {
           </div>
         </Modal.Content>
         <Modal.Actions>
-          <Button data-confirm='false' onClick={e => handleModalClick(e)} negative content='Cancel' />
-          <Button data-confirm='true' onClick={e => handleModalClick(e)} positive icon='checkmark' labelPosition='right' content='Add' />
+          <Button data-confirm='false' onClick={event => handleModalClick(event)} negative content='Cancel' />
+          <Button data-confirm='true' onClick={event => handleModalClick(event)} positive icon='checkmark' labelPosition='right' content='Add' />
         </Modal.Actions>
       </Modal>
     )

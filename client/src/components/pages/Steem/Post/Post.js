@@ -298,11 +298,11 @@ const mapDispatchToProps = dispatch => (
     getContent: (author, permlink) => (
       dispatch(getDetailsContent(author, permlink))
     ),
-    showModal: (e, type, data) => (
-      dispatch(addPostActions.showModal(e, type, data))
+    showModal: (event, type, data) => (
+      dispatch(addPostActions.showModal(event, type, data))
     ),
-    handleModalClickAddPost: (e) => (
-      dispatch(addPostActions.handleModalClickAddPost(e))
+    handleModalClickAddPost: event => (
+      dispatch(addPostActions.handleModalClickAddPost(event))
     ),
     onModalCloseAddPost: () => (
       dispatch(addPostActions.onModalCloseAddPost())

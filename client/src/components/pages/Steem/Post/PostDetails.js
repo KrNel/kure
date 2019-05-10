@@ -51,6 +51,7 @@ class PostDetails extends Component {
     clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
     clearNewComments: PropTypes.func,
+    handleResteem: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
   };
 
@@ -68,6 +69,7 @@ class PostDetails extends Component {
     clearComments: () => {},
     isDeleting: false,
     clearNewComments: () => {},
+    handleResteem: () => {},
     resteemedPayload: {},
   }
 
@@ -100,7 +102,7 @@ class PostDetails extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} value Value of the element triggering the event
    */
-   handleSortChange = (e, {value}) => {
+   handleSortChange = (event, {value}) => {
      this.setState({
        sortBy: value,
       });
@@ -124,8 +126,8 @@ class PostDetails extends Component {
     *  @param {string} author Author of post
     *  @param {string} permlink Permlink of post
     */
-   handleDeletePost = (e, author, permlink) => {
-     e.preventDefault();
+   handleDeletePost = (event, author, permlink) => {
+     event.preventDefault();
      const { sendDeletePost } = this.props;
      sendDeletePost(author, permlink);
    }

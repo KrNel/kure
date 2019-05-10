@@ -91,7 +91,7 @@ class Editor extends Component {
   /**
    *  Set state for the reply form.
    */
-  handleChange = (e, { name, value }) => {
+  handleChange = (event, { name, value }) => {
     this.setState({
       [name]: value,
       tagErrors: '',
@@ -104,7 +104,7 @@ class Editor extends Component {
    *  @param {event} e Event triggered by element to handle
    *  @param {string} value Value of the element triggering the event
    */
-   handleRewardChange = (e, {value}) => {
+   handleRewardChange = (event, {value}) => {
      this.setState({
        reward: value,
       });
@@ -113,8 +113,8 @@ class Editor extends Component {
   /**
    *  Collect and process the form data for adding the post to the blockchain.
    */
-  handleSubmit = (e) => {
-    e.preventDefault();
+  handleSubmit = event => {
+    event.preventDefault();
 
     const { title, body, tags, reward } = this.state;
     const { createPost } = this.props;

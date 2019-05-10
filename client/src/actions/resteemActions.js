@@ -4,7 +4,7 @@ export const RESTEEM_START = 'RESTEEM_START';
 export const RESTEEM_SUCCESS = 'RESTEEM_SUCCESS';
 
 /**
- *  Action creator to request recent post activity.
+ *  Action creator to start a resteem.
  *
  *  @param {number} pid Post id
  *  @returns {object} The action data
@@ -15,7 +15,7 @@ const resteemStart = pid => ({
 });
 
 /**
- *  Action creator to receive recent post activity.
+ *  Action creator for successful resteem.
  *
  *  @param {number} pid Post id
  *  @returns {object} The action data
