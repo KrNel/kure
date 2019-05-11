@@ -15,8 +15,8 @@ const ToggleView = ({toggleView, showGrid}) => (
       <a href="/view" onClick={event => toggleView(event)}>
         {
           showGrid
-          ? <Icon size='large' name='list layout' />
-          : <Icon size='large' name='grid layout' />
+          ? <Icon size='large' name='list layout' title='Show list layout' />
+        : <Icon size='large' name='grid layout' title='Show grid layout' />
         }
       </a>
     </span>

@@ -231,7 +231,7 @@ class Vote extends Component {
     }else if (isVotedOn) {
       upvoteClasses = 'votedOn';
       voteTitle = 'Unvote post';
-    }else if (voters.some(vote => vote.percent === 0)) {
+    }else if (voters.some(vote => vote.voter === user && vote.percent === 0)) {
       upvoteClasses = 'voteRemoved';
     }
 
