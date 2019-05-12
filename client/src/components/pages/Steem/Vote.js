@@ -37,14 +37,14 @@ class Vote extends Component {
     ratio: PropTypes.number.isRequired,
     pid: PropTypes.number.isRequired,
     payoutDeclined: PropTypes.bool,
-    percentSD: PropTypes.number,
+    isFullPower: PropTypes.bool,
   };
 
   static defaultProps = {
     activeVotes: [],
     upvotePayload: {},
     payoutDeclined: false,
-    percentSD: 10000,
+    isFullPower: false,
   }
 
   state = {
@@ -190,7 +190,7 @@ class Vote extends Component {
         ratio,
         pid,
         payoutDeclined,
-        percentSD,
+        isFullPower,
       },
       state: {
         unvote,
@@ -198,6 +198,8 @@ class Vote extends Component {
         sliderWeight,
       }
     } = this;
+
+    const isFlagged = activeVotes.some(vote => vote.percent < 0);
 
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
@@ -313,7 +315,23 @@ class Vote extends Component {
       <React.Fragment>
         <li className="item payout">
           {
-            percentSD === 0 && <FullPower />
+            isFullPower && <FullPower />
+          }
+          {
+            isFlagged && (
+              <span>
+                {
+                  isFullPower && ' '
+                }
+                <Icon
+                  name='flag outline'
+                  color='red'
+                  size='large'
+                  title='Flagged post'
+                />
+                {' '}
+              </span>
+            )
           }
           <span>
             <DollarDisplay

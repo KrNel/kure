@@ -43,7 +43,7 @@ class PostActions extends Component {
     pageOwner: PropTypes.string,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
     payoutDeclined: PropTypes.bool,
-    percentSD: PropTypes.number,
+    isFullPower: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -68,7 +68,7 @@ class PostActions extends Component {
     pageOwner: '',
     resteemedPayload: {},
     payoutDeclined: false,
-    percentSD: 10000,
+    isFullPower: false,
   };
 
 
@@ -105,7 +105,7 @@ class PostActions extends Component {
         resteemedPayload,
         pageOwner,
         payoutDeclined,
-        percentSD,
+        isFullPower,
       },
     } = this;
 
@@ -135,7 +135,7 @@ class PostActions extends Component {
             ratio={ratio}
             pid={pid}
             payoutDeclined={payoutDeclined}
-            percentSD={percentSD}
+            isFullPower={isFullPower}
           />
 
           <li className="item">

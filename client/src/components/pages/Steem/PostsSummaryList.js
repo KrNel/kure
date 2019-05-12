@@ -93,6 +93,8 @@ const PostsSummaryList = (props) => {
           )
         }
 
+        const isFullPower = post.percent_steem_dollars === 0;
+
         const key = pid+index;
 
         return (
@@ -161,7 +163,7 @@ const PostsSummaryList = (props) => {
                     resteemedPayload={resteemedPayload}
                     pageOwner={pageOwner}
                     payoutDeclined={payoutDeclined}
-                    percentSD={post.percent_steem_dollars}
+                    isFullPower={isFullPower}
                   />
                 </div>
               </div>
