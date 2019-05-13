@@ -43,8 +43,13 @@
   color: var(--action-grey);
   font-size: 1.2em;
 }
+
 .post-actions .large.icon:hover {
   color: var(--light-blue);
+}
+
+.post-actions .flag.large.icon:hover {
+  color: #dc2e2e;
 }
 
 .post-actions .ui.form .fields {
