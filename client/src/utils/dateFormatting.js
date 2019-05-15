@@ -7,7 +7,7 @@ const CONFIG_ORIG = moment().locale("en").localeData()._relativeTime;
 
 export const standard = date => {
   moment.updateLocale("en", { relativeTime: CONFIG_ORIG });
-  return moment.utc(date).local().format("YYYY/MM/DD HH:mm:ss");
+  return moment.utc(date).local().format("YYYY/MM/DD hh:mm:ss A");
 }
 
 export const LongNowDate = ({date}) => (

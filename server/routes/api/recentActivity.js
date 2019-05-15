@@ -14,9 +14,8 @@ const router = new Router();
  */
 router.get('/:user/:limit/:nextId?', (req, res, next) => {
   const db = req.app.locals.db;
-  const user = req.params.user;
+  const { user, nextId } = req.params;
   const limit = parseInt(req.params.limit);
-  const nextId = req.params.nextId;
 
   const myCommsLimit = limit;
   const mySubsLimit = limit;
@@ -150,7 +149,7 @@ export const getRecentGroupActivity = async (db, next, groupLimit, postLimit, us
  *  @param {string} sortBy Sort type for query
  *  @returns {object} Recent group activity  data object to send to frontend
  */
-export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy) => {
+export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy, nextId) => {
   return new Promise((resolve, reject) => {
     let sorting;
     if (sortBy === 'created') {
@@ -159,7 +158,13 @@ export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy) =
       sorting = { updated: -1 }
     }
 
+    if (nextId) {
       db.collection('kgroups').aggregate([
+        {
+          $match : {
+            _id: { $lt: ObjectId(nextId) },
+          }
+        },
         { $lookup: {
             from: 'kposts',
             as: 'kposts',
@@ -194,11 +199,49 @@ export const getGroups = async (db, next, groupLimit, postLimit, user, sortBy) =
            }
         },
         { $unwind: { path: '$access', preserveNullAndEmptyArrays: true }}
-
       ]).toArray((err, result) => {
         err ? reject(err) : resolve(result);
       })
-
+  } else {
+    db.collection('kgroups').aggregate([
+      { $lookup: {
+          from: 'kposts',
+          as: 'kposts',
+          let: { kgroups_name : '$name' },
+          pipeline: [
+            { $match: {
+              $expr: { $eq: [ '$group', '$$kgroups_name' ] }
+            } },
+            { $sort: { _id: -1 } },
+            { $limit: postLimit },
+          ]
+        }
+      },
+      { $sort: sorting },
+      { $limit: groupLimit },
+      {
+        $lookup: {
+          from: "kgroups_access",
+          as: "access",
+          let: { kgroups_name : '$name' },
+          pipeline: [
+            { $match: {
+                user: user
+              ,
+              $expr: { $eq: [ '$group', '$$kgroups_name' ] } }
+            },
+            { $project: {
+              _id: 0,
+              access: 1
+            } }
+          ]
+         }
+      },
+      { $unwind: { path: '$access', preserveNullAndEmptyArrays: true }}
+    ]).toArray((err, result) => {
+      err ? reject(err) : resolve(result);
+    })
+  }
   }).catch(next)
 }
 

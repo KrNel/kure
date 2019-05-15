@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import {Grid, Segment, Label, Header} from "semantic-ui-react";
 
+import GroupsRecent from './GroupsRecent';
+import GroupsCreatedGrid from './GroupsCreatedGrid';
+import GroupsCreatedList from './GroupsCreatedList';
+import ToggleView from '../../kure/ToggleView';
 import Loading from '../../Loading/Loading';
-import { getGroupsPage, logger } from '../../../utils/fetchFunctions';
-import GroupSummary from './GroupSummary';
+
 import './Groups.css';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import { getGroups } from '../../../actions/communitiesActions';
 
 /**
  *  Community page component that displays a variety of data tailored around
@@ -15,32 +20,64 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 class Groups extends Component {
 
   static propTypes = {
-    user: PropTypes.string,
     match: PropTypes.shape(PropTypes.object.isRequired),
+    isFetching: PropTypes.bool,
+    groupsCreated: PropTypes.arrayOf(PropTypes.object.isRequired),
+    groupsActivity: PropTypes.arrayOf(PropTypes.object.isRequired),
+    getContent: PropTypes.func,
+    hasMore: PropTypes.bool,
   };
 
   static defaultProps = {
-    user: 'x',
     match: {},
+    isFetching: true,
+    groupsCreated: [],
+    groupsActivity: [],
+    getContent: () => {},
+    hasMore: true,
   };
 
   state = {
-    areGroupsLoading: true,
-    groups: {},
     showGrid: true,
     tabSelected: 'new',
   }
+
+  limit = 20;
 
   /**
    *  When going to Communities page from other pages, load componentDidMount
    *  with props set and fetch data.
    */
   componentDidMount() {
-    const {
-      user
-    } = this.props;
+    const { groupsCreated } = this.props;
 
-    this.getGroups(user);
+    window.addEventListener("scroll", this.handleScroll);
+
+    if (!groupsCreated.length)
+      this.getGroupsData();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+
+  /**
+   *  Infinite scroll. Checks to see if the last post in the list is reached,
+   *  then calls fetch to get new posts.
+   */
+  handleScroll = () => {
+    const {
+      isFetching,
+      hasMore,
+    } = this.props;
+    if (!isFetching && hasMore) {
+      var lastLi = document.querySelector("#newlyCreated div.four.wide.column:last-child");
+      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      var pageOffset = window.pageYOffset + window.innerHeight;
+      if (pageOffset > lastLiOffset) {
+        this.getGroupsData();
+      }
+    }
   }
 
   /**
@@ -48,17 +85,18 @@ class Groups extends Component {
    *
    *  @param {string} user User logged in
    */
-  getGroups = (user) => {
-    if (user === '') user = 'x';
-    getGroupsPage(user)
-    .then(result => {
-      this.setState({
-        areGroupsLoading: false,
-        groups: result.data,
-      });
-    }).catch(err => {
-      logger('error', err);
-    });
+  getGroupsData = () => {
+    const {
+      groupsCreated,
+      getContent,
+    } = this.props;
+
+    let nextPageId = '';
+    if (groupsCreated.length) {
+      nextPageId = groupsCreated[groupsCreated.length - 1]._id;
+    }
+
+    getContent(this.limit, nextPageId);
   }
 
   /**
@@ -66,8 +104,7 @@ class Groups extends Component {
    */
   toggleView = event => {
     event.preventDefault();
-    const { showGrid } = this.state;
-    this.setState({ showGrid: !showGrid });
+    this.setState(prevState => ({ showGrid: !prevState.showGrid }));
   }
 
   /**
@@ -79,35 +116,102 @@ class Groups extends Component {
   }
 
   render() {
-
     const {
       state: {
-        areGroupsLoading,
-        groups,
         showGrid,
         tabSelected,
       },
       props: {
-        match
+        match,
+        isFetching,
+        groupsCreated,
+        groupsActivity,
       }
     } = this;
 
-    return (
-      areGroupsLoading
-        ? <Loading />
-        : (
-          <ErrorBoundary>
-            <GroupSummary
-              groups={groups}
-              match={match}
-              toggleView={this.toggleView}
-              showGrid={showGrid}
-              tabSelected={tabSelected}
-              tabView={this.tabView}
-            />
-          </ErrorBoundary>
-        )
-    )
+    const newlyCreated =
+      showGrid
+      ? (
+        <GroupsCreatedGrid
+          groups={groupsCreated}
+          match={match}
+        />
+      )
+      : (
+        <GroupsCreatedList
+          groups={groupsCreated}
+          match={match}
+        />
+      );
+
+    let selectedTab = null;
+    if (tabSelected === 'new') {
+      selectedTab = newlyCreated;
+    }else if (tabSelected === 'activity') {
+      selectedTab = (
+        <GroupsRecent
+          groupsActivity={groupsActivity}
+        />
+      );
+    }
+
+    let tabs = [
+      {name: 'Recently Created', view: 'new'},
+      {name: 'Recently Active', view: 'activity'}
+    ];
+
+    //create the tab section
+    const tabViews = tabs.map(tab => {
+      let classes = 'tabSelect';
+
+      if (tabSelected === tab.view)
+        classes += ' activeTab'
+
+      return (
+        <a key={tab.view} href={`/${tab.view}`} className={classes} onClick={event => this.tabView(event, tab.view)}>
+          <Label size='big'>
+            <Header as="h3">{tab.name}</Header>
+          </Label>
+        </a>
+      )
+    })
+
+    //if there is data, display the data part of the page
+    if (groupsCreated.length) {
+      return (
+        <ErrorBoundary>
+          <Grid columns={1} stackable>
+            <Grid.Column>
+              <div id='newlyCreated'>
+                <Grid.Row>
+                  <Grid.Column>
+                    {tabViews}
+                    <ToggleView
+                      toggleView={this.toggleView}
+                      showGrid={showGrid}
+                    />
+                    <div className='clear' />
+                  </Grid.Column>
+                </Grid.Row>
+                <hr />
+                {selectedTab}
+                { isFetching && <Loading /> }
+              </div>
+            </Grid.Column>
+          </Grid>
+        </ErrorBoundary>
+      )
+    //if there is no data and fetching, show loader
+    }else if (isFetching) {
+      return <Loading />
+    //if there is no data and no fetching, no groups exist
+    }else {
+      return (
+        <Segment>
+          {'No communities.'}
+        </Segment>
+      )
+    }
   }
 }
 
@@ -118,11 +222,22 @@ class Groups extends Component {
  *  @returns {object} - Object with recent activity data
  */
 const mapStateToProps = state => {
-  const { user, isAuth } = state.auth;
+  const {
+    communities: {
+      isFetching,
+      groups: {
+        groupsCreated,
+        groupsActivity,
+        hasMore,
+      },
+    }
+  } = state;
 
   return {
-    user,
-    isAuth,
+    isFetching,
+    groupsCreated,
+    groupsActivity,
+    hasMore,
   }
 }
 
@@ -134,9 +249,9 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    /*getGroups: (selected, user, limit, nextPageId) => (
-      dispatch(getCommunityPage(selected, user, limit, nextPageId))
-    ),*/
+    getContent: (limit, nextPageId) => (
+      dispatch(getGroups(limit, nextPageId))
+    ),
   }
 );
 

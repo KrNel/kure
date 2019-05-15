@@ -118,7 +118,7 @@ class GroupDetails extends Component {
 
     let nextPageId = '';
     if (kposts.length) {
-      nextPageId = kposts[kposts.length-1]._id;
+      nextPageId = kposts[kposts.length - 1]._id;
     }
 
     getContent(group, this.limit, nextPageId);
@@ -143,8 +143,7 @@ class GroupDetails extends Component {
    */
   toggleView = event => {
     event.preventDefault();
-    const { showGrid } = this.state;
-    this.setState({ showGrid: !showGrid });
+    this.setState(prevState => ({ showGrid: !prevState.showGrid }));
   }
 
   /**
@@ -269,7 +268,7 @@ class GroupDetails extends Component {
         : <Loading />
       : (
         <Segment>
-          {`That group doesn't existab.`}
+          {`That group doesn't exist.`}
         </Segment>
       )
     )

@@ -99,28 +99,45 @@ export const getUserGroups = async (db, next, user, type, limit) => {
 }
 
 /**
- *  GET route to get groups foro the Communities page.
- *  Route: /api/groups/
+ *  GET route to get created groups for the Communities page.
+ *  Route: /api/groups/list/user/nextId
  *
  *  Gets the local DB object, group name.
  *  Retrieves the post and user group data for which the user has access.
  */
-router.get('/list/:user', async (req, res, next) => {
+router.get('/list/:user/:nextId?', async (req, res, next) => {
+  const db = req.app.locals.db;
+  const { user, nextId } = req.params;
+
+  const groupLimit = 20;
+  const postLimit = 5;
+
+  getGroups(db, next, groupLimit, postLimit, user, 'created', nextId)
+    .then(result => {
+      res.json({groupsCreated: result});
+    })
+    .catch(next);
+})
+
+/**
+ *  GET route to get active groups for the Communities page.
+ *  Route: /api/groups/active/user
+ *
+ *  Gets the local DB object, group name.
+ *  Retrieves the post and user group data for which the user has access.
+ */
+router.get('/active/:user', async (req, res, next) => {
   const db = req.app.locals.db;
   const { user } = req.params;
 
   const groupLimit = 20;
   const postLimit = 5;
 
-  const groupsCreated = getGroups(db, next, groupLimit, postLimit, user, 'created');
-  const groupsActivity = getRecentGroupActivity(db, next, groupLimit, postLimit, user);
-
-  Promise.all([groupsActivity, groupsCreated]).then((result) => {
-    res.json({
-      groupsActivity: result[0],
-      groupsCreated: result[1],
+  getRecentGroupActivity(db, next, groupLimit, postLimit, user)
+    .then(result => {
+      res.json({groupsActivity: result});
     })
-  }).catch(next)
+    .catch(next);
 })
 
 /**

@@ -135,7 +135,7 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = () => {
-    const {isFetching, hasMore} = this.props;
+    const { isFetching, hasMore } = this.props;
     if (!isFetching && hasMore) {
       var lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
       var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;

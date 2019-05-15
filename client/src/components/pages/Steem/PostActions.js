@@ -103,6 +103,7 @@ class PostActions extends Component {
         pageOwner,
         payoutDeclined,
         isFullPower,
+        page,
       },
     } = this;
 
@@ -111,7 +112,7 @@ class PostActions extends Component {
       isResteemedByUser = true;
     }
 
-    if (pageOwner === user && author !== user) {
+    if (page === 'blog' && pageOwner === user && author !== user) {
       isResteemedByUser = true;
     }
 

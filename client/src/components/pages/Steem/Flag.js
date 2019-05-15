@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Icon, Popup } from "semantic-ui-react";
 
 import PercentDisplay from './PercentDisplay';
+import DollarDisplay from './DollarDisplay';
 import UserLink from './UserLink';
 import { getDownvotes, sortVotes } from '../../../utils/helpers';
 
@@ -32,6 +33,10 @@ const Flag = ({activeVotes, ratio,  user}) => {
     votersPopup = downVotes.slice(0, 14).map(vote => (
       <div key={vote.voter}>
         { <UserLink user={vote.voter} /> }
+        <span>
+          {`\u00A0\u00A0`}
+          <DollarDisplay value={vote.rshares * ratio} />
+        </span>
         {
           <span>
             {`\u00A0\u2022\u00A0`}

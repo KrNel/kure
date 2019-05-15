@@ -97,7 +97,7 @@ export const getFromSteem = async (url) => {
         title,
         image_link,
       }
-      
+
     } else return {exists: false};
   });
   return await res;
@@ -131,12 +131,6 @@ export const userValidation = (newUser) => {
     valid = false;
     return {valid, errors};
   }
-
-  /*//if user exists (check users obj)
-  if(valid)) {
-    errors["newUser"] = "Must be a valid URL";
-    valid = false;
-  }*/
 
   return {valid, errors};
 }

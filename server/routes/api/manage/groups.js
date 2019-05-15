@@ -79,7 +79,7 @@ const groupExists = async (db, next, group) => {
  *  @returns {boolean} Determines if a user has reached their limit
  */
 const exceededGrouplimit = async (db, next, user) => {
-  const exceeded = db.collection('users').find({name: user, 'owned_kgroups': {$gte: 4}}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
+  const exceeded = db.collection('users').find({name: user, $where: 'this.owned_kgroups >= this.owned_limit'}, {projection: {name: 1 }}).limit(1).toArray().then(data => {
     if (data.length) {
       return true;
     }

@@ -53,6 +53,8 @@ const GroupsRecent = ({ groupsActivity }) => {
         </Grid>
       </React.Fragment>
     );
+  }else {
+    return null;
   }
 }
 

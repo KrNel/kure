@@ -26,12 +26,9 @@ export const getManageGroup = (group, user) => {
  *
  *  @param {string} user User to get groups for
  *  @param {string} limit Limit of records to return
+ *  @param {string} nextId Id for next round of data fetches
  */
 export const getRecentActivity = (user, limit = 10, nextId) => {
-  return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
-}
-
-export const getPanelActivity = (user, limit = 10, nextId) => {
   return getData(`/api/recentactivity/${user}/${limit}/${nextId}`);
 }
 
@@ -39,9 +36,19 @@ export const getPanelActivity = (user, limit = 10, nextId) => {
  *  Get the list of communities on the site. Most recently created first.
  *
  *  @param {string} user User logged in
+ *  @param {string} nextId Id for next round of data fetches
  */
-export const getGroupsPage = (user) => {
-  return getData(`/api/groups/list/${user}`);
+export const getGroupsPage = (user, nextId) => {
+  return getData(`/api/groups/list/${user}/${nextId}`);
+}
+
+/**
+ *  Get the list of communities on the site. Most recently created first.
+ *
+ *  @param {string} user User logged in
+ */
+export const getGroupsActive = user => {
+  return getData(`/api/groups/active/${user}`);
 }
 
 /**
@@ -49,6 +56,8 @@ export const getGroupsPage = (user) => {
  *
  *  @param {string} group Requested community
  *  @param {string} user User's related data for the community
+ *  @param {string} limit Limit of records to return
+ *  @param {string} nextId Id for next round of data fetches
  */
 export const getGroupDetails = (group, user, limit, nextId) => {
   return getData(`/api/groups/group/${group}/${user}/${limit}/${nextId}`);
@@ -56,6 +65,9 @@ export const getGroupDetails = (group, user, limit, nextId) => {
 
 /**
  *  Get the community posts to show.
+ *
+ *  @param {string} limit Limit of records to return
+ *  @param {string} nextId Id for next round of data fetches
  */
 export const getPosts = (limit, nextId) => {
   return getData(`/api/posts/${limit}/${nextId}`);

@@ -235,6 +235,7 @@ class Vote extends Component {
       voteTitle = 'Unvote post';
     }else if (voters.some(vote => vote.voter === user && vote.percent === 0)) {
       upvoteClasses = 'voteRemoved';
+      voteTitle = 'Re-upvote post';
     }
 
     //vote count popup to show who voted, the vote value and percentage applied

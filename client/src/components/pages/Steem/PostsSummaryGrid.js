@@ -48,7 +48,7 @@ const PostsSummaryGrid = (props) => {
     return "No Posts";
   }else {
     return (
-      posts.map((postData, index) => {
+      posts.map(postData => {
 
         const votedPost = upvotePayload.votedPosts.find(votedPost => votedPost.id === (postData.id));
         if (votedPost)
@@ -92,11 +92,9 @@ const PostsSummaryGrid = (props) => {
           )
         }
 
-        const key = pid+index;
-
         return (
 
-          <Grid.Column key={key} width={8} className='infSummary'>
+          <Grid.Column key={permlink} width={8} className='infSummary'>
 
             <div className='postBox'>
               {resteemed}
