@@ -1,0 +1,12 @@
+.ui.modal.votersList {
+  width: 30rem;
+}
+
+.votersList > div.content > div {
+  font-size: 1.1rem;
+}
+
+.votersList > div.content img {
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}

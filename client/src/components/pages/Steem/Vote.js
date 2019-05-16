@@ -246,21 +246,18 @@ class Vote extends Component {
     if (votesCount) {
       votersPopup = voters.slice(0, 14).map(vote => (
         <div key={vote.voter}>
-          { <UserLink user={vote.voter} /> }
+          <UserLink user={vote.voter} />
 
-          { vote.rshares * ratio > 0.001 && (
-            <span>
-              {`\u00A0\u00A0`}
-              <DollarDisplay value={vote.rshares * ratio} />
-            </span>
-          )}
+          <span>
+            {`\u00A0\u00A0`}
+            <DollarDisplay value={vote.rshares * ratio} />
+          </span>
 
-          {
-            <span>
-              {`\u00A0\u2022\u00A0`}
-              <PercentDisplay value={vote.percent / 10000} />
-            </span>
-          }
+          <span>
+            {`\u00A0\u2022\u00A0`}
+            <PercentDisplay value={vote.percent / 10000} />
+          </span>
+
         </div>
       ))
     }else {

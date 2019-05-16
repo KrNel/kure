@@ -15,6 +15,7 @@ import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
+import { getFollowCount } from '../../../actions/followActions';
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
@@ -105,7 +106,18 @@ class Posts extends Component {
    *  Get the inital view settings from Redux.
    */
   componentDidMount() {
-    const { initViewSettings, match: { params: { tag } } } = this.props;
+    const {
+      initViewSettings,
+      followCount,
+      page,
+      match: {
+        params: {
+          tag,
+          author,
+        }
+      }
+    } = this.props;
+
     if (tag) {
       this.tag = tag;
     }
@@ -114,6 +126,9 @@ class Posts extends Component {
 
     this.getPosts();
     initViewSettings();
+
+    if (page === 'blog')
+      followCount(author);
   }
 
   /**
@@ -261,6 +276,8 @@ class Posts extends Component {
         handleResteem,
         resteemedPayload,
         showGrid,
+        followerCount,
+        followingCount,
       },
       state: {
         showDesc,
@@ -275,6 +292,7 @@ class Posts extends Component {
     const author = match.params.author;
 
     let pageheader = null;
+    let followHeader = null;
 
     if (page !== 'blog' && page !== 'feed') {
       pageheader = (
@@ -287,6 +305,25 @@ class Posts extends Component {
     }else if (page === 'blog') {
       pageheader = (
         <Label size='big' color='blue'><Header as='h3'>{`${author}'s Blog`}</Header></Label>
+      );
+
+      followHeader = (
+        <span>
+          {'\u00A0\u00A0'}
+          <span>
+            <strong>{followerCount[author]}</strong>
+            {' followers'}
+          </span>
+          <span>
+            {'\u00A0\u00A0'}
+            {'|'}
+            {'\u00A0\u00A0'}
+          </span>
+          <span>
+            {'Following '}
+            <strong>{followingCount[author]}</strong>
+          </span>
+        </span>
       );
     }
 
@@ -313,8 +350,8 @@ class Posts extends Component {
                 !showGrid
                 ? (
                   <div>
-                    {pageheader}
-                    {'Follow'}
+                    { pageheader }
+                    { followHeader }
                     <ToggleView
                       toggleView={this.toggleView}
                       showGrid={showGrid}
@@ -349,6 +386,7 @@ class Posts extends Component {
                         <Grid.Row>
                           <Grid.Column>
                             { pageheader }
+                            { followHeader }
                             <ToggleView
                               toggleView={this.toggleView}
                               showGrid={showGrid}
@@ -439,6 +477,10 @@ const mapStateToProps = state => {
     settings: {
       showGrid,
     },
+    follow: {
+      followerCount,
+      followingCount,
+    }
   } = state;
 
   return {
@@ -456,6 +498,8 @@ const mapStateToProps = state => {
     upvotePayload,
     resteemedPayload,
     showGrid,
+    followerCount,
+    followingCount,
   }
 }
 
@@ -491,9 +535,12 @@ const mapDispatchToProps = dispatch => (
     toggleViewSettings: () => (
       dispatch(changeViewSettings())
     ),
-    initViewSettings: () => {
+    initViewSettings: () => (
       dispatch(initViewStorage())
-    }
+    ),
+    followCount: user => (
+      dispatch(getFollowCount(user))
+    )
   }
 );
 
