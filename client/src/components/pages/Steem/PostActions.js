@@ -45,6 +45,8 @@ class PostActions extends Component {
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
     payoutDeclined: PropTypes.bool,
     isFullPower: PropTypes.bool,
+    showModalVotes: PropTypes.func,
+    page: PropTypes.string,
   };
 
   static defaultProps = {
@@ -70,6 +72,8 @@ class PostActions extends Component {
     resteemedPayload: {},
     payoutDeclined: false,
     isFullPower: false,
+    showModalVotes: () => {},
+    page: '',
   };
 
 
@@ -104,6 +108,7 @@ class PostActions extends Component {
         payoutDeclined,
         isFullPower,
         page,
+        showModalVotes,
       },
     } = this;
 
@@ -134,6 +139,7 @@ class PostActions extends Component {
             pid={pid}
             payoutDeclined={payoutDeclined}
             isFullPower={isFullPower}
+            showModalVotes={showModalVotes}
           />
 
           <li className="item">
@@ -177,6 +183,7 @@ class PostActions extends Component {
                 activeVotes={activeVotes}
                 ratio={ratio}
                 user={user}
+                showModalVotes={showModalVotes}
               />
             )
           }

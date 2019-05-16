@@ -73,7 +73,7 @@ class ModalGroup extends Component {
         </Modal.Content>
         <Modal.Actions>
           <Button data-confirm='false' onClick={event => handleModalClick(event)} negative content='Cancel' />
-          <Button data-confirm='true' onClick={event => handleModalClick(event)} positive icon='checkmark' labelPosition='right' content='Add' />
+          <Button data-confirm='true' onClick={event => handleModalClick(event)} positive content='Add' />
         </Modal.Actions>
       </Modal>
     )

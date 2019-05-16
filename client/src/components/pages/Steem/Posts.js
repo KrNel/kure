@@ -17,6 +17,7 @@ import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
+import ModalVotesList from '../../Modal/ModalVotesList';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -88,6 +89,11 @@ class Posts extends Component {
 
     this.state = {
       showDesc: true,
+      modalVotesOpen: false,
+      voterData: {
+        voters: [],
+        ratio: 0,
+      },
     };
   }
 
@@ -207,6 +213,31 @@ class Posts extends Component {
     this.setState(prevState => ({ showDesc: !prevState.showDesc }));
   }
 
+  /**
+   *  Shows the popup modal for voter data.
+   *
+   *  @param {event} event Event triggered by element to handle
+   *  @param {arary} voters Voters on a post or comment
+   */
+  showModalVotes = (event, voterData) => {
+    event.preventDefault();
+    this.setState({
+      modalVotesOpen: true,
+      voterData,
+    });
+  }
+
+  /**
+   *  Closes the popup modal for voter data.
+   *
+   *  @param {event} event Event triggered by element to handle
+   */
+  onModalVotesClose = event => {
+    this.setState({
+      modalVotesOpen: false,
+    });
+  }
+
   render() {
     const {
       props: {
@@ -233,6 +264,8 @@ class Posts extends Component {
       },
       state: {
         showDesc,
+        modalVotesOpen,
+        voterData,
       },
     } = this;
 
@@ -268,6 +301,11 @@ class Posts extends Component {
           addErrorPost={addErrorPost}
           addPostLoading={addPostLoading}
         />
+        <ModalVotesList
+          modalOpen={modalVotesOpen}
+          onModalClose={this.onModalVotesClose}
+          voterData={voterData}
+        />
         <ErrorBoundary>
           <React.Fragment>
             <div id="postList">
@@ -276,6 +314,7 @@ class Posts extends Component {
                 ? (
                   <div>
                     {pageheader}
+                    {'Follow'}
                     <ToggleView
                       toggleView={this.toggleView}
                       showGrid={showGrid}
@@ -296,6 +335,7 @@ class Posts extends Component {
                           page={page}
                           pageOwner={author}
                           resteemedPayload={resteemedPayload}
+                          showModalVotes={this.showModalVotes}
                         />
                       ) : (
                         <Loading />
@@ -341,6 +381,7 @@ class Posts extends Component {
                               pageOwner={author}
                               resteemedPayload={resteemedPayload}
                               showDesc={showDesc}
+                              showModalVotes={this.showModalVotes}
                             />
                           ) : (
                             <Loading />

@@ -17,20 +17,20 @@ import { getDownvotes, sortVotes } from '../../../utils/helpers';
  *  @param {array} ratio Ratio of payout divided by rshares for post
  *  @param {array} user User logged in
  */
-const Flag = ({activeVotes, ratio,  user}) => {
+const Flag = ({activeVotes, ratio,  user, showModalVotes}) => {
 
   const flag = event => {
     event.preventDefault();
   }
 
-  let downVotes = getDownvotes(activeVotes);
-  const votesCount = downVotes.length;
+  let voters = getDownvotes(activeVotes);
+  const votesCount = voters.length;
 
-  downVotes = sortVotes(downVotes, 'rshares');
+  voters = sortVotes(voters, 'rshares');
 
   let votersPopup = '';
   if (votesCount) {
-    votersPopup = downVotes.slice(0, 14).map(vote => (
+    votersPopup = voters.slice(0, 14).map(vote => (
       <div key={vote.voter}>
         { <UserLink user={vote.voter} /> }
         <span>
@@ -55,10 +55,19 @@ const Flag = ({activeVotes, ratio,  user}) => {
         </a>
       </span>
       {
-        votesCount !== 0 && (
+        votesCount > 0 && (
           <span>
             <Popup
-              trigger={<span>{` ${votesCount}`}</span>}
+              trigger={(
+                <span>
+                  <a
+                    href='#votes'
+                    onClick={event => showModalVotes(event, {voters, ratio})}
+                  >
+                    {` ${votesCount}`}
+                  </a>
+                </span>
+              )}
               horizontalOffset={15}
               flowing
               hoverable
@@ -76,12 +85,14 @@ Flag.propTypes = {
   activeVotes: PropTypes.arrayOf(PropTypes.object),
   ratio: PropTypes.number,
   user: PropTypes.string,
+  showModalVotes: PropTypes.func,
 };
 
 Flag.defaultProps = {
   activeVotes: [],
   ratio: 0,
   user: '',
+  showModalVotes: () => {},
 };
 
 export default Flag;

@@ -42,6 +42,7 @@ const PostsSummaryList = (props) => {
     page,
     pageOwner,
     resteemedPayload,
+    showModalVotes,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -163,6 +164,7 @@ const PostsSummaryList = (props) => {
                     pageOwner={pageOwner}
                     payoutDeclined={payoutDeclined}
                     isFullPower={isFullPower}
+                    showModalVotes={showModalVotes}
                   />
                 </div>
               </div>
@@ -183,6 +185,7 @@ PostsSummaryList.propTypes = {
   upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
   isFetching: PropTypes.bool,
   handleResteem: PropTypes.func,
+  showModalVotes: PropTypes.func,
 };
 
 PostsSummaryList.defaultProps = {
@@ -193,6 +196,7 @@ PostsSummaryList.defaultProps = {
   upvotePayload: {},
   isFetching: false,
   handleResteem: () => {},
+  showModalVotes: () => {},
 };
 
 

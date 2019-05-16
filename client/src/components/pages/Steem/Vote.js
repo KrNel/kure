@@ -38,6 +38,7 @@ class Vote extends Component {
     pid: PropTypes.number.isRequired,
     payoutDeclined: PropTypes.bool,
     isFullPower: PropTypes.bool,
+    showModalVotes: PropTypes.func,
   };
 
   static defaultProps = {
@@ -45,12 +46,13 @@ class Vote extends Component {
     upvotePayload: {},
     payoutDeclined: false,
     isFullPower: false,
+    showModalVotes: () => {},
   }
 
   state = {
     unvote: false,
     showSlider: false,
-    sliderWeight: 10000
+    sliderWeight: 10000,
   }
 
   /**
@@ -191,6 +193,7 @@ class Vote extends Component {
         pid,
         payoutDeclined,
         isFullPower,
+        showModalVotes,
       },
       state: {
         unvote,
@@ -328,7 +331,7 @@ class Vote extends Component {
                   name='flag outline'
                   color='red'
                   size='large'
-                  title='Flagged post'
+                  title='Flagged'
                 />
                 {' '}
               </span>
@@ -373,7 +376,20 @@ class Vote extends Component {
               />
             </Popup>
             <Popup
-              trigger={<span>{` ${votesCount}`}</span>}
+              trigger={
+                votesCount > 0
+                && (
+                  <span>
+                    <a
+                      href='#votes'
+                      onClick={event => showModalVotes(event, {voters, ratio})}
+                    >
+                      {` ${votesCount}`}
+                    </a>
+                  </span>
+                )
+
+              }
               horizontalOffset={15}
               flowing
               hoverable

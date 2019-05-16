@@ -42,6 +42,7 @@ const PostsSummaryGrid = (props) => {
     pageOwner,
     resteemedPayload,
     showDesc,
+    showModalVotes,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -164,6 +165,7 @@ const PostsSummaryGrid = (props) => {
                     pageOwner={pageOwner}
                     payoutDeclined={payoutDeclined}
                     percentSD={post.percent_steem_dollars}
+                    showModalVotes={showModalVotes}
                   />
                 </div>
               </div>
@@ -184,6 +186,7 @@ PostsSummaryGrid.propTypes = {
   upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
   isFetching: PropTypes.bool,
   handleResteem: PropTypes.func,
+  showModalVotes: PropTypes.func,
 };
 
 PostsSummaryGrid.defaultProps = {
@@ -194,6 +197,7 @@ PostsSummaryGrid.defaultProps = {
   upvotePayload: {},
   isFetching: false,
   handleResteem: () => {},
+  showModalVotes: () => {},
 };
 
 
