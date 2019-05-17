@@ -15,7 +15,7 @@ import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
-import { getFollowCount } from '../../../actions/followActions';
+import { getFollowCount, getFollowers, getFollowing, clearFollow } from '../../../actions/followActions';
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
@@ -53,6 +53,12 @@ class Posts extends Component {
     initViewSettings: PropTypes.func,
     toggleViewSettings: PropTypes.func,
     showGrid: PropTypes.bool,
+    followCount: PropTypes.func,
+    clearFollowData: PropTypes.func,
+    followerCount: PropTypes.number,
+    followingCount: PropTypes.number,
+    followers: PropTypes.arrayOf(PropTypes.object),
+    following: PropTypes.arrayOf(PropTypes.object),
   };
 
   static defaultProps = {
@@ -80,6 +86,12 @@ class Posts extends Component {
     initViewSettings: () => {},
     toggleViewSettings: () => {},
     showGrid: true,
+    followCount: () => {},
+    clearFollowData: () => {},
+    followerCount: 0,
+    followingCount: 0,
+    followers: [],
+    following: [],
   };
 
   constructor(props) {
@@ -136,19 +148,41 @@ class Posts extends Component {
    *  url route. If so, getPosts(), otherwise the page data stays the same.
    */
   componentDidUpdate(prevProps) {
-    const { match } = this.props;
+    const {
+      match: {
+        url,
+        params: {
+          tag,
+          author,
+        },
+      },
+      page,
+      followCount,
+      clearFollowData,
+    } = this.props;
 
-    if (match.url !== prevProps.match.url) {
-      if (match.params.tag)
-        this.tag = match.params.tag;
+    if (url !== prevProps.match.url) {
+      if (tag)
+        this.tag = tag;
       else
         this.tag = '';
+
+      if (page === 'blog') {
+        clearFollowData();
+        followCount(author);
+      }
+
       this.getPosts();
+
     }
   }
 
   componentWillUnmount() {
+    const { clearFollowData } = this.props;
+
     window.removeEventListener("scroll", this.handleScroll);
+
+    clearFollowData();
   }
 
   /**
@@ -278,6 +312,8 @@ class Posts extends Component {
         showGrid,
         followerCount,
         followingCount,
+        followers,
+        following,
       },
       state: {
         showDesc,
@@ -310,8 +346,8 @@ class Posts extends Component {
       followHeader = (
         <span>
           {'\u00A0\u00A0'}
-          <span>
-            <strong>{followerCount[author]}</strong>
+          <span key={followers}>
+            <strong>{followerCount}</strong>
             {' followers'}
           </span>
           <span>
@@ -319,9 +355,9 @@ class Posts extends Component {
             {'|'}
             {'\u00A0\u00A0'}
           </span>
-          <span>
+          <span key={following}>
             {'Following '}
-            <strong>{followingCount[author]}</strong>
+            <strong>{followingCount}</strong>
           </span>
         </span>
       );
@@ -480,6 +516,8 @@ const mapStateToProps = state => {
     follow: {
       followerCount,
       followingCount,
+      followers,
+      following,
     }
   } = state;
 
@@ -500,6 +538,8 @@ const mapStateToProps = state => {
     showGrid,
     followerCount,
     followingCount,
+    followers,
+    following,
   }
 }
 
@@ -540,7 +580,16 @@ const mapDispatchToProps = dispatch => (
     ),
     followCount: user => (
       dispatch(getFollowCount(user))
-    )
+    ),
+    followers: user => (
+      dispatch(getFollowers(user))
+    ),
+    following: user => (
+      dispatch(getFollowing(user))
+    ),
+    clearFollowData: () => (
+      dispatch(clearFollow())
+    ),
   }
 );
 

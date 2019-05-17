@@ -9,11 +9,12 @@ const Tags = ({tags}) => (
   <ul className='tags'>
     {
       tags.map(tag => (
-        <li key={tag}>
+        <span key={tag}>
           <Label>
             <Category category={tag} />
           </Label>
-        </li>
+          <span>{' '}</span>
+        </span>
       ))
     }
   </ul>
