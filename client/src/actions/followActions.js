@@ -7,6 +7,7 @@ export const GET_FOLLOWCOUNT_SUCCESS = 'GET_FOLLOWCOUNT_SUCCESS';
 export const GET_FOLLOWERS_SUCCESS = 'GET_FOLLOWERS_SUCCESS';
 export const GET_FOLLOWING_SUCCESS = 'GET_FOLLOWS_SUCCESS';
 export const CLEAR_FOLLOW = 'CLEAR_FOLLOW';
+export const GET_ALL_FOLLOWING_SUCCESS = 'GET_ALL_FOLLOWING_SUCCESS';
 
 /**
  *  Action creator for starting retrieval of follow data.
@@ -62,17 +63,29 @@ export const clearFollow = () => ({
 });
 
 /**
+ *  Action creator for successful retrieval of all following list.
+ *
+ *  @param {array} followingList All following users
+ *  @return {object} The action data
+ */
+export const followingListSuccess = followingList => ({
+  type: GET_ALL_FOLLOWING_SUCCESS,
+  followingList,
+});
+
+/**
  *  Get the follow count for a user.
  *
  *  @param {string} user User to get data for
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowCount = user => (dispatch, getState) => {
-  return client.call('follow_api', 'get_follow_count', [user])
+export const getFollowCount = user => (dispatch, getState) => (
+  client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {
       dispatch(followCountSuccess(followCount.follower_count, followCount.following_count));
+      dispatch(getAllFollowing(user));
     })
-}
+)
 
 /**
  *  Get the user's followers list.
@@ -83,7 +96,12 @@ export const getFollowCount = user => (dispatch, getState) => {
  *  @param {number} limit Number of users to get
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowers = (user, startFrom = '', type = 'blog', limit = 100) => (dispatch, getState) => {
+export const getFollowers = (user, startFrom = '', limit = 100, more = false, type = 'blog', ) => (dispatch, getState) => {
+  dispatch(followStart());
+
+  if (more)
+    limit = limit + 1;
+
   return client.call('follow_api', 'get_followers', [
       user,
       startFrom,
@@ -91,6 +109,9 @@ export const getFollowers = (user, startFrom = '', type = 'blog', limit = 100) =
       limit,
     ])
     .then(followers => {
+      if (more)
+        followers = followers.slice(1);
+
       dispatch(followersSuccess(followers));
     })
 }
@@ -104,7 +125,12 @@ export const getFollowers = (user, startFrom = '', type = 'blog', limit = 100) =
  *  @param {number} limit Number of users to get
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowing = (user, startFrom = '', type = 'blog', limit = 100) => (dispatch, getState) => {
+export const getFollowing = (user, startFrom = '', limit = 100, more = false, type = 'blog') => (dispatch, getState) => {
+  dispatch(followStart());
+
+  if (more)
+    limit = limit + 1;
+
   return client.call('follow_api', 'get_following', [
       user,
       startFrom,
@@ -112,7 +138,33 @@ export const getFollowing = (user, startFrom = '', type = 'blog', limit = 100) =
       limit,
     ])
     .then(following => {
+      if (more)
+        following = following.slice(1);
+
       dispatch(followingSuccess(following));
+    })
+}
+
+export const getAllFollowing = user => async (dispatch, getState) => {
+  const { followingCount } = getState().follow;
+
+  let count = followingCount;
+
+  if (followingCount === 0)
+    count = await client.call('follow_api', 'get_follow_count', [user])
+    .then(followCount => {
+       return followCount.following_count;
+    })
+
+  return await client.call('follow_api', 'get_following', [
+      user,
+      '',
+      'blog',
+      count,
+    ])
+    .then(following => {
+      const users = following.map(follows => follows.following)
+      dispatch(followingListSuccess(users));
     })
 }
 

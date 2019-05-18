@@ -71,9 +71,9 @@ class Groups extends Component {
       hasMore,
     } = this.props;
     if (!isFetching && hasMore) {
-      var lastLi = document.querySelector("#newlyCreated div.four.wide.column:last-child");
-      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-      var pageOffset = window.pageYOffset + window.innerHeight;
+      let lastLi = document.querySelector("#newlyCreated div.four.wide.column:last-child");
+      let lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      let pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
         this.getGroupsData();
       }

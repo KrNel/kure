@@ -2,7 +2,7 @@ import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Header, Label, Grid, Icon } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import PostsSummaryGrid from './PostsSummaryGrid';
 import PostsSummaryList from './PostsSummaryList';
@@ -19,6 +19,10 @@ import { getFollowCount, getFollowers, getFollowing, clearFollow } from '../../.
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
+import Followers from './Followers';
+import Following from './Following';
+
+import './Post.css';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -59,6 +63,8 @@ class Posts extends Component {
     followingCount: PropTypes.number,
     followers: PropTypes.arrayOf(PropTypes.object),
     following: PropTypes.arrayOf(PropTypes.object),
+    getFollowersList: PropTypes.func,
+    getFollowingList: PropTypes.func,
   };
 
   static defaultProps = {
@@ -92,6 +98,8 @@ class Posts extends Component {
     followingCount: 0,
     followers: [],
     following: [],
+    getFollowersList: () => {},
+    getFollowingList: () => {},
   };
 
   constructor(props) {
@@ -121,12 +129,17 @@ class Posts extends Component {
     const {
       initViewSettings,
       followCount,
+      getFollowersList,
+      getFollowingList,
+      clearFollowData,
+      //prevPage,
       page,
       match: {
         params: {
           tag,
           author,
-        }
+        },
+        path,
       }
     } = this.props;
 
@@ -136,11 +149,28 @@ class Posts extends Component {
 
     window.addEventListener("scroll", this.handleScroll);
 
-    this.getPosts();
-    initViewSettings();
+    if (page !== 'follows')
+      this.getPosts();
 
-    if (page === 'blog')
+    initViewSettings();
+    clearFollowData();
+    followCount(author);
+
+    /*if (page === 'blog') {
+      //clear count data when it already has data from other user
+      clearFollowData();
       followCount(author);
+    }else*/ if (path === '/@:author/followers') {
+      getFollowersList(author);
+      //if coming from non-blog page, get count again
+      /*if (prevPage !== 'blog')
+        followCount(author);*/
+    }else if (path === '/@:author/following') {
+      getFollowingList(author);
+      //if coming from non-blog page, get count again
+      /*if (prevPage !== 'blog')
+        followCount(author);*/
+    }
   }
 
   /**
@@ -150,6 +180,7 @@ class Posts extends Component {
   componentDidUpdate(prevProps) {
     const {
       match: {
+        path,
         url,
         params: {
           tag,
@@ -159,6 +190,10 @@ class Posts extends Component {
       page,
       followCount,
       clearFollowData,
+      followers,
+      following,
+      getFollowersList,
+      getFollowingList,
     } = this.props;
 
     if (url !== prevProps.match.url) {
@@ -172,17 +207,17 @@ class Posts extends Component {
         followCount(author);
       }
 
-      this.getPosts();
-
+      if (page !== 'follows')
+        this.getPosts();
+      else if (!followers.length && path === '/@:author/followers')
+        getFollowersList(author);
+      else if (!following.length && path === '/@:author/following')
+        getFollowingList(author);
     }
   }
 
   componentWillUnmount() {
-    const { clearFollowData } = this.props;
-
     window.removeEventListener("scroll", this.handleScroll);
-
-    clearFollowData();
   }
 
   /**
@@ -190,13 +225,45 @@ class Posts extends Component {
    *  then calls fetch to get new posts.
    */
   handleScroll = () => {
-    const { isFetching, hasMore } = this.props;
-    if (!isFetching && hasMore) {
-      var lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
-      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-      var pageOffset = window.pageYOffset + window.innerHeight;
+    const {
+      isFetching,
+      hasMore,
+      page,
+      followers,
+      following,
+      getFollowersList,
+      getFollowingList,
+      isFetchingFollows,
+      match: {
+        path,
+        params: {
+          author,
+        },
+      },
+    } = this.props;
+
+    if (!isFetching && hasMore && !isFetchingFollows) {
+      let lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
+      let getter = () => this.getPosts('more');
+
+      if (page === 'follows') {
+        const more = true;
+        let startFrom = '';
+        lastLi = document.querySelector("#follows > div.follow:last-child");
+
+        if (path === '/@:author/followers') {
+          startFrom = followers[followers.length - 1].follower;
+          getter = () => getFollowersList(author, startFrom, 100, more);
+        }else {
+          startFrom = following[following.length - 1].following;
+          getter = () => getFollowingList(author, startFrom, 100, more);
+        }
+      }
+
+      let lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      let pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
-        this.getPosts('more');
+        getter();
       }
     }
   }
@@ -290,6 +357,9 @@ class Posts extends Component {
   render() {
     const {
       props: {
+        match: {
+          path,
+        },
         user,
         csrf,
         posts,
@@ -314,6 +384,8 @@ class Posts extends Component {
         followingCount,
         followers,
         following,
+        getFollowersUsers,
+        getFollowingUsers,
       },
       state: {
         showDesc,
@@ -330,36 +402,52 @@ class Posts extends Component {
     let pageheader = null;
     let followHeader = null;
 
-    if (page !== 'blog' && page !== 'feed') {
+    if (page === 'feed') {
       pageheader = (
-        <FilterPosts handleSubmitFilter={this.handleSubmitFilter} />
+        <Label size='big' color='blue'>
+          <Header as='h3'>
+            {`${author}'s Feed`}
+          </Header>
+        </Label>
       );
-    }else if (page === 'feed') {
+    }else if (page === 'blog' || page === 'follows') {
       pageheader = (
-        <Label size='big' color='blue'><Header as='h3'>{`${author}'s Feed`}</Header></Label>
-      );
-    }else if (page === 'blog') {
-      pageheader = (
-        <Label size='big' color='blue'><Header as='h3'>{`${author}'s Blog`}</Header></Label>
+        <Label size='big' color='blue'>
+          <Header as='h3' className='blog'>
+            <Link
+              to={`/@${author}`}
+            >
+              {`${author}'s Blog`}
+            </Link>
+          </Header>
+        </Label>
       );
 
       followHeader = (
         <span>
           {'\u00A0\u00A0'}
-          <span key={followers}>
+          <Link
+            to={`/@${author}/followers`}
+          >
             <strong>{followerCount}</strong>
             {' followers'}
-          </span>
+          </Link>
           <span>
             {'\u00A0\u00A0'}
             {'|'}
             {'\u00A0\u00A0'}
           </span>
-          <span key={following}>
+          <Link
+            to={`/@${author}/following`}
+          >
             {'Following '}
             <strong>{followingCount}</strong>
-          </span>
+          </Link>
         </span>
+      );
+    }else {
+      pageheader = (
+        <FilterPosts handleSubmitFilter={this.handleSubmitFilter} />
       );
     }
 
@@ -381,68 +469,25 @@ class Posts extends Component {
         />
         <ErrorBoundary>
           <React.Fragment>
-            <div id="postList">
-              {
-                !showGrid
-                ? (
-                  <div>
-                    { pageheader }
-                    { followHeader }
-                    <ToggleView
-                      toggleView={this.toggleView}
-                      showGrid={showGrid}
-                    />
-                    <hr />
-                    {
-                      page === prevPage
-                      ? (
-                        <PostsSummaryList
-                          posts={posts}
-                          showModal={showModal}
-                          user={user}
-                          csrf={csrf}
-                          handleUpvote={handleUpvote}
-                          upvotePayload={upvotePayload}
-                          isFetching={isFetching}
-                          handleResteem={handleResteem}
-                          page={page}
-                          pageOwner={author}
-                          resteemedPayload={resteemedPayload}
-                          showModalVotes={this.showModalVotes}
+            {
+              page !== 'follows'
+              ? (
+                <div id="postList">
+                  {
+                    !showGrid
+                    ? (
+                      <div>
+                        { pageheader }
+                        { followHeader }
+                        <ToggleView
+                          toggleView={this.toggleView}
+                          showGrid={showGrid}
                         />
-                      ) : (
-                        <Loading />
-                      )
-                    }
-                  </div>
-                ) : (
-                  <Grid columns={1} stackable>
-                    <Grid.Column width={16} className="main">
-                      <Grid stackable>
-                        <Grid.Row>
-                          <Grid.Column>
-                            { pageheader }
-                            { followHeader }
-                            <ToggleView
-                              toggleView={this.toggleView}
-                              showGrid={showGrid}
-                            />
-                            <hr />
-                            {'Hide Descriptions: '}
-                            <a href='/description' onClick={this.toggleDescriptions}>
-                              {
-                                showDesc
-                                ? <Icon name='toggle off' size='large' />
-                                : <Icon name='toggle on' size='large' />
-                              }
-                            </a>
-                          </Grid.Column>
-                        </Grid.Row>
-
+                        <hr />
                         {
                           page === prevPage
                           ? (
-                            <PostsSummaryGrid
+                            <PostsSummaryList
                               posts={posts}
                               showModal={showModal}
                               user={user}
@@ -454,22 +499,95 @@ class Posts extends Component {
                               page={page}
                               pageOwner={author}
                               resteemedPayload={resteemedPayload}
-                              showDesc={showDesc}
                               showModalVotes={this.showModalVotes}
                             />
                           ) : (
                             <Loading />
                           )
                         }
+                      </div>
+                    ) : (
+                      <Grid columns={1} stackable>
+                        <Grid.Column width={16} className="main">
+                          <Grid stackable>
+                            <Grid.Row>
+                              <Grid.Column>
+                                { pageheader }
+                                { followHeader }
+                                <ToggleView
+                                  toggleView={this.toggleView}
+                                  showGrid={showGrid}
+                                />
+                                <hr />
+                                {'Hide Descriptions: '}
+                                <a href='/description' onClick={this.toggleDescriptions}>
+                                  {
+                                    showDesc
+                                    ? <Icon name='toggle off' size='large' />
+                                    : <Icon name='toggle on' size='large' />
+                                  }
+                                </a>
+                              </Grid.Column>
+                            </Grid.Row>
+
+                            {
+                              page === prevPage
+                              ? (
+                                <PostsSummaryGrid
+                                  posts={posts}
+                                  showModal={showModal}
+                                  user={user}
+                                  csrf={csrf}
+                                  handleUpvote={handleUpvote}
+                                  upvotePayload={upvotePayload}
+                                  isFetching={isFetching}
+                                  handleResteem={handleResteem}
+                                  page={page}
+                                  pageOwner={author}
+                                  resteemedPayload={resteemedPayload}
+                                  showDesc={showDesc}
+                                  showModalVotes={this.showModalVotes}
+                                />
+                              ) : (
+                                <Loading />
+                              )
+                            }
+                          </Grid>
+                        </Grid.Column>
                       </Grid>
-                    </Grid.Column>
-                  </Grid>
-                )
-              }
-              {
-                isFetching && page === prevPage && <Loading />
-              }
-            </div>
+                    )
+                  }
+                  {
+                    isFetching && page === prevPage && <Loading />
+                  }
+                </div>
+              )
+              : (
+                <div>
+                  { pageheader }
+                  { followHeader }
+                  <hr />
+                  {
+                    path === '/@:author/followers'
+                    ? (
+                      <Followers
+                        author={author}
+                        followerCount={followerCount}
+                        followers={followers}
+                      />
+
+                    )
+                    : (
+                      <Following
+                        author={author}
+                        followingCount={followingCount}
+                        following={following}
+                      />
+                    )
+                  }
+                </div>
+              )
+            }
           </React.Fragment>
         </ErrorBoundary>
       </React.Fragment>
@@ -518,6 +636,7 @@ const mapStateToProps = state => {
       followingCount,
       followers,
       following,
+      isFetching: isFetchingFollows,
     }
   } = state;
 
@@ -540,6 +659,7 @@ const mapStateToProps = state => {
     followingCount,
     followers,
     following,
+    isFetchingFollows,
   }
 }
 
@@ -581,11 +701,11 @@ const mapDispatchToProps = dispatch => (
     followCount: user => (
       dispatch(getFollowCount(user))
     ),
-    followers: user => (
-      dispatch(getFollowers(user))
+    getFollowersList: (user, startFrom, limit, more) => (
+      dispatch(getFollowers(user, startFrom, limit, more))
     ),
-    following: user => (
-      dispatch(getFollowing(user))
+    getFollowingList: (user, startFrom, limit, more) => (
+      dispatch(getFollowing(user, startFrom, limit, more))
     ),
     clearFollowData: () => (
       dispatch(clearFollow())

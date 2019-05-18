@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Modal, Image } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
-import UserLink from '../pages/Steem/UserLink';
+import UserCard from '../pages/Steem/UserCard';
 import DollarDisplay from '../pages/Steem/DollarDisplay';
 import PercentDisplay from '../pages/Steem/PercentDisplay';
 
@@ -20,23 +20,25 @@ import './ModalVotesList.css';
 const ModalVotesList = ({modalOpen, onModalClose, voterData}) => {
   const { voters, ratio } = voterData;
 
-  const list = !!voters.length && voters.map(vote => (
-    <div key={vote.voter}>
-      <span><Image inline src={`https://steemitimages.com/u/${vote.voter}/avatar`} height={30} width={30} /></span>
-      <span><UserLink user={vote.voter} /></span>
+  const list = !!voters.length && voters.map(vote => {
+    const user = vote.voter;
 
-      <span>
-        {`\u00A0\u00A0`}
-        <DollarDisplay value={vote.rshares * ratio} />
-      </span>
+    return (
+      <div key={user}>
+        <UserCard user={user}>
+          <span>
+            {`\u00A0\u00A0`}
+            <DollarDisplay value={vote.rshares * ratio} />
+          </span>
 
-      <span>
-        {`\u00A0\u2022\u00A0`}
-        <PercentDisplay value={vote.percent / 10000} />
-      </span>
-      <hr />
-    </div>
-  ))
+          <span>
+            {`\u00A0\u2022\u00A0`}
+            <PercentDisplay value={vote.percent / 10000} />
+          </span>
+        </UserCard>
+      </div>
+    )
+  })
 
   return (
     <Modal closeIcon size='small' open={modalOpen} onClose={onModalClose} className='votersList'>

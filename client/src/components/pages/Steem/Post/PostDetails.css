@@ -25,6 +25,10 @@
   margin-right: -3rem;
 }
 
+.PostContent .detailsFooter {
+  margin-bottom: 1rem;
+}
+
 .PostContent .footer .meta {
   font-family: var(--font-content);
   font-size: 1.1rem;

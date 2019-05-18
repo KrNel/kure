@@ -80,9 +80,9 @@ class Home extends Component {
     const { tabSelected } = this.state;
 
     if (!isFetching && hasMore && tabSelected === 'new') {
-      var lastLi = document.querySelector(".home div.infiniteEl:last-child");
-      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-      var pageOffset = window.pageYOffset + window.innerHeight;
+      let lastLi = document.querySelector(".home div.infiniteEl:last-child");
+      let lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      let pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
         this.getPosts();
       }

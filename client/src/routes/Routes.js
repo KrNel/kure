@@ -14,6 +14,7 @@ import Manage from '../components/pages/Manage/Manage';
 import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
 import Write from '../components/pages/Steem/Write/Write';
+import Follows from '../components/pages/Steem/Follows/Follows';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -37,6 +38,8 @@ const Routes = (props) => (
       <Route path='/trending/:tag?' component={Kurate} />
       <Route path='/:category/@:author/:permlink' component={Post} />
       <Route path='/@:author/feed' component={Feed} />
+      <Route path='/@:author/followers' component={Follows} />
+      <Route path='/@:author/following' component={Follows} />
       <Route path='/@:author' component={Blog} />
       <Route path='/success' component={AuthSC} />
       <Route exact path='/groups/group/:group/' component={GroupDetails} />

@@ -3,7 +3,8 @@ import {
   GET_FOLLOWCOUNT_SUCCESS,
   GET_FOLLOWERS_SUCCESS,
   GET_FOLLOWING_SUCCESS,
-  CLEAR_FOLLOW
+  CLEAR_FOLLOW,
+  GET_ALL_FOLLOWING_SUCCESS,
 } from '../actions/followActions';
 
 /**
@@ -20,6 +21,7 @@ export const follow = (state = {
   following: [],
   followerCount: 0,
   followingCount: 0,
+  followingList: [],
 }, action) => {
 
   switch (action.type) {
@@ -36,6 +38,7 @@ export const follow = (state = {
         following: [],
         followerCount: 0,
         followingCount: 0,
+        followingList: [],
       }
     case GET_FOLLOWCOUNT_SUCCESS:
       return {
@@ -48,13 +51,24 @@ export const follow = (state = {
       return {
         ...state,
         isFetching: false,
-        followers: action.followers,
+        followers: [
+          ...state.followers,
+          ...action.followers,
+        ]
       }
     case GET_FOLLOWING_SUCCESS:
       return {
         ...state,
         isFetching: false,
-        following: action.following,
+        following: [
+          ...state.following,
+          ...action.following,
+        ]
+      }
+    case GET_ALL_FOLLOWING_SUCCESS:
+      return {
+        ...state,
+        followingList: action.followingList,
       }
     default:
       return state
