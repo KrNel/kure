@@ -14,6 +14,7 @@ import { kurated } from './kuratedReducer';
 import { communities } from './communitiesReducer';
 import { resteem } from './resteemReducer';
 import { settings } from './settingsReducer';
+import { follow } from './followReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   communities,
   resteem,
   settings,
+  follow,
 });
 
 export default rootReducer;

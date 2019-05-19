@@ -1,7 +1,7 @@
 @import '../../../variables.css';
 
 .postSummary {
-  margin-bottom: 1rem;
+  /*margin-bottom: 0.5rem;*/
 }
 
 .postSummary .block {
@@ -48,7 +48,7 @@
   height: 1px;
   border: 0;
   border-top: 1px solid var(--main-border-light);
-  margin: 1em 0;
+  margin: 0.3rem 0 0.5rem 0;
   padding: 0;
 }
 

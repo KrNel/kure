@@ -1,0 +1,8 @@
+.userCard div {
+  font-size: 1.1rem;
+}
+
+.userCard span > img {
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}

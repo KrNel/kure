@@ -2,21 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Label } from "semantic-ui-react";
 
-import Category from './Category'
+import Category from '../Category'
 import './Tags.css';
 
 const Tags = ({tags}) => (
-  <ul className='tags'>
+  <span className='tags'>
     {
       tags.map(tag => (
-        <li key={tag}>
-          <Label>
+        <span key={tag}>
+          <Label basic>
             <Category category={tag} />
           </Label>
-        </li>
+          <span>{' '}</span>
+        </span>
       ))
     }
-  </ul>
+  </span>
 )
 
 Tags.propTypes = {

@@ -37,20 +37,22 @@ class Vote extends Component {
     ratio: PropTypes.number.isRequired,
     pid: PropTypes.number.isRequired,
     payoutDeclined: PropTypes.bool,
-    percentSD: PropTypes.number,
+    isFullPower: PropTypes.bool,
+    showModalVotes: PropTypes.func,
   };
 
   static defaultProps = {
     activeVotes: [],
     upvotePayload: {},
     payoutDeclined: false,
-    percentSD: 10000,
+    isFullPower: false,
+    showModalVotes: () => {},
   }
 
   state = {
     unvote: false,
     showSlider: false,
-    sliderWeight: 10000
+    sliderWeight: 10000,
   }
 
   /**
@@ -190,7 +192,8 @@ class Vote extends Component {
         ratio,
         pid,
         payoutDeclined,
-        percentSD,
+        isFullPower,
+        showModalVotes,
       },
       state: {
         unvote,
@@ -198,6 +201,8 @@ class Vote extends Component {
         sliderWeight,
       }
     } = this;
+
+    const isFlagged = activeVotes.some(vote => vote.percent < 0);
 
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
@@ -231,8 +236,9 @@ class Vote extends Component {
     }else if (isVotedOn) {
       upvoteClasses = 'votedOn';
       voteTitle = 'Unvote post';
-    }else if (voters.some(vote => vote.percent === 0)) {
+    }else if (voters.some(vote => vote.voter === user && vote.percent === 0)) {
       upvoteClasses = 'voteRemoved';
+      voteTitle = 'Re-upvote post';
     }
 
     //vote count popup to show who voted, the vote value and percentage applied
@@ -240,21 +246,18 @@ class Vote extends Component {
     if (votesCount) {
       votersPopup = voters.slice(0, 14).map(vote => (
         <div key={vote.voter}>
-          { <UserLink user={vote.voter} /> }
+          <UserLink user={vote.voter} />
 
-          { vote.rshares * ratio > 0.001 && (
-            <span>
-              {`\u00A0\u00A0`}
-              <DollarDisplay value={vote.rshares * ratio} />
-            </span>
-          )}
+          <span>
+            {`\u00A0\u00A0`}
+            <DollarDisplay value={vote.rshares * ratio} />
+          </span>
 
-          {
-            <span>
-              {`\u00A0\u2022\u00A0`}
-              <PercentDisplay value={vote.percent / 10000} />
-            </span>
-          }
+          <span>
+            {`\u00A0\u2022\u00A0`}
+            <PercentDisplay value={vote.percent / 10000} />
+          </span>
+
         </div>
       ))
     }else {
@@ -313,7 +316,23 @@ class Vote extends Component {
       <React.Fragment>
         <li className="item payout">
           {
-            percentSD === 0 && <FullPower />
+            isFullPower && <FullPower />
+          }
+          {
+            isFlagged && (
+              <span>
+                {
+                  isFullPower && ' '
+                }
+                <Icon
+                  name='flag outline'
+                  color='red'
+                  size='large'
+                  title='Flagged'
+                />
+                {' '}
+              </span>
+            )
           }
           <span>
             <DollarDisplay
@@ -354,7 +373,20 @@ class Vote extends Component {
               />
             </Popup>
             <Popup
-              trigger={<span>{` ${votesCount}`}</span>}
+              trigger={
+                votesCount > 0
+                && (
+                  <span>
+                    <a
+                      href='#votes'
+                      onClick={event => showModalVotes(event, {voters, ratio})}
+                    >
+                      {` ${votesCount}`}
+                    </a>
+                  </span>
+                )
+
+              }
               horizontalOffset={15}
               flowing
               hoverable

@@ -9,7 +9,7 @@ import logo from '../../../images/steemLogo.svg';
  */
 const FullPower = () => (
   <span className='fullPower'>
-    <Image inline src={logo} height={17} width={17} title='Payout 100% Steem Power' />
+    <Image inline src={logo} height={17} width={17} title='100% Steem Power payout' />
     {`\u00A0`}
   </span>
 )

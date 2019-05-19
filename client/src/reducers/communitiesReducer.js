@@ -4,6 +4,10 @@ import {
   CLEAR_COMMUNITY,
   JOIN_GROUP_START,
   JOIN_GROUP_SUCCESS,
+  GET_COMMUNITIES_CREATED_START,
+  GET_COMMUNITIES_ACTIVE_START,
+  GET_COMMUNITIES_CREATED_SUCCESS,
+  GET_COMMUNITIES_ACTIVE_SUCCESS,
 } from '../actions/communitiesActions';
 
 /**
@@ -17,7 +21,11 @@ import {
  */
 export const communities = (state = {
   isFetching: false,
-  groups: [],
+  groups: {
+    groupsCreated: [],
+    groupsActivity: [],
+    hasMore: true,
+  },
   groupData: {
     kposts: [],
     kusers: [],
@@ -25,7 +33,6 @@ export const communities = (state = {
     hasMore: true,
     notExists: false,
   },
-  hasMoreGroups: true,
   groupRequested: '',
   isJoining: false,
 }, action) => {
@@ -77,6 +84,37 @@ export const communities = (state = {
           ...state.groupData,
           kaccess: action.kaccess,
         },
+      }
+    case GET_COMMUNITIES_CREATED_START:
+    case GET_COMMUNITIES_ACTIVE_START:
+      return {
+        ...state,
+        isFetching: true,
+      }
+    case GET_COMMUNITIES_CREATED_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        groups: {
+          ...state.groups,
+          groupsCreated: [
+            ...state.groups.groupsCreated,
+            ...action.groupsCreated
+          ],
+          hasMore: action.hasMore,
+        }
+      }
+    case GET_COMMUNITIES_ACTIVE_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        groups: {
+          ...state.groups,
+          groupsActivity: [
+            ...action.groupsActivity
+          ],
+          hasMore: action.hasMore,
+        }
       }
     default:
       return state

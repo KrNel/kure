@@ -90,9 +90,9 @@ class GroupDetails extends Component {
     } = this.props;
 
     if (!isFetching && hasMore) {
-      var lastLi = document.querySelector(".community div.infiniteEl:last-child");
-      var lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-      var pageOffset = window.pageYOffset + window.innerHeight;
+      let lastLi = document.querySelector(".community div.infiniteEl:last-child");
+      let lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+      let pageOffset = window.pageYOffset + window.innerHeight;
       if (pageOffset > lastLiOffset) {
         this.getPosts();
       }
@@ -118,7 +118,7 @@ class GroupDetails extends Component {
 
     let nextPageId = '';
     if (kposts.length) {
-      nextPageId = kposts[kposts.length-1]._id;
+      nextPageId = kposts[kposts.length - 1]._id;
     }
 
     getContent(group, this.limit, nextPageId);
@@ -143,8 +143,7 @@ class GroupDetails extends Component {
    */
   toggleView = event => {
     event.preventDefault();
-    const { showGrid } = this.state;
-    this.setState({ showGrid: !showGrid });
+    this.setState(prevState => ({ showGrid: !prevState.showGrid }));
   }
 
   /**
@@ -269,7 +268,7 @@ class GroupDetails extends Component {
         : <Loading />
       : (
         <Segment>
-          {`That group doesn't existab.`}
+          {`That group doesn't exist.`}
         </Segment>
       )
     )

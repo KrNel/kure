@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Icon, Button, Popup } from "semantic-ui-react";
 
 import Vote from './Vote';
+import Flag from './Flag';
 
 import './PostActions.css';
 
@@ -43,7 +44,9 @@ class PostActions extends Component {
     pageOwner: PropTypes.string,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
     payoutDeclined: PropTypes.bool,
-    percentSD: PropTypes.number,
+    isFullPower: PropTypes.bool,
+    showModalVotes: PropTypes.func,
+    page: PropTypes.string,
   };
 
   static defaultProps = {
@@ -68,7 +71,9 @@ class PostActions extends Component {
     pageOwner: '',
     resteemedPayload: {},
     payoutDeclined: false,
-    percentSD: 10000,
+    isFullPower: false,
+    showModalVotes: () => {},
+    page: '',
   };
 
 
@@ -76,10 +81,6 @@ class PostActions extends Component {
     event.preventDefault();
     const { pid, author, permlink, handleResteem } = this.props;
     handleResteem(pid, author, permlink);
-  }
-
-  flag = event => {
-    event.preventDefault();
   }
 
   render() {
@@ -105,7 +106,9 @@ class PostActions extends Component {
         resteemedPayload,
         pageOwner,
         payoutDeclined,
-        percentSD,
+        isFullPower,
+        page,
+        showModalVotes,
       },
     } = this;
 
@@ -114,7 +117,7 @@ class PostActions extends Component {
       isResteemedByUser = true;
     }
 
-    if (pageOwner === user && author !== user) {
+    if (page === 'blog' && pageOwner === user && author !== user) {
       isResteemedByUser = true;
     }
 
@@ -135,7 +138,8 @@ class PostActions extends Component {
             ratio={ratio}
             pid={pid}
             payoutDeclined={payoutDeclined}
-            percentSD={percentSD}
+            isFullPower={isFullPower}
+            showModalVotes={showModalVotes}
           />
 
           <li className="item">
@@ -175,13 +179,12 @@ class PostActions extends Component {
           }
           {
             user && (
-              <li className="item disabled">
-                <span>
-                  <a href="/flag" onClick={event => this.flag(event)} title="Flag this post on Steem">
-                    <Icon name='flag outline' size='large' />
-                  </a>
-                </span>
-              </li>
+              <Flag
+                activeVotes={activeVotes}
+                ratio={ratio}
+                user={user}
+                showModalVotes={showModalVotes}
+              />
             )
           }
         </ul>

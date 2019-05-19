@@ -13,11 +13,11 @@
   padding: 0;
 }
 
-.authorCatTime .item.author a {
-  color: var(--charcoal-grey);
+.authorCatTime .item.author a, .authorCatTime .item.tag a, .authorCatTime .item.timeago a {
+  color: var(--medium-grey);
 }
 
-.authorCatTime .item.author a:hover {
+.authorCatTime .item.author a:hover, .authorCatTime .item.tag a:hover, .authorCatTime .item.timeago a:hover {
   color: var(--bright-medium-blue);
 }
 

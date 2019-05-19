@@ -42,13 +42,15 @@ const PostsSummaryList = (props) => {
     page,
     pageOwner,
     resteemedPayload,
+    showModalVotes,
   } = props;
 
   if (!posts.length && !isFetching) {
     return "No Posts";
   }else {
     return (
-      posts.map((postData, index) => {
+      posts.map(postData => {
+        const pid = parseInt(postData.id);
 
         const votedPost = upvotePayload.votedPosts.find(votedPost => votedPost.id === (postData.id));
         if (votedPost)
@@ -70,7 +72,7 @@ const PostsSummaryList = (props) => {
         const totalPayout = sumPayout(post);
         const totalRShares = post.active_votes.reduce((a, b) => a + parseFloat(b.rshares), 0);
         const ratio = totalRShares === 0 ? 0 : totalPayout / totalRShares;
-        const pid = parseInt(post.id);
+
         const payoutDeclined = post.max_accepted_payout === '0.000 SBD';
         const reblogged_by = post.reblogged_by;
 
@@ -93,10 +95,10 @@ const PostsSummaryList = (props) => {
           )
         }
 
-        const key = pid+index;
+        const isFullPower = post.percent_steem_dollars === 0;
 
         return (
-          <div key={key} className='infSummary postSummary'>
+          <div key={permlink} className='infSummary postSummary'>
             { resteemed }
             <AuthorCatgoryTime
               author={author}
@@ -161,7 +163,8 @@ const PostsSummaryList = (props) => {
                     resteemedPayload={resteemedPayload}
                     pageOwner={pageOwner}
                     payoutDeclined={payoutDeclined}
-                    percentSD={post.percent_steem_dollars}
+                    isFullPower={isFullPower}
+                    showModalVotes={showModalVotes}
                   />
                 </div>
               </div>
@@ -182,6 +185,7 @@ PostsSummaryList.propTypes = {
   upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
   isFetching: PropTypes.bool,
   handleResteem: PropTypes.func,
+  showModalVotes: PropTypes.func,
 };
 
 PostsSummaryList.defaultProps = {
@@ -192,6 +196,7 @@ PostsSummaryList.defaultProps = {
   upvotePayload: {},
   isFetching: false,
   handleResteem: () => {},
+  showModalVotes: () => {},
 };
 
 

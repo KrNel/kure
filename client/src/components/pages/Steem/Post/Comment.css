@@ -81,7 +81,7 @@ ul.commentList > li {
   line-height: 1;
   margin: 5px 10px 0 0;
   list-style-position: inside;
-  border-left: 1px solid var(--main-border);
+  border-left: 1px solid var(--main-border-light);
   padding-left: 10px;
 }
 

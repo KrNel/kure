@@ -58,13 +58,13 @@ const GroupsGrid = (props) => {
               const date = standard(created);
 
               return (
-                <Grid.Column key={key+1} width={4}>
-                  <Segment key={key+2} className='groupList'>
+                <Grid.Column key={key} width={4}>
+                  <Segment className='groupList'>
                     {
                       (selectedGroup === name)
                       && <Dimmer inverted active={isGroupLoading}><Loader /></Dimmer>
                     }
-                    <div key={key+3}>
+                    <div>
                       <h3 className='left'>
                         <GroupLink display={display} name={name} />
                       </h3>

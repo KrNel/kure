@@ -11,7 +11,7 @@ import { getFromMetadata } from '../helpers/parser';
 import { getProxyImageURL } from '../helpers/image';
 import { jsonParse } from '../helpers/formatter';
 import PostFeedEmbed from '../PostFeedEmbed';
-import Tags from '../Tags';
+import Tags from './Tags';
 import Comments from './Comments'
 import ReplyForm from './ReplyForm';
 import AuthorCatgoryTime from '../AuthorCatgoryTime';
@@ -284,28 +284,31 @@ class PostDetails extends Component {
                           }
                           <br />
                           <div className='footer'>
-                            <div className='left'>
-                              <Tags tags={tags} />
+                            <div className='detailsFooter'>
+                              <div className='left'>
+                                <Tags tags={tags} />
+                              </div>
+                              <div className='alt-site right'>
+                                {`View on `}
+                                <a
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  href={`https://steemit.com${post.url}`}
+                                >
+                                  {'Steemit'}
+                                </a>
+                                {' | '}
+                                <a
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  href={`https://busy.org/@${author}/${permlink}`}
+                                >
+                                  {'Busy'}
+                                </a>
+                              </div>
+                              <div className='clear' />
                             </div>
-                            <div className='alt-site right'>
-                              {`View on `}
-                              <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={`https://steemit.com${post.url}`}
-                              >
-                                {'Steemit'}
-                              </a>
-                              {' | '}
-                              <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={`https://busy.org/@${author}/${permlink}`}
-                              >
-                                {'Busy'}
-                              </a>
-                            </div>
-                            <div className='clear' />
+
                             <div className='post-actions'>
                               <PostActions
                                 activeVotes={activeVotes}

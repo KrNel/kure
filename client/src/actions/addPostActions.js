@@ -30,7 +30,7 @@ export const addPostExists = (postExists) => ({
 /**
  *  Shows the popup modal for user confirmation.
  *
- *  @param {event} e Event triggered by element to handle
+ *  @param {event} event Event triggered by element to handle
  *  @param {string} type Type of modal being used
  *  @param {object} data Data from the modal to process
  *  @param {object} modalData Post and user data for the modal
