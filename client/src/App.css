@@ -201,8 +201,6 @@ ul.custom-list {
   -moz-box-shadow: none !important;
   box-shadow: none !important;
   border: 1px solid var(--main-border) !important;
-  /*padding: 12px*/
-  /*min-height: 2.5em;*/
 }
 
 
@@ -228,4 +226,9 @@ i.blue.icon {
 
 i.blue.icon:hover {
   color: var(--dark-blue) !important;
+}
+
+.ui.basic.button:hover {
+  background-color: var(--light-blue) !important;
+  color: #fff !important;
 }

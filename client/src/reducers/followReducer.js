@@ -5,11 +5,16 @@ import {
   GET_FOLLOWING_SUCCESS,
   CLEAR_FOLLOW,
   GET_ALL_FOLLOWING_SUCCESS,
+  SEND_FOLLOW_START,
+  SEND_FOLLOW_SUCCESS,
+  SEND_UNFOLLOW_START,
+  SEND_UNFOLLOW_SUCCESS,
 } from '../actions/followActions';
 
 /**
  *  Reducer function for follow data. Will send back the follow data requested,
- *  such as follow counts or lists of followers or following users.
+ *  such as follow counts, lists of followers or following users, and following
+ *  or unfollowing of users.
  *
  *  @param {object} state Redux state, default values set
  *  @param {object} action Action dispatched
@@ -22,6 +27,11 @@ export const follow = (state = {
   followerCount: 0,
   followingCount: 0,
   followingList: [],
+  hasMore: true,
+  followPayload: {
+    isFetching: false,
+    userFollowing: '',
+  },
 }, action) => {
 
   switch (action.type) {
@@ -39,6 +49,7 @@ export const follow = (state = {
         followerCount: 0,
         followingCount: 0,
         followingList: [],
+        hasMore: true,
       }
     case GET_FOLLOWCOUNT_SUCCESS:
       return {
@@ -54,7 +65,8 @@ export const follow = (state = {
         followers: [
           ...state.followers,
           ...action.followers,
-        ]
+        ],
+        hasMore: action.hasMore,
       }
     case GET_FOLLOWING_SUCCESS:
       return {
@@ -63,12 +75,45 @@ export const follow = (state = {
         following: [
           ...state.following,
           ...action.following,
-        ]
+        ],
+        hasMore: action.hasMore,
       }
     case GET_ALL_FOLLOWING_SUCCESS:
       return {
         ...state,
         followingList: action.followingList,
+      }
+    case SEND_FOLLOW_START:
+    case SEND_UNFOLLOW_START:
+      return {
+        ...state,
+        followPayload: {
+          isFollowing: true,
+          userFollowing: action.user,
+        }
+      }
+    case SEND_FOLLOW_SUCCESS:
+      return {
+        ...state,
+        followingList: [
+          ...state.followingList,
+          action.user,
+        ],
+        followPayload: {
+          isFollowing: false,
+          userFollowing: '',
+        }
+      }
+    case SEND_UNFOLLOW_SUCCESS:
+      return {
+        ...state,
+        followingList: [
+          state.followingList.filter(user => user !== action.user),
+        ],
+        followPayload: {
+          isFollowing: false,
+          userFollowing: '',
+        }
       }
     default:
       return state

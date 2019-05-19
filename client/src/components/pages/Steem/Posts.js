@@ -234,6 +234,7 @@ class Posts extends Component {
       getFollowersList,
       getFollowingList,
       isFetchingFollows,
+      hasMoreFollows,
       match: {
         path,
         params: {
@@ -242,7 +243,7 @@ class Posts extends Component {
       },
     } = this.props;
 
-    if (!isFetching && hasMore && !isFetchingFollows) {
+    if (!isFetching && hasMore && !isFetchingFollows && hasMoreFollows) {
       let lastLi = document.querySelector("#postList div.infSummary:nth-last-child(4)");
       let getter = () => this.getPosts('more');
 
@@ -637,6 +638,7 @@ const mapStateToProps = state => {
       followers,
       following,
       isFetching: isFetchingFollows,
+      hasMore: hasMoreFollows,
     }
   } = state;
 
@@ -660,6 +662,7 @@ const mapStateToProps = state => {
     followers,
     following,
     isFetchingFollows,
+    hasMoreFollows,
   }
 }
 

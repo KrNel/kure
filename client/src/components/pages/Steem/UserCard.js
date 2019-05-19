@@ -3,14 +3,19 @@ import PropTypes from 'prop-types';
 import { Image } from 'semantic-ui-react';
 
 import UserLink from './UserLink';
-import FollowButton from './FollowButton';
 import './UserCard.css';
 
+/**
+ *  Displays the user avatar and username floated left, with any children data
+ *  passed floated to the right.
+ *
+ *  @param {string} user User being displayed
+ *  @param {object} children Child components
+ */
 const UserCard = (props) => {
   const {
     user,
     children,
-    followingList,
   } = props;
   return (
     <div className="userCard">
@@ -21,15 +26,24 @@ const UserCard = (props) => {
         <span>
           <UserLink user={user} />
         </span>
-        { children }
       </div>
       <div className='right'>
-        <FollowButton user={user} />
+        { children }
       </div>
       <div className='clear' />
       <hr className='borderTopLight' />
     </div>
   )
 }
+
+UserCard.propTypes = {
+  user: PropTypes.string,
+  children: PropTypes.shape(PropTypes.object.isRequired),
+};
+
+UserCard.defaultProps = {
+  user: '',
+  children: {},
+};
 
 export default UserCard;

@@ -3,10 +3,15 @@ import PropTypes from 'prop-types';
 import { Header } from 'semantic-ui-react';
 
 import UserCard from './UserCard';
+import FollowButton from './FollowButton';
 
+/**
+ *  The Follower page. Displays the list of users that follow someone.
+ *
+ *  @param {array} followers Followers of a user
+ */
 const Followers = (props) => {
   const {
-    followerCount,
     followers,
   } = props;
 
@@ -19,7 +24,9 @@ const Followers = (props) => {
 
           return (
             <div className='follow' key={user}>
-              <UserCard user={user} />
+              <UserCard user={user}>
+                <FollowButton user={user} />
+              </UserCard>
             </div>
           )
         })
@@ -27,5 +34,13 @@ const Followers = (props) => {
     </div>
   )
 }
+
+Followers.propTypes = {
+  followers: PropTypes.arrayOf(PropTypes.object.isRequired),
+};
+
+Followers.defaultProps = {
+  followers: [],
+};
 
 export default Followers;
