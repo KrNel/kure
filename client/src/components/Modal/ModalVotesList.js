@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, Image } from 'semantic-ui-react';
+import { Button, Modal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 import UserCard from '../pages/Steem/UserCard';

@@ -65,6 +65,8 @@ class Posts extends Component {
     following: PropTypes.arrayOf(PropTypes.object),
     getFollowersList: PropTypes.func,
     getFollowingList: PropTypes.func,
+    isFetchingFollows: PropTypes.bool,
+    hasMoreFollows: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -100,6 +102,8 @@ class Posts extends Component {
     following: [],
     getFollowersList: () => {},
     getFollowingList: () => {},
+    isFetchingFollows: false,
+    hasMoreFollows: true,
   };
 
   constructor(props) {
@@ -385,8 +389,6 @@ class Posts extends Component {
         followingCount,
         followers,
         following,
-        getFollowersUsers,
-        getFollowingUsers,
       },
       state: {
         showDesc,

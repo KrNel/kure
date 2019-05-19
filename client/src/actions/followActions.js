@@ -216,6 +216,7 @@ export const getAllFollowing = user => async (dispatch, getState) => {
 
   let count = followingCount;
 
+  //if this funcitonis called before the count is done, get it now
   if (followingCount === 0)
     count = await client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {

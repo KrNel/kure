@@ -36,7 +36,7 @@ const Followers = (props) => {
 }
 
 Followers.propTypes = {
-  followers: PropTypes.arrayOf(PropTypes.object.isRequired),
+  followers: PropTypes.arrayOf(PropTypes.object),
 };
 
 Followers.defaultProps = {
