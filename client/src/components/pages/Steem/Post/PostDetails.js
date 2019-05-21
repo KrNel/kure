@@ -23,6 +23,7 @@ import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
 import { commentsClear } from '../../../../actions/commentsActions';
 import { sendCommentClear } from '../../../../actions/sendCommentActions';
 import { resteem } from '../../../../actions/resteemActions';
+import FollowButton from '../FollowButton';
 
 import './PostDetails.css'
 
@@ -263,14 +264,20 @@ class PostDetails extends Component {
                                 <h1>
                                   {title}
                                 </h1>
-                                <AuthorCatgoryTime
-                                  author={author}
-                                  authorReputation={authorReputation}
-                                  category={category}
-                                  created={created}
-                                  permlink={permlink}
-                                  percentSD={post.percent_steem_dollars}
-                                />
+                                <div className='left'>
+                                  <AuthorCatgoryTime
+                                    author={author}
+                                    authorReputation={authorReputation}
+                                    category={category}
+                                    created={created}
+                                    permlink={permlink}
+                                    percentSD={post.percent_steem_dollars}
+                                  />
+                                </div>
+                                <div className='right'>
+                                  <FollowButton user={author} compact />
+                                </div>
+                                <div className='clear' />
                                 <hr />
                                 {this.renderDtubeEmbedPlayer(post)}
                                 <PostBody

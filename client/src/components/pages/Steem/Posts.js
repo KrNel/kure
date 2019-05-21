@@ -450,12 +450,11 @@ class Posts extends Component {
           </Link>
           {
             user !== author && (
-              <span className='followSpacer'>
-                <FollowButton
-                  user={author}
-                  pageOwner={author}
-                />
-              </span>
+              <FollowButton
+                user={author}
+                pageOwner={author}
+                compact
+              />
             )
           }
 

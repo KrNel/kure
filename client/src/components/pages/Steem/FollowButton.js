@@ -20,7 +20,11 @@ const FollowButton = (props) => {
     unfollowUser,
     followPayload,
     pageOwner,
+    compact,
   } = props;
+
+  if (!isAuth)
+    return null;
 
   const followed = followingList.includes(user);
   const { isFollowing, userFollowing } = followPayload;
@@ -30,26 +34,31 @@ const FollowButton = (props) => {
     loading = true;
 
   let button = null;
-  if (isAuth) {
-    if (!followed)
-      button = (
-        <Button
-          content='Follow'
-          basic
-          onClick={() => followUser(user, pageOwner)}
-          loading={loading}
-        />
-      )
-    else
-      button = (
-        <Button
-          content='Unfollow'
-          color='blue'
-          onClick={() => unfollowUser(user, pageOwner)}
-          loading={loading}
-        />
-      )
-  }
+  if (!followed)
+    button = (
+      <Button
+        content='Follow'
+        basic
+        onClick={() => followUser(user, pageOwner)}
+        loading={loading}
+      />
+    )
+  else
+    button = (
+      <Button
+        content='Unfollow'
+        color='blue'
+        onClick={() => unfollowUser(user, pageOwner)}
+        loading={loading}
+      />
+    )
+
+  if (compact)
+    button = (
+      <span className='followSpacer'>
+        { button }
+      </span>
+    )
 
   return (
     button
