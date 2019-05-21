@@ -1,7 +1,7 @@
 import { Client } from 'dsteem';
 import SteemConnect from '../utils/auth/scAPI';
 
-const client = new Client('https://hive.anyx.io/');
+import { cookieUser } from './authActions';
 
 export const GET_FOLLOW_START = 'GET_FOLLOW_START';
 export const GET_FOLLOWCOUNT_SUCCESS = 'GET_FOLLOWCOUNT_SUCCESS';
@@ -13,6 +13,9 @@ export const SEND_FOLLOW_START = 'SEND_FOLLOW_START';
 export const SEND_FOLLOW_SUCCESS = 'SEND_FOLLOW_SUCCESS';
 export const SEND_UNFOLLOW_START = 'SEND_UNFOLLOW_START';
 export const SEND_UNFOLLOW_SUCCESS = 'SEND_UNFOLLOW_SUCCESS';
+
+const client = new Client('https://hive.anyx.io/');
+
 /**
  *  Action creator for starting retrieval of follow data.
  *
@@ -131,13 +134,16 @@ export const sendUnfollowSuccess = user => ({
  *  @param {string} user User to get data for
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowCount = user => (dispatch, getState) => (
-  client.call('follow_api', 'get_follow_count', [user])
+export const getFollowCount = user => (dispatch, getState) => {
+  let { user: userLogged } = getState().auth;
+  if (!userLogged) userLogged = cookieUser();
+
+  return client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {
       dispatch(followCountSuccess(followCount.follower_count, followCount.following_count));
-      dispatch(getAllFollowing(user));
+      dispatch(getAllFollowing(userLogged));
     })
-)
+}
 
 /**
  *  Get the user's followers list.
@@ -212,13 +218,7 @@ export const getFollowing = (user, startFrom = '', limit = 100, more = false, ty
  *  @returns {function} Dispatches returned action object
  */
 export const getAllFollowing = user => async (dispatch, getState) => {
-  const { followingCount } = getState().follow;
-
-  let count = followingCount;
-
-  //if this funcitonis called before the count is done, get it now
-  if (followingCount === 0)
-    count = await client.call('follow_api', 'get_follow_count', [user])
+  const count = await client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {
        return followCount.following_count;
     })
@@ -241,13 +241,15 @@ export const getAllFollowing = user => async (dispatch, getState) => {
  *  @param {string} userToFollow User to follow
  *  @returns {function} Dispatches returned action object
  */
-export const sendFollowUser = userToFollow => (dispatch, getState) => {
+export const sendFollowUser = (userToFollow, pageOwner) => (dispatch, getState) => {
   dispatch(sendFollowStart(userToFollow));
   const { auth: { user }} = getState();
 
   return SteemConnect.follow(user, userToFollow)
-    .then(result => {
+    .then(result => {   
       dispatch(sendFollowSuccess(userToFollow));
+      if (pageOwner === userToFollow)
+        dispatch(getFollowCount(pageOwner));
     });
 };
 
@@ -257,13 +259,15 @@ export const sendFollowUser = userToFollow => (dispatch, getState) => {
  *  @param {string} userToUnfollow User to unfollow
  *  @returns {function} Dispatches returned action object
  */
-export const sendUnfollowUser = userToUnfollow => (dispatch, getState) => {
+export const sendUnfollowUser = (userToUnfollow, pageOwner) => (dispatch, getState) => {
   dispatch(sendUnfollowStart(userToUnfollow));
   const { auth: { user }} = getState();
 
   return SteemConnect.unfollow(user, userToUnfollow)
     .then(result => {
       dispatch(sendUnfollowSuccess(userToUnfollow));
+      if (pageOwner === userToUnfollow)
+        dispatch(getFollowCount(pageOwner));
     });
 };
 

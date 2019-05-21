@@ -108,7 +108,7 @@ export const follow = (state = {
       return {
         ...state,
         followingList: [
-          state.followingList.filter(user => user !== action.user),
+          ...state.followingList.filter(user => user !== action.user),
         ],
         followPayload: {
           isFollowing: false,

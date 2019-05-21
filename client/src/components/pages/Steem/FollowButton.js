@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 
 import { sendFollowUser, sendUnfollowUser } from '../../../actions/followActions';
+import './FollowButton.css';
 
 /**
  *  The Follower page. Displays the list of users that follow someone.
@@ -18,6 +19,7 @@ const FollowButton = (props) => {
     followUser,
     unfollowUser,
     followPayload,
+    pageOwner,
   } = props;
 
   const followed = followingList.includes(user);
@@ -34,7 +36,7 @@ const FollowButton = (props) => {
         <Button
           content='Follow'
           basic
-          onClick={() => followUser(user)}
+          onClick={() => followUser(user, pageOwner)}
           loading={loading}
         />
       )
@@ -43,7 +45,7 @@ const FollowButton = (props) => {
         <Button
           content='Unfollow'
           color='blue'
-          onClick={() => unfollowUser(user)}
+          onClick={() => unfollowUser(user, pageOwner)}
           loading={loading}
         />
       )
@@ -61,6 +63,7 @@ FollowButton.propTypes = {
   followUser: PropTypes.func,
   unfollowUser: PropTypes.func,
   followPayload: PropTypes.shape(PropTypes.object.isRequired),
+  pageOwner: PropTypes.string,
 };
 
 FollowButton.defaultProps = {
@@ -70,6 +73,7 @@ FollowButton.defaultProps = {
   followUser: () => {},
   unfollowUser: () => {},
   followPayload: {},
+  pageOwner: '',
 };
 
 /**
@@ -104,11 +108,11 @@ const mapStateToProps = state => {
  */
 const mapDispatchToProps = dispatch => (
   {
-    followUser: user => (
-      dispatch(sendFollowUser(user))
+    followUser: (user, pageOwner) => (
+      dispatch(sendFollowUser(user, pageOwner))
     ),
-    unfollowUser: user => (
-      dispatch(sendUnfollowUser(user))
+    unfollowUser: (user, pageOwner) => (
+      dispatch(sendUnfollowUser(user, pageOwner))
     ),
   }
 );

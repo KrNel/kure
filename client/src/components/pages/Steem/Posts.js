@@ -21,6 +21,7 @@ import { changeViewSettings, initViewStorage } from '../../../actions/settingsAc
 import ModalVotesList from '../../Modal/ModalVotesList';
 import Followers from './Followers';
 import Following from './Following';
+import FollowButton from './FollowButton';
 
 import './Post.css';
 
@@ -435,6 +436,7 @@ class Posts extends Component {
             <strong>{followerCount}</strong>
             {' followers'}
           </Link>
+
           <span>
             {'\u00A0\u00A0'}
             {'|'}
@@ -446,6 +448,17 @@ class Posts extends Component {
             {'Following '}
             <strong>{followingCount}</strong>
           </Link>
+          {
+            user !== author && (
+              <span className='followSpacer'>
+                <FollowButton
+                  user={author}
+                  pageOwner={author}
+                />
+              </span>
+            )
+          }
+
         </span>
       );
     }else {
@@ -574,16 +587,14 @@ class Posts extends Component {
                     path === '/@:author/followers'
                     ? (
                       <Followers
-                        author={author}
-                        followerCount={followerCount}
+                        userLogged={user}
                         followers={followers}
                       />
 
                     )
                     : (
                       <Following
-                        author={author}
-                        followingCount={followingCount}
+                        userLogged={user}
                         following={following}
                       />
                     )

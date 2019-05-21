@@ -13,6 +13,7 @@ import FollowButton from './FollowButton';
 const Followers = (props) => {
   const {
     followers,
+    userLogged,
   } = props;
 
   return (
@@ -25,7 +26,11 @@ const Followers = (props) => {
           return (
             <div className='follow' key={user}>
               <UserCard user={user}>
-                <FollowButton user={user} />
+                {
+                  userLogged !== user
+                  ? <FollowButton user={user} />
+                  : null
+                }
               </UserCard>
             </div>
           )
@@ -37,10 +42,12 @@ const Followers = (props) => {
 
 Followers.propTypes = {
   followers: PropTypes.arrayOf(PropTypes.object),
+  userLogged: PropTypes.string,
 };
 
 Followers.defaultProps = {
   followers: [],
+  userLogged: '',
 };
 
 export default Followers;
