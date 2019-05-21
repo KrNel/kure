@@ -13,6 +13,7 @@ export const SEND_FOLLOW_START = 'SEND_FOLLOW_START';
 export const SEND_FOLLOW_SUCCESS = 'SEND_FOLLOW_SUCCESS';
 export const SEND_UNFOLLOW_START = 'SEND_UNFOLLOW_START';
 export const SEND_UNFOLLOW_SUCCESS = 'SEND_UNFOLLOW_SUCCESS';
+export const SEARCH_START = 'SEARCH_START';
 
 const client = new Client('https://hive.anyx.io/');
 
@@ -129,6 +130,16 @@ export const sendUnfollowSuccess = user => ({
 });
 
 /**
+ *  Action creator for starting to unfollow a user.
+ *
+ *  @param {string} user User to unfollow
+ *  @return {object} The action data
+ */
+export const searchStart = () => ({
+  type: SEARCH_START,
+});
+
+/**
  *  Get the follow count for a user.
  *
  *  @param {string} user User to get data for
@@ -154,7 +165,7 @@ export const getFollowCount = user => (dispatch, getState) => {
  *  @param {number} limit Number of users to get
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowers = (user, startFrom = '', limit = 100, more = false, type = 'blog', ) => (dispatch, getState) => {
+export const getFollowers = (user, startFrom = '', limit = 100, more = false, type = 'blog') => (dispatch, getState) => {
   dispatch(followStart());
 
   if (more)
@@ -236,6 +247,15 @@ export const getAllFollowing = user => async (dispatch, getState) => {
 }
 
 /**
+ *
+ */
+export const searchFollowers = (user, startFrom = '', limit = 100, more = false, type = 'blog') => (dispatch, getState) => {
+  dispatch(searchStart());
+
+  dispatch(getFollowers(user, startFrom));
+}
+
+/**
  *  Send a follow request to Steem.
  *
  *  @param {string} userToFollow User to follow
@@ -246,7 +266,7 @@ export const sendFollowUser = (userToFollow, pageOwner) => (dispatch, getState) 
   const { auth: { user }} = getState();
 
   return SteemConnect.follow(user, userToFollow)
-    .then(result => {   
+    .then(result => {
       dispatch(sendFollowSuccess(userToFollow));
       if (pageOwner === userToFollow)
         dispatch(getFollowCount(pageOwner));

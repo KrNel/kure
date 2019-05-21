@@ -15,7 +15,7 @@ import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
-import { getFollowCount, getFollowers, getFollowing, clearFollow } from '../../../actions/followActions';
+import { getFollowCount, getFollowers, getFollowing, clearFollow, searchFollowers } from '../../../actions/followActions';
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
@@ -120,6 +120,7 @@ class Posts extends Component {
         voters: [],
         ratio: 0,
       },
+      userToFind: '',
     };
   }
 
@@ -360,6 +361,35 @@ class Posts extends Component {
     });
   }
 
+  /**
+   *  Set state values for when finding a user changes.
+   *
+   *  @param {event} e Event triggered by element to handle
+   *  @param {string} name Name of the element triggering the event
+   *  @param {string} value Value of the element triggering the event
+   */
+  handleChangeFollowFind = (event, { name, value }) => {
+    this.setState({
+      [name]: value,
+     });
+  }
+
+  /**
+   *
+   */
+  handleSubmitFollowFind = () => {
+    const { userToFind } = this.state;
+    const {
+      match: {
+        params: {
+          author,
+        },
+      },
+      getSearchFollow,
+    } = this.props;
+    getSearchFollow(author, userToFind)
+  }
+
   render() {
     const {
       props: {
@@ -395,6 +425,7 @@ class Posts extends Component {
         showDesc,
         modalVotesOpen,
         voterData,
+        userToFind,
       },
     } = this;
 
@@ -588,6 +619,9 @@ class Posts extends Component {
                       <Followers
                         userLogged={user}
                         followers={followers}
+                        handleSubmitFollowFind={this.handleSubmitFollowFind}
+                        handleChangeFollowFind={this.handleChangeFollowFind}
+                        userToFind={userToFind}
                       />
 
                     )
@@ -724,6 +758,9 @@ const mapDispatchToProps = dispatch => (
     ),
     clearFollowData: () => (
       dispatch(clearFollow())
+    ),
+    getSearchFollow: (user, userToFind) => (
+      dispatch(searchFollowers(user, userToFind))
     ),
   }
 );

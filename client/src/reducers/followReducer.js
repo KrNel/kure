@@ -9,6 +9,7 @@ import {
   SEND_FOLLOW_SUCCESS,
   SEND_UNFOLLOW_START,
   SEND_UNFOLLOW_SUCCESS,
+  SEARCH_START,
 } from '../actions/followActions';
 
 /**
@@ -114,6 +115,11 @@ export const follow = (state = {
           isFollowing: false,
           userFollowing: '',
         }
+      }
+    case SEARCH_START:
+      return {
+        ...state,
+        followers: [],
       }
     default:
       return state
