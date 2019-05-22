@@ -68,6 +68,7 @@ export const follow = (state = {
           ...action.followers,
         ],
         hasMore: action.hasMore,
+        searchFollowLoading: false,
       }
     case GET_FOLLOWING_SUCCESS:
       return {
@@ -78,6 +79,7 @@ export const follow = (state = {
           ...action.following,
         ],
         hasMore: action.hasMore,
+        searchFollowLoading: false,
       }
     case GET_ALL_FOLLOWING_SUCCESS:
       return {
@@ -119,7 +121,8 @@ export const follow = (state = {
     case SEARCH_START:
       return {
         ...state,
-        followers: [],
+        [action.page]: [],
+        searchFollowLoading: true,
       }
     default:
       return state

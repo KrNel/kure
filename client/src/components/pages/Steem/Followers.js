@@ -6,7 +6,8 @@ import UserCard from './UserCard';
 import FollowButton from './FollowButton';
 
 /**
- *  The Follower page. Displays the list of users that follow someone.
+ *  The Follower page. Displays the list of users that follow someone, and
+ *  allows for searching a follower.
  *
  *  @param {array} followers Followers of a user
  */
@@ -16,11 +17,9 @@ const Followers = (props) => {
     userLogged,
     handleSubmitFollowFind,
     handleChangeFollowFind,
-    userToFind,
+    searchFollowers,
+    searchFollowLoading,
   } = props;
-
-  const findUserError = null;
-  const findUserLoading = false;
 
   return (
     <div id='follows'>
@@ -29,19 +28,25 @@ const Followers = (props) => {
           <Header as='h2'>Followers</Header>
         </Grid.Column>
         <Grid.Column width={12}>
-          <Form size="tiny" onSubmit={handleSubmitFollowFind}>
+          <Form size="tiny" onSubmit={() => handleSubmitFollowFind('followers')}>
             <Form.Group className='left'>
               <Form.Field>
                 <Form.Input
                   placeholder='Find a user'
-                  name='userToFind'
-                  value={userToFind}
+                  name='searchFollowers'
+                  value={searchFollowers}
                   onChange={handleChangeFollowFind}
-                  loading={findUserLoading}
+                  loading={searchFollowLoading}
+                  icon='user'
+                  iconPosition='left'
                 />
-                {findUserError}
               </Form.Field>
-              <Form.Button icon size="tiny" color="blue">
+              <Form.Button
+                icon
+                size="tiny"
+                color="blue"
+                disabled={searchFollowLoading}
+              >
                 <Icon name="search" />
               </Form.Button>
             </Form.Group>
@@ -72,11 +77,19 @@ const Followers = (props) => {
 Followers.propTypes = {
   followers: PropTypes.arrayOf(PropTypes.object),
   userLogged: PropTypes.string,
+  handleSubmitFollowFind: PropTypes.func,
+  handleChangeFollowFind: PropTypes.func,
+  searchFollowers: PropTypes.string,
+  searchFollowLoading: PropTypes.bool,
 };
 
 Followers.defaultProps = {
   followers: [],
   userLogged: '',
+  handleSubmitFollowFind: () => {},
+  handleChangeFollowFind: () => {},
+  searchFollowers: '',
+  searchFollowLoading: false,
 };
 
 export default Followers;

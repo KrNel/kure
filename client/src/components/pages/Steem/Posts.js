@@ -19,9 +19,8 @@ import { getFollowCount, getFollowers, getFollowing, clearFollow, searchFollower
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
-import Followers from './Followers';
-import Following from './Following';
 import FollowButton from './FollowButton';
+import FollowsContainer from './FollowsContainer';
 
 import './Post.css';
 
@@ -68,6 +67,8 @@ class Posts extends Component {
     getFollowingList: PropTypes.func,
     isFetchingFollows: PropTypes.bool,
     hasMoreFollows: PropTypes.bool,
+    getSearchFollow: PropTypes.func,
+    searchFollowLoading: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -105,6 +106,8 @@ class Posts extends Component {
     getFollowingList: () => {},
     isFetchingFollows: false,
     hasMoreFollows: true,
+    getSearchFollow: () => {},
+    searchFollowLoading: false,
   };
 
   constructor(props) {
@@ -120,7 +123,6 @@ class Posts extends Component {
         voters: [],
         ratio: 0,
       },
-      userToFind: '',
     };
   }
 
@@ -138,7 +140,6 @@ class Posts extends Component {
       getFollowersList,
       getFollowingList,
       clearFollowData,
-      //prevPage,
       page,
       match: {
         params: {
@@ -162,20 +163,10 @@ class Posts extends Component {
     clearFollowData();
     followCount(author);
 
-    /*if (page === 'blog') {
-      //clear count data when it already has data from other user
-      clearFollowData();
-      followCount(author);
-    }else*/ if (path === '/@:author/followers') {
+    if (path === '/@:author/followers') {
       getFollowersList(author);
-      //if coming from non-blog page, get count again
-      /*if (prevPage !== 'blog')
-        followCount(author);*/
     }else if (path === '/@:author/following') {
       getFollowingList(author);
-      //if coming from non-blog page, get count again
-      /*if (prevPage !== 'blog')
-        followCount(author);*/
     }
   }
 
@@ -361,35 +352,6 @@ class Posts extends Component {
     });
   }
 
-  /**
-   *  Set state values for when finding a user changes.
-   *
-   *  @param {event} e Event triggered by element to handle
-   *  @param {string} name Name of the element triggering the event
-   *  @param {string} value Value of the element triggering the event
-   */
-  handleChangeFollowFind = (event, { name, value }) => {
-    this.setState({
-      [name]: value,
-     });
-  }
-
-  /**
-   *
-   */
-  handleSubmitFollowFind = () => {
-    const { userToFind } = this.state;
-    const {
-      match: {
-        params: {
-          author,
-        },
-      },
-      getSearchFollow,
-    } = this.props;
-    getSearchFollow(author, userToFind)
-  }
-
   render() {
     const {
       props: {
@@ -420,12 +382,13 @@ class Posts extends Component {
         followingCount,
         followers,
         following,
+        getSearchFollow,
+        searchFollowLoading,
       },
       state: {
         showDesc,
         modalVotesOpen,
         voterData,
-        userToFind,
       },
     } = this;
 
@@ -480,7 +443,7 @@ class Posts extends Component {
             <strong>{followingCount}</strong>
           </Link>
           {
-            user !== author && (
+            user && user !== author && (
               <FollowButton
                 user={author}
                 pageOwner={author}
@@ -614,21 +577,15 @@ class Posts extends Component {
                   { followHeader }
                   <hr />
                   {
-                    path === '/@:author/followers'
-                    ? (
-                      <Followers
+                    page === 'follows' && (
+                      <FollowsContainer
+                        path={path}
                         userLogged={user}
                         followers={followers}
-                        handleSubmitFollowFind={this.handleSubmitFollowFind}
-                        handleChangeFollowFind={this.handleChangeFollowFind}
-                        userToFind={userToFind}
-                      />
-
-                    )
-                    : (
-                      <Following
-                        userLogged={user}
                         following={following}
+                        getSearchFollow={getSearchFollow}
+                        author={author}
+                        searchFollowLoading={searchFollowLoading}
                       />
                     )
                   }
@@ -685,6 +642,7 @@ const mapStateToProps = state => {
       following,
       isFetching: isFetchingFollows,
       hasMore: hasMoreFollows,
+      searchFollowLoading,
     }
   } = state;
 
@@ -709,6 +667,7 @@ const mapStateToProps = state => {
     following,
     isFetchingFollows,
     hasMoreFollows,
+    searchFollowLoading,
   }
 }
 
@@ -759,8 +718,8 @@ const mapDispatchToProps = dispatch => (
     clearFollowData: () => (
       dispatch(clearFollow())
     ),
-    getSearchFollow: (user, userToFind) => (
-      dispatch(searchFollowers(user, userToFind))
+    getSearchFollow: (user, userToFind, page) => (
+      dispatch(searchFollowers(user, userToFind, page))
     ),
   }
 );

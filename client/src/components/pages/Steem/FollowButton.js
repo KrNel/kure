@@ -7,9 +7,19 @@ import { sendFollowUser, sendUnfollowUser } from '../../../actions/followActions
 import './FollowButton.css';
 
 /**
- *  The Follower page. Displays the list of users that follow someone.
+ *  A button is shown with the unfollow or follow test shown based on the
+ *  logged in user having the opposite as their current following list.
+ *  When clicking the button, the followPayload will alternate the button
+ *  display text to the opposite of what it was.
  *
- *  @param {array} followers Followers of a user
+ *  @param {array} followingList Logged in user ist of following users
+ *  @param {string} user User to follow or unfollow
+ *  @param {boolean} isAuth Determines if logged in user
+ *  @param {function} followUser Redux follow function
+ *  @param {function} unfollowUser Redux unfollow function
+ *  @param {object} followPayload Redux follow/unfollow payload
+ *  @param {string} pageOwner Who the page owner is
+ *  @param {boolean} compact Determines if compact view
  */
 const FollowButton = (props) => {
   const {

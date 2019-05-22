@@ -135,8 +135,9 @@ export const sendUnfollowSuccess = user => ({
  *  @param {string} user User to unfollow
  *  @return {object} The action data
  */
-export const searchStart = () => ({
+export const searchStart = page => ({
   type: SEARCH_START,
+  page,
 });
 
 /**
@@ -249,10 +250,15 @@ export const getAllFollowing = user => async (dispatch, getState) => {
 /**
  *
  */
-export const searchFollowers = (user, startFrom = '', limit = 100, more = false, type = 'blog') => (dispatch, getState) => {
-  dispatch(searchStart());
+export const searchFollowers = (user, startFrom = '', page = 'followers', limit = 100, more = false) => (dispatch, getState) => {
 
-  dispatch(getFollowers(user, startFrom));
+  if (page === 'followers') {
+    dispatch(searchStart(page));
+    dispatch(getFollowers(user, startFrom));
+  }else {
+    dispatch(searchStart(page));
+    dispatch(getFollowing(user, startFrom));
+  }
 }
 
 /**
