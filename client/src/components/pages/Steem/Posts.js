@@ -20,7 +20,7 @@ import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
 import FollowButton from './FollowButton';
-import FollowsContainer from './FollowsContainer';
+import Follows from './Follows';
 
 import './Post.css';
 
@@ -578,7 +578,7 @@ class Posts extends Component {
                   <hr />
                   {
                     page === 'follows' && (
-                      <FollowsContainer
+                      <Follows
                         path={path}
                         userLogged={user}
                         followers={followers}

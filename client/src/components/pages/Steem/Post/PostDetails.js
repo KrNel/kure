@@ -275,7 +275,11 @@ class PostDetails extends Component {
                                   />
                                 </div>
                                 <div className='right'>
-                                  <FollowButton user={author} compact />
+                                  {
+                                    user && user !== author && (
+                                      <FollowButton user={author} compact />
+                                    )
+                                  }
                                 </div>
                                 <div className='clear' />
                                 <hr />

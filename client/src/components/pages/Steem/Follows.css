@@ -1,0 +1,11 @@
+.searchLetters {
+  font-size: 1rem;
+  line-height: 1.2rem;
+}
+
+.searchLetter {
+  margin-left: 0.25rem;
+  padding-right: 0.3rem;
+  font-family: Courier;
+  font-weight: bold;
+}

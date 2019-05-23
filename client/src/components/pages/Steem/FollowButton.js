@@ -36,11 +36,13 @@ const FollowButton = (props) => {
   if (!isAuth)
     return null;
 
+  //is the current user being follow by the logged in user
   const followed = followingList.includes(user);
-  const { isFollowing, userFollowing } = followPayload;
+
+  const { userFollowing } = followPayload;
   let loading = false;
 
-  if (isFollowing && userFollowing === user)
+  if (userFollowing && userFollowing === user)
     loading = true;
 
   let button = null;

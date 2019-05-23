@@ -30,7 +30,6 @@ export const follow = (state = {
   followingList: [],
   hasMore: true,
   followPayload: {
-    isFetching: false,
     userFollowing: '',
   },
 }, action) => {
@@ -51,6 +50,7 @@ export const follow = (state = {
         followingCount: 0,
         followingList: [],
         hasMore: true,
+        followPayload: {},
       }
     case GET_FOLLOWCOUNT_SUCCESS:
       return {
@@ -91,7 +91,6 @@ export const follow = (state = {
       return {
         ...state,
         followPayload: {
-          isFollowing: true,
           userFollowing: action.user,
         }
       }
@@ -103,7 +102,6 @@ export const follow = (state = {
           action.user,
         ],
         followPayload: {
-          isFollowing: false,
           userFollowing: '',
         }
       }
@@ -111,10 +109,9 @@ export const follow = (state = {
       return {
         ...state,
         followingList: [
-          ...state.followingList.filter(user => user !== action.user),
+          ...state.followingList.filter(user => user !== action.user)
         ],
         followPayload: {
-          isFollowing: false,
           userFollowing: '',
         }
       }
