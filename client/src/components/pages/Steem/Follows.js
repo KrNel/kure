@@ -11,7 +11,7 @@ import './Follows.css';
  *  Changes to the search form are store din the state, and a search request
  *  is received and sent to Redux for the particular page type.
  */
-class FollowsContainer extends React.Component {
+class Follows extends React.Component {
   static propTypes = {
     followers: PropTypes.arrayOf(PropTypes.object),
     following: PropTypes.arrayOf(PropTypes.object),
@@ -45,7 +45,7 @@ class FollowsContainer extends React.Component {
    */
   searchAlpha = this.alphabet.map((letter, index) => {
     return (
-      <React.Fragment>
+      <span key={letter}>
         {
           index === 13 && <br />
         }
@@ -57,7 +57,7 @@ class FollowsContainer extends React.Component {
           { letter }
         </a>
         {`  `}
-      </React.Fragment>
+      </span>
     )
   })
 
@@ -221,4 +221,4 @@ class FollowsContainer extends React.Component {
   }
 }
 
-export default FollowsContainer;
+export default Follows;
