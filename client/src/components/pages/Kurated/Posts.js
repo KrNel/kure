@@ -2,6 +2,7 @@ import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Header, Label } from "semantic-ui-react";
+import { Helmet } from 'react-helmet-async';
 
 import { fetchPosts } from '../../../actions/kuratedActions';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
@@ -9,6 +10,7 @@ import RecentPostsList from '../Home/RecentPostsList';
 import RecentPostsGrid from '../Home/RecentPostsGrid';
 import ToggleView from '../../kure/ToggleView';
 import Loading from '../../Loading/Loading';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Display the kurated posts that have been submitted for all communities.
@@ -110,35 +112,55 @@ class Posts extends Component {
     } = this;
 
 
-  const recentPostsComp =
+    const recentPostsComp =
     showGrid
       ? <RecentPostsGrid posts={posts} isAuth={isAuth} />
       : <RecentPostsList posts={posts} isAuth={isAuth} />
 
+    const metaUrl = `https://thekure.net/kurated`;
+    const pageTitle = `Kurated Posts`;
+    const desc = 'View the posts that have been curate on KURE.';
+    const metaTitle = `${pageTitle} - KURE`;
+    const image = `https://thekure.net${defaultImage}`;
+
     return (
-      <ErrorBoundary>
-        <div className='kurated'>
-          <Grid columns={1} stackable>
-            <Grid.Column width={16} className="main">
-              <Grid stackable>
-                <Grid.Row>
-                  <Grid.Column>
-                    <Label size='big' color='blue'>
-                      <Header as="h3">Kurated Posts</Header>
-                    </Label>
-                    <ToggleView
-                      toggleView={this.toggleView}
-                      showGrid={showGrid}
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-                {recentPostsComp}
-                { isFetching && <Loading /> }
-              </Grid>
-            </Grid.Column>
-          </Grid>
-        </div>
-      </ErrorBoundary>
+      <React.Fragment>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <link rel="canonical" href={metaUrl} />
+          <link rel="amphtml" href={metaUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={metaTitle} />
+          <meta property="og:type" content="page" />
+          <meta property="og:url" content={metaUrl} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="KURE" />
+        </Helmet>
+        <ErrorBoundary>
+          <div className='kurated'>
+            <Grid columns={1} stackable>
+              <Grid.Column width={16} className="main">
+                <Grid stackable>
+                  <Grid.Row>
+                    <Grid.Column>
+                      <Label size='big' color='blue'>
+                        <Header as="h3">Kurated Posts</Header>
+                      </Label>
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                  {recentPostsComp}
+                  { isFetching && <Loading /> }
+                </Grid>
+              </Grid.Column>
+            </Grid>
+          </div>
+        </ErrorBoundary>
+      </React.Fragment>
     )
   }
 }

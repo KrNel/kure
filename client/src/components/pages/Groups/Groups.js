@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {Grid, Segment, Label, Header} from "semantic-ui-react";
+import { Helmet } from 'react-helmet-async';
 
 import GroupsRecent from './GroupsRecent';
 import GroupsCreatedGrid from './GroupsCreatedGrid';
@@ -12,6 +13,7 @@ import Loading from '../../Loading/Loading';
 import './Groups.css';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import { getGroups } from '../../../actions/communitiesActions';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Community page component that displays a variety of data tailored around
@@ -176,30 +178,50 @@ class Groups extends Component {
       )
     })
 
+    const metaUrl = `https://thekure.net/groups`;
+    const pageTitle = `Communities`;
+    const desc = 'View the communities users have created on KURE.';
+    const metaTitle = `${pageTitle} - KURE`;
+    const image = `https://thekure.net${defaultImage}`;
+
     //if there is data, display the data part of the page
     if (groupsCreated.length) {
       return (
-        <ErrorBoundary>
-          <Grid columns={1} stackable>
-            <Grid.Column>
-              <div id='newlyCreated'>
-                <Grid.Row>
-                  <Grid.Column>
-                    {tabViews}
-                    <ToggleView
-                      toggleView={this.toggleView}
-                      showGrid={showGrid}
-                    />
-                    <div className='clear' />
-                  </Grid.Column>
-                </Grid.Row>
-                <hr />
-                {selectedTab}
-                { isFetching && <Loading /> }
-              </div>
-            </Grid.Column>
-          </Grid>
-        </ErrorBoundary>
+        <React.Fragment>
+          <Helmet>
+            <title>{pageTitle}</title>
+            <link rel="canonical" href={metaUrl} />
+            <link rel="amphtml" href={metaUrl} />
+            <meta property="description" content={desc} />
+            <meta property="og:title" content={metaTitle} />
+            <meta property="og:type" content="page" />
+            <meta property="og:url" content={metaUrl} />
+            <meta property="og:image" content={image} />
+            <meta property="og:description" content={desc} />
+            <meta property="og:site_name" content="KURE" />
+          </Helmet>
+          <ErrorBoundary>
+            <Grid columns={1} stackable>
+              <Grid.Column>
+                <div id='newlyCreated'>
+                  <Grid.Row>
+                    <Grid.Column>
+                      {tabViews}
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
+                      <div className='clear' />
+                    </Grid.Column>
+                  </Grid.Row>
+                  <hr />
+                  {selectedTab}
+                  { isFetching && <Loading /> }
+                </div>
+              </Grid.Column>
+            </Grid>
+          </ErrorBoundary>
+        </React.Fragment>
       )
     //if there is no data and fetching, show loader
     }else if (isFetching) {

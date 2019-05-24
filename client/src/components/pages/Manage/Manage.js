@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from "semantic-ui-react";
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
 import ManageGroups from './ManageGroups';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import { getUserGroups, logger } from '../../../utils/fetchFunctions';
 import './Manage.css';
-
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  The root manangement page for community groups, posts and users.
@@ -99,40 +100,61 @@ class Manage extends Component {
       areGroupsLoading
     } = this.state;
 
+    const metaUrl = `https://thekure.net/manage`;
+    const pageTitle = `Managing ${user}'s Communities`;
+    const desc = 'Manage the communities you own or have joined.';
+    const metaTitle = `${pageTitle} - KURE`;
+    const image = `https://thekure.net${defaultImage}`;
+
     return (
-      <ErrorBoundary>
-        <div className="manage">
-          <Grid columns={1} stackable>
-            <Grid.Column width={16} className="main">
-              <Grid>
+      <React.Fragment>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <link rel="canonical" href={metaUrl} />
+          <link rel="amphtml" href={metaUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={metaTitle} />
+          <meta property="og:type" content="page" />
+          <meta property="og:url" content={metaUrl} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="KURE" />
+        </Helmet>
+        <ErrorBoundary>
+          <div className="manage">
+            <Grid columns={1} stackable>
+              <Grid.Column width={16} className="main">
+                <Grid>
 
-                <ManageGroups
-                  user={user}
-                  csrf={csrf}
-                  section='owned'
-                  headerText='Communities You Own'
-                  match={match}
-                  areGroupsLoading={areGroupsLoading}
-                  groups={groupsOwned}
-                  onChangeOwnership={this.onChangeOwnership}
-                />
+                  <ManageGroups
+                    user={user}
+                    csrf={csrf}
+                    section='owned'
+                    headerText='Communities You Own'
+                    match={match}
+                    areGroupsLoading={areGroupsLoading}
+                    groups={groupsOwned}
+                    onChangeOwnership={this.onChangeOwnership}
+                  />
 
-                <ManageGroups
-                  user={user}
-                  csrf={csrf}
-                  section='joined'
-                  headerText='Communities You Joined'
-                  match={match}
-                  areGroupsLoading={areGroupsLoading}
-                  groups={groupsJoined}
-                  onChangeOwnership={this.onChangeOwnership}
-                />
+                  <ManageGroups
+                    user={user}
+                    csrf={csrf}
+                    section='joined'
+                    headerText='Communities You Joined'
+                    match={match}
+                    areGroupsLoading={areGroupsLoading}
+                    groups={groupsJoined}
+                    onChangeOwnership={this.onChangeOwnership}
+                  />
 
-              </Grid>
-            </Grid.Column>
-          </Grid>
-        </div>
-      </ErrorBoundary>
+                </Grid>
+              </Grid.Column>
+            </Grid>
+          </div>
+        </ErrorBoundary>
+      </React.Fragment>
+
     )
   }
 }
