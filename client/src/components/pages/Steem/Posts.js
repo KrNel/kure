@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Header, Label, Grid, Icon } from 'semantic-ui-react';
 import { withRouter, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 import PostsSummaryGrid from './PostsSummaryGrid';
 import PostsSummaryList from './PostsSummaryList';
@@ -23,6 +24,7 @@ import FollowButton from './FollowButton';
 import Follows from './Follows';
 
 import './Posts.css';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -357,6 +359,7 @@ class Posts extends Component {
       props: {
         match: {
           path,
+          url,
         },
         user,
         csrf,
@@ -460,8 +463,46 @@ class Posts extends Component {
       );
     }
 
+    let pageTitle = '';
+    let desc = '';
+
+    if (page === 'blog') {
+      pageTitle = `${author}'s Blog`;
+      desc = `Check out the latest content from ${author}.`;
+    }else if (page === 'feed') {
+      pageTitle = `${author}'s Feed`;
+      desc = `Look at ${author}'s feed of posts around Steem.`;
+    }else if (path === '/@:author/followers') {
+      pageTitle = `${author}'s Followers`;
+      desc = `Look at ${author}'s followers on Steem.`;
+    }else if (path === '/@:author/following') {
+      pageTitle = `${author}'s Following`;
+      desc = `Look at who ${author} is following on Steem.`;
+    }else {
+      let filterPage = this.selectedFilter.charAt(0).toUpperCase() + this.selectedFilter.slice(1);
+      filterPage = filterPage.indexOf('Created') === 0 ? 'New' : filterPage;
+      pageTitle = `${filterPage} Steem Posts`;
+      desc = `Check out the latest ${filterPage} content on Steem.`;
+    }
+
+    const metaUrl = `https://thekure.net${url}`;
+    const metaTitle = `${pageTitle} - KURE`;
+    const image = `https://thekure.net${defaultImage}`;
+
     return (
       <React.Fragment>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <link rel="canonical" href={metaUrl} />
+          <link rel="amphtml" href={metaUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={metaTitle} />
+          <meta property="og:type" content="page" />
+          <meta property="og:url" content={metaUrl} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="KURE" />
+        </Helmet>
         <ModalGroup
           modalOpen={modalOpenAddPost}
           onModalClose={onModalCloseAddPost}

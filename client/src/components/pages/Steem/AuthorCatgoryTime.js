@@ -19,33 +19,32 @@ import './AuthorCatgoryTime.css';
  *  @param {number} payoutValue Post payout value
  *  @param {string} createdFromNow Time since post was created
  */
-const AuthorCatgoryTime = ({ author, authorReputation, category, created, permlink }) => {
-  return (
-    <div className='authorCatTime'>
-      <ul className="info">
-        <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
-        <li className="item author" data-author={author}>
-          {'\u00A0'}
-          <AuthorReputation author={author} reputation={authorReputation} />
-        </li>
-        <li className="item tag">
-          {'\u00A0in\u00A0'}
-          <Category category={category} />
-        </li>
-        <li className="item timeago">
-          {`\u00A0\u2022\u00A0`}
-          <PostLink
-            author={author}
-            category={category}
-            permlink={permlink}
-            title={standard(created)}
-            text={<LongNowDate date={created} />}
-          />
-        </li>
-      </ul>
-    </div>
-  )
-}
+const AuthorCatgoryTime = ({ author, authorReputation, category, created, permlink }) => (
+  <div className='authorCatTime'>
+    <ul className="info">
+      <li className="item avatar"><Avatar author={author} height='30px' width='30px' /></li>
+      <li className="item author" data-author={author}>
+        {'\u00A0'}
+        <AuthorReputation author={author} reputation={authorReputation} />
+      </li>
+      <li className="item tag">
+        {'\u00A0in\u00A0'}
+        <Category category={category} />
+      </li>
+      <li className="item timeago">
+        {`\u00A0\u2022\u00A0`}
+        <PostLink
+          author={author}
+          category={category}
+          permlink={permlink}
+          title={standard(created)}
+          text={<LongNowDate date={created} />}
+        />
+      </li>
+    </ul>
+  </div>
+)
+
 
 AuthorCatgoryTime.propTypes = {
   author: PropTypes.string,

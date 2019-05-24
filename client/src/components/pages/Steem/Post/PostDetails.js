@@ -225,7 +225,7 @@ class PostDetails extends Component {
           <meta property="og:url" content={url} />
           <meta property="og:image" content={image} />
           <meta property="og:description" content={desc} />
-          <meta property="og:site_name" content="Kure" />
+          <meta property="og:site_name" content="KURE" />
           <meta property="article:tag" content={category} />
           <meta property="article:published_time" content={new Date(created).toDateString()} />
         </Helmet>
