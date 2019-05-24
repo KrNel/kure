@@ -191,6 +191,7 @@ function proxifyImages(doc) {
   if (!doc) return;
   Array.prototype.forEach.call(doc.getElementsByTagName('img'), node => {
     const url = node.getAttribute('src');
+
     if (!linksRe.local.test(url)) {// eslint-disable-line import/no-named-as-default-member
       node.setAttribute('src', getProxyImageURL(url));
     }
