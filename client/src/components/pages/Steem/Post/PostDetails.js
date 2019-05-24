@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Form, Select, Dimmer, Loader } from "semantic-ui-react";
 import { attempt, isError, has, get } from 'lodash';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
 import Editor from '../Write/Editor';
 import PostBody from './PostBody';
@@ -18,12 +17,8 @@ import AuthorCatgoryTime from '../AuthorCatgoryTime';
 import PostActions from '../PostActions';
 import Loading from '../../../Loading/Loading';
 import { sumPayout } from '../../../../utils/helpers';
-import { editPost } from '../../../../actions/sendPostActions';
-import { clearPost, deletePost } from '../../../../actions/detailsPostActions';
-import { commentsClear } from '../../../../actions/commentsActions';
-import { sendCommentClear } from '../../../../actions/sendCommentActions';
-import { resteem } from '../../../../actions/resteemActions';
 import FollowButton from '../FollowButton';
+import { getDescription } from '../helpers/extractContent';
 
 import './PostDetails.css'
 
@@ -38,22 +33,20 @@ class PostDetails extends Component {
     isAuth: PropTypes.bool,
     post: PropTypes.shape(PropTypes.object.isRequired),
     isFetching: PropTypes.bool.isRequired,
-    handleUpvote: PropTypes.func.isRequired,
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
     replies: PropTypes.arrayOf(PropTypes.object.isRequired),
-    sendComment: PropTypes.func.isRequired,
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
     isUpdating: PropTypes.bool,
-    showEditPost: PropTypes.func,
-    clearPostDetails: PropTypes.func,
-    sendDeletePost: PropTypes.func,
-    clearComments: PropTypes.func,
     isDeleting: PropTypes.bool,
-    clearNewComments: PropTypes.func,
-    handleResteem: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
+    showEditPost: PropTypes.func,
+    sendDeletePost: PropTypes.func,
+    handleResteem: PropTypes.func,
+    sendComment: PropTypes.func.isRequired,
+    handleUpvote: PropTypes.func.isRequired,
+    followingList: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
@@ -64,14 +57,12 @@ class PostDetails extends Component {
     isAuth: false,
     replies: [],
     isUpdating: false,
-    showEditPost: () => {},
-    clearPostDetails: () => {},
-    sendDeletePost: () => {},
-    clearComments: () => {},
     isDeleting: false,
-    clearNewComments: () => {},
-    handleResteem: () => {},
     resteemedPayload: {},
+    followingList: [],
+    showEditPost: () => {},
+    handleResteem: () => {},
+    sendDeletePost: () => {},
   }
 
   constructor(props) {
@@ -88,13 +79,6 @@ class PostDetails extends Component {
     this.state = {
       sortBy: 'payout',
     }
-  }
-
-  componentWillUnmount() {
-    const { clearPostDetails, clearComments, clearNewComments } = this.props;
-    clearPostDetails();
-    clearComments();
-    clearNewComments();
   }
 
   /**
@@ -181,6 +165,7 @@ class PostDetails extends Component {
       isDeleting,
       handleResteem,
       resteemedPayload,
+      followingList,
     } = this.props;
 
     const {
@@ -191,6 +176,8 @@ class PostDetails extends Component {
     if (upvotePayload.post.id > 0 && post.id === upvotePayload.post.id) {
       post = upvotePayload.post
     }
+
+    const { desc } = getDescription(post.body, post.depth);
 
     const title = post.title;
     const author = post.author;
@@ -209,7 +196,6 @@ class PostDetails extends Component {
     const url = `https://thekure.net${post.url}`;
     const ampUrl = `${url}/amp`;
     const metaTitle = `${title} - KURE`;
-    const desc = post.desc;
     const postMetaData = jsonParse(post.json_metadata);
     const postMetaImage = postMetaData && postMetaData.image && postMetaData.image[0];
     const image = postMetaImage || `https://steemitimages.com/u/${author}/avatar` || '/images/logo.png';
@@ -228,212 +214,185 @@ class PostDetails extends Component {
     const columns = isUpdating ? 13 : 11;
 
     return (
-      <HelmetProvider>
-        <React.Fragment>
-          <Helmet>
-            <title>{title}</title>
-            <link rel="canonical" href={canonicalUrl} />
-            <link rel="amphtml" href={ampUrl} />
-            <meta property="description" content={desc} />
-            <meta property="og:title" content={metaTitle} />
-            <meta property="og:type" content="article" />
-            <meta property="og:url" content={url} />
-            <meta property="og:image" content={image} />
-            <meta property="og:description" content={desc} />
-            <meta property="og:site_name" content="Kure" />
-            <meta property="article:tag" content={category} />
-            <meta property="article:published_time" content={new Date(created).toDateString()} />
-          </Helmet>
-          <Grid verticalAlign='middle' columns={1} centered>
-            {
-              isDeleting && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
-            }
-            <Grid.Row>
-              <Grid.Column width={columns}>
-                <React.Fragment>
-                  {
-                    isFetching ? <Loading />
-                    : (
-                      <React.Fragment>
-                        <div className='PostContent'>
-                          {
-                            isUpdating
-                            ? <Editor />
-                            : (
-                              <React.Fragment>
-                                <h1>
-                                  {title}
-                                </h1>
-                                <div className='left'>
-                                  <AuthorCatgoryTime
-                                    author={author}
-                                    authorReputation={authorReputation}
-                                    category={category}
-                                    created={created}
-                                    permlink={permlink}
-                                    percentSD={post.percent_steem_dollars}
-                                  />
-                                </div>
-                                <div className='right'>
-                                  {
-                                    user && user !== author && (
-                                      <FollowButton user={author} compact />
-                                    )
-                                  }
-                                </div>
-                                <div className='clear' />
-                                <hr />
-                                {this.renderDtubeEmbedPlayer(post)}
-                                <PostBody
-                                  full
-                                  rewriteLinks={false}
-                                  body={body}
-                                  jsonMetadata={post.json_metadata}
-                                />
-                              </React.Fragment>
-                            )
-                          }
-                          <br />
-                          <div className='footer'>
-                            <div className='detailsFooter'>
+      <React.Fragment>
+        <Helmet>
+          <title>{title}</title>
+          <link rel="canonical" href={canonicalUrl} />
+          <link rel="amphtml" href={ampUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={metaTitle} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={url} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="Kure" />
+          <meta property="article:tag" content={category} />
+          <meta property="article:published_time" content={new Date(created).toDateString()} />
+        </Helmet>
+        <Grid verticalAlign='middle' columns={1} centered>
+          {
+            isDeleting && <Dimmer inverted active={isDeleting}><Loader /></Dimmer>
+          }
+          <Grid.Row>
+            <Grid.Column width={columns}>
+              <React.Fragment>
+                {
+                  isFetching ? <Loading />
+                  : (
+                    <React.Fragment>
+                      <div className='PostContent'>
+                        {
+                          isUpdating
+                          ? <Editor />
+                          : (
+                            <React.Fragment>
+                              <h1>
+                                {title}
+                              </h1>
                               <div className='left'>
-                                <Tags tags={tags} />
+                                <AuthorCatgoryTime
+                                  author={author}
+                                  authorReputation={authorReputation}
+                                  category={category}
+                                  created={created}
+                                  permlink={permlink}
+                                  percentSD={post.percent_steem_dollars}
+                                />
                               </div>
-                              <div className='alt-site right'>
-                                {`View on `}
-                                <a
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  href={`https://steemit.com${post.url}`}
-                                >
-                                  {'Steemit'}
-                                </a>
-                                {' | '}
-                                <a
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  href={`https://busy.org/@${author}/${permlink}`}
-                                >
-                                  {'Busy'}
-                                </a>
+                              <div className='right'>
+                                {
+                                  user && user !== author && (
+                                    <FollowButton
+                                      user={author}
+                                      compact
+                                      followingList={followingList}
+                                    />
+                                  )
+                                }
                               </div>
                               <div className='clear' />
-                            </div>
-
-                            <div className='post-actions'>
-                              <PostActions
-                                activeVotes={activeVotes}
-                                commentCount={commentCount}
-                                author={author}
-                                category={category}
-                                payoutValue={totalPayout}
-                                permlink={permlink}
-                                title={title}
-                                showModal={showModal}
-                                user={user}
-                                handleUpvote={handleUpvote}
-                                upvotePayload={upvotePayload}
-                                ratio={ratio}
-                                pid={pid}
-                                image={image}
-                                isPost
-                                onEditPost={this.handleEditPost}
-                                onDeletePost={this.handleDeletePost}
-                                handleResteem={handleResteem}
-                                resteemedPayload={resteemedPayload}
-                                payoutDeclined={payoutDeclined}
+                              <hr />
+                              {this.renderDtubeEmbedPlayer(post)}
+                              <PostBody
+                                full
+                                rewriteLinks={false}
+                                body={body}
+                                jsonMetadata={post.json_metadata}
                               />
+                            </React.Fragment>
+                          )
+                        }
+                        <br />
+                        <div className='footer'>
+                          <div className='detailsFooter'>
+                            <div className='left'>
+                              <Tags tags={tags} />
                             </div>
-                            <hr />
-                            {
-                              isAuth &&
-                              (
-                                <ReplyForm
-                                  sendComment={sendComment}
-                                  isCommenting={isCommenting}
-                                  parentPost={post}
-                                  commentedId={commentedId}
-                                />
-                              )
-                            }
+                            <div className='alt-site right'>
+                              {`View on `}
+                              <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={`https://steemit.com${post.url}`}
+                              >
+                                {'Steemit'}
+                              </a>
+                              {' | '}
+                              <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={`https://busy.org/@${author}/${permlink}`}
+                              >
+                                {'Busy'}
+                              </a>
+                            </div>
+                            <div className='clear' />
                           </div>
+
+                          <div className='post-actions'>
+                            <PostActions
+                              activeVotes={activeVotes}
+                              commentCount={commentCount}
+                              author={author}
+                              category={category}
+                              payoutValue={totalPayout}
+                              permlink={permlink}
+                              title={title}
+                              showModal={showModal}
+                              user={user}
+                              handleUpvote={handleUpvote}
+                              upvotePayload={upvotePayload}
+                              ratio={ratio}
+                              pid={pid}
+                              image={image}
+                              isPost
+                              onEditPost={this.handleEditPost}
+                              onDeletePost={this.handleDeletePost}
+                              handleResteem={handleResteem}
+                              resteemedPayload={resteemedPayload}
+                              payoutDeclined={payoutDeclined}
+                            />
+                          </div>
+                          <hr />
+                          {
+                            isAuth &&
+                            (
+                              <ReplyForm
+                                sendComment={sendComment}
+                                isCommenting={isCommenting}
+                                parentPost={post}
+                                commentedId={commentedId}
+                              />
+                            )
+                          }
                         </div>
+                      </div>
+                    </React.Fragment>
+                  )
+                }
+                <div className='comments' id='comments'>
+                  {
+                    !!comments.length && (
+                      <React.Fragment>
+                        <div className='left'>
+                          <h2>Comments</h2>
+                        </div>
+                        <div className='right'>
+                          <Form>
+                            <Form.Group>
+                              <Form.Field
+                                control={Select}
+                                defaultValue={this.sortOptions[3].value}
+                                options={this.sortOptions}
+                                onChange={this.handleSortChange}
+                              />
+                            </Form.Group>
+                          </Form>
+                        </div>
+                        <Comments
+                          comments={comments}
+                          sendComment={sendComment}
+                          isCommenting={isCommenting}
+                          commentedId={commentedId}
+                          isAuth={isAuth}
+                          commentPayload={commentPayload}
+                          pid={pid}
+                          handleUpvote={handleUpvote}
+                          user={user}
+                          upvotePayload={upvotePayload}
+                          sortBy={sortBy}
+                        />
                       </React.Fragment>
                     )
                   }
-                  <div className='comments' id='comments'>
-                    {
-                      !!comments.length && (
-                        <React.Fragment>
-                          <div className='left'>
-                            <h2>Comments</h2>
-                          </div>
-                          <div className='right'>
-                            <Form>
-                              <Form.Group>
-                                <Form.Field
-                                  control={Select}
-                                  defaultValue={this.sortOptions[3].value}
-                                  options={this.sortOptions}
-                                  onChange={this.handleSortChange}
-                                />
-                              </Form.Group>
-                            </Form>
-                          </div>
-                          <Comments
-                            comments={comments}
-                            sendComment={sendComment}
-                            isCommenting={isCommenting}
-                            commentedId={commentedId}
-                            isAuth={isAuth}
-                            commentPayload={commentPayload}
-                            pid={pid}
-                            handleUpvote={handleUpvote}
-                            user={user}
-                            upvotePayload={upvotePayload}
-                            sortBy={sortBy}
-                          />
-                        </React.Fragment>
-                      )
-                    }
-                  </div>
-                </React.Fragment>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </React.Fragment>
-      </HelmetProvider>
+                </div>
+              </React.Fragment>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </React.Fragment>
     )
   }
 }
 
-/**
- *  Map redux dispatch functions to component props.
- *
- *  @param {object} dispatch - Redux dispatch
- *  @returns {object} - Object with recent activity data
- */
-const mapDispatchToProps = dispatch => (
- {
-   showEditPost: (post) => (
-     dispatch(editPost(post))
-   ),
-   clearPostDetails: () => (
-     dispatch(clearPost())
-   ),
-   sendDeletePost: (author, permlink) => (
-     dispatch(deletePost(author, permlink))
-   ),
-   clearComments: () => (
-     dispatch(commentsClear())
-   ),
-   clearNewComments: () => (
-     dispatch(sendCommentClear())
-   ),
-   handleResteem: (pid, author, permlink) => (
-     dispatch(resteem(pid, author, permlink))
-   ),
- }
-);
-
-export default connect(null, mapDispatchToProps)(PostDetails);
+export default PostDetails;

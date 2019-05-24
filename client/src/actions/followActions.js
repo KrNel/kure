@@ -146,16 +146,13 @@ export const searchStart = page => ({
  *  @param {string} user User to get data for
  *  @returns {function} Dispatches returned action object
  */
-export const getFollowCount = user => (dispatch, getState) => {
-  let { user: userLogged } = getState().auth;
-  if (!userLogged) userLogged = cookieUser();
-
-  return client.call('follow_api', 'get_follow_count', [user])
+export const getFollowCount = user => (dispatch, getState) => (
+  client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {
       dispatch(followCountSuccess(followCount.follower_count, followCount.following_count));
-      dispatch(getAllFollowing(userLogged));
+      dispatch(getAllFollowing());
     })
-}
+)
 
 /**
  *  Get the user's followers list.
@@ -229,7 +226,10 @@ export const getFollowing = (user, startFrom = '', limit = 100, more = false, ty
  *  @param {string} user User to get data for
  *  @returns {function} Dispatches returned action object
  */
-export const getAllFollowing = user => async (dispatch, getState) => {
+export const getAllFollowing = () => async (dispatch, getState) => {
+  let { user } = getState().auth;
+  if (!user) user = cookieUser();
+
   const count = await client.call('follow_api', 'get_follow_count', [user])
     .then(followCount => {
        return followCount.following_count;
@@ -248,9 +248,15 @@ export const getAllFollowing = user => async (dispatch, getState) => {
 }
 
 /**
+ *  Get the search results for a specified user or letter follow search.
  *
+ *  @param {string} user User to get data for
+ *  @param {string} startFrom Previous user to start from
+ *  @param {string} page Follow page type
+ *  @param {number} limit Number of users to get
+ *  @returns {function} Dispatches returned action object
  */
-export const searchFollowers = (user, startFrom = '', page = 'followers', limit = 100, more = false) => (dispatch, getState) => {
+export const searchFollowers = (user, startFrom = '', page = 'followers', limit = 100) => (dispatch, getState) => {
 
   if (page === 'followers') {
     dispatch(searchStart(page));

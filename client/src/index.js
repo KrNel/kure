@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from 'react-redux';
+import { HelmetProvider } from 'react-helmet-async';
 
 import store from './redux'
 import "./index.css";
@@ -17,9 +18,11 @@ import AppRoutes from './routes/Routes';
 const renderApp = Component => {
   ReactDOM.render(
     <Provider store={store}>
-      <Router>
-        <Component />
-      </Router>
+      <HelmetProvider>
+        <Router>
+          <Component />
+        </Router>
+      </HelmetProvider>
     </Provider>,
     document.getElementById("root")
   )

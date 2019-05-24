@@ -22,7 +22,7 @@ import ModalVotesList from '../../Modal/ModalVotesList';
 import FollowButton from './FollowButton';
 import Follows from './Follows';
 
-import './Post.css';
+import './Posts.css';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
