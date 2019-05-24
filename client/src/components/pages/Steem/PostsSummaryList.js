@@ -43,6 +43,7 @@ const PostsSummaryList = (props) => {
     pageOwner,
     resteemedPayload,
     showModalVotes,
+    showResteems,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -94,6 +95,9 @@ const PostsSummaryList = (props) => {
             </div>
           )
         }
+
+        if (!showResteems && isResteemed)
+          return null;
 
         const isFullPower = post.percent_steem_dollars === 0;
 

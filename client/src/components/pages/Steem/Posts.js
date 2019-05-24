@@ -120,6 +120,7 @@ class Posts extends Component {
 
     this.state = {
       showDesc: true,
+      showResteems: true,
       modalVotesOpen: false,
       voterData: {
         voters: [],
@@ -322,11 +323,19 @@ class Posts extends Component {
   }
 
   /**
-   *  Toggle state showDesc to show the description on the page.
+   *  Toggle state showDesc to hide/show the descriptions for posts.
    */
   toggleDescriptions = event => {
     event.preventDefault();
     this.setState(prevState => ({ showDesc: !prevState.showDesc }));
+  }
+
+  /**
+   *  Toggle state showResteems to hide/show the resteems on the page.
+   */
+  toggleResteems = event => {
+    event.preventDefault();
+    this.setState(prevState => ({ showResteems: !prevState.showResteems }));
   }
 
   /**
@@ -390,6 +399,7 @@ class Posts extends Component {
       },
       state: {
         showDesc,
+        showResteems,
         modalVotesOpen,
         voterData,
       },
@@ -485,6 +495,19 @@ class Posts extends Component {
       desc = `Check out the latest ${filterPage} content on Steem.`;
     }
 
+    const showHideresteems = page === 'blog' && (
+      <div className='showHideResteems'>
+        {'Hide Resteems: '}
+        <a href='/hideresteems' onClick={this.toggleResteems}>
+          {
+            showResteems
+            ? <Icon name='toggle off' size='large' />
+            : <Icon name='toggle on' size='large' />
+          }
+        </a>
+      </div>
+    );
+
     const metaUrl = `https://thekure.net${url}`;
     const metaTitle = `${pageTitle} - KURE`;
     const image = `https://thekure.net${defaultImage}`;
@@ -534,6 +557,7 @@ class Posts extends Component {
                           showGrid={showGrid}
                         />
                         <hr />
+                        { showHideresteems }
                         {
                           page === prevPage
                           ? (
@@ -550,6 +574,7 @@ class Posts extends Component {
                               pageOwner={author}
                               resteemedPayload={resteemedPayload}
                               showModalVotes={this.showModalVotes}
+                              showResteems={showResteems}
                             />
                           ) : (
                             <Loading />
@@ -577,6 +602,7 @@ class Posts extends Component {
                                     : <Icon name='toggle on' size='large' />
                                   }
                                 </a>
+                                { showHideresteems }
                               </Grid.Column>
                             </Grid.Row>
 
@@ -597,6 +623,7 @@ class Posts extends Component {
                                   resteemedPayload={resteemedPayload}
                                   showDesc={showDesc}
                                   showModalVotes={this.showModalVotes}
+                                  showResteems={showResteems}
                                 />
                               ) : (
                                 <Loading />

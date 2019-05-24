@@ -43,6 +43,7 @@ const PostsSummaryGrid = (props) => {
     resteemedPayload,
     showDesc,
     showModalVotes,
+    showResteems,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -92,6 +93,9 @@ const PostsSummaryGrid = (props) => {
             </div>
           )
         }
+
+        if (!showResteems && isResteemed)
+          return null;
 
         return (
 
