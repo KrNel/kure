@@ -39,15 +39,13 @@ class App extends Component {
     const loginURL = SteemConnect.getLoginURL(scState);
 
     return (
-      <React.Fragment>
-        <NavMenu loginURL={loginURL}>
-          <Grid container className="wrapper">
-            <Grid.Column width={16}>
-              {children}
-            </Grid.Column>
-          </Grid>
-        </NavMenu>
-      </React.Fragment>
+      <NavMenu loginURL={loginURL}>
+        <Grid className="wrapper">
+          <Grid.Column width={16}>
+            {children}
+          </Grid.Column>
+        </Grid>
+      </NavMenu>
     )
   }
 }

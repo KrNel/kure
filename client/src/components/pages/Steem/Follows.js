@@ -56,7 +56,6 @@ class Follows extends React.Component {
         >
           { letter }
         </a>
-        {`  `}
       </span>
     )
   })

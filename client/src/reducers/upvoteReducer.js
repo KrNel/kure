@@ -1,7 +1,9 @@
 import {
   UPVOTE_START,
   UPVOTE_SUCCESS,
-  UPVOTE_FAILED,
+  VOTE_FAILED,
+  DOWNVOTE_START,
+  DOWNVOTE_SUCCESS,
 } from '../actions/upvoteActions';
 
 /**
@@ -17,6 +19,7 @@ export const upvote = (
   state = {
     upvotePayload: {
       isUpvoting: false,
+      isDownvoting: false,
       author: '',
       permlink: '',
       votedPosts: [],
@@ -30,7 +33,6 @@ export const upvote = (
   action) => {
 
   switch (action.type) {
-
     case UPVOTE_START:
       return ({
         ...state,
@@ -41,12 +43,34 @@ export const upvote = (
           error: '',
         }
       });
-    case UPVOTE_FAILED:
+    case VOTE_FAILED:
     case UPVOTE_SUCCESS:
       return ({
         ...state,
         upvotePayload: {
           isUpvoting: false,
+          votedPosts: [
+            ...state.upvotePayload.votedPosts,
+            action.payload.post
+          ],
+          ...action.payload,
+        }
+      });
+    case DOWNVOTE_START:
+      return ({
+        ...state,
+        upvotePayload: {
+          isDownvoting: true,
+          votedPosts: [...state.upvotePayload.votedPosts],
+          ...action.payload,
+          error: '',
+        }
+      });
+    case DOWNVOTE_SUCCESS:
+      return ({
+        ...state,
+        upvotePayload: {
+          isDownvoting: false,
           votedPosts: [
             ...state.upvotePayload.votedPosts,
             action.payload.post

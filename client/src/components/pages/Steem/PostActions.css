@@ -88,6 +88,10 @@
   color: var(--soft-black);
 }
 
+.flagged {
+  color: var(--red) !important;
+}
+
 .item.reply {
   margin-left:2rem;
   border-left: none;

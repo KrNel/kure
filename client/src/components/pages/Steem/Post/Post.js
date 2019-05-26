@@ -367,8 +367,8 @@ const mapDispatchToProps = dispatch => (
     handleResteem: (pid, author, permlink) => (
       dispatch(resteem(pid, author, permlink))
     ),
-    handleUpvote: (voter, author, permlink, weight) => (
-      dispatch(upvotePost(voter, author, permlink, weight))
+    handleUpvote: (author, permlink, weight) => (
+      dispatch(upvotePost(author, permlink, weight))
     ),
     sendComment: (body, parentPost) => (
       dispatch(sendComment(body, parentPost))

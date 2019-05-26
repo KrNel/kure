@@ -168,7 +168,7 @@ class Vote extends Component {
    *  @param {number} weight Weight value received from slider
    */
   setSavedVoteWeight = (weight, user) => {
-    localStorage.setItem('voteWeight-' + user, weight);
+    localStorage.setItem('voteWeight-up-' + user, weight);
   }
 
   /**
@@ -177,7 +177,7 @@ class Vote extends Component {
    *  @param {string} user Voting user
    */
   getSavedVoteWeight = user => (
-    localStorage.getItem('voteWeight-' + user)
+    localStorage.getItem('voteWeight-up-' + user)
   )
 
   render() {
@@ -206,14 +206,15 @@ class Vote extends Component {
 
     const votedAuthor = upvotePayload.author;
     const votedPermlink = upvotePayload.permlink;
-    const votedVoters = upvotePayload.post.active_votes;
+    const votedVoters = getUpvotes(upvotePayload.post.active_votes);
 
     const isThisPost = votedAuthor === author && votedPermlink === permlink;
 
-    let votesCount = getUpvotes(activeVotes).length;
-    let voters = activeVotes;
+    let voters = getUpvotes(activeVotes);
+    let votesCount = voters.length;
+
     if (votedVoters.length && isThisPost) {
-      votesCount = getUpvotes(votedVoters).length;
+      votesCount = votedVoters.length;
       voters = votedVoters;
     }
 
@@ -232,10 +233,10 @@ class Vote extends Component {
       upvoteClasses = 'loading';
     }else if (isNewlyVoted) {
       upvoteClasses = 'votedOn';
-      voteTitle = 'Unvote post';
+      voteTitle = 'Remove vote';
     }else if (isVotedOn) {
       upvoteClasses = 'votedOn';
-      voteTitle = 'Unvote post';
+      voteTitle = 'Remove vote';
     }else if (voters.some(vote => vote.voter === user && vote.percent === 0)) {
       upvoteClasses = 'voteRemoved';
       voteTitle = 'Re-upvote post';
@@ -351,7 +352,7 @@ class Vote extends Component {
             </div>
             <Popup
               trigger={(
-                <a ref={this.contextRef} href="/vote" onClick={event => this.vote(event, user, pid)} title={voteTitle}>
+                <a href="/vote" onClick={event => this.vote(event, user, pid)} title={voteTitle}>
                   <Icon id={`pid-${pid}`} name='chevron up circle' size='large' className={upvoteClasses} />
                 </a>
               )}

@@ -184,6 +184,10 @@ class PostActions extends Component {
                 ratio={ratio}
                 user={user}
                 showModalVotes={showModalVotes}
+                pid={pid}
+                upvotePayload={upvotePayload}
+                author={author}
+                permlink={permlink}
               />
             )
           }
