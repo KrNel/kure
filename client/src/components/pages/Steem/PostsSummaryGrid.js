@@ -82,6 +82,9 @@ const PostsSummaryGrid = (props) => {
           isResteemed = pageOwner !== author
         }
 
+        if (!showResteems && isResteemed)
+          return null;
+
         let resteemed = reblogged_by && !!reblogged_by.length
         ? <Resteemers rebloggedBy={reblogged_by} /> : null;
 
@@ -93,9 +96,6 @@ const PostsSummaryGrid = (props) => {
             </div>
           )
         }
-
-        if (!showResteems && isResteemed)
-          return null;
 
         return (
 

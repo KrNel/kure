@@ -84,6 +84,9 @@ const PostsSummaryList = (props) => {
           isResteemed = pageOwner !== author
         }
 
+        if (!showResteems && isResteemed)
+          return null;
+
         let resteemed = reblogged_by && !!reblogged_by.length
         ? <Resteemers rebloggedBy={reblogged_by} /> : null;
 
@@ -95,9 +98,6 @@ const PostsSummaryList = (props) => {
             </div>
           )
         }
-
-        if (!showResteems && isResteemed)
-          return null;
 
         const isFullPower = post.percent_steem_dollars === 0;
 

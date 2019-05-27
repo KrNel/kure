@@ -2,17 +2,17 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Grid, Label, Header, Segment, Dimmer, Loader } from "semantic-ui-react";
 import PropTypes from 'prop-types';
+import { Helmet } from 'react-helmet-async';
 
 import Loading from '../../Loading/Loading';
 import GroupPostsList from '../../kure/GroupPostsList';
 import GroupPostsGrid from '../../kure/GroupPostsGrid';
 import GroupUsers from '../../kure/GroupUsers';
-
 import joinCommunities from '../../../utils/joinCommunities';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import { getGroupData, groupClear, joinGroup } from '../../../actions/communitiesActions';
-
 import ToggleView from '../../kure/ToggleView';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Shows the individual community page details.
@@ -166,6 +166,9 @@ class GroupDetails extends Component {
         isFetching,
         groupRequested,
         isJoining,
+        match: {
+          url,
+        }
       }
     } = this;
 
@@ -218,52 +221,73 @@ class GroupDetails extends Component {
       )
     })
 
+    const metaUrl = `https://thekure.net/${url}`;
+    const pageTitle = `${groupData.display} Community`;
+    const desc = 'View the communities users have created on KURE.';
+    const metaTitle = `${pageTitle} - KURE`;
+    const ampUrl = `${url}/amp`;
+    const image = `https://thekure.net${defaultImage}`;
+
     return (
       !groupData.notExists
       ? groupData.display
         ? (
-          <ErrorBoundary>
-            <div className='community'>
-              <Grid columns={1} stackable>
-                <Grid.Column width={16} className="main">
-                  <Grid stackable>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Label size='large' color='blue'>
-                          <Header as='h2'>
-                            {groupData.display}
-                          </Header>
-                        </Label>
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <div className='left'>
-                          {tabViews}
-                          { isAuth && (
-                            <Label size='large'>
-                              { isJoining && <Dimmer inverted active={isJoining}><Loader size='tiny' inline /></Dimmer> }
-                              {'Membership: '}
-                              {
-                                joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
-                              }
-                            </Label>
-                          )}
-                        </div>
-                        <ToggleView
-                          toggleView={this.toggleView}
-                          showGrid={showGrid}
-                        />
-                        <div className='clear' />
-                      </Grid.Column>
-                    </Grid.Row>
-                    {selectedTab}
-                    { isFetching && <Loading /> }
-                  </Grid>
-                </Grid.Column>
-              </Grid>
-            </div>
-          </ErrorBoundary>
+          <React.Fragment>
+            <Helmet>
+              <title>{pageTitle}</title>
+              <link rel="canonical" href={metaUrl} />
+              <link rel="amphtml" href={ampUrl} />
+              <meta property="description" content={desc} />
+              <meta property="og:title" content={metaTitle} />
+              <meta property="og:type" content="article" />
+              <meta property="og:url" content={metaUrl} />
+              <meta property="og:image" content={image} />
+              <meta property="og:description" content={desc} />
+              <meta property="og:site_name" content="KURE" />
+            </Helmet>
+            <ErrorBoundary>
+              <div className='community'>
+                <Grid columns={1} stackable>
+                  <Grid.Column width={16} className="main">
+                    <Grid stackable>
+                      <Grid.Row>
+                        <Grid.Column>
+                          <Label size='large' color='blue'>
+                            <Header as='h2'>
+                              {groupData.display}
+                            </Header>
+                          </Label>
+                        </Grid.Column>
+                      </Grid.Row>
+                      <Grid.Row>
+                        <Grid.Column>
+                          <div className='left'>
+                            {tabViews}
+                            { isAuth && (
+                              <Label size='large'>
+                                { isJoining && <Dimmer inverted active={isJoining}><Loader size='tiny' inline /></Dimmer> }
+                                {'Membership: '}
+                                {
+                                  joinCommunities(isAuth, groupRequested, groupData.name, groupData.kaccess[0], this.onJoinGroup)
+                                }
+                              </Label>
+                            )}
+                          </div>
+                          <ToggleView
+                            toggleView={this.toggleView}
+                            showGrid={showGrid}
+                          />
+                          <div className='clear' />
+                        </Grid.Column>
+                      </Grid.Row>
+                      {selectedTab}
+                      { isFetching && <Loading /> }
+                    </Grid>
+                  </Grid.Column>
+                </Grid>
+              </div>
+            </ErrorBoundary>
+          </React.Fragment>
         )
         : <Loading />
       : (

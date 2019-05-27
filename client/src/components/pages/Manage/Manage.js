@@ -104,6 +104,7 @@ class Manage extends Component {
     const pageTitle = `Managing ${user}'s Communities`;
     const desc = 'Manage the communities you own or have joined.';
     const metaTitle = `${pageTitle} - KURE`;
+    const ampUrl = `manage/amp`;
     const image = `https://thekure.net${defaultImage}`;
 
     return (
@@ -111,10 +112,10 @@ class Manage extends Component {
         <Helmet>
           <title>{pageTitle}</title>
           <link rel="canonical" href={metaUrl} />
-          <link rel="amphtml" href={metaUrl} />
+          <link rel="amphtml" href={ampUrl} />
           <meta property="description" content={desc} />
           <meta property="og:title" content={metaTitle} />
-          <meta property="og:type" content="page" />
+          <meta property="og:type" content="article" />
           <meta property="og:url" content={metaUrl} />
           <meta property="og:image" content={image} />
           <meta property="og:description" content={desc} />

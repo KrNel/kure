@@ -90,7 +90,7 @@ class Flag extends React.Component {
   };
 
   /**
-   *  The real upvote is sent here after the confimation to vote is done via
+   *  The real downvote is sent here after the confimation to vote is done via
    *  the slider.
    *
    *  @param {element} event Element triggering the event
@@ -134,7 +134,7 @@ class Flag extends React.Component {
   }
 
   /**
-   *  When the upvote slider is closed, the vote weight is saved in
+   *  When the downvote slider is closed, the vote weight is saved in
    *  localStorage for future use of that user.
    *
    *  @param {element} event Element triggering the event
@@ -221,6 +221,7 @@ class Flag extends React.Component {
       flagIcon = 'flag';
     }
 
+    //popup to show the user, dolalr value and percentage
     let votersPopup = '';
     if (votesCount) {
       votersPopup = voters.slice(0, 14).map(vote => (

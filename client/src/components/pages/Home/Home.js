@@ -163,6 +163,7 @@ class Home extends Component {
     const metaUrl = `https://thekure.net/`;
     const pageTitle = 'KURE Community Curation';
     const desc = 'KURE empowers the Steem community to coordinate their curation efforts through building community networks of their own.';
+    const ampUrl = `home/amp`;
     const image = `https://thekure.net${defaultImage}`;
 
     return (
@@ -170,10 +171,10 @@ class Home extends Component {
         <Helmet>
           <title>{pageTitle}</title>
           <link rel="canonical" href={metaUrl} />
-          <link rel="amphtml" href={metaUrl} />
+          <link rel="amphtml" href={ampUrl} />
           <meta property="description" content={desc} />
           <meta property="og:title" content={pageTitle} />
-          <meta property="og:type" content="page" />
+          <meta property="og:type" content="article" />
           <meta property="og:url" content={metaUrl} />
           <meta property="og:image" content={image} />
           <meta property="og:description" content={desc} />

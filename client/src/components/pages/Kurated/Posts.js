@@ -121,6 +121,7 @@ class Posts extends Component {
     const pageTitle = `Kurated Posts`;
     const desc = 'View the posts that have been curate on KURE.';
     const metaTitle = `${pageTitle} - KURE`;
+    const ampUrl = `kurated/amp`;
     const image = `https://thekure.net${defaultImage}`;
 
     return (
@@ -128,10 +129,10 @@ class Posts extends Component {
         <Helmet>
           <title>{pageTitle}</title>
           <link rel="canonical" href={metaUrl} />
-          <link rel="amphtml" href={metaUrl} />
+          <link rel="amphtml" href={ampUrl} />
           <meta property="description" content={desc} />
           <meta property="og:title" content={metaTitle} />
-          <meta property="og:type" content="page" />
+          <meta property="og:type" content="article" />
           <meta property="og:url" content={metaUrl} />
           <meta property="og:image" content={image} />
           <meta property="og:description" content={desc} />
