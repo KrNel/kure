@@ -9,6 +9,7 @@ import {
   SEND_FOLLOW_SUCCESS,
   SEND_UNFOLLOW_START,
   SEND_UNFOLLOW_SUCCESS,
+  SEARCH_START,
 } from '../actions/followActions';
 
 /**
@@ -29,7 +30,6 @@ export const follow = (state = {
   followingList: [],
   hasMore: true,
   followPayload: {
-    isFetching: false,
     userFollowing: '',
   },
 }, action) => {
@@ -50,6 +50,7 @@ export const follow = (state = {
         followingCount: 0,
         followingList: [],
         hasMore: true,
+        followPayload: {},
       }
     case GET_FOLLOWCOUNT_SUCCESS:
       return {
@@ -67,6 +68,7 @@ export const follow = (state = {
           ...action.followers,
         ],
         hasMore: action.hasMore,
+        searchFollowLoading: false,
       }
     case GET_FOLLOWING_SUCCESS:
       return {
@@ -77,6 +79,7 @@ export const follow = (state = {
           ...action.following,
         ],
         hasMore: action.hasMore,
+        searchFollowLoading: false,
       }
     case GET_ALL_FOLLOWING_SUCCESS:
       return {
@@ -88,7 +91,6 @@ export const follow = (state = {
       return {
         ...state,
         followPayload: {
-          isFollowing: true,
           userFollowing: action.user,
         }
       }
@@ -100,7 +102,6 @@ export const follow = (state = {
           action.user,
         ],
         followPayload: {
-          isFollowing: false,
           userFollowing: '',
         }
       }
@@ -108,12 +109,17 @@ export const follow = (state = {
       return {
         ...state,
         followingList: [
-          state.followingList.filter(user => user !== action.user),
+          ...state.followingList.filter(user => user !== action.user)
         ],
         followPayload: {
-          isFollowing: false,
           userFollowing: '',
         }
+      }
+    case SEARCH_START:
+      return {
+        ...state,
+        [action.page]: [],
+        searchFollowLoading: true,
       }
     default:
       return state

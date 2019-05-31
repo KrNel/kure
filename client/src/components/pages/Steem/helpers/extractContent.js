@@ -63,6 +63,29 @@ export function extractContent(post) {
 
   const {image_link, jsonMetadata} = extractImage(json_metadata, body, author, permlink)
 
+  const {desc, desc_complete} = getDescription(body, depth);
+
+  return {
+    author,
+    permlink,
+    parent_author,
+    parent_permlink,
+    json_metadata: jsonMetadata,
+    category,
+    title,
+    created,
+    net_rshares,
+    children,
+    url,
+    pending_payout_value,
+    image_link,
+    desc,
+    desc_complete,
+    body
+  };
+}
+
+export const getDescription = (body, depth) => {
   let desc;
   let desc_complete = false;
 
@@ -92,27 +115,9 @@ export function extractContent(post) {
   }
   desc_complete = body2 === desc; // is the entire body in desc?
 
-  return {
-    author,
-    permlink,
-    parent_author,
-    parent_permlink,
-    json_metadata: jsonMetadata,
-    category,
-    title,
-    created,
-    net_rshares,
-    children,
-    url,
-    pending_payout_value,
-    image_link,
-    desc,
-    desc_complete,
-    body
-  };
-
-
+  return {desc, desc_complete}
 }
+
 export const slugify = (string) => {
   const a = 'àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
   const b = 'aaaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'

@@ -66,6 +66,15 @@ const LoginControl = ({isAuth, user, loginURL}) => {
             </Dropdown.Item>
 
             <Dropdown.Item
+              as='a'
+              href={`https://steemitwallet.com/@${user}`}
+              target='_blank'
+            >
+              <Icon name='money bill alternate outline' />
+              {'Wallet'}
+            </Dropdown.Item>
+
+            <Dropdown.Item
               exact
               as={NavLink}
               to="/logout"

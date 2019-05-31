@@ -7,10 +7,14 @@ import PostDetails from './PostDetails';
 import ErrorBoundary from '../../../ErrorBoundary/ErrorBoundary';
 import ModalGroup from '../../../Modal/ModalGroup';
 import ErrorLabel from '../../../ErrorLabel/ErrorLabel';
-import { getDetailsContent, clearPost } from '../../../../actions/detailsPostActions';
+import { getDetailsContent, clearPost, deletePost } from '../../../../actions/detailsPostActions';
 import * as addPostActions from '../../../../actions/addPostActions';
+import { commentsClear } from '../../../../actions/commentsActions';
+import { sendComment, sendCommentClear } from '../../../../actions/sendCommentActions';
+import { editPost } from '../../../../actions/sendPostActions';
+import { resteem } from '../../../../actions/resteemActions';
 import { upvotePost } from '../../../../actions/upvoteActions';
-import { sendComment } from '../../../../actions/sendCommentActions';
+import { getAllFollowing } from '../../../../actions/followActions';
 import { hasLength } from '../../../../utils/helpers';
 import Loading from '../../../Loading/Loading';
 
@@ -28,7 +32,6 @@ class Post extends Component {
     post: PropTypes.shape(PropTypes.object.isRequired),
     handleUpvote: PropTypes.func.isRequired,
     upvotePayload: PropTypes.shape(PropTypes.object.isRequired),
-    sendComment: PropTypes.func.isRequired,
     isCommenting: PropTypes.bool.isRequired,
     commentedId: PropTypes.number,
     commentPayload: PropTypes.shape(PropTypes.object.isRequired),
@@ -48,8 +51,16 @@ class Post extends Component {
     draft: PropTypes.shape(PropTypes.object.isRequired),
     isDeleting: PropTypes.bool,
     redirect: PropTypes.string,
-    clearPostData: PropTypes.func,
     resteemedPayload: PropTypes.shape(PropTypes.object.isRequired),
+    clearPostDetails: PropTypes.func,
+    clearComments: PropTypes.func,
+    clearNewComments: PropTypes.func,
+    showEditPost: PropTypes.func,
+    sendDeletePost: PropTypes.func,
+    handleResteem: PropTypes.func,
+    sendComment: PropTypes.func.isRequired,
+    allFollowing: PropTypes.func,
+    followingList: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
@@ -65,8 +76,15 @@ class Post extends Component {
     draft: {},
     isDeleting: false,
     redirect: '',
-    clearPostData: () => {},
     resteemedPayload: {},
+    followingList: [],
+    clearPostDetails: () => {},
+    clearComments: () => {},
+    clearNewComments: () => {},
+    showEditPost: () => {},
+    handleResteem: () => {},
+    sendDeletePost: () => {},
+    allFollowing: () => {},
   }
 
   constructor(props) {
@@ -83,6 +101,7 @@ class Post extends Component {
   componentDidMount() {
     const {
       getContent,
+      allFollowing,
       match: {
         params: {
           author,
@@ -92,6 +111,7 @@ class Post extends Component {
     } = this.props;
 
     getContent(author, permlink);
+    allFollowing();
   }
 
   /**
@@ -105,7 +125,7 @@ class Post extends Component {
       getContent,
       draft,
       redirect,
-      clearPostData,
+      clearPostDetails,
       match: {
         params: {
           author,
@@ -124,8 +144,15 @@ class Post extends Component {
     //if redirect requested, clear previous post data in Redux
     if (redirect && redirect !== prevProps.redirect) {
       this.redirect = redirect;
-      clearPostData();
+      clearPostDetails();
     }
+  }
+
+  componentWillUnmount() {
+    const { clearPostDetails, clearComments, clearNewComments } = this.props;
+    clearPostDetails();
+    clearComments();
+    clearNewComments();
   }
 
   render() {
@@ -148,13 +175,17 @@ class Post extends Component {
       handleUpvote,
       upvotePayload,
       replies,
-      sendComment,
       isCommenting,
       commentedId,
       commentPayload,
       isUpdating,
       isDeleting,
       resteemedPayload,
+      showEditPost,
+      sendDeletePost,
+      handleResteem,
+      sendComment,
+      followingList,
     } = this.props;
 
     let addErrorPost = '';
@@ -191,7 +222,6 @@ class Post extends Component {
                     handleUpvote={handleUpvote}
                     upvotePayload={upvotePayload}
                     replies={replies}
-                    sendComment={sendComment}
                     isCommenting={isCommenting}
                     commentedId={commentedId}
                     isFetching={isFetchingDetails}
@@ -199,6 +229,11 @@ class Post extends Component {
                     isUpdating={isUpdating}
                     isDeleting={isDeleting}
                     resteemedPayload={resteemedPayload}
+                    showEditPost={showEditPost}
+                    sendDeletePost={sendDeletePost}
+                    handleResteem={handleResteem}
+                    sendComment={sendComment}
+                    followingList={followingList}
                   />
                 )
                 :  <Loading />
@@ -259,6 +294,9 @@ class Post extends Component {
      resteem: {
        resteemedPayload,
      },
+     follow: {
+       followingList,
+     },
    } = state;
 
    return {
@@ -284,6 +322,7 @@ class Post extends Component {
      isDeleting,
      redirect,
      resteemedPayload,
+     followingList,
    }
  }
 
@@ -310,15 +349,33 @@ const mapDispatchToProps = dispatch => (
     handleGroupSelect: (value) => (
       dispatch(addPostActions.handleGroupSelect(value))
     ),
-    handleUpvote: (voter, author, permlink, weight) => (
-      dispatch(upvotePost(voter, author, permlink, weight))
+    clearPostDetails: () => (
+      dispatch(clearPost())
+    ),
+    clearComments: () => (
+      dispatch(commentsClear())
+    ),
+    clearNewComments: () => (
+      dispatch(sendCommentClear())
+    ),
+    showEditPost: (post) => (
+      dispatch(editPost(post))
+    ),
+    sendDeletePost: (author, permlink) => (
+      dispatch(deletePost(author, permlink))
+    ),
+    handleResteem: (pid, author, permlink) => (
+      dispatch(resteem(pid, author, permlink))
+    ),
+    handleUpvote: (author, permlink, weight) => (
+      dispatch(upvotePost(author, permlink, weight))
     ),
     sendComment: (body, parentPost) => (
       dispatch(sendComment(body, parentPost))
     ),
-    clearPostData: () => (
-      dispatch(clearPost())
-    ),
+    allFollowing: () => (
+      dispatch(getAllFollowing())
+    )
   }
 );
 

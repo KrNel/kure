@@ -1,4 +1,4 @@
-export const getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent > 0);
+export const getUpvotes = activeVotes => activeVotes.filter(vote => vote.percent >= 0);
 export const getDownvotes = activeVotes => activeVotes.filter(vote => vote.percent < 0);
 export const sortVotes = (votes, sortBy) => votes.sort((a, b) => a[sortBy] - b[sortBy]);
 export const sumPayout = content => (

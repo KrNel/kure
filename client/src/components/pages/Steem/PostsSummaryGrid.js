@@ -43,6 +43,7 @@ const PostsSummaryGrid = (props) => {
     resteemedPayload,
     showDesc,
     showModalVotes,
+    showResteems,
   } = props;
 
   if (!posts.length && !isFetching) {
@@ -80,6 +81,9 @@ const PostsSummaryGrid = (props) => {
         if (page === 'blog') {
           isResteemed = pageOwner !== author
         }
+
+        if (!showResteems && isResteemed)
+          return null;
 
         let resteemed = reblogged_by && !!reblogged_by.length
         ? <Resteemers rebloggedBy={reblogged_by} /> : null;

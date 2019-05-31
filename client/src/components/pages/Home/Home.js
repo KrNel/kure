@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Header, Label } from "semantic-ui-react";
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
 import CommunityActivity from './CommunityActivity';
 import Loading from '../../Loading/Loading';
@@ -13,6 +14,7 @@ import RecentPostsList from './RecentPostsList';
 import RecentPostsGrid from './RecentPostsGrid';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import './Home.css';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Home page component.
@@ -158,33 +160,53 @@ class Home extends Component {
       )
     });
 
-    return (
-      <ErrorBoundary>
-        <div className="home">
-          <Grid columns={1} stackable>
-            <Grid.Column width={12} className="main">
-              <Grid stackable>
-                <Grid.Row>
-                  <Grid.Column>
-                    {tabViews}
-                    <ToggleView
-                      toggleView={this.toggleView}
-                      showGrid={showGrid}
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-                {selectedTab}
-                { isFetching && <Loading /> }
-              </Grid>
-            </Grid.Column>
+    const metaUrl = `https://thekure.net/`;
+    const pageTitle = 'KURE Community Curation';
+    const desc = 'KURE empowers the Steem community to coordinate their curation efforts through building community networks of their own.';
+    const ampUrl = `home/amp`;
+    const image = `https://thekure.net${defaultImage}`;
 
-            <Grid.Column width={4} className="sidebar">
-              <MyCommunities myComms={myComms} isAuth={isAuth} />
-              <MySubmissions mySubs={mySubs} isAuth={isAuth} />
-            </Grid.Column>
-          </Grid>
-        </div>
-      </ErrorBoundary>
+    return (
+      <React.Fragment>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <link rel="canonical" href={metaUrl} />
+          <link rel="amphtml" href={ampUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={metaUrl} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="KURE" />
+        </Helmet>
+        <ErrorBoundary>
+          <div className="home">
+            <Grid columns={1} stackable>
+              <Grid.Column width={12} className="main">
+                <Grid stackable>
+                  <Grid.Row>
+                    <Grid.Column>
+                      {tabViews}
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                  {selectedTab}
+                  { isFetching && <Loading /> }
+                </Grid>
+              </Grid.Column>
+
+              <Grid.Column width={4} className="sidebar">
+                <MyCommunities myComms={myComms} isAuth={isAuth} />
+                <MySubmissions mySubs={mySubs} isAuth={isAuth} />
+              </Grid.Column>
+            </Grid>
+          </div>
+        </ErrorBoundary>
+      </React.Fragment>
     )
   }
 }

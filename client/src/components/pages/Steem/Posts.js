@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Header, Label, Grid, Icon } from 'semantic-ui-react';
 import { withRouter, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 import PostsSummaryGrid from './PostsSummaryGrid';
 import PostsSummaryList from './PostsSummaryList';
@@ -15,14 +16,15 @@ import { getSummaryContent } from '../../../actions/summaryPostActions';
 import * as addPostActions from '../../../actions/addPostActions';
 import { upvotePost } from '../../../actions/upvoteActions';
 import { resteem } from '../../../actions/resteemActions';
-import { getFollowCount, getFollowers, getFollowing, clearFollow } from '../../../actions/followActions';
+import { getFollowCount, getFollowers, getFollowing, clearFollow, searchFollowers } from '../../../actions/followActions';
 import ToggleView from '../../kure/ToggleView';
 import { changeViewSettings, initViewStorage } from '../../../actions/settingsActions';
 import ModalVotesList from '../../Modal/ModalVotesList';
-import Followers from './Followers';
-import Following from './Following';
+import FollowButton from './FollowButton';
+import Follows from './Follows';
 
-import './Post.css';
+import './Posts.css';
+import defaultImage from '../../../images/steemkure-600.png';
 
 /**
  *  Gets the Steem blockchain content and displays a list of post
@@ -67,6 +69,8 @@ class Posts extends Component {
     getFollowingList: PropTypes.func,
     isFetchingFollows: PropTypes.bool,
     hasMoreFollows: PropTypes.bool,
+    getSearchFollow: PropTypes.func,
+    searchFollowLoading: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -104,6 +108,8 @@ class Posts extends Component {
     getFollowingList: () => {},
     isFetchingFollows: false,
     hasMoreFollows: true,
+    getSearchFollow: () => {},
+    searchFollowLoading: false,
   };
 
   constructor(props) {
@@ -114,6 +120,7 @@ class Posts extends Component {
 
     this.state = {
       showDesc: true,
+      showResteems: true,
       modalVotesOpen: false,
       voterData: {
         voters: [],
@@ -136,7 +143,6 @@ class Posts extends Component {
       getFollowersList,
       getFollowingList,
       clearFollowData,
-      //prevPage,
       page,
       match: {
         params: {
@@ -160,20 +166,10 @@ class Posts extends Component {
     clearFollowData();
     followCount(author);
 
-    /*if (page === 'blog') {
-      //clear count data when it already has data from other user
-      clearFollowData();
-      followCount(author);
-    }else*/ if (path === '/@:author/followers') {
+    if (path === '/@:author/followers') {
       getFollowersList(author);
-      //if coming from non-blog page, get count again
-      /*if (prevPage !== 'blog')
-        followCount(author);*/
     }else if (path === '/@:author/following') {
       getFollowingList(author);
-      //if coming from non-blog page, get count again
-      /*if (prevPage !== 'blog')
-        followCount(author);*/
     }
   }
 
@@ -327,11 +323,19 @@ class Posts extends Component {
   }
 
   /**
-   *  Toggle state showDesc to show the description on the page.
+   *  Toggle state showDesc to hide/show the descriptions for posts.
    */
   toggleDescriptions = event => {
     event.preventDefault();
     this.setState(prevState => ({ showDesc: !prevState.showDesc }));
+  }
+
+  /**
+   *  Toggle state showResteems to hide/show the resteems on the page.
+   */
+  toggleResteems = event => {
+    event.preventDefault();
+    this.setState(prevState => ({ showResteems: !prevState.showResteems }));
   }
 
   /**
@@ -364,6 +368,7 @@ class Posts extends Component {
       props: {
         match: {
           path,
+          url,
         },
         user,
         csrf,
@@ -389,9 +394,12 @@ class Posts extends Component {
         followingCount,
         followers,
         following,
+        getSearchFollow,
+        searchFollowLoading,
       },
       state: {
         showDesc,
+        showResteems,
         modalVotesOpen,
         voterData,
       },
@@ -435,6 +443,7 @@ class Posts extends Component {
             <strong>{followerCount}</strong>
             {' followers'}
           </Link>
+
           <span>
             {'\u00A0\u00A0'}
             {'|'}
@@ -446,6 +455,16 @@ class Posts extends Component {
             {'Following '}
             <strong>{followingCount}</strong>
           </Link>
+          {
+            user && user !== author && (
+              <FollowButton
+                user={author}
+                pageOwner={author}
+                compact
+              />
+            )
+          }
+
         </span>
       );
     }else {
@@ -454,8 +473,60 @@ class Posts extends Component {
       );
     }
 
+    let pageTitle = '';
+    let desc = '';
+
+    if (page === 'blog') {
+      pageTitle = `${author}'s Blog`;
+      desc = `Check out the latest content from ${author}.`;
+    }else if (page === 'feed') {
+      pageTitle = `${author}'s Feed`;
+      desc = `Look at ${author}'s feed of posts around Steem.`;
+    }else if (path === '/@:author/followers') {
+      pageTitle = `${author}'s Followers`;
+      desc = `Look at ${author}'s followers on Steem.`;
+    }else if (path === '/@:author/following') {
+      pageTitle = `${author}'s Following`;
+      desc = `Look at who ${author} is following on Steem.`;
+    }else {
+      let filterPage = this.selectedFilter.charAt(0).toUpperCase() + this.selectedFilter.slice(1);
+      filterPage = filterPage.indexOf('Created') === 0 ? 'New' : filterPage;
+      pageTitle = `${filterPage} Steem Posts`;
+      desc = `Check out the latest ${filterPage} content on Steem.`;
+    }
+
+    const showHideresteems = page === 'blog' && (
+      <div className='showHideResteems'>
+        {'Hide Resteems: '}
+        <a href='/hideresteems' onClick={this.toggleResteems}>
+          {
+            showResteems
+            ? <Icon name='toggle off' size='large' />
+            : <Icon name='toggle on' size='large' />
+          }
+        </a>
+      </div>
+    );
+
+    const metaUrl = `https://thekure.net${url}`;
+    const metaTitle = `${pageTitle} - KURE`;
+    const ampUrl = `${url}/amp`;
+    const image = `https://thekure.net${defaultImage}`;
+
     return (
       <React.Fragment>
+        <Helmet>
+          <title>{pageTitle}</title>
+          <link rel="canonical" href={metaUrl} />
+          <link rel="amphtml" href={ampUrl} />
+          <meta property="description" content={desc} />
+          <meta property="og:title" content={metaTitle} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={metaUrl} />
+          <meta property="og:image" content={image} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:site_name" content="KURE" />
+        </Helmet>
         <ModalGroup
           modalOpen={modalOpenAddPost}
           onModalClose={onModalCloseAddPost}
@@ -487,6 +558,7 @@ class Posts extends Component {
                           showGrid={showGrid}
                         />
                         <hr />
+                        { showHideresteems }
                         {
                           page === prevPage
                           ? (
@@ -503,6 +575,7 @@ class Posts extends Component {
                               pageOwner={author}
                               resteemedPayload={resteemedPayload}
                               showModalVotes={this.showModalVotes}
+                              showResteems={showResteems}
                             />
                           ) : (
                             <Loading />
@@ -530,6 +603,7 @@ class Posts extends Component {
                                     : <Icon name='toggle on' size='large' />
                                   }
                                 </a>
+                                { showHideresteems }
                               </Grid.Column>
                             </Grid.Row>
 
@@ -550,6 +624,7 @@ class Posts extends Component {
                                   resteemedPayload={resteemedPayload}
                                   showDesc={showDesc}
                                   showModalVotes={this.showModalVotes}
+                                  showResteems={showResteems}
                                 />
                               ) : (
                                 <Loading />
@@ -571,20 +646,15 @@ class Posts extends Component {
                   { followHeader }
                   <hr />
                   {
-                    path === '/@:author/followers'
-                    ? (
-                      <Followers
-                        author={author}
-                        followerCount={followerCount}
+                    page === 'follows' && (
+                      <Follows
+                        path={path}
+                        userLogged={user}
                         followers={followers}
-                      />
-
-                    )
-                    : (
-                      <Following
-                        author={author}
-                        followingCount={followingCount}
                         following={following}
+                        getSearchFollow={getSearchFollow}
+                        author={author}
+                        searchFollowLoading={searchFollowLoading}
                       />
                     )
                   }
@@ -641,6 +711,7 @@ const mapStateToProps = state => {
       following,
       isFetching: isFetchingFollows,
       hasMore: hasMoreFollows,
+      searchFollowLoading,
     }
   } = state;
 
@@ -665,6 +736,7 @@ const mapStateToProps = state => {
     following,
     isFetchingFollows,
     hasMoreFollows,
+    searchFollowLoading,
   }
 }
 
@@ -714,6 +786,9 @@ const mapDispatchToProps = dispatch => (
     ),
     clearFollowData: () => (
       dispatch(clearFollow())
+    ),
+    getSearchFollow: (user, userToFind, page) => (
+      dispatch(searchFollowers(user, userToFind, page))
     ),
   }
 );

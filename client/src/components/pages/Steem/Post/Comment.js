@@ -172,7 +172,7 @@ class Comment extends Component {
     const id = comment.id;
     const author = comment.author;
     const permlink = comment.permlink;
-    const created = comment.created;
+    const created = `${comment.created}Z`;
     const anchorLink = `#@${author}/${permlink}`;
     const activeVotes = comment.active_votes;
     const totalPayout =
