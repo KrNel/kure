@@ -185,62 +185,56 @@ class Groups extends Component {
     const ampUrl = `groups/amp`;
     const image = `https://thekure.net${defaultImage}`;
 
-    let pageData = null;
-
     //if there is data, display the data part of the page
     if (groupsCreated.length) {
-      pageData = (
-        <Grid columns={1} stackable>
-          <Grid.Column>
-            <div id='newlyCreated'>
-              <Grid.Row>
-                <Grid.Column>
-                  {tabViews}
-                  <ToggleView
-                    toggleView={this.toggleView}
-                    showGrid={showGrid}
-                  />
-                  <div className='clear' />
-                </Grid.Column>
-              </Grid.Row>
-              <hr />
-              {selectedTab}
-              { isFetching && <Loading /> }
-            </div>
-          </Grid.Column>
-        </Grid>
+      return (
+        <React.Fragment>
+          <Helmet>
+            <title>{pageTitle}</title>
+            <link rel="canonical" href={metaUrl} />
+            <link rel="amphtml" href={ampUrl} />
+            <meta property="description" content={desc} />
+            <meta property="og:title" content={metaTitle} />
+            <meta property="og:type" content="article" />
+            <meta property="og:url" content={metaUrl} />
+            <meta property="og:image" content={image} />
+            <meta property="og:description" content={desc} />
+            <meta property="og:site_name" content="KURE" />
+          </Helmet>
+          <ErrorBoundary>
+            <Grid columns={1} stackable>
+              <Grid.Column>
+                <div id='newlyCreated'>
+                  <Grid.Row>
+                    <Grid.Column>
+                      {tabViews}
+                      <ToggleView
+                        toggleView={this.toggleView}
+                        showGrid={showGrid}
+                      />
+                      <div className='clear' />
+                    </Grid.Column>
+                  </Grid.Row>
+                  <hr />
+                  {selectedTab}
+                  { isFetching && <Loading /> }
+                </div>
+              </Grid.Column>
+            </Grid>
+          </ErrorBoundary>
+        </React.Fragment>
       )
     //if there is no data and fetching, show loader
     }else if (isFetching) {
-      pageData = <Loading />;
+      return <Loading />;
     //if there is no data and no fetching, no groups exist
     }else {
-      pageData = (
+      return (
         <Segment>
           {'No communities.'}
         </Segment>
       )
     }
-    
-    return (
-      <React.Fragment>
-        <Helmet>
-          <title>{pageTitle}</title>
-          <link rel="canonical" href={metaUrl} />
-          <link rel="amphtml" href={ampUrl} />
-          <meta property="description" content={desc} />
-          <meta property="og:title" content={metaTitle} />
-          <meta property="og:type" content="article" />
-          <meta property="og:url" content={metaUrl} />
-          <meta property="og:image" content={image} />
-          <meta property="og:description" content={desc} />
-          <meta property="og:site_name" content="KURE" />
-        </Helmet>
-        <ErrorBoundary>
-          {pageData}
-        </ErrorBoundary>
-      </React.Fragment>
-    )
   }
 }
 

@@ -15,6 +15,7 @@ import Logout from '../components/Auth/Logout';
 import AuthSC from '../components/Auth/AuthSC';
 import Write from '../components/pages/Steem/Write/Write';
 import Follows from '../components/pages/Steem/Follows/Follows';
+import Wallet from '../components/pages/Steem/Wallet/Wallet';
 import PrivateRoute from './PrivateRoute';
 import NoMatch from './NoMatch';
 
@@ -32,11 +33,12 @@ const Routes = (props) => (
       <Route exact path='/kurated' component={Posts} />
       <PrivateRoute exact path='/manage' component={Manage} />
       <Route exact path='/logout' component={Logout} />
-      <Route path='/created/:tag?' component={Kurate} />
-      <Route path='/hot/:tag?' component={Kurate} />
-      <Route path='/promoted/:tag?' component={Kurate} />
-      <Route path='/trending/:tag?' component={Kurate} />
+      <Route exact path='/created/:tag?' component={Kurate} />
+      <Route exact path='/hot/:tag?' component={Kurate} />
+      <Route exact path='/promoted/:tag?' component={Kurate} />
+      <Route exact path='/trending/:tag?' component={Kurate} />
       <Route path='/:category/@:author/:permlink' component={Post} />
+      <Route path='/@:author/wallet' component={Wallet} />
       <Route path='/@:author/feed' component={Feed} />
       <Route path='/@:author/followers' component={Follows} />
       <Route path='/@:author/following' component={Follows} />

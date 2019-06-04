@@ -237,7 +237,6 @@ class Post extends Component {
                   />
                 )
                 :  <Loading />
-
             }
           </React.Fragment>
         </ErrorBoundary>

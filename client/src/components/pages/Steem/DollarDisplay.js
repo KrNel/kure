@@ -14,7 +14,7 @@ const DollarDisplay = ({ value, payoutDeclined }) => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 3
-  })
+  });
 
   let declined = '';
   let title = '';

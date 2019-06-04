@@ -15,6 +15,7 @@ import { communities } from './communitiesReducer';
 import { resteem } from './resteemReducer';
 import { settings } from './settingsReducer';
 import { follow } from './followReducer';
+import { wallet } from './walletReducer';
 
 /**
  *  Combine imported reducers for the application.
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   resteem,
   settings,
   follow,
+  wallet,
 });
 
 export default rootReducer;
