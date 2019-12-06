@@ -41,7 +41,7 @@
     "mongodb": "^3.1.10",
     "morgan": "^1.9.1",
     "path": "^0.12.7",
-    "serialize-javascript": "^1.6.1",
+    "serialize-javascript": "^2.1.1",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.7.0",
     "xss": "^1.0.3"
