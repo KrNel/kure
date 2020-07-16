@@ -15,7 +15,7 @@
     "js-cookie": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
     "lightrpc": "^1.0.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "log4javascript": "^1.4.15",
     "moment": "^2.23.0",
     "moment-timezone": "^0.5.25",
