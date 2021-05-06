@@ -32,7 +32,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "remarkable": "^1.7.1",
-    "sanitize-html": "^1.20.0",
+    "sanitize-html": "^2.3.2",
     "secure-random": "^1.1.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.85.0",
